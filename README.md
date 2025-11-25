@@ -49,19 +49,48 @@ Next.js application
 
 ```
 src/
-├── app/              # Next.js App Router pages
-├── components/       # React components
-│   ├── common/      # Reusable UI components
-│   ├── features/    # Feature-specific components
-│   └── layout/      # Layout components
-├── config/          # Application configuration
-├── hooks/           # Custom React hooks
-├── lib/             # Utility functions and helpers
-│   ├── api/        # API client utilities
-│   ├── constants/  # Constants and routes
-│   └── utils/      # Helper functions
-├── services/        # API services
-└── types/           # TypeScript type definitions
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes
+│   │   └── feature-flags/ # Feature flags API
+│   ├── dashboard/         # Dashboard page
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Home page
+├── components/            # React components
+│   ├── common/           # Reusable UI components
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── Input.tsx
+│   │   └── Table.tsx
+│   ├── layout/           # Layout components
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   └── MainLayout.tsx
+│   └── modules/          # Feature-specific modules
+│       ├── bajar-parwana/        # Permit application module
+│       ├── birth-death/          # Certificate application module
+│       ├── dashboard/            # Dashboard service cards
+│       ├── property-tax/         # Property tax module
+│       └── water-tax/            # Water tax module
+├── config/               # Application configuration
+│   └── app.config.ts
+├── features/             # Feature implementations
+├── hooks/                # Custom React hooks
+│   ├── useAsync.ts
+│   └── useLoading.ts
+├── lib/                  # Utility functions and helpers
+│   ├── api/             # API client utilities
+│   ├── constants/       # Constants and routes
+│   │   └── routes.ts
+│   └── utils/           # Helper functions
+│       ├── cn.ts
+│       └── format.ts
+├── services/             # API services
+│   └── api.service.ts
+├── styles/               # Additional styles
+└── types/                # TypeScript type definitions
+    ├── common.types.ts
+    └── service.types.ts
 ```
 
 See [STRUCTURE.md](./STRUCTURE.md) for detailed project structure.
