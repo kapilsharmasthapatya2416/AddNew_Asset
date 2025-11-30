@@ -53,21 +53,25 @@ export function Table<T extends Record<string, any>>({
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="hover:bg-gray-50 transition-colors">
-              {columns.map((column, colIndex) => {
-                const value = row[column.key as keyof T];
-                return (
-                  <td
-                    key={String(column.key) + colIndex}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                  >
-                    {column.render ? column.render(value, row) : String(value || '-')}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
+          {data.map((row, rowIndex) => {
+            // Use id field if available for better reconciliation, fallback to index
+            const rowKey = (row.id as string) || rowIndex;
+            return (
+              <tr key={rowKey} className="hover:bg-gray-50 transition-colors">
+                {columns.map((column, colIndex) => {
+                  const value = row[column.key as keyof T];
+                  return (
+                    <td
+                      key={String(column.key) + colIndex}
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                    >
+                      {column.render ? column.render(value, row) : String(value || '-')}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

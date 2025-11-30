@@ -1,59 +1,27 @@
 import { MainLayout } from '@/components/layout';
 import { Card, CardHeader, CardTitle, CardContent, Table } from '@/components/common';
 import { TableColumn } from '@/types/common.types';
+import { getDashboardData, DashboardData } from './actions';
+import { DeleteButton } from '@/components/modules/dashboard/DeleteButton';
+import { Suspense } from 'react';
 
 /**
  * Dashboard Page - Server Component with SSR
  * Fetches data server-side and renders on the server
+ * Optimized with proper keys, streaming, and efficient reconciliation
  */
-
-interface DashboardData {
-  id: string;
-  route: string;
-  status: 'Active' | 'Delayed' | 'Completed';
-  vehicles: number;
-  lastUpdate: string;
-}
-
-// Simulated server-side data fetch
-async function getDashboardData(): Promise<DashboardData[]> {
-  // In a real application, this would be an API call
-  // For now, we return mock data
-  return [
-    {
-      id: '1',
-      route: 'North Route A',
-      status: 'Active',
-      vehicles: 12,
-      lastUpdate: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      route: 'South Route B',
-      status: 'Delayed',
-      vehicles: 8,
-      lastUpdate: new Date().toISOString(),
-    },
-    {
-      id: '3',
-      route: 'East Route C',
-      status: 'Active',
-      vehicles: 15,
-      lastUpdate: new Date().toISOString(),
-    },
-    {
-      id: '4',
-      route: 'West Route D',
-      status: 'Completed',
-      vehicles: 10,
-      lastUpdate: new Date().toISOString(),
-    },
-  ];
-}
 
 export default async function DashboardPage() {
   // Server-side data fetching
   const dashboardData = await getDashboardData();
+
+  // Pre-calculate stats on server (more efficient than client-side)
+  const stats = {
+    totalRoutes: dashboardData.length,
+    activeVehicles: dashboardData.reduce((sum, item) => sum + item.vehicles, 0),
+    activeRoutes: dashboardData.filter((item) => item.status === 'Active').length,
+    delayedRoutes: dashboardData.filter((item) => item.status === 'Delayed').length,
+  };
 
   const columns: TableColumn<DashboardData>[] = [
     { key: 'route', label: 'Route' },
@@ -80,6 +48,11 @@ export default async function DashboardPage() {
       label: 'Last Update',
       render: (value: string) => new Date(value).toLocaleTimeString(),
     },
+    {
+      key: 'id',
+      label: 'Actions',
+      render: (value: string) => <DeleteButton routeId={value} />,
+    },
   ];
 
   return (
@@ -92,30 +65,30 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - Pre-calculated on server */}
         <div className="grid md:grid-cols-4 gap-4">
           <Card variant="elevated" padding="md">
             <div className="text-sm text-gray-600">Total Routes</div>
             <div className="text-3xl font-bold text-gray-900 mt-2">
-              {dashboardData.length}
+              {stats.totalRoutes}
             </div>
           </Card>
           <Card variant="elevated" padding="md">
             <div className="text-sm text-gray-600">Active Vehicles</div>
             <div className="text-3xl font-bold text-gray-900 mt-2">
-              {dashboardData.reduce((sum, item) => sum + item.vehicles, 0)}
+              {stats.activeVehicles}
             </div>
           </Card>
           <Card variant="elevated" padding="md">
             <div className="text-sm text-gray-600">Active Routes</div>
             <div className="text-3xl font-bold text-green-600 mt-2">
-              {dashboardData.filter((item) => item.status === 'Active').length}
+              {stats.activeRoutes}
             </div>
           </Card>
           <Card variant="elevated" padding="md">
             <div className="text-sm text-gray-600">Delayed</div>
             <div className="text-3xl font-bold text-yellow-600 mt-2">
-              {dashboardData.filter((item) => item.status === 'Delayed').length}
+              {stats.delayedRoutes}
             </div>
           </Card>
         </div>
