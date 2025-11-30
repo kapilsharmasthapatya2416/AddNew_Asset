@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent, Table } from '@/components/co
 import { TableColumn } from '@/types/common.types';
 import { getDashboardData, DashboardData } from './actions';
 import { DeleteButton } from '@/components/modules/dashboard/DeleteButton';
+import { AddRouteButton } from '@/components/modules/dashboard/AddRouteButton';
 import { Suspense } from 'react';
 
 /**
@@ -58,11 +59,14 @@ export default async function DashboardPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-2">
-            Overview of operations and real-time status
-          </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-gray-600 mt-2">
+              Overview of operations and real-time status
+            </p>
+          </div>
+          <AddRouteButton />
         </div>
 
         {/* Stats Cards - Pre-calculated on server */}

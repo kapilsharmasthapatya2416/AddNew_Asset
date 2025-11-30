@@ -55,6 +55,33 @@ export async function getDashboardData(): Promise<DashboardData[]> {
 }
 
 /**
+ * Creates a new route
+ * Server Action - called from client components
+ * Returns success status for error handling
+ */
+export async function createRoute(
+  data: Omit<DashboardData, 'id' | 'lastUpdate'>
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const newRoute: DashboardData = {
+      id: String(Date.now()),
+      ...data,
+      lastUpdate: new Date().toISOString(),
+    };
+    
+    dashboardRoutes.push(newRoute);
+    
+    // Revalidate to trigger re-render
+    revalidatePath('/dashboard');
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Create error:', error);
+    return { success: false, error: 'Failed to create route' };
+  }
+}
+
+/**
  * Deletes a route by ID
  * Server Action - called from client components
  * Returns success status for error handling
