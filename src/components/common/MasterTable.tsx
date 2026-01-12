@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { cn } from "@/lib/utils/cn";
-import { ActionButton } from "./ActionButtons";
+import { ActionButton } from "./Buttons";
 import { StatusBadge } from "./StatusBadge";
 export interface Column<
   T extends Record<string, unknown> = Record<string, unknown>

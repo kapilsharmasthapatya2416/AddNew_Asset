@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
-import { ActionButton } from "@/components/common/ActionButtons";
+import { ActionButton } from "@/components/common/Buttons";
 
 interface Option {
   label: string;
