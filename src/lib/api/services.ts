@@ -27,7 +27,7 @@ export async function getServices(): Promise<Service[]> {
       const agent = new https.Agent({
         rejectUnauthorized: false,
       });
-      // @ts-ignore - Node.js fetch accepts agent
+      // @ts-expect-error - Node.js fetch accepts agent
       fetchOptions.agent = agent;
     }
 

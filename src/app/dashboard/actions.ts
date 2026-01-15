@@ -7,7 +7,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-export interface DashboardData {
+export interface DashboardData extends Record<string, unknown> {
   id: string;
   route: string;
   status: 'Active' | 'Delayed' | 'Completed';
@@ -16,7 +16,7 @@ export interface DashboardData {
 }
 
 // In-memory data store (simulating a database)
-let dashboardRoutes: DashboardData[] = [
+const dashboardRoutes: DashboardData[] = [
   {
     id: '1',
     route: 'North Route A',
@@ -63,11 +63,11 @@ export async function createRoute(
   data: Omit<DashboardData, 'id' | 'lastUpdate'>
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const newRoute: DashboardData = {
-      id: String(Date.now()),
+    const newRoute = {
       ...data,
+      id: String(Date.now()),
       lastUpdate: new Date().toISOString(),
-    };
+    } as DashboardData;
     
     dashboardRoutes.push(newRoute);
     

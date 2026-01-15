@@ -4,7 +4,6 @@ import { TableColumn } from '@/types/common.types';
 import { getDashboardData, DashboardData } from './actions';
 import { DeleteButton } from '@/components/modules/dashboard/DeleteButton';
 import { AddRouteButton } from '@/components/modules/dashboard/AddRouteButton';
-import { Suspense } from 'react';
 
 /**
  * Dashboard Page - Server Component with SSR
@@ -29,7 +28,7 @@ export default async function DashboardPage() {
     {
       key: 'status',
       label: 'Status',
-      render: (value: string) => (
+      render: (value: unknown) => (
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium ${
             value === 'Active'
@@ -39,7 +38,7 @@ export default async function DashboardPage() {
               : 'bg-gray-100 text-gray-800'
           }`}
         >
-          {value}
+          {String(value)}
         </span>
       ),
     },
@@ -47,12 +46,12 @@ export default async function DashboardPage() {
     {
       key: 'lastUpdate',
       label: 'Last Update',
-      render: (value: string) => new Date(value).toLocaleTimeString(),
+      render: (value: unknown) => new Date(String(value)).toLocaleTimeString(),
     },
     {
       key: 'id',
       label: 'Actions',
-      render: (value: string) => <DeleteButton routeId={value} />,
+      render: (value: unknown) => <DeleteButton routeId={String(value)} />,
     },
   ];
 
@@ -103,7 +102,7 @@ export default async function DashboardPage() {
             <CardTitle>Routes</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table data={dashboardData} columns={columns} />
+            <Table<DashboardData> data={dashboardData} columns={columns} />
           </CardContent>
         </Card>
       </div>

@@ -3,15 +3,11 @@
  * Handles property search, tax payment, and assessment details
  */
 
-interface PropertySearchProps {
-  // Add your props here
-}
-
 /**
  * PropertySearch Component
  * Search for properties by ID, owner name, or address
  */
-const PropertySearch = (props: PropertySearchProps) => {
+const PropertySearch = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Property Search</h2>

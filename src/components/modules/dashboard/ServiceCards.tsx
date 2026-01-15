@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Service, Stat } from "@/types/service.types";
+import React from "react";
+import { Stat } from "@/types/service.types";
 import { getServices } from "@/lib/api/services";
 import * as Icons from "lucide-react";
 import { LucideIcon } from "lucide-react";
@@ -36,8 +37,6 @@ const ServiceCard = ({
     subtext,
     stats
 }: ServiceCardProps) => {
-    const IconComponent = getIconComponent(icon);
-
     return (
         <Link href={link} className="block group">
             <div className="relative pt-[20px] pr-5 pb-[15px] pl-[15px] bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 min-h-[130px] flex flex-col justify-end border-l-[8px] border-solid border-[#004c8c]">
@@ -53,7 +52,7 @@ const ServiceCard = ({
                 </div>
                 <div className="flex flex-col">
                     <div className="text-[#004c8c] mb-2">
-                        <IconComponent size={36} />
+                        {React.createElement(getIconComponent(icon), { size: 36 })}
                     </div>
                     <div className="text-lg font-semibold text-gray-800">{title}</div>
                     <p className="text-xs text-gray-500">{subtext}</p>
