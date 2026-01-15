@@ -14,7 +14,7 @@ interface DrawerProps {
   footer?: React.ReactNode;
 }
 
-export default function Drawer({
+export  function Drawer({
   open,
   onClose,
   title,
@@ -35,7 +35,7 @@ export default function Drawer({
   return (
     <>
 
-      <div
+        <div
         className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
         role="button"
@@ -72,7 +72,7 @@ export default function Drawer({
             {title}
           </div>
 
-          <button
+         <button
             onClick={onClose}
             className="
               p-2 rounded-lg

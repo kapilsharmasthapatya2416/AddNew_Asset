@@ -5,7 +5,7 @@ interface PageContainerProps {
   className?: string;
 }
 
-export default function PageContainer({ children, className = "" }: PageContainerProps) {
+export  function PageContainer({ children, className = "" }: PageContainerProps) {
   return (
     <div
       className={`

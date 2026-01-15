@@ -1,4 +1,4 @@
-"use client" 
+"use client";
 import {
   Plus,
   Pencil,
@@ -43,7 +43,7 @@ export interface ActionButtonProps
   isLoading?: boolean; // ✅ ADDED
 }
 
-export function Button({
+export function ActionButton({
   variant,
   onClick,
   icon: Icon,

@@ -17,7 +17,7 @@ export function SearchInput({
   onChange,
   placeholder = "Search...",
   className,
-  showClear = true,
+ showClear = true,
 }: SearchInputProps) {
   return (
      <div className={cn("relative mb-4 w-[300px]", className)}>
@@ -42,7 +42,7 @@ export function SearchInput({
 
       {/* CLEAR BUTTON */}
       {showClear && value && (
-        <button
+         <button
           type="button"
           onClick={() => onChange("")}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:text-gray-600"

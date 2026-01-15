@@ -323,7 +323,7 @@ export function MasterTable<
               disabled={pageNumber === totalPages}
               onClick={() => onPageChange(totalPages)}
               label="»"
-              className="h-9 w-9 px-0 border  border-[#DCEAFF]"
+                className="h-9 w-9 px-0 border border-[#DCEAFF]"
             />
           </div>
 

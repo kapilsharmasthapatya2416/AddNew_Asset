@@ -17,7 +17,7 @@ interface TableHeaderProps {
   className?: string;
 }
 
-export default function TableHeader({
+export function TableHeader({
   title,
   subtitle,
   icon: Icon,
@@ -46,7 +46,7 @@ export default function TableHeader({
 
           {/* TITLE */}
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-blue-900  flex items-center gap-2">
+            <h1 className="text-xl font-bold text-blue-900 flex items-center gap-2">
               {title}
             </h1>
             {subtitle && (

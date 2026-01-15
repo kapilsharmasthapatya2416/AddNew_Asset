@@ -50,13 +50,7 @@ export function ToggleSwitch({
             inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full
             border border-transparent
             transition-all outline-none
-
-            data-[state=unchecked]:bg-switch-background
-            data-[state=unchecked]:bg-gray-300
-            
-
             data-[state=checked]:bg-blue-600
-
             focus-visible:border-ring
             focus-visible:ring-ring/50
             focus-visible:ring-[3px]

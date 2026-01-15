@@ -47,7 +47,7 @@ export function ValidationMessage({
 
   return (
     <div
-      className={cn(
+    className={cn(
         "mt-1 flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs",
         config.text,
         config.bg,
