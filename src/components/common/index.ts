@@ -7,7 +7,7 @@
 
 export { Card, CardHeader, CardTitle, CardContent } from './Card';
 export type { CardProps } from './Card';
-export { ActionButton } from './Buttons';
+export { ActionButton } from './Button';
 
 export { Input } from './Input';
 export type { InputProps } from './Input';
@@ -16,7 +16,7 @@ export { Table } from './Table';
 export type { TableProps } from './Table';
 ;
 export { Drawer } from './Drawer';
-export { Dropdown } from './Dropdown';
+export { MultiSelectDropdown } from './Dropdown';
 export { MasterTable } from './MasterTable';
 export { PageContainer } from './PageContainer';
 export { SearchInput } from './SearchInput';

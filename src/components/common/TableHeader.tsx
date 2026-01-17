@@ -2,7 +2,7 @@
 
 import React from "react";
 import { LucideIcon } from "lucide-react";
-import { ActionButton } from "@/components/common/Buttons";
+import { ActionButton } from "@/components/common/Button";
 import { cn } from "@/lib/utils/cn";
 
 interface TableHeaderProps {

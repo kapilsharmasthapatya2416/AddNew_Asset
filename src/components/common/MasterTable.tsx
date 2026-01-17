@@ -2,17 +2,17 @@
 
 import React, { useMemo } from "react";
 import { cn } from "@/lib/utils/cn";
-import { ActionButton } from "./Buttons";
+import { ActionButton } from "./Button";
 import { StatusBadge } from "./StatusBadge";
 export interface Column<
   T extends Record<string, unknown> = Record<string, unknown>
 > {
-  key: keyof T;
+  key: string | number;
   label: string;
   width?: string;
   isStatus?: boolean;
   render?: (
-    value: T[keyof T] | undefined,
+    value: unknown,
     row: T,
     rowIndex: number
   ) => React.ReactNode;
@@ -213,10 +213,11 @@ export function MasterTable<
                     )}
                   >
                     {columns.map((col) => {
-                      const value = row[col.key];
+                      const value = row[col.key as keyof T];
+                      const statusValue = value as string | number | boolean | null | undefined;
                       return (
                         <td
-                          key={col.key}
+                          key={String(col.key)}
                           className={cn(
                             "px-2 py-2 text-gray-700",
                             col.cellClassName
@@ -225,7 +226,7 @@ export function MasterTable<
                           {col.render ? (
                             col.render(value, row, i)
                           ) : col.isStatus ? (
-                            <StatusBadge value={value} />
+                            <StatusBadge value={statusValue} />
                           ) : (
                             <span className="font-medium">
                               {value ?? "-"}
