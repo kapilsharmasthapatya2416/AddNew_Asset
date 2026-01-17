@@ -229,7 +229,7 @@ export function MasterTable<
                             <StatusBadge value={statusValue} />
                           ) : (
                             <span className="font-medium">
-                              {value ?? "-"}
+                              {String(value ?? "-")}
                             </span>
                           )}
                         </td>
