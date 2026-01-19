@@ -1,7 +1,3 @@
-/**
- * Common TypeScript types used across the application
- */
-
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
@@ -46,4 +42,20 @@ export interface SelectOption {
   label: string;
   value: string | number;
   disabled?: boolean;
+}
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+ variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'save' | 'cancel' | 'add' | 'upload' | 'import' | 'export';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+  fullWidth?: boolean;
+}
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'default' | 'bordered' | 'elevated';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
 }

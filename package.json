@@ -16,12 +16,14 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.555.0",
     "next": "^16.1.2",
     "next-intl": "^4.7.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
