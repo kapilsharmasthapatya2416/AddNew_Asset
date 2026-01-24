@@ -22,7 +22,6 @@ const eslintConfig = defineConfig([
       "i18next/no-literal-string": [
         "warn",
         {
-          markupOnly: true,
           ignoreAttribute: [
             "className",
             "class",
