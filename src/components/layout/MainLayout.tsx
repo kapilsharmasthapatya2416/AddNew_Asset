@@ -12,6 +12,13 @@ export interface MainLayoutProps {
  * Note: User authentication (cookies/user_name) is handled client-side in Header component
  * to allow this layout to remain statically optimizable.
  *
+ * DESIGN DECISION: This is intentionally a synchronous Server Component that imports
+ * Header (Client Component) and Footer (async Server Component). This mixed component
+ * boundary is acceptable because:
+ * 1. Header needs client-side interactivity (language switching, logout)
+ * 2. Footer is async for i18n translations via getTranslations()
+ * 3. MainLayout will become async when MasterService API integration is implemented
+ *
  * TODO: Future implementation will include:
  * - Sidebar component for navigation
  * - SessionWatcher for authentication monitoring
