@@ -35,6 +35,8 @@ export function sanitizeInput(input: string | undefined | null): string {
     .replace(/javascript:/gi, '') // Remove javascript: protocol
     .replace(/data:/gi, '') // Remove data: protocol
     .replace(/vbscript:/gi, '') // Remove vbscript: protocol
-    .replace(/(^|\s)on\w+\s*=/gi, '$1') // Remove event handlers like onclick= while preserving leading whitespace
+    // Remove event handlers like onclick= while preserving leading whitespace
+    // Known limitation: This pattern requires '=' sign, so edge cases like onclick(alert) are not caught
+    .replace(/(^|\s)on\w+\s*=/gi, '$1')
     .slice(0, MAX_SANITIZED_INPUT_LENGTH);
 }
