@@ -1,4 +1,10 @@
-// Define a minimal interface for the router to avoid deep Next.js imports in config
+/**
+ * Minimal router interface for locale switching.
+ * We define this locally instead of importing from 'next/navigation' to:
+ * 1. Keep this config file framework-agnostic and testable
+ * 2. Avoid importing Next.js internals in a shared configuration module
+ * 3. Only expose the single method we actually need (push)
+ */
 interface MinimalRouter {
   push: (href: string) => void;
 }

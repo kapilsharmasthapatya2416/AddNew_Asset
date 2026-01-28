@@ -15,12 +15,13 @@ interface MainLayoutProps {
  * TODO: Future implementation will include:
  * - Sidebar component for navigation
  * - SessionWatcher for authentication monitoring
- * - MasterService for ULB data fetching
+ * - MasterService for ULB data fetching (will make this async when implemented)
  */
-export async function MainLayout({ children }: MainLayoutProps) {
+export function MainLayout({ children }: MainLayoutProps) {
   // Fallback ULB data; replace with real data source (API/database) when available
+  // TODO: Replace with actual API call when backend is ready
   const ulbData = {
-    id: 0,
+    id: 1,
     ulbCode: 'TMC',
     ulbName: 'Thane Municipal Corporation',
     ulbTypeId: 1,

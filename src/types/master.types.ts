@@ -11,7 +11,11 @@ export interface UlbMaster {
   ulbName: string;
   /** Localized name (e.g., Marathi/Hindi), optional */
   ulbNameLocal?: string;
-  /** Type identifier (e.g., Municipal Council, Corporation) */
+  /**
+   * Type identifier for the ULB category.
+   * Common values: 1 = Municipal Corporation, 2 = Municipal Council, 3 = Nagar Panchayat
+   * Note: Actual type definitions should be fetched from the backend or defined in a separate UlbType enum.
+   */
   ulbTypeId: number;
   /** URL to the ULB's logo image. If not present, a default placeholder/text will be shown */
   ulbLogo?: string;

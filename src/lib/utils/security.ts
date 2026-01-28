@@ -4,8 +4,25 @@ export const MAX_SANITIZED_INPUT_LENGTH = 100;
  * Performs basic sanitization of user-provided text for safer UI display.
  * Strips HTML tags and some hazardous patterns, but is not a full XSS or
  * injection sanitizer and should not be relied on as a security boundary.
- * NOTE: We avoid manual HTML entity encoding here because React/Next.js
- * automatically escapes content rendered in JSX, preventing double-encoding issue.
+ *
+ * This helper is intentionally **not** a full XSS / injection sanitizer and must
+ * never be treated as a security boundary.
+ *
+ * IMPORTANT USAGE NOTE:
+ * - This function is only safe when its return value is rendered as plain text
+ *   by React/Next.js JSX (e.g. `{sanitizeInput(value)}` inside JSX). In these
+ *   cases React automatically escapes HTML entities, and we avoid double-encoding
+ *   by not performing manual entity encoding here.
+ * - Do NOT use this function when:
+ *   - Constructing or concatenating raw HTML strings
+ *   - Passing values into `dangerouslySetInnerHTML`
+ *   - Rendering content with non-React renderers (e.g. email templates, PDFs,
+ *     server-side string templates, or any system that does not perform its own
+ *     robust HTML escaping)
+ *
+ * In those cases, use a dedicated, well-reviewed HTML escaping / sanitization
+ * library appropriate for the target context instead.
+ *
  * @param input The string to sanitize
  * @returns Sanitized string
  */
@@ -14,7 +31,7 @@ export function sanitizeInput(input: string | undefined | null): string {
 
   return input
     .trim() // Trim leading and trailing whitespace first
-    .replace(/<[^>]*>/gm, '') // Strip HTML tags
+    .replace(/<[^>]*>/g, '') // Strip HTML tags
     .replace(/javascript:/gi, '') // Remove javascript: protocol
     .replace(/data:/gi, '') // Remove data: protocol
     .replace(/vbscript:/gi, '') // Remove vbscript: protocol

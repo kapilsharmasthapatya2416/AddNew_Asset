@@ -49,27 +49,15 @@ export async function Footer({ ulbData }: FooterProps) {
 
             {/* Links - Placeholders until actual routes are implemented */}
             <div className="flex items-center gap-4 sm:gap-6 text-blue-100/90">
-              <button
-                type="button"
-                aria-disabled="true"
-                className="hover:text-white hover:underline transition-all cursor-default"
-              >
+              <span className="text-blue-100/80 cursor-default">
                 {t('footer.privacyPolicy')}
-              </button>
-              <button
-                type="button"
-                aria-disabled="true"
-                className="hover:text-white hover:underline transition-all cursor-default"
-              >
+              </span>
+              <span className="text-blue-100/80 cursor-default">
                 {t('footer.termsOfService')}
-              </button>
-              <button
-                type="button"
-                aria-disabled="true"
-                className="hover:text-white hover:underline transition-all cursor-default"
-              >
+              </span>
+              <span className="text-blue-100/80 cursor-default">
                 {t('footer.contact')}
-              </button>
+              </span>
             </div>
           </div>
         </div>

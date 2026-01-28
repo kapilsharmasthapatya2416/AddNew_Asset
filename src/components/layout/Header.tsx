@@ -56,11 +56,11 @@ export function Header({ ulbData }: HeaderProps) {
       const safeUserName =
         typeof decodedUserName === 'string' ? sanitizeInput(decodedUserName) : undefined;
 
+      // Allow international usernames (Hindi/Marathi) - sanitizeInput handles dangerous patterns
       if (
         typeof safeUserName === 'string' &&
         safeUserName.length > 0 &&
-        safeUserName.length <= 50 &&
-        /^[A-Za-z0-9 ._-]+$/.test(safeUserName)
+        safeUserName.length <= 50
       ) {
         setUsername(safeUserName);
       }
@@ -72,10 +72,8 @@ export function Header({ ulbData }: HeaderProps) {
     [ulbData?.ulbName]
   );
 
-  // Optimized dynamic page title lookup
-  const headerDetails = useMemo(() => {
-    return t('app.assessmentSystem');
-  }, [t]);
+  // Page title translation
+  const headerDetails = t('app.assessmentSystem');
 
   // Handle Escape key to close dropdown
   useEffect(() => {
@@ -95,7 +93,7 @@ export function Header({ ulbData }: HeaderProps) {
         window.sessionStorage.clear();
       } catch (error) {
         // Log storage clearing errors in development for debugging, but continue with redirect
-        if (process.env.NODE_ENV === 'development' && typeof console !== 'undefined') {
+        if (process.env.NODE_ENV === 'development') {
           console.error('Failed to clear web storage during logout:', error);
         }
       }
@@ -210,7 +208,11 @@ export function Header({ ulbData }: HeaderProps) {
               {langOpen && (
                 <>
                   {/* Click-outside overlay */}
-                  <div className="fixed inset-0 z-40" onClick={() => setLangOpen(false)} />
+                  <div
+                    className="fixed inset-0 z-40"
+                    aria-hidden="true"
+                    onClick={() => setLangOpen(false)}
+                  />
 
                   {/* Dropdown panel */}
                   <div
@@ -289,10 +291,10 @@ export function Header({ ulbData }: HeaderProps) {
               </div>
             </div>
 
-            {/* MOBILE USER ICON */}
+            {/* MOBILE USER ICON - min touch target 44px for accessibility */}
             <button
               type="button"
-              className="flex h-9 w-9 md:hidden items-center justify-center rounded-full text-white bg-white/10 border border-white/20 shadow-md"
+              className="flex h-11 w-11 md:hidden items-center justify-center rounded-full text-white bg-white/10 border border-white/20 shadow-md"
               aria-label={t('actions.logout')}
               onClick={handleLogout}
               title={t('actions.logout')}
