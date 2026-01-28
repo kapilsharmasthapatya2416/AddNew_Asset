@@ -34,36 +34,49 @@ export function Header({ ulbData }: HeaderProps) {
   const pathname = usePathname();
   const [langOpen, setLangOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
+
+  // Read username from cookie - extracted as a function to use for initial state
+  const getUsernameFromCookie = (): string | undefined => {
+    if (typeof document === 'undefined') return undefined;
+
+    const match = document.cookie.match(/(^| )user_name=([^;]+)/);
+    const rawUserName = match ? match[2] : undefined;
+
+    let decodedUserName: string | undefined;
+    if (typeof rawUserName === 'string') {
+      try {
+        // Cookies may encode spaces as '+' or '%20'
+        const plusNormalized = rawUserName.replace(/\+/g, ' ');
+        decodedUserName = decodeURIComponent(plusNormalized);
+      } catch {
+        decodedUserName = undefined;
+      }
+    }
+
+    const safeUserName =
+      typeof decodedUserName === 'string' ? sanitizeInput(decodedUserName) : undefined;
+
+    // Allow international usernames (Hindi/Marathi) - sanitizeInput handles dangerous patterns
+    if (
+      typeof safeUserName === 'string' &&
+      safeUserName.length > 0 &&
+      safeUserName.length <= 50
+    ) {
+      return safeUserName;
+    }
+    return undefined;
+  };
+
+  // Initialize username state lazily to avoid hydration mismatch
   const [username, setUsername] = useState<string | undefined>(undefined);
 
+  // Set username after mount to avoid SSR/hydration issues
+  // This is a valid use case for reading from cookies/external state on mount
   useEffect(() => {
-    // Client-side only: Read username from cookie
-    if (typeof document !== 'undefined') {
-      const match = document.cookie.match(/(^| )user_name=([^;]+)/);
-      const rawUserName = match ? match[2] : undefined;
-
-      let decodedUserName: string | undefined;
-      if (typeof rawUserName === 'string') {
-        try {
-          // Cookies may encode spaces as '+' or '%20'
-          const plusNormalized = rawUserName.replace(/\+/g, ' ');
-          decodedUserName = decodeURIComponent(plusNormalized);
-        } catch {
-          decodedUserName = undefined;
-        }
-      }
-
-      const safeUserName =
-        typeof decodedUserName === 'string' ? sanitizeInput(decodedUserName) : undefined;
-
-      // Allow international usernames (Hindi/Marathi) - sanitizeInput handles dangerous patterns
-      if (
-        typeof safeUserName === 'string' &&
-        safeUserName.length > 0 &&
-        safeUserName.length <= 50
-      ) {
-        setUsername(safeUserName);
-      }
+    const cookieUsername = getUsernameFromCookie();
+    if (cookieUsername) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Reading from cookie on mount is valid external state sync
+      setUsername(cookieUsername);
     }
   }, []);
 
