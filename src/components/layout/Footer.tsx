@@ -1,29 +1,76 @@
+import type { UlbMaster } from '@/types/master.types';
 import { getTranslations } from 'next-intl/server';
+import { sanitizeInput } from '@/lib/utils/security';
+
+export interface FooterProps {
+  ulbData?: UlbMaster;
+}
 
 /**
- * Footer component for the application
+ * Footer component for the application (Server Component)
  */
-export async function Footer({ locale }: { locale: string }) {
+export async function Footer({ ulbData }: FooterProps) {
+  const t = await getTranslations('common');
+
   const currentYear = new Date().getFullYear();
-  const t = await getTranslations({ locale, namespace: 'common' });
+  const ulbDisplayName = sanitizeInput(ulbData?.ulbName || 'Thane Municipal Corporation');
 
   return (
-    <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="text-sm text-gray-600">
-            © {currentYear}. {t('footer.copyright')}.
-          </div>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
-              {t('footer.privacyPolicy')}
-            </a>
-            <a href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
-              {t('footer.termsOfService')}
-            </a>
-            <a href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
-              {t('footer.contact')}
-            </a>
+    <footer className="relative mt-auto z-30 print:hidden">
+      {/* Gold accent line - Refined gradient */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 opacity-80" />
+
+      {/* Main Footer Content */}
+      <div className="w-full bg-[#4b70a6] text-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3">
+            {/* Branding & Entity */}
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 md:gap-2">
+              <div className="flex items-center gap-2">
+                <span
+                  className="font-bold tracking-wide text-xs sm:text-sm text-white"
+                  style={{
+                    fontFamily: 'Georgia, "Times New Roman", serif',
+                    letterSpacing: '0.5px',
+                  }}
+                >
+                  {ulbDisplayName}
+                </span>
+              </div>
+              <span className="hidden sm:inline-block text-white/30">|</span>
+              <div className="flex items-center gap-1 text-blue-50/80 font-medium">
+                <span>{t('app.departmentName')}</span>
+                <span className="hidden sm:inline mx-1">•</span>
+                <span>
+                  © {currentYear} {t('footer.copyright')}
+                </span>
+              </div>
+            </div>
+
+            {/* Links - Placeholders until actual routes are implemented */}
+            <div className="flex items-center gap-4 sm:gap-6 text-blue-100/90">
+              <button
+                type="button"
+                aria-disabled="true"
+                className="hover:text-white hover:underline transition-all cursor-default"
+              >
+                {t('footer.privacyPolicy')}
+              </button>
+              <button
+                type="button"
+                aria-disabled="true"
+                className="hover:text-white hover:underline transition-all cursor-default"
+              >
+                {t('footer.termsOfService')}
+              </button>
+              <button
+                type="button"
+                aria-disabled="true"
+                className="hover:text-white hover:underline transition-all cursor-default"
+              >
+                {t('footer.contact')}
+              </button>
+            </div>
           </div>
         </div>
       </div>

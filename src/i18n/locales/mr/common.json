@@ -19,7 +19,8 @@
     "deleting": "हटवत आहे...",
     "adding": "जोडत आहे...",
     "updating": "अपडेट होत आहे...",
-    "processing": "प्रक्रिया सुरू आहे..."
+    "processing": "प्रक्रिया सुरू आहे...",
+    "logout": "बाहेर पडा"
   },
   "validation": {
     "required": "हे फील्ड आवश्यक आहे",
@@ -70,7 +71,41 @@
     "contact": "संपर्क करा"
   },
   "app": {
-    "title": "अॅप",
-    "noServicesAvailable": "कोणत्याही सेवा उपलब्ध नाहीत"
+    "title": "अ‍ॅप",
+    "noServicesAvailable": "कोणत्याही सेवा उपलब्ध नाहीत",
+    "departmentName": "मालमत्ता कर विभाग",
+    "assessmentSystem": "मालमत्ता कर आकारणी आणि व्यवस्थापन प्रणाली",
+    "defaultUser": "वापरकर्ता"
+  },
+  "menu": {
+    "analytics": "डेटा विश्लेषण",
+    "searchProperty": "मालमत्ता शोध",
+    "dashboard": "पी.टी.आय.एस.",
+    "assessmentProcess": "करनिर्धारण प्रक्रिया",
+    "dataCenter": "डेटा सेंटर",
+    "ulbApproval": "यूएलबी मान्यता",
+    "hearingApplication": "सुनावणी अर्ज",
+    "autoAppeal": "ऑटो अपील",
+    "hearingApproval": "सुनावणी मंजुरी",
+    "reportEngine": "अहवाल इंजिन",
+    "utility": "उपयोगिता",
+    "lockProperty": "मालमत्ता लॉक करा",
+    "addTaxes": "कर जोडा",
+    "autoWardEntry": "ऑटो प्रभाग नोंद",
+    "updateCommonDetails": "सामान्य तपशील अपडेट करा",
+    "deleteProperty": "मालमत्ता हटवा",
+    "qrGeneration": "क्यूआर जनरेशन",
+    "dataImport": "डेटा आयात",
+    "services": "सेवा",
+    "payPropertyTax": "मालमत्ता कर भरा",
+    "payWaterTax": "पाणी पट्टी भरा",
+    "payTradeLicense": "व्यवसाय परवाना शुल्क भरा",
+    "rts": "आरटीएस",
+    "rti": "आरटीआय",
+    "igr": "आयजीआर",
+    "aapleSarkar": "आपले सरकार",
+    "gis": "जी.आय.एस.",
+    "master": "मास्टर",
+    "userManagement": "वापरकर्ता व्यवस्थापन"
   }
 }
