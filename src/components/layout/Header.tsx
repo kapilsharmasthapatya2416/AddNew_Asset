@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 import type { UlbMaster } from '@/types/master.types';
 
 import { sanitizeInput } from '@/lib/utils/security';
-import { locales, defaultLocale, switchLocale } from '@/i18n/config';
+import { locales, switchLocale, getLocaleFromPathname } from '@/i18n/config';
 
 /**
  * Header Theme Colors
@@ -99,8 +99,7 @@ export function Header({ ulbData }: HeaderProps) {
       }
     }
     // Ensure we redirect to a locale-prefixed route (localePrefix: 'always')
-    const localeMatch = pathname.match(new RegExp(`^/(${locales.join('|')})`));
-    const currentLocale = localeMatch?.[1] ?? defaultLocale;
+    const currentLocale = getLocaleFromPathname(pathname);
     router.push(`/${currentLocale}`);
   };
 

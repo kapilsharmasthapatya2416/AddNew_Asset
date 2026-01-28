@@ -8,14 +8,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Globe } from 'lucide-react';
-import { Locale, locales, localeNames, defaultLocale, switchLocale } from '@/i18n/config';
-
-// Extract locale from pathname (e.g., /en/dashboard -> en)
-const getLocaleFromPath = (pathname: string): Locale => {
-  const segments = pathname.split('/').filter(Boolean);
-  const firstSegment = segments[0] as Locale;
-  return locales.includes(firstSegment) ? firstSegment : defaultLocale;
-};
+import {
+  Locale,
+  locales,
+  localeNames,
+  defaultLocale,
+  switchLocale,
+  getLocaleFromPathname,
+} from '@/i18n/config';
 
 export function LanguageSelector() {
   const pathname = usePathname();
@@ -26,7 +26,7 @@ export function LanguageSelector() {
 
   // Update current locale when pathname changes
   useEffect(() => {
-    setCurrentLocale(getLocaleFromPath(pathname));
+    setCurrentLocale(getLocaleFromPathname(pathname));
   }, [pathname]);
 
   const handleLanguageChange = (locale: Locale) => {

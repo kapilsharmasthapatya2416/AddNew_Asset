@@ -26,6 +26,19 @@ export const localeNames: Record<Locale, string> = {
 };
 
 /**
+ * Extracts the locale from a pathname.
+ * This is a shared utility to ensure consistent locale extraction across the app.
+ * @param pathname - The URL pathname (e.g., '/en/dashboard', '/hi', '/')
+ * @returns The extracted locale or the default locale if not found
+ */
+export const getLocaleFromPathname = (pathname: string): Locale => {
+  const locale = locales.find(
+    (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
+  );
+  return locale ?? defaultLocale;
+};
+
+/**
  * Switches the application locale by updating cookies, localStorage, and redirecting.
  */
 export const switchLocale = (locale: Locale, pathname: string, router: MinimalRouter): void => {
