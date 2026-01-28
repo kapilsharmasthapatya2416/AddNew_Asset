@@ -49,19 +49,6 @@ export async function Footer({ ulbData }: FooterProps) {
                 </span>
               </div>
             </div>
-
-            {/* Links - Placeholders until actual routes are implemented */}
-            <div className="flex items-center gap-4 sm:gap-6 text-blue-100/90">
-              <span className="text-blue-100/70 cursor-not-allowed opacity-70">
-                {t('footer.privacyPolicy')}
-              </span>
-              <span className="text-blue-100/70 cursor-not-allowed opacity-70">
-                {t('footer.termsOfService')}
-              </span>
-              <span className="text-blue-100/70 cursor-not-allowed opacity-70">
-                {t('footer.contact')}
-              </span>
-            </div>
           </div>
         </div>
       </div>
