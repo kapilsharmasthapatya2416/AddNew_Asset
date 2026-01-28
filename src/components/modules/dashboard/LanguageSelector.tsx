@@ -8,8 +8,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Globe } from 'lucide-react';
+import type { Locale } from '@/i18n/config';
 import {
-  Locale,
   locales,
   localeNames,
   defaultLocale,

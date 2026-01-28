@@ -4,8 +4,10 @@
  * 1. Keep this config file framework-agnostic and testable
  * 2. Avoid importing Next.js internals in a shared configuration module
  * 3. Only expose the single method we actually need (push)
+ *
+ * Exported for consumers of switchLocale who need to type their router parameter.
  */
-interface MinimalRouter {
+export interface MinimalRouter {
   push: (href: string) => void;
 }
 

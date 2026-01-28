@@ -31,7 +31,7 @@ export function sanitizeInput(input: string | undefined | null): string {
 
   return input
     .trim() // Trim leading and trailing whitespace first
-    .replace(/<[^>]*>/g, '') // Strip HTML tags
+    .replace(/<[^>]*>/g, '') // Strip HTML tags (g flag only, m flag unnecessary)
     .replace(/javascript:/gi, '') // Remove javascript: protocol
     .replace(/data:/gi, '') // Remove data: protocol
     .replace(/vbscript:/gi, '') // Remove vbscript: protocol

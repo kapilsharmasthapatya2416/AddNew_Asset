@@ -23,7 +23,7 @@ const HEADER_COLORS = {
   langBtnTo: '#6FB1FC',
 } as const;
 
-interface HeaderProps {
+export interface HeaderProps {
   ulbData?: UlbMaster;
   // username prop removed, fetched client-side
 }
@@ -72,7 +72,7 @@ export function Header({ ulbData }: HeaderProps) {
     [ulbData?.ulbName]
   );
 
-  // Page title translation
+  // Page title translation - simple lookup, no memoization needed
   const headerDetails = t('app.assessmentSystem');
 
   // Handle Escape key to close dropdown
@@ -225,8 +225,8 @@ export function Header({ ulbData }: HeaderProps) {
                     "
                     style={{ backgroundColor: `${HEADER_COLORS.dropdown}e6` }}
                   >
-                    {locales.map((code) => {
-                      const labelMap: Record<string, string> = {
+                    {locales.map((code: typeof locales[number]) => {
+                      const labelMap: Record<typeof locales[number], string> = {
                         en: t('language.english'),
                         mr: t('language.marathi'),
                         hi: t('language.hindi'),
