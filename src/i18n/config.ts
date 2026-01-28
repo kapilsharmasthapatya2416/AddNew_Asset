@@ -8,7 +8,7 @@
  * Exported for consumers of switchLocale who need to type their router parameter.
  */
 export interface MinimalRouter {
-  push: (href: string) => void;
+  push: (href: string) => void | Promise<void>;
 }
 
 /**

@@ -2,7 +2,7 @@ import type { UlbMaster } from '@/types/master.types';
 import { getTranslations } from 'next-intl/server';
 import { sanitizeInput } from '@/lib/utils/security';
 
-export interface FooterProps {
+interface FooterProps {
   ulbData?: UlbMaster;
 }
 
@@ -49,30 +49,15 @@ export async function Footer({ ulbData }: FooterProps) {
 
             {/* Links - Placeholders until actual routes are implemented */}
             <div className="flex items-center gap-4 sm:gap-6 text-blue-100/90">
-              <a
-                href="#"
-                aria-disabled="true"
-                tabIndex={-1}
-                className="text-blue-100/70 cursor-not-allowed opacity-70"
-              >
+              <span className="text-blue-100/70 cursor-not-allowed opacity-70">
                 {t('footer.privacyPolicy')}
-              </a>
-              <a
-                href="#"
-                aria-disabled="true"
-                tabIndex={-1}
-                className="text-blue-100/70 cursor-not-allowed opacity-70"
-              >
+              </span>
+              <span className="text-blue-100/70 cursor-not-allowed opacity-70">
                 {t('footer.termsOfService')}
-              </a>
-              <a
-                href="#"
-                aria-disabled="true"
-                tabIndex={-1}
-                className="text-blue-100/70 cursor-not-allowed opacity-70"
-              >
+              </span>
+              <span className="text-blue-100/70 cursor-not-allowed opacity-70">
                 {t('footer.contact')}
-              </a>
+              </span>
             </div>
           </div>
         </div>

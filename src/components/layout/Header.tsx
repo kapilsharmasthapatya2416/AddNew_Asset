@@ -23,7 +23,7 @@ const HEADER_COLORS = {
   langBtnTo: '#6FB1FC',
 } as const;
 
-export interface HeaderProps {
+interface HeaderProps {
   ulbData?: UlbMaster;
   // username prop removed, fetched client-side
 }
@@ -33,7 +33,16 @@ export function Header({ ulbData }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [langOpen, setLangOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
+  // Track logo URL to reset error state when it changes - derived state pattern
+  const [logoState, setLogoState] = useState<{ url: string | undefined; hasError: boolean }>({
+    url: ulbData?.ulbLogo,
+    hasError: false,
+  });
+
+  // Reset logo error when ulbLogo prop changes - using derived state pattern
+  if (ulbData?.ulbLogo !== logoState.url) {
+    setLogoState({ url: ulbData?.ulbLogo, hasError: false });
+  }
 
   // Read username from cookie - extracted as a function to use for initial state
   const getUsernameFromCookie = (): string | undefined => {
@@ -146,14 +155,14 @@ export function Header({ ulbData }: HeaderProps) {
             <div className="relative flex h-10 w-10 md:h-14 md:w-14 items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-white/30 blur-xl opacity-70" />
               <div className="relative h-full w-full overflow-hidden rounded-full bg-white ring-2 ring-white/40 shadow-xl">
-                {ulbData?.ulbLogo && !logoError ? (
+                {ulbData?.ulbLogo && !logoState.hasError ? (
                   <Image
                     src={ulbData.ulbLogo}
                     alt={`${title} Logo`}
                     width={56}
                     height={56}
                     className="h-full w-full object-contain"
-                    onError={() => setLogoError(true)}
+                    onError={() => setLogoState((prev) => ({ ...prev, hasError: true }))}
                     unoptimized
                   />
                 ) : (
@@ -190,6 +199,7 @@ export function Header({ ulbData }: HeaderProps) {
                 aria-expanded={langOpen}
                 aria-haspopup="true"
                 aria-controls="language-dropdown"
+                aria-label={t('language.selectLanguage')}
                 id="language-btn"
                 className="
                   flex items-center gap-2 rounded-2xl border border-white/20

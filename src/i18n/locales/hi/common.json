@@ -55,6 +55,7 @@
   },
   "language": {
     "select": "भाषा चुनें",
+    "selectLanguage": "एप्लिकेशन भाषा चुनें",
     "english": "English",
     "hindi": "हिंदी (Hindi)",
     "marathi": "मराठी (Marathi)"
