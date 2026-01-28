@@ -139,16 +139,13 @@ export function Header({ ulbData }: HeaderProps) {
         {/* DECORATIVE PARTICLES - CSS containment isolates repaints for better performance */}
         <div className="pointer-events-none absolute inset-0 hidden sm:block opacity-30" style={{ contain: 'layout style paint' }}>
           <div
-            className="absolute left-[15%] top-4 h-16 w-16 rounded-full bg-orange-400 blur-xl motion-safe:animate-bounce motion-reduce:animate-none"
-            style={{ animationDuration: '4s' }}
+            className="absolute left-[15%] top-4 h-16 w-16 rounded-full bg-orange-400 blur-xl motion-safe:animate-pulse motion-reduce:animate-none"
           />
           <div
             className="absolute left-[50%] top-2 h-20 w-20 rounded-full bg-blue-400 blur-xl motion-safe:animate-pulse motion-reduce:animate-none"
-            style={{ animationDelay: '1s', animationDuration: '5s' }}
           />
           <div
-            className="absolute right-[15%] top-6 h-20 w-20 rounded-full bg-purple-400 blur-xl motion-safe:animate-bounce motion-reduce:animate-none"
-            style={{ animationDelay: '2s', animationDuration: '4s' }}
+            className="absolute right-[15%] top-6 h-20 w-20 rounded-full bg-purple-400 blur-xl motion-safe:animate-pulse motion-reduce:animate-none"
           />
         </div>
 

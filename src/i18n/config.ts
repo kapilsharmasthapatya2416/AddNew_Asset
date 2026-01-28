@@ -33,17 +33,20 @@ export const localeNames: Record<Locale, string> = {
  * @param pathname - The URL pathname (e.g., '/en/dashboard', '/hi', '/')
  * @returns The extracted locale or the default locale if not found
  */
-export const getLocaleFromPathname = (pathname: string): Locale => {
+export function getLocaleFromPathname(pathname: string): Locale {
   const locale = locales.find(
     (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
   );
   return locale ?? defaultLocale;
-};
+}
 
 /**
  * Switches the application locale by updating cookies, localStorage, and redirecting.
+ * @param locale - The target locale to switch to
+ * @param pathname - The current pathname
+ * @param router - Router instance with push method
  */
-export const switchLocale = (locale: Locale, pathname: string, router: MinimalRouter): void => {
+export function switchLocale(locale: Locale, pathname: string, router: MinimalRouter): void {
   // Save to cookie (expires in 1 year)
   const expires = new Date();
   expires.setFullYear(expires.getFullYear() + 1);
@@ -70,4 +73,4 @@ export const switchLocale = (locale: Locale, pathname: string, router: MinimalRo
 
   // Use simple push; Next.js middleware and layouts will handle the rest
   router.push(newPath);
-};
+}
