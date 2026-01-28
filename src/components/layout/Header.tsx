@@ -72,6 +72,7 @@ export function Header({ ulbData }: HeaderProps) {
 
   // Reset logo error when ulbLogo prop changes - using useEffect instead of derived state pattern
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Resetting error state when prop changes is valid
     setLogoHasError(false);
   }, [ulbData?.ulbLogo]);
 
@@ -83,6 +84,7 @@ export function Header({ ulbData }: HeaderProps) {
   useEffect(() => {
     const cookieUsername = getUsernameFromCookie();
     if (cookieUsername) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Reading from cookie on mount is valid external state sync
       setUsername(cookieUsername);
     }
   }, []);
@@ -257,6 +259,7 @@ export function Header({ ulbData }: HeaderProps) {
                           type="button"
                           key={code}
                           role="option"
+                          aria-selected={false}
                           className="w-full px-4 py-2 text-left text-xs sm:text-sm text-white hover:bg-white/10 transition"
                           onClick={() => {
                             try {
