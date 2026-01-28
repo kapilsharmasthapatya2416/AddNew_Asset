@@ -111,5 +111,15 @@
     "gis": "GIS",
     "master": "Master",
     "userManagement": "User Management"
+    "noServicesAvailable": "No services available"
+  },
+  "multiSelect": {
+    "selectAll": "Select All",
+    "allSelected": "All selected",
+    "selectedCount": "{count} selected",
+    "placeholder": "Select options...",
+    "clearAll": "Clear All",
+    "noOptions": "No options found",
+    "search": "Search..."
   }
 }
