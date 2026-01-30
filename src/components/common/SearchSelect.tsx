@@ -72,25 +72,26 @@ export function SearchSelect({
 
   const hasOptions = validOptions.length > 0;
 
-  /* ---------------- Sync selected value ---------------- */
+  /* ---------------- Sync selected value (lint-friendly) ---------------- */
   useEffect(() => {
+    // Determine new state values first
+    let newSearch = "";
+    let newHasTyped = false;
+
     if (!hasOptions) {
-      setSearch("");
-      setHasTyped(false);
-      return;
+      newSearch = "";
+      newHasTyped = false;
+    } else if (forceSearchText !== undefined) {
+      newSearch = forceSearchText;
+      newHasTyped = false;
+    } else {
+      newSearch = validOptions.find((o) => o.value === value)?.label ?? "";
+      newHasTyped = false;
     }
 
-    if (forceSearchText !== undefined) {
-      setSearch(forceSearchText);
-      setHasTyped(false);
-      return;
-    }
-
-    const selectedLabel =
-      validOptions.find((o) => o.value === value)?.label ?? "";
-
-    setSearch(selectedLabel);
-    setHasTyped(false);
+    // Only update state if it actually changes
+    setSearch((prev) => (prev !== newSearch ? newSearch : prev));
+    setHasTyped((prev) => (prev !== newHasTyped ? newHasTyped : prev));
   }, [value, validOptions, forceSearchText, hasOptions]);
 
   /* ---------------- Close on outside click ---------------- */
