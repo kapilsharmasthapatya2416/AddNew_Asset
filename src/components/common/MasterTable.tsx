@@ -236,7 +236,9 @@ export function MasterTable<T extends Record<string, unknown> = any>({
                       {col.render ? (
                         col.render(value, row, i)
                       ) : col.isStatus ? (
-                        <StatusBadge value={value} />
+                        isPrimitive(value)
+                          ? <StatusBadge value={value} />
+                          : <span className="font-medium">-</span>
                       ) : (
                         <span className="font-medium">
                           {isPrimitive(value) ? value : "-"}
