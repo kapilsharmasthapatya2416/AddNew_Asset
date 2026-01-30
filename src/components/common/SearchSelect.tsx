@@ -31,7 +31,7 @@ export interface SelectProps extends ServerSelectProps {
     | "email"
     | "decimal";
   disabled?: boolean;
-  forceSearchText?: string; // initial value only
+  forceSearchText?: string;
   sanitizeInput?: (value: string) => string;
 }
 
@@ -64,7 +64,10 @@ export function SearchSelect({
     () =>
       Array.isArray(options)
         ? options.filter(
-            (o) => o && typeof o.label === "string" && typeof o.value === "string"
+            (o) =>
+              o &&
+              typeof o.label === "string" &&
+              typeof o.value === "string"
           )
         : [],
     [options]
@@ -72,41 +75,31 @@ export function SearchSelect({
 
   const hasOptions = validOptions.length > 0;
 
-  /* ---------------- Initialize search with forceSearchText ---------------- */
-  useEffect(() => {
-    if (forceSearchText !== undefined) {
-      setSearch(forceSearchText);
-      setHasTyped(false);
-    }
-  }, [forceSearchText]);
+  /* ---------------- Derived display value (NO EFFECT) ---------------- */
+  const displayValue = useMemo(() => {
+    if (!hasOptions) return "";
+    if (hasTyped) return search;
 
-  /* ---------------- Sync selected value ---------------- */
-  useEffect(() => {
-    if (!hasOptions) {
-      if (search !== "" || hasTyped !== false) {
-        setSearch("");
-        setHasTyped(false);
-      }
-      return;
-    }
+    if (forceSearchText !== undefined) return forceSearchText;
 
-    const selectedLabel = validOptions.find((o) => o.value === value)?.label ?? "";
-    if (!hasTyped) {
-      setSearch(selectedLabel);
-    }
-  }, [value, validOptions, hasOptions, search, hasTyped]);
+    return validOptions.find((o) => o.value === value)?.label ?? "";
+  }, [hasOptions, hasTyped, search, forceSearchText, value, validOptions]);
 
   /* ---------------- Close on outside click ---------------- */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
         setHighlightedIndex(-1);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   /* ---------------- Filter options ---------------- */
@@ -124,8 +117,8 @@ export function SearchSelect({
     if (!selected) return;
 
     setSearch(selected.label);
-    setIsOpen(false);
     setHasTyped(false);
+    setIsOpen(false);
     setHighlightedIndex(-1);
 
     onChange(name, val);
@@ -134,9 +127,8 @@ export function SearchSelect({
   /* ---------------- Input change ---------------- */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
-    if (sanitizeInput) {
-      val = sanitizeInput(val);
-    }
+    if (sanitizeInput) val = sanitizeInput(val);
+
     setSearch(val);
     setHasTyped(true);
     setIsOpen(true);
@@ -195,7 +187,7 @@ export function SearchSelect({
         id={id}
         type="text"
         name={name}
-        value={search}
+        value={displayValue}
         placeholder={!hasOptions ? t("noOptionsAvailable") : placeholder}
         required={required}
         autoComplete="off"
@@ -203,7 +195,9 @@ export function SearchSelect({
         aria-expanded={isOpen}
         aria-controls={`${name}-listbox`}
         aria-activedescendant={
-          highlightedIndex >= 0 ? `${name}-option-${highlightedIndex}` : undefined
+          highlightedIndex >= 0
+            ? `${name}-option-${highlightedIndex}`
+            : undefined
         }
         disabled={disabled || !hasOptions}
         inputMode={inputMode}
@@ -211,7 +205,9 @@ export function SearchSelect({
         onBlur={() => {
           if (!hasOptions) return;
 
-          const matched = validOptions.find((opt) => opt.label === search);
+          const matched = validOptions.find(
+            (opt) => opt.label === displayValue
+          );
 
           if (!matched) {
             setSearch("");
@@ -221,7 +217,7 @@ export function SearchSelect({
 
           setIsOpen(false);
         }}
-        onChange={handleInputChange} // always allow typing
+        onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         className={`w-full rounded-lg border border-blue-200 px-2.5 py-1 text-sm bg-white
           focus:ring-2 focus:ring-blue-500 outline-none text-gray-900
@@ -244,7 +240,9 @@ export function SearchSelect({
               aria-selected={index === highlightedIndex}
               onMouseDown={() => handleSelect(opt.value)}
               className={`px-3 py-2 cursor-pointer ${
-                index === highlightedIndex ? "bg-blue-200" : "hover:bg-blue-100"
+                index === highlightedIndex
+                  ? "bg-blue-200"
+                  : "hover:bg-blue-100"
               }`}
             >
               {opt.label}
