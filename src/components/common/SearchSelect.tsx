@@ -31,7 +31,7 @@ export interface SelectProps extends ServerSelectProps {
     | "email"
     | "decimal";
   disabled?: boolean;
-  forceSearchText?: string;
+  forceSearchText?: string; // initial value only
   sanitizeInput?: (value: string) => string;
 }
 
@@ -72,27 +72,29 @@ export function SearchSelect({
 
   const hasOptions = validOptions.length > 0;
 
-  /* ---------------- Sync selected value (lint-friendly) ---------------- */
+  /* ---------------- Initialize search with forceSearchText ---------------- */
   useEffect(() => {
-    // Determine new state values first
-    let newSearch = "";
-    let newHasTyped = false;
+    if (forceSearchText !== undefined) {
+      setSearch(forceSearchText);
+      setHasTyped(false);
+    }
+  }, [forceSearchText]);
 
+  /* ---------------- Sync selected value ---------------- */
+  useEffect(() => {
     if (!hasOptions) {
-      newSearch = "";
-      newHasTyped = false;
-    } else if (forceSearchText !== undefined) {
-      newSearch = forceSearchText;
-      newHasTyped = false;
-    } else {
-      newSearch = validOptions.find((o) => o.value === value)?.label ?? "";
-      newHasTyped = false;
+      if (search !== "" || hasTyped !== false) {
+        setSearch("");
+        setHasTyped(false);
+      }
+      return;
     }
 
-    // Only update state if it actually changes
-    setSearch((prev) => (prev !== newSearch ? newSearch : prev));
-    setHasTyped((prev) => (prev !== newHasTyped ? newHasTyped : prev));
-  }, [value, validOptions, forceSearchText, hasOptions]);
+    const selectedLabel = validOptions.find((o) => o.value === value)?.label ?? "";
+    if (!hasTyped) {
+      setSearch(selectedLabel);
+    }
+  }, [value, validOptions, hasOptions, search, hasTyped]);
 
   /* ---------------- Close on outside click ---------------- */
   useEffect(() => {
@@ -121,7 +123,7 @@ export function SearchSelect({
     const selected = validOptions.find((o) => o.value === val);
     if (!selected) return;
 
-    setSearch(forceSearchText ?? selected.label);
+    setSearch(selected.label);
     setIsOpen(false);
     setHasTyped(false);
     setHighlightedIndex(-1);
@@ -132,11 +134,9 @@ export function SearchSelect({
   /* ---------------- Input change ---------------- */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
-
     if (sanitizeInput) {
       val = sanitizeInput(val);
     }
-
     setSearch(val);
     setHasTyped(true);
     setIsOpen(true);
@@ -206,18 +206,10 @@ export function SearchSelect({
           highlightedIndex >= 0 ? `${name}-option-${highlightedIndex}` : undefined
         }
         disabled={disabled || !hasOptions}
-        readOnly={forceSearchText !== undefined}
         inputMode={inputMode}
         onFocus={() => hasOptions && setIsOpen(true)}
         onBlur={() => {
           if (!hasOptions) return;
-
-          if (forceSearchText !== undefined) {
-            setSearch(forceSearchText);
-            setHasTyped(false);
-            setIsOpen(false);
-            return;
-          }
 
           const matched = validOptions.find((opt) => opt.label === search);
 
@@ -229,16 +221,8 @@ export function SearchSelect({
 
           setIsOpen(false);
         }}
-        onChange={
-          forceSearchText !== undefined || !hasOptions
-            ? undefined
-            : handleInputChange
-        }
-        onKeyDown={
-          forceSearchText !== undefined || !hasOptions
-            ? undefined
-            : handleKeyDown
-        }
+        onChange={handleInputChange} // always allow typing
+        onKeyDown={handleKeyDown}
         className={`w-full rounded-lg border border-blue-200 px-2.5 py-1 text-sm bg-white
           focus:ring-2 focus:ring-blue-500 outline-none text-gray-900
           cursor-pointer focus:cursor-text disabled:bg-gray-100 disabled:cursor-not-allowed
@@ -255,7 +239,7 @@ export function SearchSelect({
           {filteredOptions.map((opt, index) => (
             <li
               key={opt.value}
-              id={`${name}-option-${index}`} // <-- for aria-activedescendant
+              id={`${name}-option-${index}`}
               role="option"
               aria-selected={index === highlightedIndex}
               onMouseDown={() => handleSelect(opt.value)}
