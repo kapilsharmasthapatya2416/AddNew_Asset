@@ -10,8 +10,14 @@ import {
   Share,
   Save,
   X,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
 } from "lucide-react";
 import { Button, ButtonProps } from "./Button";
+import { ActionButton } from "./Buttons";
+import { cn } from "@/lib/utils/cn";
 
 /* ----------------------------------------------------------
    SPECIFIC ACTION BUTTONS - COMPOSED FROM GENERIC BUTTON
@@ -31,13 +37,13 @@ export function AddButton({ label = "Add", ...props }: ActionButtonProps) {
 
 export function EditButton({ ...props }: Omit<ButtonProps, "icon" | "variant">) {
   return (
-    <Button variant="ghost" icon={Pencil} size="sm" {...props} />
+    <Button variant="edit" icon={Pencil} size="sm" {...props} />
   );
 }
 
 export function DeleteButton({ ...props }: Omit<ButtonProps, "icon" | "variant">) {
   return (
-    <Button variant="ghost" icon={Trash2} size="sm" {...props} />
+    <Button variant="delete" icon={Trash2} size="sm" {...props} />
   );
 }
 
@@ -81,6 +87,54 @@ export function ImportButton({ label = "Import", ...props }: ActionButtonProps) 
   );
 }
 
+
+// * ===== FIRST PAGE ===== */
+export function FirstPageButton(props: Omit<ButtonProps, "icon" | "variant">) {
+  return (
+    <Button
+      variant="secondary"
+      icon={ChevronsLeft}
+      size="sm"
+      {...props}
+    />
+  );
+}
+
+/* ===== PREVIOUS PAGE ===== */
+export function PrevPageButton(props: Omit<ButtonProps, "icon" | "variant">) {
+  return (
+    <Button
+      variant="secondary"
+      icon={ChevronLeft}
+      size="sm"
+      {...props}
+    />
+  );
+}
+
+/* ===== NEXT PAGE ===== */
+export function NextPageButton(props: Omit<ButtonProps, "icon" | "variant">) {
+  return (
+    <Button
+      variant="secondary"
+      icon={ChevronRight}
+      size="sm"
+      {...props}
+    />
+  );
+}
+
+/* ===== LAST PAGE ===== */
+export function LastPageButton(props: Omit<ButtonProps, "icon" | "variant">) {
+  return (
+    <Button
+      variant="secondary"
+      icon={ChevronsRight}
+      size="sm"
+      {...props}
+    />
+  );
+}
 /* ----------------------------------------------------------
    ICON-ONLY BUTTONS WITH FANCY GRADIENTS
 ---------------------------------------------------------- */
@@ -90,7 +144,7 @@ interface IconButtonProps extends Omit<ButtonProps, "children" | "icon"> {
   variant?: "primary" | "danger";
 }
 
-export function IconButton({
+export default function IconButton({
   icon: Icon,
   variant = "primary",
   className = "",
@@ -131,5 +185,35 @@ export function IconButton({
         strokeWidth={2}
       />
     </button>
+  );
+}
+
+
+
+
+type PageNumberButtonProps = {
+  page: number;
+  active?: boolean;
+  onClick?: () => void;
+};
+
+export function PageNumberButton({
+  page,
+  active,
+  onClick,
+}: PageNumberButtonProps) {
+  return (
+    <ActionButton
+      size="sm"
+      label={String(page)}
+      onClick={onClick}
+      variant={active ? "primary" : "secondary"}
+      className={cn(
+        "h-9 min-w-[36px] px-3 text-sm font-medium",
+        active
+          ? "bg-[#2563EB] text-white border-[#2563EB]"
+          : "bg-white border border-[#DCEAFF] text-[#1E3A8A] hover:bg-gray-50"
+      )}
+    />
   );
 }
