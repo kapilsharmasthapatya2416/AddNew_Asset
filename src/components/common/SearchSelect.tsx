@@ -1,7 +1,7 @@
 "use client";
 
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { useState, useEffect, useRef, useMemo } from "react";
 
 export interface SelectOption {
   label: string;
@@ -49,61 +49,51 @@ export function SearchSelect({
   disabled = false,
   forceSearchText,
   sanitizeInput,
-}: SelectProps) {
+}: SelectProps): React.ReactElement {
   const t = useTranslations("common.multiSelect");
 
-  const [search, setSearch] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [hasTyped, setHasTyped] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [search, setSearch] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [hasTyped, setHasTyped] = useState<boolean>(false);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   /* ---------------- Valid options ---------------- */
-  const validOptions = useMemo(
-    () =>
-      Array.isArray(options)
-        ? options.filter(
-            (o) =>
-              o &&
-              typeof o.label === "string" &&
-              typeof o.value === "string"
-          )
-        : [],
-    [options]
-  );
+  const validOptions = useMemo<SelectOption[]>(() => {
+    return Array.isArray(options)
+      ? options.filter(
+          (o) => o && typeof o.label === "string" && typeof o.value === "string"
+        )
+      : [];
+  }, [options]);
 
   const hasOptions = validOptions.length > 0;
 
-  /* ---------------- Derived display value (NO EFFECT) ---------------- */
-  const displayValue = useMemo(() => {
+  /* ---------------- Derived display value ---------------- */
+  const displayValue = useMemo<string>(() => {
     if (!hasOptions) return "";
     if (hasTyped) return search;
-
     if (forceSearchText !== undefined) return forceSearchText;
 
     return validOptions.find((o) => o.value === value)?.label ?? "";
   }, [hasOptions, hasTyped, search, forceSearchText, value, validOptions]);
 
   /* ---------------- Close on outside click ---------------- */
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(e.target as Node)
-      ) {
+  useEffect((): (() => void) => {
+    const handleClickOutside = (e: MouseEvent): void => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setIsOpen(false);
         setHighlightedIndex(-1);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   /* ---------------- Filter options ---------------- */
-  const filteredOptions = useMemo(() => {
+  const filteredOptions = useMemo<SelectOption[]>(() => {
     if (!hasTyped) return validOptions;
 
     return validOptions.filter((opt) =>
@@ -112,7 +102,7 @@ export function SearchSelect({
   }, [search, hasTyped, validOptions]);
 
   /* ---------------- Select option ---------------- */
-  const handleSelect = (val: string) => {
+  const handleSelect = (val: string): void => {
     const selected = validOptions.find((o) => o.value === val);
     if (!selected) return;
 
@@ -121,11 +111,11 @@ export function SearchSelect({
     setIsOpen(false);
     setHighlightedIndex(-1);
 
-    onChange(name, val);
+    onChange?.(name, val); // safe call
   };
 
   /* ---------------- Input change ---------------- */
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     let val = e.target.value;
     if (sanitizeInput) val = sanitizeInput(val);
 
@@ -136,7 +126,7 @@ export function SearchSelect({
   };
 
   /* ---------------- Keyboard navigation ---------------- */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (!hasOptions) return;
 
     if (!isOpen && e.key !== "Escape") {
@@ -195,9 +185,7 @@ export function SearchSelect({
         aria-expanded={isOpen}
         aria-controls={`${name}-listbox`}
         aria-activedescendant={
-          highlightedIndex >= 0
-            ? `${name}-option-${highlightedIndex}`
-            : undefined
+          highlightedIndex >= 0 ? `${name}-option-${highlightedIndex}` : undefined
         }
         disabled={disabled || !hasOptions}
         inputMode={inputMode}
@@ -205,14 +193,12 @@ export function SearchSelect({
         onBlur={() => {
           if (!hasOptions) return;
 
-          const matched = validOptions.find(
-            (opt) => opt.label === displayValue
-          );
+          const matched = validOptions.find((opt) => opt.label === displayValue);
 
           if (!matched) {
             setSearch("");
             setHasTyped(false);
-            onChange(name, "");
+            onChange?.(name, "");
           }
 
           setIsOpen(false);
@@ -240,9 +226,7 @@ export function SearchSelect({
               aria-selected={index === highlightedIndex}
               onMouseDown={() => handleSelect(opt.value)}
               className={`px-3 py-2 cursor-pointer ${
-                index === highlightedIndex
-                  ? "bg-blue-200"
-                  : "hover:bg-blue-100"
+                index === highlightedIndex ? "bg-blue-200" : "hover:bg-blue-100"
               }`}
             >
               {opt.label}
@@ -253,3 +237,5 @@ export function SearchSelect({
     </div>
   );
 }
+
+SearchSelect.displayName = "SearchSelect";

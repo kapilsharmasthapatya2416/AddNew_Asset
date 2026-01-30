@@ -117,4 +117,43 @@ describe('Tooltip', () => {
     
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   });
+
+  it('applies correct placement classes', () => {
+    render(
+      <Tooltip content="Tooltip content" placement="right">
+        <button>Hover me</button>
+      </Tooltip>
+    );
+
+    const trigger = screen.getByText('Hover me');
+    fireEvent.mouseEnter(trigger);
+    
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    
+    const tooltip = screen.getByRole('tooltip');
+    expect(tooltip).toHaveClass('translate-x-0', '-translate-y-1/2');
+  });
+
+  it('sets aria-describedby when visible', () => {
+    render(
+      <Tooltip content="Tooltip content">
+        <button>Hover me</button>
+      </Tooltip>
+    );
+
+    const trigger = screen.getByText('Hover me').closest('span');
+    expect(trigger).not.toHaveAttribute('aria-describedby');
+    
+    if (!trigger) throw new Error('Trigger not found');
+    fireEvent.mouseEnter(trigger);
+    
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    
+    const tooltip = screen.getByRole('tooltip');
+    expect(trigger).toHaveAttribute('aria-describedby', tooltip.id);
+  });
 });

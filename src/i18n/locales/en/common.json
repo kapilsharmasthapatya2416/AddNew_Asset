@@ -125,6 +125,7 @@
   },
   "Grid": {
     "action": "Action",
-    "currencySymbol": "₹"
+    "currencySymbol": "₹",
+    "deleteRow": "Delete Row"
   }
 }

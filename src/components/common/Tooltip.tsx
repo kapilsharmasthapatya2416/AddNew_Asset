@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useRef, useState, useId, useEffect } from "react";
+import { ReactNode, ReactElement, useRef, useState, useId, useEffect } from "react";
 import { cn } from "@/lib/utils/cn";
 
 export interface TooltipProps {
@@ -10,12 +10,13 @@ export interface TooltipProps {
   placement?: "top" | "bottom" | "left" | "right";
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({
+
+export const Tooltip = ({
   content,
   children,
   className = "",
   placement = "bottom",
-}) => {
+}: TooltipProps): ReactElement | null => {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLSpanElement | null>(null);
@@ -23,13 +24,14 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
   const tooltipId = useId();
 
-  const show = () => {
+  // Show tooltip with calculated position
+  const show = (): void => {
     timeoutRef.current = setTimeout(() => {
       if (!triggerRef.current) return;
 
       const rect = triggerRef.current.getBoundingClientRect();
 
-      const positions = {
+      const positions: Record<string, { top: number; left: number }> = {
         top: { top: rect.top - 8, left: rect.left + rect.width / 2 },
         bottom: { top: rect.bottom + 8, left: rect.left + rect.width / 2 },
         left: { top: rect.top + rect.height / 2, left: rect.left - 8 },
@@ -41,7 +43,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
     }, 100);
   };
 
-  const hide = () => {
+  // Hide tooltip
+  const hide = (): void => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setVisible(false);
   };
@@ -53,10 +56,10 @@ export const Tooltip: React.FC<TooltipProps> = ({
     };
   }, []);
 
-  const hasContent =
+  const hasContent: boolean =
     !!content && (typeof content !== "string" || content.trim() !== "");
 
-  const transformMap = {
+  const transformMap: Record<string, string> = {
     top: "-translate-x-1/2 -translate-y-full",
     bottom: "-translate-x-1/2 translate-y-0",
     left: "-translate-x-full -translate-y-1/2",
@@ -76,10 +79,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         onFocus={show}
         onBlur={hide}
         onKeyDown={(e) => {
-          if (e.key === "Escape") {
-            // console.log('Escape pressed, hiding');
-            hide();
-          }
+          if (e.key === "Escape") hide();
         }}
         tabIndex={0}
         aria-describedby={visible ? tooltipId : undefined}
@@ -110,3 +110,5 @@ export const Tooltip: React.FC<TooltipProps> = ({
     </>
   );
 };
+
+Tooltip.displayName = "Tooltip";

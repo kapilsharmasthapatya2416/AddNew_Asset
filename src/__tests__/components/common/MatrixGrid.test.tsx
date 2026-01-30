@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MatrixGrid, MatrixColumn, MatrixRow } from '@/components/common/MatrixGrid';
 
 // Mock next-intl
@@ -14,6 +14,14 @@ vi.mock('next-intl', () => ({
 }));
 
 describe('MatrixGrid', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const columns: MatrixColumn[] = [
     { id: 'col1', label: 'Column 1', unit: 'kg' },
     { id: 'col2', label: 'Column 2' },
@@ -133,5 +141,41 @@ describe('MatrixGrid', () => {
     // Negative value -> 0
     fireEvent.change(inputs[0], { target: { value: '-5' } });
     expect(onCellChange).toHaveBeenCalledWith('row1', 'col1', 0);
+  });
+
+  it('applies colorMap to headers and cells', () => {
+    const colorMap = { 'COL1': 'bg-red-100', 'COL2': 'bg-green-100' };
+    render(<MatrixGrid columns={columns} rows={rows} colorMap={colorMap} />);
+    
+    // Check header for Col1
+    // The text 'Column 1' is inside a div which is inside the columnheader div
+    const col1Header = screen.getByText('Column 1').closest('[role="columnheader"]');
+    expect(col1Header).toHaveClass('bg-red-100');
+    
+    // Check cell for Col1 (in row 1)
+    // The cell value '₹10.00' is directly inside the div that has the color class
+    const col1Cell = screen.getByText('₹10.00');
+    expect(col1Cell).toHaveClass('bg-red-100');
+  });
+
+  it('renders tooltip for columns with tooltip property', () => {
+    const columnsWithTooltip: MatrixColumn[] = [
+      { id: 'col1', label: 'Column 1', tooltip: 'Helpful info' }
+    ];
+    
+    render(<MatrixGrid columns={columnsWithTooltip} rows={rows} />);
+    
+    // The tooltip trigger is the header cell wrapper
+    // The structure is Tooltip -> headerCell
+    const headerText = screen.getByText('Column 1');
+    
+    fireEvent.mouseEnter(headerText);
+    
+    act(() => {
+      vi.advanceTimersByTime(100);
+    });
+    
+    expect(screen.getByRole('tooltip')).toBeInTheDocument();
+    expect(screen.getByText('Helpful info')).toBeInTheDocument();
   });
 });
