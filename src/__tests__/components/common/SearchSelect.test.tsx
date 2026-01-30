@@ -118,22 +118,7 @@ describe('SearchSelect', () => {
     expect(onChange).toHaveBeenCalledWith('test-select', 'opt2');
   });
 
-  // Skipped because current SearchSelect implementation overrides forceSearchText with value label
-  it.skip('handles forceSearchText prop', async () => {
-    render(
-      <SearchSelect
-        name="test-select"
-        options={options}
-        value=""
-        onChange={() => {}}
-        forceSearchText="Forced Text"
-      />
-    );
-    
-    await waitFor(() => {
-        expect(screen.getByDisplayValue('Forced Text')).toBeInTheDocument();
-    });
-  });
+
 
   it('shows no options available message when options are empty', () => {
     render(
