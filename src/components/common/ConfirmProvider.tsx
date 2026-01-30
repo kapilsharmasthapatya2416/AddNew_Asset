@@ -11,7 +11,7 @@ type ConfirmVariant = "delete" | "add" | "update" | "info" | "warning";
 type ConfirmMeta = {
   id?: string | number;
   name?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 type ConfirmPayload = {
