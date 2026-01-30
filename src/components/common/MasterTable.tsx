@@ -234,9 +234,7 @@ export function MasterTable<T extends Record<string, unknown> = any>({
                             ? value
                             : value == null || typeof value === "undefined"
                               ? "-"
-                              : typeof value === "object"
-                                ? JSON.stringify(value)
-                                : "-"}
+                              : "-"}
                         </span>
                       )}
                     </td>
