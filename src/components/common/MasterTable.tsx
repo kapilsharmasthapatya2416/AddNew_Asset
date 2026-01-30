@@ -230,11 +230,18 @@ export function MasterTable<T extends Record<string, unknown> = any>({
                         <StatusBadge value={value} />
                       ) : (
                         <span className="font-medium">
-                          {typeof value === "string" || typeof value === "number" || typeof value === "boolean"
-                            ? value
-                            : value == null || typeof value === "undefined"
-                              ? "-"
-                              : "-"}
+                          {(() => {
+                            if (
+                              typeof value === "string" ||
+                              typeof value === "number" ||
+                              typeof value === "boolean" ||
+                              value === null ||
+                              typeof value === "undefined"
+                            ) {
+                              return value;
+                            }
+                            return "-";
+                          })()}
                         </span>
                       )}
                     </td>
