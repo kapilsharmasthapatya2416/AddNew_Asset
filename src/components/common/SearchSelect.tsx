@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 
 export interface SelectOption {
@@ -102,7 +102,7 @@ export function SearchSelect({
   }, [search, hasTyped, validOptions]);
 
   /* ---------------- Validate and clear on blur ---------------- */
-  const handleBlur = (): void => {
+  const handleBlur = useCallback((): void => {
     if (!hasOptions) return;
 
     const matched = validOptions.find((opt) => opt.label === displayValue);
@@ -110,11 +110,11 @@ export function SearchSelect({
     if (!matched) {
       setSearch("");
       setHasTyped(false);
-      onChange?.(name, "");
+      onChange(name, "");
     }
 
     setIsOpen(false);
-  };
+  }, [hasOptions, validOptions, displayValue, name, onChange]);
 
   /* ---------------- Select option ---------------- */
   const handleSelect = (val: string): void => {
@@ -126,7 +126,7 @@ export function SearchSelect({
     setIsOpen(false);
     setHighlightedIndex(-1);
 
-    onChange?.(name, val); // safe call
+    onChange(name, val); // safe call
   };
 
   /* ---------------- Input change ---------------- */

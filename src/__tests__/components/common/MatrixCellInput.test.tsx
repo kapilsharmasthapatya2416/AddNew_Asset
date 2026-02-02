@@ -19,10 +19,9 @@ describe('MatrixCellInput', () => {
 
   it('renders placeholder when value is 0', () => {
     render(<MatrixCellInput {...defaultProps} value={0} />);
-    const input = screen.getByRole('spinbutton');
-    expect(input).toHaveValue(null); // value="" results in null for number input in JSDOM sometimes, or empty string. Let's check logic.
-    // The component sets value={value === 0 ? "" : value}
-    // So for DOM it should be empty string
+    const input = screen.getByRole('spinbutton') as HTMLInputElement;
+    // When value is 0, the component renders an empty string so the placeholder is visible
+    expect(input.value).toBe('');
     expect(input).toHaveAttribute('placeholder', '0');
   });
 

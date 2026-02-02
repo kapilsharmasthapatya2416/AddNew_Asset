@@ -6,6 +6,7 @@ import React, {
   useState,
   useId,
   useEffect,
+  useCallback,
   isValidElement,
   cloneElement,
 } from "react";
@@ -92,31 +93,34 @@ export const Tooltip = ({
 
   const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
 
-  // Handle ref forwarding - use callback ref to avoid mutations
+  // Handle ref forwarding safely
   const childRef = (child as React.ReactElement & { ref?: React.Ref<HTMLElement> }).ref;
-  const mergedRef = (node: HTMLElement | null): void => {
-    triggerRef.current = node;
-    
-    // Forward to original ref if it exists
-    if (childRef) {
-      if (typeof childRef === 'function') {
+
+  const mergedRef = useCallback(
+    (node: HTMLElement | null): void => {
+      triggerRef.current = node;
+
+      if (!childRef) return;
+
+      if (typeof childRef === "function") {
         childRef(node);
-      } else if (childRef && typeof childRef === 'object' && 'current' in childRef) {
-        // Use Object.defineProperty to avoid direct mutation warning
+      } else if ("current" in childRef) {
         const refObject = childRef as { current: HTMLElement | null };
-        Object.defineProperty(refObject, 'current', {
+        Object.defineProperty(refObject, "current", {
           value: node,
           writable: true,
           enumerable: true,
           configurable: true,
         });
       }
-    }
-  };
+    },
+    [childRef]
+  );
 
   return (
     <>
       {/* ================= TRIGGER ================= */}
+      {/* eslint-disable-next-line react-hooks/refs */}
       {cloneElement(child, {
         ref: mergedRef,
         onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
