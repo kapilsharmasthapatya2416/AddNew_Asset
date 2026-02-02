@@ -1,9 +1,9 @@
-"use client";
-
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Tooltip } from "./Tooltip";
 import { cn } from "@/lib/utils/cn";
+import { MatrixCellInput } from "./MatrixCellInput";
+import { MatrixDeleteButton } from "./MatrixDeleteButton";
 
 /* ================= TYPES ================= */
 
@@ -211,23 +211,15 @@ export const MatrixGrid = ({
                           className="px-1 md:px-2 py-1.5 md:py-2"
                         >
                           {canEdit ? (
-                            <input
-                              type="number"
-                              value={value === 0 ? "" : value}
-                              aria-label={`${String(col.label)} for ${String(
+                            <MatrixCellInput
+                              value={value}
+                              rowId={row.id}
+                              columnId={col.id}
+                              metaLabel={`${String(col.label)} for ${String(
                                 row.meta?.[metaColumns[0]?.id] ?? row.id
                               )}`}
-                              onChange={(e): void => {
-                                let val: number =
-                                  e.target.value === "" ? 0 : Number(e.target.value);
-                                if (val < 0) val = 0;
-                                onCellChange?.(row.id, col.id, val);
-                              }}
-                              placeholder="0"
-                              className={cn(
-                                "px-2 md:px-3 py-1.5 md:py-2 rounded-lg md:rounded-xl font-bold text-xs md:text-sm text-center border border-gray-300 bg-white w-full outline-none focus:ring-2 focus:ring-blue-400",
-                                colorClass
-                              )}
+                              colorClass={colorClass}
+                              onCellChange={onCellChange}
                             />
                           ) : (
                             <div
@@ -251,25 +243,11 @@ export const MatrixGrid = ({
                       role="cell"
                       className="px-1 md:px-2 py-1.5 md:py-2 flex justify-center gap-2"
                     >
-                      <button
-                        onClick={(): void => onRowDelete(rowIndex)}
-                        className="p-1.5 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors"
-                        aria-label={t("deleteRow")}
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                      </button>
+                      <MatrixDeleteButton
+                        rowIndex={rowIndex}
+                        onRowDelete={onRowDelete}
+                        ariaLabel={t("deleteRow")}
+                      />
                     </div>
                   )}
                 </div>
