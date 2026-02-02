@@ -13,6 +13,12 @@ vi.mock('next-intl', () => ({
   },
 }));
 
+const mockTranslations = {
+  action: 'Action',
+  currencySymbol: '₹',
+  deleteRow: 'Delete Row',
+};
+
 describe('MatrixGrid', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -45,7 +51,7 @@ describe('MatrixGrid', () => {
   ];
 
   it('renders correctly with required props', () => {
-    render(<MatrixGrid columns={columns} rows={rows} />);
+    render(<MatrixGrid columns={columns} rows={rows} translations={mockTranslations} />);
     
     expect(screen.getByText('Column 1')).toBeInTheDocument();
     expect(screen.getByText('(kg)')).toBeInTheDocument();
@@ -56,7 +62,7 @@ describe('MatrixGrid', () => {
   });
 
   it('renders meta columns correctly', () => {
-    render(<MatrixGrid columns={columns} rows={rows} metaColumns={metaColumns} />);
+    render(<MatrixGrid columns={columns} rows={rows} metaColumns={metaColumns} translations={mockTranslations} />);
     
     expect(screen.getByText('Meta 1')).toBeInTheDocument();
     expect(screen.getByText('Meta Value 1')).toBeInTheDocument();
@@ -65,7 +71,7 @@ describe('MatrixGrid', () => {
 
   it('renders action column when onRowDelete is provided', () => {
     const onRowDelete = vi.fn();
-    render(<MatrixGrid columns={columns} rows={rows} onRowDelete={onRowDelete} />);
+    render(<MatrixGrid columns={columns} rows={rows} onRowDelete={onRowDelete} translations={mockTranslations} />);
     
     expect(screen.getByText('Action')).toBeInTheDocument();
     const deleteButtons = screen.getAllByRole('button');
@@ -74,7 +80,7 @@ describe('MatrixGrid', () => {
 
   it('calls onRowDelete when delete button is clicked', () => {
     const onRowDelete = vi.fn();
-    render(<MatrixGrid columns={columns} rows={rows} onRowDelete={onRowDelete} />);
+    render(<MatrixGrid columns={columns} rows={rows} onRowDelete={onRowDelete} translations={mockTranslations} />);
     
     const deleteButtons = screen.getAllByRole('button');
     fireEvent.click(deleteButtons[0]);
@@ -90,7 +96,8 @@ describe('MatrixGrid', () => {
         rows={rows} 
         mode="edit" 
         editableColumns={['col1']} 
-        onCellChange={onCellChange} 
+        onCellChange={onCellChange}
+        translations={mockTranslations}
       />
     );
     
@@ -110,7 +117,8 @@ describe('MatrixGrid', () => {
         rows={rows} 
         mode="edit" 
         editableColumns={['col1']} 
-        onCellChange={onCellChange} 
+        onCellChange={onCellChange}
+        translations={mockTranslations}
       />
     );
     
@@ -128,7 +136,8 @@ describe('MatrixGrid', () => {
         rows={rows} 
         mode="edit" 
         editableColumns={['col1']} 
-        onCellChange={onCellChange} 
+        onCellChange={onCellChange}
+        translations={mockTranslations}
       />
     );
     
@@ -145,7 +154,7 @@ describe('MatrixGrid', () => {
 
   it('applies colorMap to headers and cells', () => {
     const colorMap = { 'COL1': 'bg-red-100', 'COL2': 'bg-green-100' };
-    render(<MatrixGrid columns={columns} rows={rows} colorMap={colorMap} />);
+    render(<MatrixGrid columns={columns} rows={rows} colorMap={colorMap} translations={mockTranslations} />);
     
     // Check header for Col1
     // The text 'Column 1' is inside a div which is inside the columnheader div
@@ -163,7 +172,7 @@ describe('MatrixGrid', () => {
       { id: 'col1', label: 'Column 1', tooltip: 'Helpful info' }
     ];
     
-    render(<MatrixGrid columns={columnsWithTooltip} rows={rows} />);
+    render(<MatrixGrid columns={columnsWithTooltip} rows={rows} translations={mockTranslations} />);
     
     // The tooltip trigger is the header cell wrapper
     // The structure is Tooltip -> headerCell

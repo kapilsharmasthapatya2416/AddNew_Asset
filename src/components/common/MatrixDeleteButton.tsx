@@ -3,7 +3,7 @@
 import { DeleteButton } from "./ActionButtons";
 import { cn } from "@/lib/utils/cn";
 
-interface MatrixDeleteButtonProps {
+export interface MatrixDeleteButtonProps {
   rowIndex: number;
   onRowDelete?: (index: number) => void;
   ariaLabel?: string;

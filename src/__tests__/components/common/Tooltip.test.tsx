@@ -143,10 +143,9 @@ describe('Tooltip', () => {
       </Tooltip>
     );
 
-    const trigger = screen.getByText('Hover me').closest('span');
+    const trigger = screen.getByText('Hover me');
     expect(trigger).not.toHaveAttribute('aria-describedby');
     
-    if (!trigger) throw new Error('Trigger not found');
     fireEvent.mouseEnter(trigger);
     
     act(() => {

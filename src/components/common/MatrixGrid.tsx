@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslations } from "next-intl";
 import { Tooltip } from "./Tooltip";
 import { cn } from "@/lib/utils/cn";
 import { MatrixCellInput } from "./MatrixCellInput";
@@ -31,6 +30,11 @@ export interface MatrixGridProps {
   editableColumns?: string[];
   onCellChange?: (rowId: string, columnId: string, value: number) => void;
   onRowDelete?: (index: number) => void;
+  translations: {
+    action: string;
+    currencySymbol: string;
+    deleteRow: string;
+  };
 }
 
 /* ================= HELPER FUNCTIONS ================= */
@@ -65,8 +69,8 @@ export const MatrixGrid = ({
   editableColumns = [],
   onCellChange,
   onRowDelete,
-}: MatrixGridProps): React.ReactNode => {
-  const t = useTranslations("common.Grid");
+  translations,
+}: MatrixGridProps) => {
   const isEditable = mode === "edit";
 
   // Separate rate columns
@@ -112,7 +116,7 @@ export const MatrixGrid = ({
           >
             {/* Meta headers */}
             {metaColumns.map(
-              (meta): React.ReactNode => (
+              (meta) => (
                 <div
                   key={meta.id}
                   role="columnheader"
@@ -125,7 +129,7 @@ export const MatrixGrid = ({
 
             {/* Rate headers */}
             {rateColumns.map(
-              (col): React.ReactNode => {
+              (col) => {
                 const colorClass: string =
                   colorMap[col.id?.toUpperCase()] || col.headerClassName || "";
 
@@ -162,7 +166,7 @@ export const MatrixGrid = ({
                 role="columnheader"
                 className="px-2 md:px-3 py-1.5 md:py-2 bg-blue-50 text-sm text-blue-700 font-semibold text-base flex items-center justify-center rounded-lg"
               >
-                {t("action")}
+                {translations.action}
               </div>
             )}
           </div>
@@ -170,7 +174,7 @@ export const MatrixGrid = ({
           {/* ================= ROWS ================= */}
           <div role="rowgroup" className="space-y-0">
             {rows.map(
-              (row, rowIndex): React.ReactNode => (
+              (row, rowIndex) => (
                 <div
                   role="row"
                   key={row.id}
@@ -179,7 +183,7 @@ export const MatrixGrid = ({
                 >
                   {/* Meta cells */}
                   {metaColumns.map(
-                    (meta): React.ReactNode => (
+                    (meta) => (
                       <div
                         role="cell"
                         key={meta.id}
@@ -194,8 +198,8 @@ export const MatrixGrid = ({
 
                   {/* Rate cells */}
                   {rateColumns.map(
-                    (col): React.ReactNode => {
-                      const colorClass: string = colorMap[col.id?.toUpperCase()] || "";
+                    (col) => {
+                      const colorClass: string = colorMap[col.id.toUpperCase()] || "";
                       const rawValue = row.cells[col.id];
                       const value: number = Number(rawValue) || 0;
 
@@ -222,15 +226,16 @@ export const MatrixGrid = ({
                               onCellChange={onCellChange}
                             />
                           ) : (
-                            <div
+                             <div
                               className={cn(
                                 "px-2 md:px-3 py-1.5 md:py-2 rounded-lg md:rounded-xl font-bold text-xs md:text-sm text-center border border-gray-300 bg-white",
                                 colorClass
-                              )}
+                               )}
                             >
-                              {t("currencySymbol")}
+                             {translations.currencySymbol}
                               {value.toFixed(2)}
-                            </div>
+                             </div>
+                             
                           )}
                         </div>
                       );
@@ -246,7 +251,7 @@ export const MatrixGrid = ({
                       <MatrixDeleteButton
                         rowIndex={rowIndex}
                         onRowDelete={onRowDelete}
-                        ariaLabel={t("deleteRow")}
+                        ariaLabel={translations.deleteRow}
                       />
                     </div>
                   )}

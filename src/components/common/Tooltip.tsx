@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, ReactElement, useRef, useState, useId, useEffect } from "react";
+import { ReactNode, useRef, useState, useId, useEffect, isValidElement, cloneElement } from "react";
 import { cn } from "@/lib/utils/cn";
 
 export interface TooltipProps {
@@ -10,16 +10,15 @@ export interface TooltipProps {
   placement?: "top" | "bottom" | "left" | "right";
 }
 
-
 export const Tooltip = ({
   content,
   children,
   className = "",
   placement = "bottom",
-}: TooltipProps): ReactElement | null => {
+}: TooltipProps) => {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
-  const triggerRef = useRef<HTMLSpanElement | null>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const tooltipId = useId();
@@ -68,24 +67,38 @@ export const Tooltip = ({
 
   if (!hasContent) return <>{children}</>;
 
+  if (!isValidElement(children)) {
+    console.warn("Tooltip children must be a valid React element.");
+    return <>{children}</>;
+  }
+
   return (
     <>
       {/* Tooltip Trigger */}
-      <span
-        ref={triggerRef}
-        className="inline-block"
-        onMouseEnter={show}
-        onMouseLeave={hide}
-        onFocus={show}
-        onBlur={hide}
-        onKeyDown={(e) => {
+      {cloneElement(children as React.ReactElement<any>, {
+        ref: triggerRef,
+        onMouseEnter: (e: React.MouseEvent) => {
+          show();
+          (children as any).props.onMouseEnter?.(e);
+        },
+        onMouseLeave: (e: React.MouseEvent) => {
+          hide();
+          (children as any).props.onMouseLeave?.(e);
+        },
+        onFocus: (e: React.FocusEvent) => {
+          show();
+          (children as any).props.onFocus?.(e);
+        },
+        onBlur: (e: React.FocusEvent) => {
+          hide();
+          (children as any).props.onBlur?.(e);
+        },
+        onKeyDown: (e: React.KeyboardEvent) => {
           if (e.key === "Escape") hide();
-        }}
-        tabIndex={0}
-        aria-describedby={visible ? tooltipId : undefined}
-      >
-        {children}
-      </span>
+          (children as any).props.onKeyDown?.(e);
+        },
+        "aria-describedby": visible ? tooltipId : undefined,
+      })}
 
       {/* Tooltip Content */}
       {visible && (

@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils/cn";
 
-interface MatrixCellInputProps {
+export interface MatrixCellInputProps {
   value: number;
   rowId: string;
   columnId: string;

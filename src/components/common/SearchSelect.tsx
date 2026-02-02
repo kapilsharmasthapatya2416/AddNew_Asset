@@ -8,7 +8,7 @@ export interface SelectOption {
   value: string;
 }
 
-export interface ServerSelectProps {
+export interface BaseSelectProps  {
   id?: string;
   name: string;
   label?: string;
@@ -16,7 +16,7 @@ export interface ServerSelectProps {
   required?: boolean;
 }
 
-export interface SelectProps extends ServerSelectProps {
+export interface SelectProps extends BaseSelectProps  {
   value: string;
   onChange: (name: string, value: string) => void;
   placeholder?: string;
@@ -49,7 +49,7 @@ export function SearchSelect({
   disabled = false,
   forceSearchText,
   sanitizeInput,
-}: SelectProps): React.ReactElement {
+}: SelectProps) {
   const t = useTranslations("common.multiSelect");
 
   const [search, setSearch] = useState<string>("");
