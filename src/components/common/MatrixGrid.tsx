@@ -70,7 +70,7 @@ export const MatrixGrid = ({
   onCellChange,
   onRowDelete,
   translations,
-}: MatrixGridProps) => {
+}: MatrixGridProps): React.ReactElement => {
   const isEditable = mode === "edit";
 
   // Separate rate columns

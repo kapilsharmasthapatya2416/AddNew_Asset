@@ -81,4 +81,7 @@ export { MatrixGrid } from './MatrixGrid';
 export type { MatrixGridProps, MatrixColumn, MatrixRow } from './MatrixGrid';
 
 export { MatrixDeleteButton } from './MatrixDeleteButton';
+export type { MatrixDeleteButtonProps } from './MatrixDeleteButton';
+
 export { MatrixCellInput } from './MatrixCellInput';
+export type { MatrixCellInputProps } from './MatrixCellInput';

@@ -18,7 +18,7 @@ export const MatrixCellInput = ({
   metaLabel,
   colorClass,
   onCellChange,
-}: MatrixCellInputProps) => {
+}: MatrixCellInputProps): React.ReactElement => {
   return (
     <input
       type="number"

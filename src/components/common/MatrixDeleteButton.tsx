@@ -13,7 +13,7 @@ export const MatrixDeleteButton = ({
   rowIndex,
   onRowDelete,
   ariaLabel,
-}: MatrixDeleteButtonProps) => {
+}: MatrixDeleteButtonProps): React.ReactElement => {
   return (
     <DeleteButton
       onClick={() => onRowDelete?.(rowIndex)}

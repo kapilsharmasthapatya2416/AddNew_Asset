@@ -1,7 +1,17 @@
 "use client";
 
-import { ReactNode, useRef, useState, useId, useEffect, isValidElement, cloneElement } from "react";
+import {
+  ReactNode,
+  useRef,
+  useState,
+  useId,
+  useEffect,
+  isValidElement,
+  cloneElement,
+} from "react";
 import { cn } from "@/lib/utils/cn";
+
+/* ================= TYPES ================= */
 
 export interface TooltipProps {
   content: ReactNode;
@@ -9,6 +19,8 @@ export interface TooltipProps {
   className?: string;
   placement?: "top" | "bottom" | "left" | "right";
 }
+
+/* ================= COMPONENT ================= */
 
 export const Tooltip = ({
   content,
@@ -23,14 +35,17 @@ export const Tooltip = ({
 
   const tooltipId = useId();
 
-  // Show tooltip with calculated position
+  /* ---------------- Show tooltip ---------------- */
   const show = (): void => {
     timeoutRef.current = setTimeout(() => {
       if (!triggerRef.current) return;
 
       const rect = triggerRef.current.getBoundingClientRect();
 
-      const positions: Record<string, { top: number; left: number }> = {
+      const positions: Record<
+        NonNullable<TooltipProps["placement"]>,
+        { top: number; left: number }
+      > = {
         top: { top: rect.top - 8, left: rect.left + rect.width / 2 },
         bottom: { top: rect.bottom + 8, left: rect.left + rect.width / 2 },
         left: { top: rect.top + rect.height / 2, left: rect.left - 8 },
@@ -42,23 +57,26 @@ export const Tooltip = ({
     }, 100);
   };
 
-  // Hide tooltip
+  /* ---------------- Hide tooltip ---------------- */
   const hide = (): void => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setVisible(false);
   };
 
-  // Cleanup timeout on unmount
+  /* ---------------- Cleanup ---------------- */
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
-  const hasContent: boolean =
+  const hasContent =
     !!content && (typeof content !== "string" || content.trim() !== "");
 
-  const transformMap: Record<string, string> = {
+  const transformMap: Record<
+    NonNullable<TooltipProps["placement"]>,
+    string
+  > = {
     top: "-translate-x-1/2 -translate-y-full",
     bottom: "-translate-x-1/2 translate-y-0",
     left: "-translate-x-full -translate-y-1/2",
@@ -72,35 +90,42 @@ export const Tooltip = ({
     return <>{children}</>;
   }
 
+  const child = children as React.ReactElement<any>;
+
   return (
     <>
-      {/* Tooltip Trigger */}
-      {cloneElement(children as React.ReactElement<any>, {
-        ref: triggerRef,
+      {/* ================= TRIGGER ================= */}
+      {cloneElement(child, {
+        ref: (node: HTMLElement | null) => {
+          triggerRef.current = node;
+          const { ref } = child as any;
+          if (typeof ref === 'function') ref(node);
+          else if (ref) ref.current = node;
+        },
         onMouseEnter: (e: React.MouseEvent) => {
           show();
-          (children as any).props.onMouseEnter?.(e);
+          child.props.onMouseEnter?.(e);
         },
         onMouseLeave: (e: React.MouseEvent) => {
           hide();
-          (children as any).props.onMouseLeave?.(e);
+          child.props.onMouseLeave?.(e);
         },
         onFocus: (e: React.FocusEvent) => {
           show();
-          (children as any).props.onFocus?.(e);
+          child.props.onFocus?.(e);
         },
         onBlur: (e: React.FocusEvent) => {
           hide();
-          (children as any).props.onBlur?.(e);
+          child.props.onBlur?.(e);
         },
         onKeyDown: (e: React.KeyboardEvent) => {
           if (e.key === "Escape") hide();
-          (children as any).props.onKeyDown?.(e);
+          child.props.onKeyDown?.(e);
         },
         "aria-describedby": visible ? tooltipId : undefined,
       })}
 
-      {/* Tooltip Content */}
+      {/* ================= TOOLTIP ================= */}
       {visible && (
         <span
           id={tooltipId}
