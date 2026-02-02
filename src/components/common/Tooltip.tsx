@@ -1,6 +1,6 @@
 "use client";
 
-import {
+import React, {
   ReactNode,
   useRef,
   useState,
@@ -27,7 +27,7 @@ export const Tooltip = ({
   children,
   className = "",
   placement = "bottom",
-}: TooltipProps) => {
+}: TooltipProps): React.ReactElement => {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -90,40 +90,50 @@ export const Tooltip = ({
     return <>{children}</>;
   }
 
-  const child = children as React.ReactElement<any>;
+  const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
+
+  // Handle ref forwarding
+  const childRef = (child as React.ReactElement & { ref?: React.Ref<HTMLElement> }).ref;
+  const mergedRef = (node: HTMLElement | null): void => {
+    triggerRef.current = node;
+    
+    // Forward to original ref if it exists
+    if (childRef) {
+      if (typeof childRef === 'function') {
+        childRef(node);
+      } else if (typeof childRef === 'object' && childRef !== null && 'current' in childRef) {
+        (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
+      }
+    }
+  };
 
   return (
     <>
       {/* ================= TRIGGER ================= */}
       {cloneElement(child, {
-        ref: (node: HTMLElement | null) => {
-          triggerRef.current = node;
-          const { ref } = child as any;
-          if (typeof ref === 'function') ref(node);
-          else if (ref) ref.current = node;
-        },
-        onMouseEnter: (e: React.MouseEvent) => {
+        ref: mergedRef,
+        onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
           show();
           child.props.onMouseEnter?.(e);
         },
-        onMouseLeave: (e: React.MouseEvent) => {
+        onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
           hide();
           child.props.onMouseLeave?.(e);
         },
-        onFocus: (e: React.FocusEvent) => {
+        onFocus: (e: React.FocusEvent<HTMLElement>) => {
           show();
           child.props.onFocus?.(e);
         },
-        onBlur: (e: React.FocusEvent) => {
+        onBlur: (e: React.FocusEvent<HTMLElement>) => {
           hide();
           child.props.onBlur?.(e);
         },
-        onKeyDown: (e: React.KeyboardEvent) => {
+        onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
           if (e.key === "Escape") hide();
           child.props.onKeyDown?.(e);
         },
         "aria-describedby": visible ? tooltipId : undefined,
-      })}
+      } as unknown as React.HTMLProps<HTMLElement>)}
 
       {/* ================= TOOLTIP ================= */}
       {visible && (

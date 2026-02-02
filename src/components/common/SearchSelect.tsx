@@ -101,6 +101,21 @@ export function SearchSelect({
     );
   }, [search, hasTyped, validOptions]);
 
+  /* ---------------- Validate and clear on blur ---------------- */
+  const handleBlur = (): void => {
+    if (!hasOptions) return;
+
+    const matched = validOptions.find((opt) => opt.label === displayValue);
+
+    if (!matched) {
+      setSearch("");
+      setHasTyped(false);
+      onChange?.(name, "");
+    }
+
+    setIsOpen(false);
+  };
+
   /* ---------------- Select option ---------------- */
   const handleSelect = (val: string): void => {
     const selected = validOptions.find((o) => o.value === val);
@@ -190,19 +205,7 @@ export function SearchSelect({
         disabled={disabled || !hasOptions}
         inputMode={inputMode}
         onFocus={() => hasOptions && setIsOpen(true)}
-        onBlur={() => {
-          if (!hasOptions) return;
-
-          const matched = validOptions.find((opt) => opt.label === displayValue);
-
-          if (!matched) {
-            setSearch("");
-            setHasTyped(false);
-            onChange?.(name, "");
-          }
-
-          setIsOpen(false);
-        }}
+        onBlur={handleBlur}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         className={`w-full rounded-lg border border-blue-200 px-2.5 py-1 text-sm bg-white

@@ -58,6 +58,133 @@ function getMetaWidth(
   }
 }
 
+/**
+ * Render meta column header
+ */
+function renderMetaHeader(
+  meta: { id: string; label: string | React.ReactNode; width?: string }
+): React.ReactElement {
+  return (
+    <div
+      key={meta.id}
+      role="columnheader"
+      className="px-2 md:px-3 py-1.5 md:py-2 bg-blue-50 text-sm text-blue-700 font-semibold text-base flex items-center justify-center rounded-lg"
+    >
+      {meta.label}
+    </div>
+  );
+}
+
+/**
+ * Render rate column header with optional tooltip
+ */
+function renderRateHeader(
+  col: MatrixColumn,
+  colorMap: Record<string, string>
+): React.ReactElement {
+  const colorClass: string =
+    colorMap[col.id?.toUpperCase()] || col.headerClassName || "";
+
+  const headerCell: React.ReactNode = (
+    <div
+      role="columnheader"
+      className={cn(
+        "px-2 md:px-3 py-1.5 md:py-2 font-bold text-xs md:text-sm rounded-lg md:rounded-xl text-center w-full flex flex-col items-center justify-center",
+        colorClass
+      )}
+    >
+      <div>{col.label}</div>
+      {col.unit && (
+        <div className="text-[9px] md:text-[10px] mt-0.5 opacity-75">
+          ({col.unit})
+        </div>
+      )}
+    </div>
+  );
+
+  return col.tooltip ? (
+    <Tooltip key={col.id} content={col.tooltip} placement="top">
+      {headerCell}
+    </Tooltip>
+  ) : (
+    <React.Fragment key={col.id}>{headerCell}</React.Fragment>
+  );
+}
+
+/**
+ * Render meta cell content
+ */
+function renderMetaCell(
+  meta: { id: string; label: string | React.ReactNode; width?: string },
+  row: MatrixRow
+): React.ReactElement {
+  return (
+    <div
+      role="cell"
+      key={meta.id}
+      className="px-1 md:px-2 py-1.5 md:py-2"
+    >
+      <div className="px-2 md:px-3 py-1.5 md:py-2 bg-white text-blue-700 rounded-lg md:rounded-xl font-medium text-xs md:text-sm border border-gray-300 text-center">
+        {row.meta?.[meta.id]}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Render rate cell (editable or view mode)
+ */
+function renderRateCell(
+  col: MatrixColumn,
+  row: MatrixRow,
+  colorMap: Record<string, string>,
+  isEditable: boolean,
+  editableColumns: string[],
+  translations: { currencySymbol: string },
+  metaColumns: { id: string; label: string | React.ReactNode; width?: string }[],
+  onCellChange?: (rowId: string, columnId: string, value: number) => void
+): React.ReactElement {
+  const colorClass: string = colorMap[col.id.toUpperCase()] || "";
+  const rawValue = row.cells[col.id];
+  const value: number = Number(rawValue) || 0;
+
+  const canEdit: boolean =
+    isEditable &&
+    editableColumns.includes(col.id) &&
+    typeof onCellChange === "function";
+
+  return (
+    <div
+      role="cell"
+      key={col.id}
+      className="px-1 md:px-2 py-1.5 md:py-2"
+    >
+      {canEdit ? (
+        <MatrixCellInput
+          value={value}
+          rowId={row.id}
+          columnId={col.id}
+          metaLabel={`${String(col.label)} for ${String(
+            row.meta?.[metaColumns[0]?.id] ?? row.id
+          )}`}
+          colorClass={colorClass}
+          onCellChange={onCellChange}
+        />
+      ) : (
+        <div
+          className={cn(
+            "px-2 md:px-3 py-1.5 md:py-2 rounded-lg md:rounded-xl font-bold text-xs md:text-sm text-center border border-gray-300 bg-white",
+            colorClass
+          )}
+        >
+          {translations.currencySymbol}
+          {value.toFixed(2)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ================= COMPONENT ================= */
 
 export const MatrixGrid = ({
@@ -115,50 +242,10 @@ export const MatrixGrid = ({
             style={{ gridTemplateColumns }}
           >
             {/* Meta headers */}
-            {metaColumns.map(
-              (meta) => (
-                <div
-                  key={meta.id}
-                  role="columnheader"
-                  className="px-2 md:px-3 py-1.5 md:py-2 bg-blue-50 text-sm text-blue-700 font-semibold text-base flex items-center justify-center rounded-lg"
-                >
-                  {meta.label}
-                </div>
-              )
-            )}
+            {metaColumns.map((meta): React.ReactElement => renderMetaHeader(meta))}
 
             {/* Rate headers */}
-            {rateColumns.map(
-              (col) => {
-                const colorClass: string =
-                  colorMap[col.id?.toUpperCase()] || col.headerClassName || "";
-
-                const headerCell: React.ReactNode = (
-                  <div
-                    role="columnheader"
-                    className={cn(
-                      "px-2 md:px-3 py-1.5 md:py-2 font-bold text-xs md:text-sm rounded-lg md:rounded-xl text-center w-full flex flex-col items-center justify-center",
-                      colorClass
-                    )}
-                  >
-                    <div>{col.label}</div>
-                    {col.unit && (
-                      <div className="text-[9px] md:text-[10px] mt-0.5 opacity-75">
-                        ({col.unit})
-                      </div>
-                    )}
-                  </div>
-                );
-
-                return col.tooltip ? (
-                  <Tooltip key={col.id} content={col.tooltip} placement="top">
-                    {headerCell}
-                  </Tooltip>
-                ) : (
-                  <React.Fragment key={col.id}>{headerCell}</React.Fragment>
-                );
-              }
-            )}
+            {rateColumns.map((col): React.ReactElement => renderRateHeader(col, colorMap))}
 
             {/* Action header */}
             {onRowDelete && (
@@ -182,64 +269,20 @@ export const MatrixGrid = ({
                   style={{ gridTemplateColumns }}
                 >
                   {/* Meta cells */}
-                  {metaColumns.map(
-                    (meta) => (
-                      <div
-                        role="cell"
-                        key={meta.id}
-                        className="px-1 md:px-2 py-1.5 md:py-2"
-                      >
-                        <div className="px-2 md:px-3 py-1.5 md:py-2 bg-white text-blue-700 rounded-lg md:rounded-xl font-medium text-xs md:text-sm border border-gray-300 text-center">
-                          {row.meta?.[meta.id]}
-                        </div>
-                      </div>
-                    )
-                  )}
+                  {metaColumns.map((meta): React.ReactElement => renderMetaCell(meta, row))}
 
                   {/* Rate cells */}
-                  {rateColumns.map(
-                    (col) => {
-                      const colorClass: string = colorMap[col.id.toUpperCase()] || "";
-                      const rawValue = row.cells[col.id];
-                      const value: number = Number(rawValue) || 0;
-
-                      const canEdit: boolean =
-                        isEditable &&
-                        editableColumns.includes(col.id) &&
-                        typeof onCellChange === "function";
-
-                      return (
-                        <div
-                          role="cell"
-                          key={col.id}
-                          className="px-1 md:px-2 py-1.5 md:py-2"
-                        >
-                          {canEdit ? (
-                            <MatrixCellInput
-                              value={value}
-                              rowId={row.id}
-                              columnId={col.id}
-                              metaLabel={`${String(col.label)} for ${String(
-                                row.meta?.[metaColumns[0]?.id] ?? row.id
-                              )}`}
-                              colorClass={colorClass}
-                              onCellChange={onCellChange}
-                            />
-                          ) : (
-                             <div
-                              className={cn(
-                                "px-2 md:px-3 py-1.5 md:py-2 rounded-lg md:rounded-xl font-bold text-xs md:text-sm text-center border border-gray-300 bg-white",
-                                colorClass
-                               )}
-                            >
-                             {translations.currencySymbol}
-                              {value.toFixed(2)}
-                             </div>
-                             
-                          )}
-                        </div>
-                      );
-                    }
+                  {rateColumns.map((col): React.ReactElement =>
+                    renderRateCell(
+                      col,
+                      row,
+                      colorMap,
+                      isEditable,
+                      editableColumns,
+                      translations,
+                      metaColumns,
+                      onCellChange
+                    )
                   )}
 
                   {/* Action cell */}
