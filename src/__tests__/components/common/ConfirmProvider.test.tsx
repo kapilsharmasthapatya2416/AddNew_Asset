@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { ConfirmProvider, useConfirm, type ConfirmPayload, type ConfirmVariant } from "@/components/common/ConfirmProvider";
+import { ConfirmProvider, useConfirm, type ConfirmPayload } from "@/components/common/ConfirmProvider";
 import { NextIntlClientProvider } from 'next-intl';
 
 function TestComponent({ payload }: { payload: ConfirmPayload }) {
