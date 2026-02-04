@@ -71,7 +71,7 @@ function DialogButton({
 
   const cancelBtn = "bg-gray-200 text-gray-800 hover:bg-gray-300 border border-gray-300 focus:ring-gray-300";
 
-  const confirmBtn =
+   const confirmBtn =
     variant === "confirm"
       ? "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-300"
       : "bg-red-600 text-white hover:bg-red-700 focus:ring-red-300";
