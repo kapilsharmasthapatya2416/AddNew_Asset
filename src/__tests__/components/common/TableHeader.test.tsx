@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import React from "react";
 import TableHeader from "@/components/common/TableHeader";
 import { Plus } from "lucide-react";
 

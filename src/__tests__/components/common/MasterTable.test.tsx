@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import React from "react";
 import { MasterTable, MasterTableProps, Column } from "@/components/common/MasterTable";
 import { NextIntlClientProvider } from "next-intl";
 

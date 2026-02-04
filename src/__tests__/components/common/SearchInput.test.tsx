@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import React from "react";
 import { SearchInput } from "@/components/common/SearchInput";
 
 describe("SearchInput", () => {

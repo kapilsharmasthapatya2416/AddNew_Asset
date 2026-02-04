@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import React from "react";
-import { ConfirmProvider, useConfirm, type ConfirmPayload } from "@/components/common/ConfirmProvider";
+import { ConfirmProvider, useConfirm, type ConfirmPayload, type ConfirmVariant } from "@/components/common/ConfirmProvider";
 import { NextIntlClientProvider } from 'next-intl';
 
 function TestComponent({ payload }: { payload: ConfirmPayload }) {
@@ -12,8 +11,8 @@ function TestComponent({ payload }: { payload: ConfirmPayload }) {
 }
 
 describe("ConfirmProvider", () => {
-  const basePayload = {
-    variant: "delete" as const,
+  const basePayload: ConfirmPayload = {
+    variant: "delete",
     title: "Delete Record",
     description: "Are you sure you want to delete?",
     confirmText: "Delete",
@@ -21,6 +20,7 @@ describe("ConfirmProvider", () => {
     meta: { id: 1, name: "Test" },
     onConfirm: vi.fn(),
     onCancel: vi.fn(),
+    closeOnConfirm: true,
   };
 
   const mockMessages = {
