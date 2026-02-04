@@ -118,15 +118,31 @@ export function ImportButton({
 ---------------------------------------------------------- */
 
 export function EditButton(
-  props: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, ...props }: Omit<ButtonProps, "icon" | "variant">
 ): JSX.Element {
-  return <Button variant="edit" icon={Pencil} size="sm" {...props} />;
+  return (
+    <Button
+      variant="edit"
+      icon={Pencil}
+      size="sm"
+      aria-label={ariaLabel ?? "Edit"}
+      {...props}
+    />
+  );
 }
 
 export function DeleteButton(
-  props: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, ...props }: Omit<ButtonProps, "icon" | "variant">
 ): JSX.Element {
-  return <Button variant="delete" icon={Trash2} size="sm" {...props} />;
+  return (
+    <Button
+      variant="delete"
+      icon={Trash2}
+      size="sm"
+      aria-label={ariaLabel ?? "Delete"}
+      {...props}
+    />
+  );
 }
 
 /* ----------------------------------------------------------
@@ -134,27 +150,59 @@ export function DeleteButton(
 ---------------------------------------------------------- */
 
 export function FirstPageButton(
-  props: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, ...props }: Omit<ButtonProps, "icon" | "variant">
 ): JSX.Element {
-  return <Button variant="secondary" icon={ChevronsLeft} size="sm" {...props} />;
+  return (
+    <Button
+      variant="secondary"
+      icon={ChevronsLeft}
+      size="sm"
+      aria-label={ariaLabel ?? "Go to first page"}
+      {...props}
+    />
+  );
 }
 
 export function PrevPageButton(
-  props: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, ...props }: Omit<ButtonProps, "icon" | "variant">
 ): JSX.Element {
-  return <Button variant="secondary" icon={ChevronLeft} size="sm" {...props} />;
+  return (
+    <Button
+      variant="secondary"
+      icon={ChevronLeft}
+      size="sm"
+      aria-label={ariaLabel ?? "Go to previous page"}
+      {...props}
+    />
+  );
 }
 
 export function NextPageButton(
-  props: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, ...props }: Omit<ButtonProps, "icon" | "variant">
 ): JSX.Element {
-  return <Button variant="secondary" icon={ChevronRight} size="sm" {...props} />;
+  return (
+    <Button
+      variant="secondary"
+      icon={ChevronRight}
+      size="sm"
+      aria-label={ariaLabel ?? "Go to next page"}
+      {...props}
+    />
+  );
 }
 
 export function LastPageButton(
-  props: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, ...props }: Omit<ButtonProps, "icon" | "variant">
 ): JSX.Element {
-  return <Button variant="secondary" icon={ChevronsRight} size="sm" {...props} />;
+  return (
+    <Button
+      variant="secondary"
+      icon={ChevronsRight}
+      size="sm"
+      aria-label={ariaLabel ?? "Go to last page"}
+      {...props}
+    />
+  );
 }
 
 /* ----------------------------------------------------------

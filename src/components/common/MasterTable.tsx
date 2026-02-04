@@ -117,8 +117,6 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   maxBodyHeightClassName = "max-h-[calc(100vh-260px)]",
   emptyText,
   loadingText,
-
-  // containerClassName, // Removed because unused
   tableClassName,
   theadClassName,
   rowClassName,
@@ -176,7 +174,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                 style={{ width: col.width }}
                 className={cn(
                   "px-2 py-3 text-left text-sm font-semibold text-[#1E3A8A]",
-                  index === 0,
+                  index === 0 && "rounded-tl-lg",
                   !hasActions &&
                   index === columns.length - 1 &&
                   "rounded-tr-lg",

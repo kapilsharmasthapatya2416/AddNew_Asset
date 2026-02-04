@@ -61,7 +61,7 @@ export default function TableHeader({
           {rightContent}
 
           {actionLabel && onActionClick && (
-            <AddButton
+           <AddButton
               label={actionLabel}
               onClick={onActionClick}
               disabled={actionDisabled}

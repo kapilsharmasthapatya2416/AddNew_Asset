@@ -20,9 +20,9 @@ describe("MultiSelectDropdown", () => {
     { label: "Banana", value: "banana" },
     { label: "Cherry", value: "cherry" },
   ];
-  function setup(props = {}) {
-    const value = (props as any).value ?? [];
-    const onChange = (props as any).onChange ?? vi.fn();
+  function setup(props: Partial<{ value: string[]; onChange: (value: string[]) => void }> = {}) {
+    const value = props.value ?? [];
+    const onChange = props.onChange ?? vi.fn();
     return render(
       <NextIntlClientProvider locale="en" messages={{ common: mockMessages }}>
         <MultiSelectDropdown
