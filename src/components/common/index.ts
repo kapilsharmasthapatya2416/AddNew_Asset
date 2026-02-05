@@ -73,10 +73,6 @@ export type { BadgeProps, BadgeVariant, BadgeSize } from './Badge';
 
 export { ContextMenu } from './ContextMenu';
 export type { ContextMenuProps, ContextMenuItem } from './ContextMenu';
-<<<<<<< feature/PTISMaster-PTIS2/updatedcommoncomponenent
-export {ConfirmProvider, useConfirm} from './ConfirmProvider';
-export type { ConfirmOptions, ConfirmPayload, ConfirmContextType, ConfirmVariant, ConfirmMeta } from './ConfirmProvider';
-=======
 
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
@@ -92,4 +88,3 @@ export type { MatrixDeleteButtonProps } from './MatrixDeleteButton';
 
 export { MatrixCellInput } from './MatrixCellInput';
 export type { MatrixCellInputProps } from './MatrixCellInput';
->>>>>>> main
