@@ -68,7 +68,6 @@
     "noRecordsFound": "कोई रिकॉर्ड नहीं मिला",
     "actionCompleted": "कार्रवाई सफलतापूर्वक पूरी हुई",
     "recordsFound": "रिकॉर्ड मिले"
-    
   },
   "confirm": {
     "delete": {
@@ -104,7 +103,6 @@
     "showing": "दिखा रहा है",
     "to": "से",
     "of": "में से",
-   
     "columns": {
       "status": "स्थिति",
       "actions": "कार्रवाई"

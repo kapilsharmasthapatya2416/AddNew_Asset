@@ -23,7 +23,7 @@ describe("ConfirmProvider", () => {
     closeOnConfirm: true,
   };
 
-  const mockMessages = {
+   const mockMessages = {
     delete: { title: 'Delete', description: 'Delete desc', confirm: 'Delete' },
     add: { title: 'Add', description: 'Add desc', confirm: 'Add' },
     update: { title: 'Update', description: 'Update desc', confirm: 'Update' },

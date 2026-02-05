@@ -1,6 +1,4 @@
 "use client";
-
-
 import { ConfirmProvider } from "@/components/common";
 import { Toaster } from "sonner";
 

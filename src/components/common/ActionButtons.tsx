@@ -1,4 +1,3 @@
-// ...existing code...
 "use client";
 
 import React from "react";
@@ -254,7 +253,8 @@ export function PageNumberButton({
         active
           ? "bg-[#2563EB] text-white border border-[#2563EB]"
           : "bg-white border border-[#DCEAFF] text-[#1E3A8A] hover:bg-gray-50"
-      )}
+       )}
+      aria-label={`Go to page ${page}`}
     >
       {page}
     </Button>
