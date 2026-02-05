@@ -209,7 +209,7 @@ export function LastPageButton(
    ICON-ONLY FANCY BUTTON
 ---------------------------------------------------------- */
 
-export default function IconButton({
+export  function IconButton({
   icon: Icon,
   variant = "primary",
   className = "",

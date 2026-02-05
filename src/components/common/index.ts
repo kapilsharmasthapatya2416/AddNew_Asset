@@ -23,7 +23,8 @@ export {
   NextPageButton,
   LastPageButton,
 } from './ActionButtons';
-export { default as IconButton } from './ActionButtons';
+// export { default as IconButton } from './ActionButtons';
+export { IconButton } from './ActionButtons';
 export { Card, CardHeader, CardTitle, CardContent } from './Card';
 export type { CardProps } from './Card';
 

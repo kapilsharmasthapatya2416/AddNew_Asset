@@ -129,7 +129,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }): JS
       title: payload?.title ?? d.title,
       description: `${baseDesc}${metaSuffix}`,
       confirmText: payload?.confirmText ?? d.confirmText,
-      cancelText: payload?.cancelText ?? t("cancel"),
+      cancelText: payload?.cancelText ?? t("confirm.cancel"),
       closeOnConfirm: payload?.closeOnConfirm ?? true,
       meta: payload?.meta,
       onConfirm: payload?.onConfirm,
