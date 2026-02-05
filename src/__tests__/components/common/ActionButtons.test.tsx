@@ -15,7 +15,7 @@ import {
   LastPageButton,
   PageNumberButton,
 } from "@/components/common/ActionButtons";
-import IconButton from "@/components/common/ActionButtons";
+import { IconButton } from "@/components/common/ActionButtons";
 
 describe("ActionButtons", () => {
   describe("Labeled Action Buttons", () => {
