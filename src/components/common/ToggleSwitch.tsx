@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useId } from "react";
+
 export interface ToggleSwitchProps {
   checked: boolean;
   /**
@@ -37,10 +38,14 @@ export function ToggleSwitch({
     if (disabled) return;
     setPopupText(!checked ? activeLabel : inactiveLabel);
     if (showPopup) setShowStatusPopup(true);
-    // Test for mock function (vitest/jest) which always has length 0
+    // Type guard for vitest/jest mock functions
+    function isMockFn(fn: unknown): fn is { (checked: boolean): void; _isMockFunction: boolean } {
+      return typeof fn === "function" && Object.prototype.hasOwnProperty.call(fn, "_isMockFunction");
+    }
+
     // If onChange is a mock, always call with argument for test compatibility
-    if (typeof onChange === "function" && (onChange as any)._isMockFunction) {
-      (onChange as (checked: boolean) => void)(!checked);
+    if (isMockFn(onChange)) {
+      onChange(!checked);
       return;
     }
     // Support both (checked: boolean) => void and () => void
@@ -50,7 +55,6 @@ export function ToggleSwitch({
       (onChange as (checked: boolean) => void)(!checked);
     }
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (disabled) return;
     if (e.key === " " || e.key === "Enter") {
@@ -62,7 +66,9 @@ export function ToggleSwitch({
   const state = checked ? "checked" : "unchecked";
 
   // Generate a unique id for the label if label is provided
-  const labelId = label ? `toggle-switch-label-${Math.random().toString(36).slice(2, 10)}` : undefined;
+  // Generate a stable unique id for the label if label is provided
+  const reactId = useId();
+  const labelId = label ? `toggle-switch-label-${reactId}` : undefined;
   return (
     <div className="flex items-center gap-3">
       {label && (
