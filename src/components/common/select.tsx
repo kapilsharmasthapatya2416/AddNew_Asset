@@ -12,8 +12,12 @@ export interface Option {
 
 export interface SelectProps {
   options: Option[];
+  /**
+   * Controlled value. `null` represents "no selection" and may be used for initialization;
+   * `onChange` is only called with non-null option values.
+   */
   value?: string | null;
-  onChange?: (value: string | null) => void;
+  onChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
   selectSize?: "sm" | "md";
