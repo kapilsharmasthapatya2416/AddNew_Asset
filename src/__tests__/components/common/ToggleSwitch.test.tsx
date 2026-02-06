@@ -13,11 +13,21 @@ describe("ToggleSwitch", () => {
     expect(screen.getByRole("switch")).toBeInTheDocument();
   });
 
-  it("calls onChange when toggled", () => {
+
+  it("calls onChange(checked) when toggled (new signature)", () => {
     const handleChange = vi.fn();
     render(<ToggleSwitch checked={false} onChange={handleChange} />);
     fireEvent.click(screen.getByRole("switch"));
-    expect(handleChange).toHaveBeenCalled();
+    expect(handleChange).toHaveBeenCalledWith(true);
+  });
+
+  it("calls onChange() when toggled (legacy signature)", () => {
+    let called = false;
+    function legacyChange() { called = true; }
+    // @ts-expect-error intentionally using legacy signature
+    render(<ToggleSwitch checked={false} onChange={legacyChange} />);
+    fireEvent.click(screen.getByRole("switch"));
+    expect(called).toBe(true);
   });
 
   it("shows popup when toggled and hides after timeout", async () => {

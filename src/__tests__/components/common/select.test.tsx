@@ -25,7 +25,7 @@ describe("Select", () => {
 
   it("opens dropdown on button click", () => {
     render(<Select options={options} />);
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByTestId("select-button"));
     expect(screen.getByRole("listbox")).toBeInTheDocument();
     expect(screen.getByText("Apple")).toBeInTheDocument();
     expect(screen.getByText("Banana")).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe("Select", () => {
   it("selects option and calls onChange", () => {
     const handleChange = vi.fn();
     render(<Select options={options} onChange={handleChange} />);
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByTestId("select-button"));
     fireEvent.click(screen.getByText("Banana"));
     expect(handleChange).toHaveBeenCalledWith("banana");
     // Should close dropdown
@@ -44,7 +44,7 @@ describe("Select", () => {
   it("does not select disabled option", () => {
     const handleChange = vi.fn();
     render(<Select options={options} onChange={handleChange} />);
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByTestId("select-button"));
     fireEvent.click(screen.getByText("Cherry"));
     expect(handleChange).not.toHaveBeenCalled();
   });
@@ -63,17 +63,17 @@ describe("Select", () => {
 
   it("renders as disabled", () => {
     render(<Select options={options} disabled />);
-    const button = screen.getByRole("button");
+    const button = screen.getByTestId("select-button");
     expect(button).toBeDisabled();
     expect(button).toHaveClass("cursor-not-allowed");
   });
 
   it("closes dropdown on blur", () => {
     render(<Select options={options} />);
-    const selectDiv = screen.getByRole("button").parentElement;
-    fireEvent.click(screen.getByRole("button"));
+    const selectDiv = screen.getByTestId("select-root");
+    fireEvent.click(screen.getByTestId("select-button"));
     expect(screen.getByRole("listbox")).toBeInTheDocument();
-    fireEvent.blur(selectDiv!);
+    fireEvent.blur(selectDiv);
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 });

@@ -1,5 +1,6 @@
 
-import React, { useState, useRef, useCallback } from "react";
+"use client";
+import React, { useState, useRef, useCallback, useId } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -53,47 +54,75 @@ export function Select({
   }, [onChange]);
 
   // Keyboard navigation
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement | HTMLUListElement>) => {
     if (disabled) return;
     if (!open) {
       if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
         setOpen(true);
-        setTimeout(() => {
-          // Focus first or selected option
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
           setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0);
         }, 0);
         e.preventDefault();
       }
       return;
     }
-    if (open) {
-      if (e.key === "Escape") {
-        setOpen(false);
-        setHighlightedIndex(-1);
-        buttonRef.current?.focus();
+    // Only reach here if open === true
+    if (e.key === "Escape") {
+      setOpen(false);
+      setHighlightedIndex(-1);
+      buttonRef.current?.focus();
+      e.preventDefault();
+    } else if (e.key === "ArrowDown") {
+      // Prevent infinite loop if all options are disabled
+      if (options.every((opt) => opt.disabled)) {
         e.preventDefault();
-      } else if (e.key === "ArrowDown") {
-        let next = highlightedIndex + 1;
-        while (next < options.length && options[next].disabled) next++;
-        if (next >= options.length) next = 0;
-        while (options[next].disabled) next = (next + 1) % options.length;
-        setHighlightedIndex(next);
-        e.preventDefault();
-      } else if (e.key === "ArrowUp") {
-        let prev = highlightedIndex - 1;
-        while (prev >= 0 && options[prev].disabled) prev--;
-        if (prev < 0) prev = options.length - 1;
-        while (options[prev].disabled) prev = (prev - 1 + options.length) % options.length;
-        setHighlightedIndex(prev);
-        e.preventDefault();
-      } else if (e.key === "Enter" || e.key === " ") {
-        if (highlightedIndex >= 0 && !options[highlightedIndex].disabled) {
-          handleSelect(options[highlightedIndex].value);
-        }
-        e.preventDefault();
+        return;
       }
+      let next = highlightedIndex + 1;
+      let count = 0;
+      while (next < options.length && options[next].disabled) { next++; count++; }
+      if (next >= options.length) next = 0;
+      count = 0;
+      while (options[next].disabled) {
+        next = (next + 1) % options.length;
+        count++;
+        if (count > options.length) break;
+      }
+      setHighlightedIndex(next);
+      e.preventDefault();
+    } else if (e.key === "ArrowUp") {
+      // Prevent infinite loop if all options are disabled
+      if (options.every((opt) => opt.disabled)) {
+        e.preventDefault();
+        return;
+      }
+      let prev = highlightedIndex - 1;
+      let count = 0;
+      while (prev >= 0 && options[prev].disabled) { prev--; count++; }
+      if (prev < 0) prev = options.length - 1;
+      count = 0;
+      while (options[prev].disabled) {
+        prev = (prev - 1 + options.length) % options.length;
+        count++;
+        if (count > options.length) break;
+      }
+      setHighlightedIndex(prev);
+      e.preventDefault();
+    } else if (e.key === "Enter" || e.key === " ") {
+      if (highlightedIndex >= 0 && !options[highlightedIndex].disabled) {
+        handleSelect(options[highlightedIndex].value);
+      }
+      e.preventDefault();
     }
   };
+  // Cleanup for setTimeout in handleKeyDown
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   // Keep internal value in sync with prop
   React.useEffect(() => {
@@ -118,8 +147,9 @@ export function Select({
     md: "h-10 px-4 text-base",
   };
 
-  // For ARIA
-  const listboxId = id ? `${id}-listbox` : undefined;
+  // For ARIA: always provide a valid id
+  const reactId = useId();
+  const listboxId = `${id ?? reactId}-listbox`;
 
   // Placeholder logic: treat null/undefined as no value
   const displayLabel =
