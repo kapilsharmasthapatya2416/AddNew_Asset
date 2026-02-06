@@ -1,4 +1,4 @@
-import { render, fireEvent, screen, act, waitFor } from "@testing-library/react";
+import { render, fireEvent, screen, act } from "@testing-library/react";
 import { describe, it, expect, beforeAll, vi } from "vitest";
 import { Select, Option } from "@/components/common/select";
 
