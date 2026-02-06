@@ -43,15 +43,23 @@ export function Select({
   // Find the index of the selected value
   const selectedIndex = options.findIndex((opt) => opt.value === internalValue);
 
+  // Find the first enabled option index
+  const getFirstEnabledIndex = (): number => {
+    return options.findIndex((opt) => !opt.disabled);
+  };
+
   // Handle selection
-  const handleSelect = useCallback((val: string) => {
-    setInternalValue(val);
-    setOpen(false);
-    setHighlightedIndex(-1);
-    onChange?.(val);
-    // Focus back to button after selection
-    buttonRef.current?.focus();
-  }, [onChange]);
+  const handleSelect = useCallback(
+    (val: string) => {
+      setInternalValue(val);
+      setOpen(false);
+      setHighlightedIndex(-1);
+      onChange?.(val);
+      // Focus back to button after selection
+      buttonRef.current?.focus();
+    },
+    [onChange]
+  );
 
   // Keyboard navigation
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -62,7 +70,10 @@ export function Select({
         setOpen(true);
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
-          setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0);
+          let initialIndex = selectedIndex >= 0 && !options[selectedIndex]?.disabled
+            ? selectedIndex
+            : getFirstEnabledIndex();
+          setHighlightedIndex(initialIndex);
         }, 0);
         e.preventDefault();
       }
@@ -81,10 +92,9 @@ export function Select({
         return;
       }
       let next = highlightedIndex + 1;
-      let count = 0;
-      while (next < options.length && options[next].disabled) { next++; count++; }
+      while (next < options.length && options[next].disabled) { next++; }
       if (next >= options.length) next = 0;
-      count = 0;
+      let count = 0;
       while (options[next].disabled) {
         next = (next + 1) % options.length;
         count++;
@@ -99,10 +109,9 @@ export function Select({
         return;
       }
       let prev = highlightedIndex - 1;
-      let count = 0;
-      while (prev >= 0 && options[prev].disabled) { prev--; count++; }
+      while (prev >= 0 && options[prev].disabled) { prev--; }
       if (prev < 0) prev = options.length - 1;
-      count = 0;
+      let count = 0;
       while (options[prev].disabled) {
         prev = (prev - 1 + options.length) % options.length;
         count++;
