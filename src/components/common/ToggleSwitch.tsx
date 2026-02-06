@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState,useId } from "react";
+import { useEffect, useState, useId } from "react";
 
 export interface ToggleSwitchProps {
   checked: boolean;
