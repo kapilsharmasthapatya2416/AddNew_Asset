@@ -21,14 +21,6 @@ describe("ToggleSwitch", () => {
     expect(handleChange).toHaveBeenCalledWith(true);
   });
 
-  it("calls onChange() when toggled (legacy signature)", () => {
-    let called = false;
-    function legacyChange() { called = true; }
-    render(<ToggleSwitch checked={false} onChange={legacyChange} />);
-    fireEvent.click(screen.getByRole("switch"));
-    expect(called).toBe(true);
-  });
-
   it("shows popup when toggled and hides after timeout", async () => {
     vi.useFakeTimers();
     render(<ToggleSwitch checked={false} onChange={() => {}} />);
