@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useId } from "react";
+import type { KeyboardEvent } from "react";
 
 export interface ToggleSwitchProps {
   checked: boolean;
@@ -42,7 +43,7 @@ export function ToggleSwitch({
     // Always call onChange with the new checked state; callbacks that ignore arguments remain compatible.
     onChange(!checked);
   };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if (disabled) return;
     if (e.key === " " || e.key === "Enter") {
       e.preventDefault();

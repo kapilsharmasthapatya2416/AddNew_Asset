@@ -202,9 +202,15 @@ export function Select({
       onBlur={handleBlur}
       data-testid="select-root"
     >
-      {/* Hidden input for form integration */}
+      {/* Hidden input for form integration; disable when Select is disabled */}
       {name && (
-        <input type="hidden" name={name} value={internalValue ?? ""} data-testid="select-hidden-input" />
+        <input
+          type="hidden"
+          name={name}
+          value={internalValue ?? ""}
+          data-testid="select-hidden-input"
+          disabled={disabled}
+        />
       )}
       <button
         ref={buttonRef}
