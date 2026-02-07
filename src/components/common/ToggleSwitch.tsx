@@ -4,9 +4,10 @@ import { useEffect, useState, useId } from "react";
 export interface ToggleSwitchProps {
   checked: boolean;
   /**
-   * Callback when toggled. Accepts either (checked: boolean) => void or () => void for backward compatibility.
+   * Callback when toggled. Receives the new checked state.
+   * For backward compatibility, callbacks that ignore the argument are still assignable.
    */
-  onChange: ((checked: boolean) => void) | (() => void);
+  onChange: (checked: boolean) => void;
   label?: string;
   showPopup?: boolean;
   disabled?: boolean;

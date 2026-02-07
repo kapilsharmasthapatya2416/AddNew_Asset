@@ -127,8 +127,8 @@
     "title": "App",
     "noServicesAvailable": "No services available",
     "departmentName": "Property Tax Department",
-    "assessmentSystem": "Property Tax Assessment & Management System",
-    "defaultUser": "Default User"
+    "defaultUser": "Default User",
+     "assessmentSystem": "Property Tax Assessment & Management System"
   },
   "menu": {
     "analytics": "Data Analytics",
