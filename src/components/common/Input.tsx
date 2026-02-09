@@ -1,6 +1,6 @@
 import React, { useId } from 'react';
 import { cn } from '@/lib/utils/cn';
- 
+
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
@@ -8,7 +8,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   fullWidth?: boolean;
   required?: boolean;
 }
- 
+
 /**
  * Input component with label, error, and helper text support
  * Follows accessibility best practices
@@ -17,7 +17,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, helperText, fullWidth = false, id, disabled, required, ...props }, ref) => {
     const generatedId = useId();
     const inputId = id || `input-${generatedId}`;
- 
+
     return (
       <div className={cn('flex flex-col', fullWidth && 'w-full')}>
         {label && (
@@ -60,5 +60,5 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
- 
+
 Input.displayName = 'Input';
