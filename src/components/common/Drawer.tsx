@@ -27,7 +27,7 @@ export  function Drawer({
   const widthClass = {
     sm: "w-[90vw] md:w-[420px]",
     md: "w-[90vw] md:w-[520px]",
-    lg: "w-[95vw] md:w-[900px] lg:w-[800px] xl:w-[900px]",
+    lg: "w-[95vw] md:w-[900px] lg:w-[900px] xl:w-[900px]",
     xl: "w-[97vw] md:w-[1000px] lg:w-[1200px] xl:w-[1400px]",
   }[width];
  

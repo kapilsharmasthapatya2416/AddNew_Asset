@@ -69,7 +69,7 @@ export function Select({
   );
 
   // Keyboard navigation
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement | HTMLUListElement>) => {
     if (disabled) return;
     if (!open) {
@@ -233,6 +233,7 @@ export function Select({
         ref={buttonRef}
         type="button"
         id={buttonId}
+        role="combobox"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listboxId}
@@ -264,6 +265,7 @@ export function Select({
           role="listbox"
           tabIndex={-1}
           aria-labelledby={buttonId}
+          aria-activedescendant={highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
           onKeyDown={handleKeyDown}
           data-testid="select-listbox"
         >
