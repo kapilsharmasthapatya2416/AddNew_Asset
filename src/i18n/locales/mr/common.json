@@ -117,6 +117,7 @@
   },
   "language": {
     "select": "भाषा निवडा",
+    "selectLanguage": "भाषा निवडा",
     "english": "English",
     "hindi": "हिंदी (Hindi)",
     "marathi": "मराठी (Marathi)"
