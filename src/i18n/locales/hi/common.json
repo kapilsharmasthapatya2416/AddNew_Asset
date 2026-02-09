@@ -27,7 +27,6 @@
     "update": "अपडेट करें",
     "submit": "जमा करें",
     "pleaseWait": "कृपया प्रतीक्षा करें..."
-
   },
   "validation": {
     "required": "यह फ़ील्ड आवश्यक है",
@@ -107,7 +106,7 @@
       "status": "स्थिति",
       "actions": "कार्रवाई"
     },
-     "noData": "कोई डेटा उपलब्ध नहीं है",
+    "noData": "कोई डेटा उपलब्ध नहीं है",
     "noRecordsFound": "कोई रिकॉर्ड नहीं मिला",
     "showingEntries": "{start} से {end} तक {total} प्रविष्टियां दिखा रहे हैं",
     "page": "पृष्ठ {current} का {total}",
@@ -118,10 +117,10 @@
   },
   "language": {
     "select": "भाषा चुनें",
+    "selectLanguage": "भाषा चुनें",
     "english": "English",
     "hindi": "हिंदी (Hindi)",
-    "marathi": "मराठी (Marathi)",
-    "selectLanguage": "भाषा चुनें"
+    "marathi": "मराठी (Marathi)"
   },
   "navigation": {
     "dashboard": "डैशबोर्ड",
@@ -138,8 +137,8 @@
     "title": "ऐप",
     "noServicesAvailable": "कोई सेवा उपलब्ध नहीं है",
     "departmentName": "संपत्ति कर विभाग",
-    "assessmentSystem": "संपत्ति कर निर्धारण और प्रबंधन प्रणाली",
-    "defaultUser": "डिफ़ॉल्ट उपयोगकर्ता"
+    "defaultUser": "डिफ़ॉल्ट उपयोगकर्ता",
+    "assessmentSystem": "संपत्ति कर निर्धारण और प्रबंधन प्रणाली"
   },
   "menu": {
     "analytics": "डेटा विश्लेषण",

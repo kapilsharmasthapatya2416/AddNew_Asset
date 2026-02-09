@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useRef, useCallback, useId } from "react";
 import { ChevronDownIcon } from "lucide-react";
@@ -24,6 +23,8 @@ export interface SelectProps {
   disabled?: boolean;
   id?: string;
   name?: string;
+  required?: boolean;
+  label?: string;
 }
 
 export function Select({
@@ -36,6 +37,8 @@ export function Select({
   disabled = false,
   id,
   name,
+  required,
+  label,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [internalValue, setInternalValue] = useState<string | null>(value ?? null);
@@ -66,7 +69,7 @@ export function Select({
   );
 
   // Keyboard navigation
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement | HTMLUListElement>) => {
     if (disabled) return;
     if (!open) {
@@ -157,7 +160,7 @@ export function Select({
 
   const sizeClasses = {
     sm: "h-8 px-3 text-sm",
-    md: "h-10 px-4 text-base",
+    md: "h-10 px-4 text-sm",
   };
 
   // For ARIA: always provide a valid id
@@ -170,6 +173,9 @@ export function Select({
     internalValue == null
       ? placeholder
       : options.find((opt) => opt.value === internalValue)?.label ?? placeholder;
+
+  // Check if currently showing placeholder
+  const isPlaceholder = internalValue == null;
 
   // Blur handler: close only if focus leaves the whole widget
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
@@ -202,20 +208,37 @@ export function Select({
       onBlur={handleBlur}
       data-testid="select-root"
     >
-      {/* Hidden input for form integration */}
+      {label && (
+        <label
+          htmlFor={buttonId}
+          className="mb-1.5 block text-sm font-medium text-gray-700"
+        >
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
+
+      {/* Hidden input for form integration; disable when Select is disabled */}
       {name && (
-        <input type="hidden" name={name} value={internalValue ?? ""} data-testid="select-hidden-input" />
+        <input
+          type="hidden"
+          name={name}
+          value={internalValue ?? ""}
+          data-testid="select-hidden-input"
+          disabled={disabled}
+        />
       )}
       <button
         ref={buttonRef}
         type="button"
         id={buttonId}
+        role="combobox"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listboxId}
         aria-activedescendant={open && highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
         className={cn(
-          "flex items-center justify-between w-full border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all",
+          "flex items-center justify-between w-full border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all",
           sizeClasses[selectSize],
           disabled && "opacity-50 cursor-not-allowed"
         )}
@@ -225,7 +248,10 @@ export function Select({
         tabIndex={0}
         data-testid="select-button"
       >
-        <span className="truncate text-left flex-1">
+        <span className={cn(
+          "truncate text-left flex-1",
+          isPlaceholder ? "text-gray-400" : "text-gray-900"
+        )}>
           {displayLabel}
         </span>
         <ChevronDownIcon className="ml-2 w-4 h-4 text-gray-400" />
@@ -234,10 +260,11 @@ export function Select({
         <ul
           ref={listRef}
           id={listboxId}
-          className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-50 mt-1 w-full bg-white border text-gray-700  border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
           role="listbox"
           tabIndex={-1}
           aria-labelledby={buttonId}
+          aria-activedescendant={highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
           onKeyDown={handleKeyDown}
           data-testid="select-listbox"
         >
@@ -246,7 +273,7 @@ export function Select({
               key={opt.value}
               id={`${listboxId}-option-${idx}`}
               className={cn(
-                "px-4 py-2 cursor-pointer hover:bg-blue-50",
+                "px-4 py-2 text-sm cursor-pointer hover:bg-blue-50",
                 internalValue === opt.value && "bg-blue-100 text-blue-700",
                 highlightedIndex === idx && "bg-blue-200",
                 opt.disabled && "opacity-50 cursor-not-allowed"
