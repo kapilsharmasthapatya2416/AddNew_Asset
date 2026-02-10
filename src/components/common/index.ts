@@ -1,3 +1,5 @@
+export { Select } from './select';
+export type { Option, SelectProps } from './select';
 /**
  * Common components barrel export
  * Centralized exports for all reusable UI components
