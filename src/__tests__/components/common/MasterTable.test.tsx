@@ -28,7 +28,9 @@ describe("MasterTable", () => {
   /*
      Helper to render the component with default props appropriate for testing.
      Most test cases exercise pagination, so the helper opts into the
-     feature by passing `isPagination: true` unless explicitly overridden.
+     feature by passing `isPaginationOpen: true` (and also the legacy
+     `isPagination` flag for backwards compatibility) unless explicitly
+     overridden.
   */
   function setup(props: Partial<MasterTableProps<Row>> = {}, messages = mockMessages) {
     const defaultProps = {
@@ -39,6 +41,8 @@ describe("MasterTable", () => {
       totalCount: 2,
       totalPages: 1,
       onPageChange: vi.fn(),
+      // default pagination enabled; support both legacy and new prop names
+      isPaginationOpen: true,
       isPagination: true,
       ...props
     };
@@ -76,7 +80,7 @@ describe("MasterTable", () => {
     expect(screen.getByText("Actions")).toBeInTheDocument();
     const buttons = screen.getAllByRole("button");
     // Should render Edit and Delete buttons. 
-    // Since isPagination is true by default in setup, pagination buttons might also be present.
+    // Since pagination is enabled by default in setup, pagination buttons might also be present.
     // 2 rows * 2 actions = 4 action buttons at least.
     expect(buttons.length).toBeGreaterThanOrEqual(4);
   });
@@ -108,15 +112,15 @@ describe("MasterTable", () => {
     expect(screen.getByText("Right")).toBeInTheDocument();
   });
 
-  it("shows correct pagination info when isPagination is true", () => {
-    setup({ pageNumber: 1, pageSize: 10, totalCount: 2, totalPages: 1, isPagination: true });
+  it("shows correct pagination info when pagination is enabled", () => {
+    setup({ pageNumber: 1, pageSize: 10, totalCount: 2, totalPages: 1, isPaginationOpen: true });
     expect(screen.getByText(/Showing 1-2 of 2/)).toBeInTheDocument();
     expect(screen.getByText(/Page 1 of 1/)).toBeInTheDocument();
   });
 
   it("calls onPageChange when pagination buttons clicked", () => {
     const onPageChange = vi.fn();
-    setup({ pageNumber: 2, pageSize: 1, totalCount: 2, totalPages: 2, onPageChange, isPagination: true });
+    setup({ pageNumber: 2, pageSize: 1, totalCount: 2, totalPages: 2, onPageChange, isPaginationOpen: true });
 
     const prevBtn = screen.getByRole("button", { name: /Go to previous page/i });
     fireEvent.click(prevBtn);
@@ -133,8 +137,8 @@ describe("MasterTable", () => {
     expect(rows[0]).toHaveClass("custom-row");
   });
 
-  it("does not render pagination when isPagination is false", () => {
-    setup({ isPagination: false });
+  it("does not render pagination when pagination disabled", () => {
+    setup({ isPaginationOpen: false });
     // "Showing X-Y of Z" text should not be present
     const paginationText = screen.queryByText(/Showing/);
     expect(paginationText).not.toBeInTheDocument();
@@ -144,7 +148,7 @@ describe("MasterTable", () => {
     expect(prevBtn).not.toBeInTheDocument();
   });
 
-  it("does not render pagination when paging props are missing (isPagination defaults to undefined)", () => {
+  it("does not render pagination when paging props are missing (no flag provided)", () => {
     // Manually render without setup helper to avoid default props
     render(
       <NextIntlClientProvider locale="en" messages={{ common: mockMessages }}>
@@ -159,6 +163,16 @@ describe("MasterTable", () => {
     const paginationText = screen.queryByText(/Showing/);
     expect(paginationText).not.toBeInTheDocument();
   });
+  
+  it("calls onPageSizeChange when page size dropdown changes", () => {
+    const onPageSizeChange = vi.fn();
+    setup({
+      isPageSize: true,
+      pageSize: 10,
+      onPageSizeChange,
+      totalCount: 100,
+      isPaginationOpen: true
+    });
 
   it("applies containerClassName to the outer wrapper", () => {
     const { container } = setup({ containerClassName: "my-custom-container" });
@@ -172,7 +186,7 @@ describe("MasterTable", () => {
       pageSize: 10,
       onPageSizeChange,
       totalCount: 100,
-      isPagination: true
+      isPaginationOpen: true
     });
 
     const selects = screen.getAllByRole("combobox");
@@ -200,20 +214,66 @@ describe("MasterTable", () => {
       isPageSize: true,
       pageSize: 10,
       totalCount: 100,
-      isPagination: true
+      isPaginationOpen: true
     });
 
     expect(screen.getAllByRole("combobox")[0]).toBeInTheDocument();
   });
 
-  it("renders standalone page size dropdown when isPagination is false but isPageSize is true", () => {
+  it("renders standalone page size dropdown when pagination is disabled but isPageSize is true", () => {
     setup({
-      isPagination: false,
+      isPaginationOpen: false,
       isPageSize: true,
       pageSize: 10,
       totalCount: 100
     });
 
     expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("shows plain dropdown when paginationConfig.showPageSizeSelector is true but counts are missing", () => {
+    setup({
+      isPaginationOpen: false,
+      paginationConfig: { enabled: false, showPageSizeSelector: true },
+      pageSize: undefined,
+      totalCount: undefined,
+      totalPages: undefined,
+    });
+
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("respects paginationConfig.enabled over legacy flag", () => {
+    // disabled via config should hide pagination even if legacy flag true
+    setup({ paginationConfig: { enabled: false }, isPaginationOpen: true, isPagination: true });
+    expect(screen.queryByText(/Showing/)).not.toBeInTheDocument();
+
+    // enabled via config should show pagination even if isPagination false
+    setup({
+      paginationConfig: { enabled: true },
+      pageNumber: 1,
+      pageSize: 10,
+      totalCount: 2,
+      totalPages: 1,
+      isPaginationOpen: false,
+      isPagination: false,
+    });
+    expect(screen.getByText(/Page 1 of 1/)).toBeInTheDocument();
+  });
+
+  it("renders page size dropdown with custom pageSizeOptions", () => {
+    setup({
+      isPageSize: true,
+      pageSize: 10,
+      pageSizeOptions: [5, 15, 25],
+      totalCount: 100,
+      isPaginationOpen: true
+    });
+
+    const options = screen.getAllByRole("option");
+    expect(options).toHaveLength(3);
+    expect(options[0]).toHaveTextContent("5");
+    expect(options[1]).toHaveTextContent("15");
+    expect(options[2]).toHaveTextContent("25");
   });
 });

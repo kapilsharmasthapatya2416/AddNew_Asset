@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useMemo } from "react";
@@ -42,21 +43,18 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   /**
-   * Whether pagination controls should be displayed.
+   * @deprecated Use `paginationConfig.enabled` instead. When both props are
+   * provided the configuration object takes precedence.  
    *
-   * If omitted or `false` the table behaves as an un‑paged list:
-   * the “showing X–Y of Z” metadata and navigation buttons are hidden.
-   *
-   * This value is independent of `isPageSize`; the latter only governs
-   * the presence of the page‑size dropdown.
+   * Previously called `isPagination`; renamed to `isPaginationOpen` for
+   * clarity but the old name is still accepted for now.
    */
   isPagination?: boolean;
-
   /**
-   * When `true` a page‑size selector is shown. It can be used even when
-   * pagination itself is disabled (i.e. `isPagination` is falsy) to offer
-   * a standalone size control.
+   * New name for the same boolean flag; controls whether pagination controls
+   * are displayed.  
    */
+  isPaginationOpen?: boolean;
   isPageSize?: boolean;
 
   onEdit?: (row: T) => void;
@@ -82,6 +80,22 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   footerLeftContent?: React.ReactNode;
   footerRightContent?: React.ReactNode;
   pageSizeOptions?: number[];
+
+  /**
+   * Configuration for pagination behaviour. Supersedes the deprecated
+   * boolean props when provided.
+   */
+  paginationConfig?: {
+    /**
+     * Whether pagination is enabled. Overrides `isPagination`/`isPaginationOpen`.
+     */
+    enabled: boolean;
+
+    /**
+     * Show the page size selector dropdown.
+     */
+    showPageSizeSelector?: boolean;
+  };
 }
 
 type PageToken = number | "dots";
@@ -126,8 +140,13 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   totalPages,
   onPageChange,
   onPageSizeChange,
-  isPagination,
+  /**
+   * New name for the pagination flag; kept separately from `isPagination`
+   * to ease migration.
+   */
+  isPaginationOpen,
   isPageSize,
+  paginationConfig,
   onEdit,
   onDelete,
   actionLabel,
@@ -163,13 +182,34 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
 
   const hasFooter = !!(footerLeftContent || footerRightContent);
 
-  const start = !totalCount || !pageNumber || !pageSize ? 0 : (pageNumber - 1) * pageSize + 1;
-  const end = !totalCount || !pageNumber || !pageSize ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  // normalize inputs for paging calculations
+  const safePageNumber = typeof pageNumber === "number" ? pageNumber : 1;
+
+  // effectivePagination respects the new paginationConfig.enabled flag while
+  // still allowing the older boolean props for backwards compatibility.
+  const effectivePagination =
+    paginationConfig?.enabled ?? isPaginationOpen;
+
+  const start =
+    !totalCount || !safePageNumber || !pageSize
+      ? 0
+      : (safePageNumber - 1) * pageSize + 1;
+  const end =
+    !totalCount || !safePageNumber || !pageSize
+      ? 0
+      : Math.min(safePageNumber * pageSize, totalCount);
 
   const pages = useMemo(
-    () => (pageNumber && totalPages) ? buildPagination(pageNumber, Math.max(1, totalPages)) : [],
-    [pageNumber, totalPages]
+    () =>
+      safePageNumber && totalPages
+        ? buildPagination(safePageNumber, Math.max(1, totalPages))
+        : [],
+    [safePageNumber, totalPages]
   );
+
+  // Determine whether we should display the page-size dropdown.
+  const showPageSizeSelector =
+    paginationConfig?.showPageSizeSelector ?? isPageSize;
 
   /* =========================
      TABLE
@@ -343,52 +383,69 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
         )}
       </div>
 
-      {/* ================= PAGE SIZE ONLY ================= */}
-      {!isPagination && isPageSize && pageSize && totalCount !== undefined && (
-        <div className="bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-3 shadow-sm">
-          <div className="flex items-center gap-2 text-sm text-[#6B7280]">
-            {(() => {
-              const text = t("table.showingEntries", {
-                start: 1,
-                end: "DROPDOWN_PLACEHOLDER",
-                total: totalCount,
-              });
-              const parts = text.split("DROPDOWN_PLACEHOLDER");
-              return (
-                <>
-                  {parts[0]}
-                  <select
-                    value={pageSize}
-                    onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
-                    disabled={!onPageSizeChange}
-                    className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed mx-1"
-                  >
-                    {pageSizeOptions.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                  {parts[1]}
-                </>
-              );
-            })()}
+      {/* ================= PAGE SIZE (no pagination) ================= */}
+      {!effectivePagination && showPageSizeSelector && (
+        totalCount !== undefined && pageSize ? (
+          <div className="bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-3 shadow-sm">
+            <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+              {(() => {
+                const safePageSize = pageSize || 10;
+                const startEntry = totalCount === 0 ? 0 : (safePageNumber - 1) * safePageSize + 1;
+                const text = t("table.showingEntries", {
+                  start: startEntry,
+                  end: "DROPDOWN_PLACEHOLDER",
+                  total: totalCount || 0,
+                });
+                const parts = text.split("DROPDOWN_PLACEHOLDER");
+                return (
+                  <>
+                    {parts[0]}
+                    <select
+                      value={safePageSize}
+                      onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
+                      disabled={!onPageSizeChange}
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed mx-1"
+                    >
+                      {pageSizeOptions.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                    {parts[1]}
+                  </>
+                );
+              })()}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+            <select
+              value={pageSize || 10}
+              onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
+              className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed mx-1"
+            >
+              {pageSizeOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+        )
       )}
 
       {/* ================= PAGINATION ================= */}
-      {isPagination &&
+      {effectivePagination &&
         typeof pageNumber === "number" &&
         typeof totalPages === "number" &&
         onPageChange && (
           <div className="bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm">
-            {isPageSize ? (
+            {showPageSizeSelector ? (
               <div className="flex items-center gap-2 text-sm text-[#6B7280]">
                 {(() => {
                   const safePageSize = pageSize || 10;
-                  const startEntry = totalCount === 0 ? 0 : (pageNumber - 1) * safePageSize + 1;
-                  // const endEntry = Math.min(pageNumber * safePageSize, totalCount || 0);
+                  const startEntry = totalCount === 0 ? 0 : (safePageNumber - 1) * safePageSize + 1;
                   const text = t("table.showingEntries", {
                     start: startEntry,
                     end: "DROPDOWN_PLACEHOLDER",
@@ -427,20 +484,20 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
 
             <div className="flex items-center justify-between md:justify-end gap-2 w-full md:w-auto">
               <PrevPageButton
-                disabled={pageNumber <= 1}
-                onClick={() => onPageChange(pageNumber - 1)}
+                disabled={safePageNumber <= 1}
+                onClick={() => onPageChange(safePageNumber - 1)}
               />
 
               <span className="md:hidden text-sm font-semibold text-[#1E3A8A]">
                 {t("table.page", {
-                  current: pageNumber,
+                  current: safePageNumber,
                   total: totalPages,
                 })}
               </span>
 
               <div className="hidden md:flex items-center gap-1">
                 <FirstPageButton
-                  disabled={pageNumber === 1}
+                  disabled={safePageNumber === 1}
                   onClick={() => onPageChange(1)}
                 />
 
@@ -453,21 +510,21 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                     <PageNumberButton
                       key={`page-${p}-${i}`}
                       page={p as number}
-                      active={pageNumber === p}
+                      active={safePageNumber === p}
                       onClick={() => onPageChange(p as number)}
                     />
                   ),
                 )}
 
                 <LastPageButton
-                  disabled={pageNumber === totalPages}
+                  disabled={safePageNumber === totalPages}
                   onClick={() => onPageChange(totalPages)}
                 />
               </div>
 
               <NextPageButton
-                disabled={pageNumber >= totalPages}
-                onClick={() => onPageChange(pageNumber + 1)}
+                disabled={safePageNumber >= totalPages}
+                onClick={() => onPageChange(safePageNumber + 1)}
               />
             </div>
           </div>
