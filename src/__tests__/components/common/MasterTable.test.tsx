@@ -25,10 +25,10 @@ describe("MasterTable", () => {
     { id: 2, name: "Bob", status: "inactive" },
   ];
 
-  /* 
+  /*
      Helper to render the component with default props appropriate for testing.
-     We default isPagination to true here to match the behavior expected 
-     by most existing tests (checking pagination presence).
+     Most test cases exercise pagination, so the helper opts into the
+     feature by passing `isPagination: true` unless explicitly overridden.
   */
   function setup(props: Partial<MasterTableProps<Row>> = {}, messages = mockMessages) {
     const defaultProps = {

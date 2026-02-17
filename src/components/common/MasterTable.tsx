@@ -41,7 +41,22 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   totalPages?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
+  /**
+   * Whether pagination controls should be displayed.
+   *
+   * If omitted or `false` the table behaves as an un‑paged list:
+   * the “showing X–Y of Z” metadata and navigation buttons are hidden.
+   *
+   * This value is independent of `isPageSize`; the latter only governs
+   * the presence of the page‑size dropdown.
+   */
   isPagination?: boolean;
+
+  /**
+   * When `true` a page‑size selector is shown. It can be used even when
+   * pagination itself is disabled (i.e. `isPagination` is falsy) to offer
+   * a standalone size control.
+   */
   isPageSize?: boolean;
 
   onEdit?: (row: T) => void;
