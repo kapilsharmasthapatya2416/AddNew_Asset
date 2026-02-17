@@ -165,4 +165,55 @@ describe("MasterTable", () => {
     // The first child of the render result should be the wrapper div
     expect(container.firstChild).toHaveClass("my-custom-container");
   });
+  it("calls onPageSizeChange when page size dropdown changes", () => {
+    const onPageSizeChange = vi.fn();
+    setup({
+      isPageSize: true,
+      pageSize: 10,
+      onPageSizeChange,
+      totalCount: 100,
+      isPagination: true
+    });
+
+    const selects = screen.getAllByRole("combobox");
+    // Depending on layout, there might be multiple dropdowns (top/bottom)
+    // We'll target the first one found or iterate
+    fireEvent.change(selects[0], { target: { value: "20" } });
+
+    expect(onPageSizeChange).toHaveBeenCalledWith(20);
+  });
+
+  it("does not render page size dropdown when isPageSize is false", () => {
+    setup({
+      isPageSize: false,
+      pageSize: 10,
+      totalCount: 100
+    });
+
+    // Look for the select element which shouldn't exist
+    const select = screen.queryByRole("combobox");
+    expect(select).not.toBeInTheDocument();
+  });
+
+  it("renders page size dropdown when isPageSize is true", () => {
+    setup({
+      isPageSize: true,
+      pageSize: 10,
+      totalCount: 100,
+      isPagination: true
+    });
+
+    expect(screen.getAllByRole("combobox")[0]).toBeInTheDocument();
+  });
+
+  it("renders standalone page size dropdown when isPagination is false but isPageSize is true", () => {
+    setup({
+      isPagination: false,
+      isPageSize: true,
+      pageSize: 10,
+      totalCount: 100
+    });
+
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
 });
