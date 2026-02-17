@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { MasterTable, MasterTableProps, Column } from "@/components/common/MasterTable";
 import { NextIntlClientProvider } from "next-intl";
 
@@ -25,19 +25,27 @@ describe("MasterTable", () => {
     { id: 2, name: "Bob", status: "inactive" },
   ];
 
+  /* 
+     Helper to render the component with default props appropriate for testing.
+     We default isPagination to true here to match the behavior expected 
+     by most existing tests (checking pagination presence).
+  */
   function setup(props: Partial<MasterTableProps<Row>> = {}, messages = mockMessages) {
+    const defaultProps = {
+      columns,
+      data,
+      pageNumber: 1,
+      pageSize: 10,
+      totalCount: 2,
+      totalPages: 1,
+      onPageChange: vi.fn(),
+      isPagination: true,
+      ...props
+    };
+
     return render(
       <NextIntlClientProvider locale="en" messages={{ common: messages }}>
-        <MasterTable
-          columns={columns}
-          data={data}
-          pageNumber={1}
-          pageSize={10}
-          totalCount={2}
-          totalPages={1}
-          onPageChange={() => {}}
-          {...props}
-        />
+        <MasterTable {...defaultProps} />
       </NextIntlClientProvider>
     );
   }
@@ -66,20 +74,29 @@ describe("MasterTable", () => {
     const onDelete = vi.fn();
     setup({ onEdit, onDelete });
     expect(screen.getByText("Actions")).toBeInTheDocument();
-    // Should render Edit and Delete buttons (by role or label)
-    expect(screen.getAllByRole("button").length).toBeGreaterThanOrEqual(2);
+    const buttons = screen.getAllByRole("button");
+    // Should render Edit and Delete buttons. 
+    // Since isPagination is true by default in setup, pagination buttons might also be present.
+    // 2 rows * 2 actions = 4 action buttons at least.
+    expect(buttons.length).toBeGreaterThanOrEqual(4);
   });
 
   it("calls onEdit and onDelete when buttons clicked", () => {
     const onEdit = vi.fn();
     const onDelete = vi.fn();
     setup({ onEdit, onDelete });
-    const buttons = screen.getAllByRole("button");
-    // Find Edit and Delete by aria-label or order
-    fireEvent.click(buttons[0]);
-    fireEvent.click(buttons[1]);
-    expect(onEdit).toHaveBeenCalled();
-    expect(onDelete).toHaveBeenCalled();
+
+    // Select specific action buttons to ensure we aren't clicking pagination
+    const editButtons = screen.getAllByRole("button", { name: "Edit" });
+    const deleteButtons = screen.getAllByRole("button", { name: "Delete" });
+
+    // Click first edit button
+    fireEvent.click(editButtons[0]);
+    expect(onEdit).toHaveBeenCalledWith(data[0]);
+
+    // Click second delete button
+    fireEvent.click(deleteButtons[1]);
+    expect(onDelete).toHaveBeenCalledWith(data[1]);
   });
 
   it("renders header and footer content", () => {
@@ -91,25 +108,61 @@ describe("MasterTable", () => {
     expect(screen.getByText("Right")).toBeInTheDocument();
   });
 
-  it("shows correct pagination info", () => {
-    setup({ pageNumber: 1, pageSize: 10, totalCount: 2, totalPages: 1 });
+  it("shows correct pagination info when isPagination is true", () => {
+    setup({ pageNumber: 1, pageSize: 10, totalCount: 2, totalPages: 1, isPagination: true });
     expect(screen.getByText(/Showing 1-2 of 2/)).toBeInTheDocument();
     expect(screen.getByText(/Page 1 of 1/)).toBeInTheDocument();
   });
 
   it("calls onPageChange when pagination buttons clicked", () => {
     const onPageChange = vi.fn();
-    setup({ pageNumber: 2, pageSize: 1, totalCount: 2, totalPages: 2, onPageChange });
-    // Prev, Next, First, Last, PageNumber buttons
-    const buttons = screen.getAllByRole("button");
-    buttons.forEach(btn => fireEvent.click(btn));
-    expect(onPageChange).toHaveBeenCalled();
+    setup({ pageNumber: 2, pageSize: 1, totalCount: 2, totalPages: 2, onPageChange, isPagination: true });
+
+    const prevBtn = screen.getByRole("button", { name: /Go to previous page/i });
+    fireEvent.click(prevBtn);
+    expect(onPageChange).toHaveBeenCalledWith(1);
   });
 
   it("renders custom row key and row className", () => {
     setup({ getRowKey: (row) => `row-${row.id}`, rowClassName: () => "custom-row" });
-    const rows = screen.getAllByRole("row");
-    // At least one row should have custom class
-    expect(rows.some(row => row.className.includes("custom-row"))).toBe(true);
+    // Assuming standard table render, check for class on tr
+    // We can't easily query by row key unless it's an ID, but we can check the class
+    const table = screen.getByRole("table");
+    // The rows are inside tbody
+    const rows = table.querySelectorAll("tbody tr");
+    expect(rows[0]).toHaveClass("custom-row");
+  });
+
+  it("does not render pagination when isPagination is false", () => {
+    setup({ isPagination: false });
+    // "Showing X-Y of Z" text should not be present
+    const paginationText = screen.queryByText(/Showing/);
+    expect(paginationText).not.toBeInTheDocument();
+
+    // Pagination buttons should not be present
+    const prevBtn = screen.queryByRole("button", { name: /Go to previous page/i });
+    expect(prevBtn).not.toBeInTheDocument();
+  });
+
+  it("does not render pagination when paging props are missing (isPagination defaults to undefined)", () => {
+    // Manually render without setup helper to avoid default props
+    render(
+      <NextIntlClientProvider locale="en" messages={{ common: mockMessages }}>
+        <MasterTable
+          columns={columns}
+          data={data}
+        // No pagination props provided
+        />
+      </NextIntlClientProvider>
+    );
+
+    const paginationText = screen.queryByText(/Showing/);
+    expect(paginationText).not.toBeInTheDocument();
+  });
+
+  it("applies containerClassName to the outer wrapper", () => {
+    const { container } = setup({ containerClassName: "my-custom-container" });
+    // The first child of the render result should be the wrapper div
+    expect(container.firstChild).toHaveClass("my-custom-container");
   });
 });

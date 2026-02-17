@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import React, { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
@@ -37,11 +35,14 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   data: T[];
   loading?: boolean;
 
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
+  pageNumber?: number;
+  pageSize?: number;
+  totalCount?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
+  isPagination?: boolean;
+  isPageSize?: boolean;
 
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
@@ -65,6 +66,7 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   /* ===== FOOTER ===== */
   footerLeftContent?: React.ReactNode;
   footerRightContent?: React.ReactNode;
+  pageSizeOptions?: number[];
 }
 
 type PageToken = number | "dots";
@@ -108,6 +110,9 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   totalCount,
   totalPages,
   onPageChange,
+  onPageSizeChange,
+  isPagination,
+  isPageSize,
   onEdit,
   onDelete,
   actionLabel,
@@ -116,6 +121,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   maxBodyHeightClassName = "max-h-[calc(100vh-260px)]",
   emptyText,
   loadingText,
+  containerClassName,
   tableClassName,
   theadClassName,
   rowClassName,
@@ -125,6 +131,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   headerExtra,
   footerLeftContent,
   footerRightContent,
+  pageSizeOptions = [5, 10, 20, 50],
 }: MasterTableProps<T>) {
   const t = useTranslations("common");
 
@@ -141,11 +148,11 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
 
   const hasFooter = !!(footerLeftContent || footerRightContent);
 
-  const start = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const end = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const start = !totalCount || !pageNumber || !pageSize ? 0 : (pageNumber - 1) * pageSize + 1;
+  const end = !totalCount || !pageNumber || !pageSize ? 0 : Math.min(pageNumber * pageSize, totalCount);
 
   const pages = useMemo(
-    () => buildPagination(pageNumber, Math.max(1, totalPages)),
+    () => (pageNumber && totalPages) ? buildPagination(pageNumber, Math.max(1, totalPages)) : [],
     [pageNumber, totalPages]
   );
 
@@ -234,10 +241,10 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                       ) : col.isStatus ? (
                         isPrimitive(value)
                           ? <StatusBadge value={value} />
-                           : <span className="font-medium">-</span>
+                          : <span className="font-medium">-</span>
                       ) : (
                         <span className="font-medium">
-                         {value === null || typeof value === "undefined"
+                          {value === null || typeof value === "undefined"
                             ? "-"
                             : isPrimitive(value)
                               ? String(value)
@@ -275,7 +282,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={cn("flex flex-col gap-4", containerClassName)}>
       <div className="border border-blue-200 rounded-xl bg-white shadow-sm">
 
         {/* ================= HEADER ================= */}
@@ -321,55 +328,135 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
         )}
       </div>
 
+      {/* ================= PAGE SIZE ONLY ================= */}
+      {!isPagination && isPageSize && pageSize && totalCount !== undefined && (
+        <div className="bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-3 shadow-sm">
+          <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+            {(() => {
+              const text = t("table.showingEntries", {
+                start: 1,
+                end: "DROPDOWN_PLACEHOLDER",
+                total: totalCount,
+              });
+              const parts = text.split("DROPDOWN_PLACEHOLDER");
+              return (
+                <>
+                  {parts[0]}
+                  <select
+                    value={pageSize}
+                    onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
+                    disabled={!onPageSizeChange}
+                    className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed mx-1"
+                  >
+                    {pageSizeOptions.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  {parts[1]}
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
       {/* ================= PAGINATION ================= */}
-      <div className="bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm">
-        <span className="text-sm text-[#6B7280]">
-          {t("table.showingEntries", { start, end, total: totalCount })}
-        </span>
-
-        <div className="flex items-center justify-between md:justify-end gap-2 w-full md:w-auto">
-          <PrevPageButton
-            disabled={pageNumber <= 1}
-            onClick={() => onPageChange(pageNumber - 1)}
-          />
-
-          <span className="md:hidden text-sm font-semibold text-[#1E3A8A]">
-            {t("table.page", { current: pageNumber, total: totalPages })}
-          </span>
-
-          <div className="hidden md:flex items-center gap-1">
-            <FirstPageButton
-              disabled={pageNumber === 1}
-              onClick={() => onPageChange(1)}
-            />
-
-            {pages.map((p, i) =>
-              p === "dots" ? (
-                <span key={`dots-${i}`} className="px-2 text-[#94A3B8]">
-                  ...
-                </span>
-              ) : (
-                <PageNumberButton
-                  key={`page-${p}-${i}`}
-                  page={p as number}
-                  active={pageNumber === p}
-                  onClick={() => onPageChange(p as number)}
-                />
-              )
+      {isPagination &&
+        typeof pageNumber === "number" &&
+        typeof totalPages === "number" &&
+        onPageChange && (
+          <div className="bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm">
+            {isPageSize ? (
+              <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+                {(() => {
+                  const safePageSize = pageSize || 10;
+                  const startEntry = totalCount === 0 ? 0 : (pageNumber - 1) * safePageSize + 1;
+                  // const endEntry = Math.min(pageNumber * safePageSize, totalCount || 0);
+                  const text = t("table.showingEntries", {
+                    start: startEntry,
+                    end: "DROPDOWN_PLACEHOLDER",
+                    total: totalCount || 0,
+                  });
+                  const parts = text.split("DROPDOWN_PLACEHOLDER");
+                  return (
+                    <>
+                      {parts[0]}
+                      <select
+                        value={safePageSize}
+                        onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
+                        disabled={!onPageSizeChange}
+                        className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed mx-1"
+                      >
+                        {pageSizeOptions.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                      {parts[1]}
+                    </>
+                  );
+                })()}
+              </div>
+            ) : (
+              <span className="text-sm text-[#6B7280]">
+                {t("table.showingEntries", {
+                  start,
+                  end,
+                  total: totalCount || 0,
+                })}
+              </span>
             )}
 
-            <LastPageButton
-              disabled={pageNumber === totalPages}
-              onClick={() => onPageChange(totalPages)}
-            />
-          </div>
+            <div className="flex items-center justify-between md:justify-end gap-2 w-full md:w-auto">
+              <PrevPageButton
+                disabled={pageNumber <= 1}
+                onClick={() => onPageChange(pageNumber - 1)}
+              />
 
-          <NextPageButton
-            disabled={pageNumber >= totalPages}
-            onClick={() => onPageChange(pageNumber + 1)}
-          />
-        </div>
-      </div>
+              <span className="md:hidden text-sm font-semibold text-[#1E3A8A]">
+                {t("table.page", {
+                  current: pageNumber,
+                  total: totalPages,
+                })}
+              </span>
+
+              <div className="hidden md:flex items-center gap-1">
+                <FirstPageButton
+                  disabled={pageNumber === 1}
+                  onClick={() => onPageChange(1)}
+                />
+
+                {pages.map((p, i) =>
+                  p === "dots" ? (
+                    <span key={`dots-${i}`} className="px-2 text-[#94A3B8]">
+                      ...
+                    </span>
+                  ) : (
+                    <PageNumberButton
+                      key={`page-${p}-${i}`}
+                      page={p as number}
+                      active={pageNumber === p}
+                      onClick={() => onPageChange(p as number)}
+                    />
+                  ),
+                )}
+
+                <LastPageButton
+                  disabled={pageNumber === totalPages}
+                  onClick={() => onPageChange(totalPages)}
+                />
+              </div>
+
+              <NextPageButton
+                disabled={pageNumber >= totalPages}
+                onClick={() => onPageChange(pageNumber + 1)}
+              />
+            </div>
+          </div>
+        )}
 
     </div>
   );
