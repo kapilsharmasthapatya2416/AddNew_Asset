@@ -44,8 +44,6 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   isPagination?: boolean;
   isPageSize?: boolean;
 
-  onEdit?: (row: T) => void;
-  onDelete?: (row: T) => void;
   renderActions?: (row: T) => React.ReactNode;
   actionLabel?: string;
 
@@ -127,8 +125,6 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   onPageSizeChange,
   isPagination,
   isPageSize,
-  onEdit,
-  onDelete,
   actionLabel,
 renderActions,
   getRowKey,
@@ -159,7 +155,7 @@ renderActions,
   const actualEmptyText = emptyText || t("messages.noData");
   const actualLoadingText = loadingText || t("actions.loading");
 
-  const hasActions = !!(onEdit || onDelete || renderActions);
+  const hasActions = !!renderActions;
   const hasHeader =
     !!headerTitle ||
     !!headerSubtitle ||
@@ -274,27 +270,17 @@ renderActions,
                   );
                 })}
 
-                 <td className="px-2 py-2 text-center">
-                  <div className="flex justify-center gap-3">
-                    {renderActions && renderActions(row)}
-                    {
-                      onEdit && (
-                        <EditButton
-                          size="sm"
-                          onClick={() => onEdit(row)}
-                        />
-                      )}
-                      {onDelete && (
-                        <DeleteButton
-                          size="sm"
-                          onClick={() => onDelete(row)}
-                        />
-                      )}
-                  </div>
-                </td>
+                {hasActions && (
+                  <td className="px-4 py-2 text-center">
+                     <div className="flex items-center justify-center gap-2">
+                       {renderActions?.(row)}
+                   </div>
+                  </td>
+                )}
               </tr>
             ))
           )}
+
         </tbody>
       </table>
     </div>
