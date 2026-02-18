@@ -347,21 +347,21 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
       </div>
 
       {/* ================= PAGE SIZE ONLY ================= */}
-      {!isPaginationEnabled && isPageSizeEnabled && pageSize && totalCount !== undefined && (
+      {!isPaginationEnabled && isPageSizeEnabled && (
         <div className="bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-3 shadow-sm">
           <div className="flex items-center gap-2 text-sm text-[#6B7280]">
             {(() => {
               const text = t("table.showingEntries", {
                 start: 1,
                 end: "DROPDOWN_PLACEHOLDER",
-                total: totalCount,
+                total: totalCount || 0,
               });
               const parts = text.split("DROPDOWN_PLACEHOLDER");
               return (
                 <>
                   {parts[0]}
                   <select
-                    value={pageSize}
+                    value={pageSize || pageSizeOptions[0]}
                     onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
                     disabled={!onPageSizeChange}
                     className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed mx-1"
