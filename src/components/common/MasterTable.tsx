@@ -373,7 +373,7 @@ renderActions,
             {isPageSizeEnabled ? (
               <div className="flex items-center gap-2 text-sm text-[#6B7280]">
                 {(() => {
-                  const safePageSize = pageSize || 10;
+                  const safePageSize = typeof pageSize === "number" ? pageSize : 10;
                   const startEntry = totalCount === 0 ? 0 : (pageNumber - 1) * safePageSize + 1;
                   const endEntry = totalCount === 0 ? 0 : Math.min(pageNumber * safePageSize, totalCount);
                   return (
