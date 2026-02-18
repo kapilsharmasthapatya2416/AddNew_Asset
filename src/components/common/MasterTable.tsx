@@ -375,16 +375,14 @@ renderActions,
                 {(() => {
                   const safePageSize = pageSize || 10;
                   const startEntry = totalCount === 0 ? 0 : (pageNumber - 1) * safePageSize + 1;
-                  
-                  const text = t("table.showingEntries", {
-                    start: startEntry,
-                    end: "DROPDOWN_PLACEHOLDER",
-                    total: totalCount || 0,
-                  });
-                  const parts = text.split("DROPDOWN_PLACEHOLDER");
+                  const endEntry = totalCount === 0 ? 0 : Math.min(pageNumber * safePageSize, totalCount);
                   return (
                     <>
-                      {parts[0]}
+                      {t("table.showingEntries", {
+                        start: startEntry,
+                        end: endEntry,
+                        total: totalCount || 0,
+                      })}
                       <select
                         value={safePageSize}
                         onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
@@ -397,7 +395,6 @@ renderActions,
                           </option>
                         ))}
                       </select>
-                      {parts[1]}
                     </>
                   );
                 })()}
