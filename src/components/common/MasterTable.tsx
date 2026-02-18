@@ -409,7 +409,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
             </div>
           </div>
         ) : (
-          (footerLeftContent || footerRightContent) && (
+          hasFooter && (
             <div className="bg-[#F8FAFF] border-t border-[#DCEAFF] rounded-b-xl px-4 py-3 flex items-center justify-between shadow-sm">
               <div>{footerLeftContent}</div>
               <div>{footerRightContent}</div>
