@@ -46,6 +46,7 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
 
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
+  renderActions?: (row: T) => React.ReactNode;
   actionLabel?: string;
 
   getRowKey?: (row: T, index: number) => React.Key;
@@ -129,7 +130,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   onEdit,
   onDelete,
   actionLabel,
-
+renderActions,
   getRowKey,
   maxBodyHeightClassName = "max-h-[calc(100vh-260px)]",
   emptyText,
@@ -158,7 +159,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   const actualEmptyText = emptyText || t("messages.noData");
   const actualLoadingText = loadingText || t("actions.loading");
 
-  const hasActions = !!(onEdit || onDelete);
+  const hasActions = !!(onEdit || onDelete || renderActions);
   const hasHeader =
     !!headerTitle ||
     !!headerSubtitle ||
@@ -273,10 +274,9 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                   );
                 })}
 
-                {hasActions && (
-                  <td className="px-2 py-2 text-center">
-                    <div className="flex justify-center gap-3">
-                      {onEdit && (
+                {renderActions && renderActions(row)}
+                    {
+                      onEdit && (
                         <EditButton
                           size="sm"
                           onClick={() => onEdit(row)}
@@ -288,9 +288,6 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                           onClick={() => onDelete(row)}
                         />
                       )}
-                    </div>
-                  </td>
-                )}
               </tr>
             ))
           )}
