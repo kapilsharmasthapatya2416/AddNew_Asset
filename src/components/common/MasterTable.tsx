@@ -335,10 +335,14 @@ renderActions,
         <div className="bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-3 shadow-sm">
           <div className="flex items-center gap-2 text-sm text-[#6B7280]">
             {(() => {
+              const total = typeof totalCount === "number" ? totalCount : 0;
+              const effectivePageSize = typeof pageSize === "number" ? pageSize : pageSizeOptions[0];
+              const start = total === 0 ? 0 : 1;
+              const end = total === 0 ? 0 : Math.min(effectivePageSize, total);
               const text = t("table.showingEntries", {
-                start: 1,
+                start,
                 end: "DROPDOWN_PLACEHOLDER",
-                total: totalCount || 0,
+                total,
               });
               const parts = text.split("DROPDOWN_PLACEHOLDER");
               return (
