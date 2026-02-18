@@ -73,34 +73,20 @@ describe("MasterTable", () => {
     expect(screen.getByText("No data available")).toBeInTheDocument();
   });
 
-  it("renders action buttons if onEdit/onDelete provided", () => {
-    const onEdit = vi.fn();
-    const onDelete = vi.fn();
-    setup({ onEdit, onDelete });
+  it("renders action buttons if renderActions provided", () => {
+    const renderActions = () => <button>Test Action</button>;
+    setup({ renderActions });
     expect(screen.getByText("Actions")).toBeInTheDocument();
-    const buttons = screen.getAllByRole("button");
-    // Should render Edit and Delete buttons. 
-    // Since pagination is enabled by default in setup, pagination buttons might also be present.
-    // 2 rows * 2 actions = 4 action buttons at least.
-    expect(buttons.length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByText("Test Action").length).toBeGreaterThan(0);
   });
 
-  it("calls onEdit and onDelete when buttons clicked", () => {
-    const onEdit = vi.fn();
-    const onDelete = vi.fn();
-    setup({ onEdit, onDelete });
-
-    // Select specific action buttons to ensure we aren't clicking pagination
-    const editButtons = screen.getAllByRole("button", { name: "Edit" });
-    const deleteButtons = screen.getAllByRole("button", { name: "Delete" });
-
-    // Click first edit button
-    fireEvent.click(editButtons[0]);
-    expect(onEdit).toHaveBeenCalledWith(data[0]);
-
-    // Click second delete button
-    fireEvent.click(deleteButtons[1]);
-    expect(onDelete).toHaveBeenCalledWith(data[1]);
+  it("calls renderActions when action button clicked", () => {
+    const actionSpy = vi.fn();
+    const renderActions = (row: any) => <button onClick={() => actionSpy(row)}>Test Action</button>;
+    setup({ renderActions });
+    const actionButtons = screen.getAllByText("Test Action");
+    fireEvent.click(actionButtons[0]);
+    expect(actionSpy).toHaveBeenCalled();
   });
 
   it("renders header and footer content", () => {
