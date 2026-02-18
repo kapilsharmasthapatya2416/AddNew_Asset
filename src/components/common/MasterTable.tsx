@@ -177,7 +177,7 @@ renderActions,
         <thead
           className={cn(
             "sticky top-0 z-20",
-            "bg-linear-to-r from-[#E2EEFF] via-[#D6E8FF] to-[#E2EEFF]",
+            "bg-gradient-to-r from-[#E2EEFF] via-[#D6E8FF] to-[#E2EEFF]",
             "border-b border-blue-200",
             "transition-colors duration-200",
             "hover:from-[#D6E8FF] hover:via-[#CFE3FF] hover:to-[#D6E8FF]",

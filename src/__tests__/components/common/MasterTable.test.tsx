@@ -28,8 +28,7 @@ describe("MasterTable", () => {
   /*
      Helper to render the component with default props appropriate for testing.
      Most test cases exercise pagination, so the helper opts into the
-     feature by passing `isPaginationOpen: true` (and also the legacy
-     `isPagination` flag for backwards compatibility) unless explicitly
+    feature by passing `isPagination: true` unless explicitly
      overridden.
   */
   function setup(props: Partial<MasterTableProps<Row>> = {}, messages = mockMessages) {
