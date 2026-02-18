@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { MasterTable, MasterTableProps, Column } from "@/components/common/MasterTable";
 import { NextIntlClientProvider } from "next-intl";
@@ -282,6 +282,8 @@ describe("MasterTable", () => {
     // only legacy prop provided, should behave same as before
     setup({ isPagination: true, pageNumber: 1, pageSize: 10, totalCount: 2, totalPages: 1 });
     expect(screen.getByText(/Page 1 of 1/)).toBeInTheDocument();
+
+    cleanup();
 
     setup({ isPagination: false });
     expect(screen.queryByText(/Page/)).not.toBeInTheDocument();
