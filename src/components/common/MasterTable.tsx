@@ -312,7 +312,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
         {TableContent}
 
         {/* ================= FOOTER / PAGINATION ================= */}
-        {(hasFooter || isPaginationEnabled || isPageSizeEnabled || (totalCount !== undefined && totalCount > 0)) && (
+        {(hasFooter || isPaginationEnabled || isPageSizeEnabled) && (
           <div className="bg-[#F8FAFF] border-t border-[#DCEAFF] rounded-b-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm">
 
             {/* LEFT SIDE: Custom Content OR Info Text + PageSize */}
@@ -320,21 +320,26 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
               {footerLeftContent ? (
                 footerLeftContent
               ) : (
-                (isPaginationEnabled || isPageSizeEnabled || totalCount) && (
+                (isPaginationEnabled || isPageSizeEnabled) && (
                   <div className="flex items-center gap-2">
-                    <span>
-                      {t("table.showingEntries", {
-                        start: totalCount === 0 ? 0 : ((pageNumber || 1) - 1) * (pageSize || 10) + 1,
-                        end: totalCount === 0 ? 0 : Math.min((pageNumber || 1) * (pageSize || 10), totalCount || 0),
-                        total: totalCount || 0,
-                      })}
-                    </span>
+                    {/* Show counts only if pagination enabled */}
+                    {isPaginationEnabled && (
+                      <span className="whitespace-nowrap">
+                        {t("table.showingEntries", {
+                          start: totalCount === 0 ? 0 : ((pageNumber || 1) - 1) * (pageSize || 10) + 1,
+                          end: totalCount === 0 ? 0 : Math.min((pageNumber || 1) * (pageSize || 10), totalCount || 0),
+                          total: totalCount || 0,
+                        })}
+                      </span>
+                    )}
 
-                    {isPageSizeEnabled && onPageSizeChange && (
+                    {/* Show PageSize selector if enabled, regardless of pagination state */}
+                    {isPageSizeEnabled && (
                       <select
                         value={pageSize || 10}
-                        onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                        className="ml-2 border border-blue-200 rounded-md p-1 focus:ring-2 focus:ring-blue-500 outline-none"
+                        onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
+                        disabled={!onPageSizeChange}
+                        className="ml-2 border border-blue-200 rounded-md p-1 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                         aria-label="Rows per page"
                       >
                         {pageSizeOptions.map((s) => (
