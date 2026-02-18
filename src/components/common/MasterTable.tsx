@@ -274,7 +274,9 @@ renderActions,
                   );
                 })}
 
-                {renderActions && renderActions(row)}
+                 <td className="px-2 py-2 text-center">
+                  <div className="flex justify-center gap-3">
+                    {renderActions && renderActions(row)}
                     {
                       onEdit && (
                         <EditButton
@@ -288,6 +290,8 @@ renderActions,
                           onClick={() => onDelete(row)}
                         />
                       )}
+                  </div>
+                </td>
               </tr>
             ))
           )}
