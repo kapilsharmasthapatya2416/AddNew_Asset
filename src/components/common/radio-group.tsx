@@ -101,8 +101,9 @@ const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
         const dataState = isSelected ? 'checked' : 'unchecked';
 
         const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-            if (isDisabled || isSelected) return;
-            onValueChange(value);
+            if (!isDisabled && !isSelected) {
+                onValueChange(value);
+            }
             restProps.onClick?.(e);
         };
 
