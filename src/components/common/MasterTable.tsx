@@ -353,7 +353,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                 footerLeftContent
               ) : (
                 (isPaginationEnabled || isPageSizeEnabled) && (
-                  <div className="flex items-center gap-2">
+                  <div data-testid="pagination-info" className="flex items-center gap-2">
                     {/* Show counts only if pagination enabled */}
                     {isPaginationEnabled && (
                       <span className="whitespace-nowrap">
