@@ -2,7 +2,15 @@
     // pageSize = 5, pageNumber = 2, totalCount = 12
     const data = Array.from({ length: 12 }, (_, i) => ({ id: i + 1, name: `Row ${i + 1}` }));
     render(
-      <NextIntlClientProvider messages={mockMessages} locale="en">
+      <NextIntlClientProvider messages={{ common: {
+        table: {
+          columns: { actions: "Actions" },
+          showingEntries: "Showing {start} to {end} of {total}",
+          page: "Page {current} of {total}",
+        },
+        messages: { noData: "No data available" },
+        actions: { loading: "Loading..." },
+      }}} locale="en">
         <MasterTable<Row>
           columns={columns}
           data={data.slice(5, 10)}
