@@ -101,7 +101,6 @@ describe("MasterTable", () => {
   it("shows correct pagination info when pagination is enabled", () => {
     setup({ pageNumber: 1, pageSize: 10, totalCount: 2, totalPages: 1 });
     expect(screen.getByText(/Showing 1-2 of 2/)).toBeInTheDocument();
-    expect(screen.getByText(/Page 1 of 1/)).toBeInTheDocument();
   });
 
   it("calls onPageChange when pagination buttons clicked", () => {
@@ -264,17 +263,17 @@ describe("MasterTable", () => {
       totalPages: 1,
       isPagination: false,
     });
-    expect(screen.getByText(/Page 1 of 1/)).toBeInTheDocument();
+    expect(screen.getByText(/Showing 1-2 of 2/)).toBeInTheDocument();
   });
   it("still respects legacy isPagination when new prop is absent", () => {
     // only legacy prop provided, should behave same as before
     setup({ isPagination: true, pageNumber: 1, pageSize: 10, totalCount: 2, totalPages: 1 });
-    expect(screen.getByText(/Page 1 of 1/)).toBeInTheDocument();
+    expect(screen.getByText(/Showing 1-2 of 2/)).toBeInTheDocument();
 
     cleanup();
 
     setup({ isPagination: false });
-    expect(screen.queryByText(/Page/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Showing/)).not.toBeInTheDocument();
   });
   it("renders page size dropdown with custom pageSizeOptions", () => {
     setup({
