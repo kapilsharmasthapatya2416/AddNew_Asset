@@ -1,11 +1,15 @@
-"use client";
-
-import React, { useMemo } from "react";
-import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils/cn";
-import { StatusBadge } from "./StatusBadge";
-import { FirstPageButton, LastPageButton, NextPageButton, PageNumberButton, PrevPageButton } from "./ActionButtons";
-
+'use client';
+import React, { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils/cn';
+import { StatusBadge } from './StatusBadge';
+import {
+  FirstPageButton,
+  LastPageButton,
+  NextPageButton,
+  PageNumberButton,
+  PrevPageButton,
+} from './ActionButtons';
 export interface PaginationConfig {
   /** Whether pagination is enabled */
   enabled: boolean;
@@ -21,11 +25,11 @@ interface PageSizeSelectorProps {
 
 function isPrimitive(val: unknown): val is string | number | boolean | null | undefined {
   return (
-    typeof val === "string" ||
-    typeof val === "number" ||
-    typeof val === "boolean" ||
+    typeof val === 'string' ||
+    typeof val === 'number' ||
+    typeof val === 'boolean' ||
     val === null ||
-    typeof val === "undefined"
+    typeof val === 'undefined'
   );
 }
 
@@ -34,11 +38,7 @@ export interface Column<T extends Record<string, unknown> = Record<string, unkno
   label: string;
   width?: string;
   isStatus?: boolean;
-  render?: (
-    value: T[keyof T] | undefined,
-    row: T,
-    rowIndex: number
-  ) => React.ReactNode;
+  render?: (value: T[keyof T] | undefined, row: T, rowIndex: number) => React.ReactNode;
   headerClassName?: string;
   cellClassName?: string;
 }
@@ -92,7 +92,11 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   paginationConfig?: PaginationConfig;
 }
 
-function PageSizeSelector({ pageSize, pageSizeOptions, onPageSizeChange }: PageSizeSelectorProps): React.ReactElement {
+function PageSizeSelector({
+  pageSize,
+  pageSizeOptions,
+  onPageSizeChange,
+}: PageSizeSelectorProps): React.ReactElement {
   return (
     <select
       value={pageSize}
@@ -108,10 +112,9 @@ function PageSizeSelector({ pageSize, pageSizeOptions, onPageSizeChange }: PageS
       ))}
     </select>
   );
-
 }
 
-type PageToken = number | "dots";
+type PageToken = number | 'dots';
 
 /* =========================
    PAGINATION
@@ -126,16 +129,15 @@ function buildPagination(current: number, total: number): PageToken[] {
 
   if (start > 1) {
     pages.push(1);
-    if (start > 2) pages.push("dots");
+    if (start > 2) pages.push('dots');
   }
 
   for (let i = start; i <= end; i++) pages.push(i);
 
   if (end < total) {
-    if (end < total - 1) pages.push("dots");
+    if (end < total - 1) pages.push('dots');
     pages.push(total);
   }
-
 
   return pages;
 }
@@ -159,7 +161,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   actionLabel,
   renderActions,
   getRowKey,
-  maxBodyHeightClassName = "max-h-[calc(100vh-260px)]",
+  maxBodyHeightClassName = 'max-h-[calc(100vh-260px)]',
   emptyText,
   loadingText,
   containerClassName,
@@ -175,28 +177,24 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   pageSizeOptions = [5, 10, 20, 50],
   paginationConfig,
 }: MasterTableProps<T>): React.ReactElement {
-  const t = useTranslations("common");
+  const t = useTranslations('common');
 
   // Determine effective pagination settings
   const isPaginationEnabled = paginationConfig?.enabled ?? isPagination;
   const isPageSizeEnabled = paginationConfig?.showPageSizeSelector ?? isPageSize;
 
-
   // Use translations for default values
-  const actualActionLabel = actionLabel || t("table.columns.actions");
-  const actualEmptyText = emptyText || t("messages.noData");
-  const actualLoadingText = loadingText || t("actions.loading");
+  const actualActionLabel = actionLabel || t('table.columns.actions');
+  const actualEmptyText = emptyText || t('messages.noData');
+  const actualLoadingText = loadingText || t('actions.loading');
 
   const hasActions = !!renderActions;
-  const hasHeader =
-    !!headerTitle ||
-    !!headerSubtitle ||
-    !!headerExtra;
+  const hasHeader = !!headerTitle || !!headerSubtitle || !!headerExtra;
 
   const hasFooter = !!(footerLeftContent || footerRightContent);
 
   const pages = useMemo(
-    () => (pageNumber && totalPages) ? buildPagination(pageNumber, Math.max(1, totalPages)) : [],
+    () => (pageNumber && totalPages ? buildPagination(pageNumber, Math.max(1, totalPages)) : []),
     [pageNumber, totalPages]
   );
 
@@ -204,15 +202,15 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
      TABLE
   ========================= */
   const TableContent = (
-    <div className={cn("overflow-auto", maxBodyHeightClassName)}>
-      <table className={cn("w-full text-sm", tableClassName)}>
+    <div className={cn('overflow-auto', maxBodyHeightClassName)}>
+      <table className={cn('w-full text-sm', tableClassName)}>
         <thead
           className={cn(
-            "sticky top-0 z-20",
-            "bg-gradient-to-r from-[#E2EEFF] via-[#D6E8FF] to-[#E2EEFF]",
-            "border-b border-blue-200",
-            "transition-colors duration-200",
-            "hover:from-[#D6E8FF] hover:via-[#CFE3FF] hover:to-[#D6E8FF]",
+            'sticky top-0 z-20',
+            'bg-gradient-to-r from-[#E2EEFF] via-[#D6E8FF] to-[#E2EEFF]',
+            'border-b border-blue-200',
+            'transition-colors duration-200',
+            'hover:from-[#D6E8FF] hover:via-[#CFE3FF] hover:to-[#D6E8FF]',
 
             theadClassName
           )}
@@ -223,11 +221,9 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                 key={String(col.key)}
                 style={{ width: col.width }}
                 className={cn(
-                  "px-2 py-3 text-left text-sm font-semibold text-[#1E3A8A]",
-                  index === 0 && "rounded-tl-lg",
-                  !hasActions &&
-                  index === columns.length - 1 &&
-                  "rounded-tr-lg",
+                  'px-2 py-3 text-left text-sm font-semibold text-[#1E3A8A]',
+                  index === 0 && 'rounded-tl-lg',
+                  !hasActions && index === columns.length - 1 && 'rounded-tr-lg',
                   col.headerClassName
                 )}
               >
@@ -266,7 +262,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
               <tr
                 key={getRowKey ? getRowKey(row, i) : i}
                 className={cn(
-                  "border-b border-blue-100 hover:bg-blue-50/40",
+                  'border-b border-blue-100 hover:bg-blue-50/40',
                   rowClassName?.(row, i)
                 )}
               >
@@ -275,24 +271,23 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                   return (
                     <td
                       key={String(col.key)}
-                      className={cn(
-                        "px-2 py-2 text-gray-700",
-                        col.cellClassName
-                      )}
+                      className={cn('px-2 py-2 text-gray-700', col.cellClassName)}
                     >
                       {col.render ? (
                         col.render(value, row, i)
                       ) : col.isStatus ? (
-                        isPrimitive(value)
-                          ? <StatusBadge value={value} />
-                          : <span className="font-medium">-</span>
+                        isPrimitive(value) ? (
+                          <StatusBadge value={value} />
+                        ) : (
+                          <span className="font-medium">-</span>
+                        )
                       ) : (
                         <span className="font-medium">
-                          {value === null || typeof value === "undefined"
-                            ? "-"
+                          {value === null || typeof value === 'undefined'
+                            ? '-'
                             : isPrimitive(value)
                               ? String(value)
-                              : "-"}
+                              : '-'}
                         </span>
                       )}
                     </td>
@@ -309,14 +304,13 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
               </tr>
             ))
           )}
-
         </tbody>
       </table>
     </div>
   );
 
   return (
-    <div className={cn("flex flex-col gap-4", containerClassName)}>
+    <div className={cn('flex flex-col gap-4', containerClassName)}>
       <div className="border border-blue-200 rounded-xl bg-white shadow-sm">
         {/* ================= HEADER ================= */}
         {hasHeader && (
@@ -324,20 +318,12 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
             {(headerTitle || headerSubtitle) && (
               <div>
                 {headerTitle && (
-                  <h3 className="text-sm font-semibold text-[#1E3A8A]">
-                    {headerTitle}
-                  </h3>
+                  <h3 className="text-sm font-semibold text-[#1E3A8A]">{headerTitle}</h3>
                 )}
-                {headerSubtitle && (
-                  <p className="text-sm text-[#6B7280] mt-1">
-                    {headerSubtitle}
-                  </p>
-                )}
+                {headerSubtitle && <p className="text-sm text-[#6B7280] mt-1">{headerSubtitle}</p>}
               </div>
             )}
-            {headerExtra && (
-              <div className="flex items-center gap-2">{headerExtra}</div>
-            )}
+            {headerExtra && <div className="flex items-center gap-2">{headerExtra}</div>}
           </div>
         )}
 
@@ -347,36 +333,37 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
         {/* ================= FOOTER / PAGINATION ================= */}
         {(hasFooter || isPaginationEnabled || isPageSizeEnabled) && (
           <div className="bg-[#F8FAFF] border-t border-[#DCEAFF] rounded-b-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm">
-
             {/* LEFT SIDE: Custom Content OR Info Text + PageSize */}
             <div className="flex items-center gap-4 text-sm text-[#6B7280]">
-              {footerLeftContent ? (
-                footerLeftContent
-              ) : (
-                (isPaginationEnabled || isPageSizeEnabled) && (
-                  <div data-testid="pagination-info" className="flex items-center gap-2">
-                    {/* Show counts only if pagination enabled */}
-                    {isPaginationEnabled && (
-                      <span className="whitespace-nowrap">
-                        {t("table.showingEntries", {
-                          start: totalCount === 0 ? 0 : ((pageNumber || 1) - 1) * (pageSize || 10) + 1,
-                          end: totalCount === 0 ? 0 : Math.min((pageNumber || 1) * (pageSize || 10), totalCount || 0),
-                          total: totalCount || 0,
-                        })}
-                      </span>
-                    )}
+              {footerLeftContent
+                ? footerLeftContent
+                : (isPaginationEnabled || isPageSizeEnabled) && (
+                    <div data-testid="pagination-info" className="flex items-center gap-2">
+                      {/* Show counts only if pagination enabled */}
+                      {isPaginationEnabled && (
+                        <span className="whitespace-nowrap">
+                          {t('table.showingEntries', {
+                            start:
+                              totalCount === 0 ? 0 : ((pageNumber || 1) - 1) * (pageSize || 10) + 1,
+                            end:
+                              totalCount === 0
+                                ? 0
+                                : Math.min((pageNumber || 1) * (pageSize || 10), totalCount || 0),
+                            total: totalCount || 0,
+                          })}
+                        </span>
+                      )}
 
-                    {/* Show PageSize selector if enabled and onPageSizeChange is provided */}
-                    {isPageSizeEnabled && (
-                      <PageSizeSelector
-                        pageSize={pageSize || 10}
-                        pageSizeOptions={pageSizeOptions}
-                        onPageSizeChange={onPageSizeChange}
-                      />
-                    )}
-                  </div>
-                )
-              )}
+                      {/* Show PageSize selector if enabled and onPageSizeChange is provided */}
+                      {isPageSizeEnabled && (
+                        <PageSizeSelector
+                          pageSize={pageSize || 10}
+                          pageSizeOptions={pageSizeOptions}
+                          onPageSizeChange={onPageSizeChange}
+                        />
+                      )}
+                    </div>
+                  )}
             </div>
 
             {/* RIGHT SIDE: Custom Content + Pagination Controls */}
@@ -384,50 +371,49 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
               {footerRightContent}
 
               {/* RIGHT SIDE: Pagination Controls */}
-{isPaginationEnabled &&
-  typeof pageNumber === "number" &&
-  typeof totalPages === "number" &&
-  onPageChange && (
-    <div className="flex items-center gap-2">
-      <PrevPageButton
-        disabled={pageNumber <= 1}
-        onClick={() => onPageChange(pageNumber - 1)}
-      />
+              {isPaginationEnabled &&
+                typeof pageNumber === 'number' &&
+                typeof totalPages === 'number' &&
+                onPageChange && (
+                  <div className="flex items-center gap-2">
+                    <PrevPageButton
+                      disabled={pageNumber <= 1}
+                      onClick={() => onPageChange(pageNumber - 1)}
+                    />
 
-      <div className="flex items-center gap-1">
-        <FirstPageButton
-          disabled={pageNumber === 1}
-          onClick={() => onPageChange(1)}
-        />
+                    <div className="flex items-center gap-1">
+                      <FirstPageButton
+                        disabled={pageNumber === 1}
+                        onClick={() => onPageChange(1)}
+                      />
 
-        {pages.map((p, i) =>
-          p === "dots" ? (
-            <span key={`dots-${i}`} className="px-2 text-[#94A3B8]">
-              ...
-            </span>
-          ) : (
-            <PageNumberButton
-              key={`page-${p}-${i}`}
-              page={p as number}
-              active={pageNumber === p}
-              onClick={() => onPageChange(p as number)}
-            />
-          )
-        )}
+                      {pages.map((p, i) =>
+                        p === 'dots' ? (
+                          <span key={`dots-${i}`} className="px-2 text-[#94A3B8]">
+                            ...
+                          </span>
+                        ) : (
+                          <PageNumberButton
+                            key={`page-${p}-${i}`}
+                            page={p as number}
+                            active={pageNumber === p}
+                            onClick={() => onPageChange(p as number)}
+                          />
+                        )
+                      )}
 
-        <LastPageButton
-          disabled={pageNumber === totalPages}
-          onClick={() => onPageChange(totalPages)}
-        />
-      </div>
+                      <LastPageButton
+                        disabled={pageNumber === totalPages}
+                        onClick={() => onPageChange(totalPages)}
+                      />
+                    </div>
 
-      <NextPageButton
-        disabled={pageNumber >= totalPages}
-        onClick={() => onPageChange(pageNumber + 1)}
-      />
-    </div>
-)}
-
+                    <NextPageButton
+                      disabled={pageNumber >= totalPages}
+                      onClick={() => onPageChange(pageNumber + 1)}
+                    />
+                  </div>
+                )}
             </div>
           </div>
         )}
