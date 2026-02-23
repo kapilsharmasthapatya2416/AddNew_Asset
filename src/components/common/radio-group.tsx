@@ -100,6 +100,31 @@ const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
         const isDisabled = groupDisabled || itemDisabled || false;
         const dataState = isSelected ? 'checked' : 'unchecked';
 
+        /* ---- detect if this is the first radio in the group ---------- */
+        const btnRef = React.useRef<HTMLButtonElement | null>(null);
+        const [isFirstItem, setIsFirstItem] = React.useState(false);
+
+        const setRefs = React.useCallback(
+            (node: HTMLButtonElement | null) => {
+                btnRef.current = node;
+                // forward the external ref
+                if (typeof ref === 'function') {
+                    ref(node);
+                } else if (ref) {
+                    (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+                }
+                // check if this is the first radio button in the group
+                if (node) {
+                    const container = node.closest('[role="radiogroup"]');
+                    if (container) {
+                        const first = container.querySelector('button[role="radio"]');
+                        setIsFirstItem(first === node);
+                    }
+                }
+            },
+            [ref]
+        );
+
         const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
             if (!isDisabled && !isSelected) {
                 onValueChange(value);
@@ -163,14 +188,14 @@ const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
                     className="sr-only"
                 />
                 <button
-                    ref={ref}
+                    ref={setRefs}
                     type="button"
                     role="radio"
                     aria-checked={isSelected}
                     data-state={dataState}
                     disabled={isDisabled}
                     data-value={value}
-                    tabIndex={isSelected ? 0 : -1}
+                    tabIndex={isSelected || (!groupValue && isFirstItem) ? 0 : -1}
                     className={cn(
                         'aspect-square h-4 w-4 rounded-full border border-primary text-primary shadow',
                         'inline-flex items-center justify-center',
