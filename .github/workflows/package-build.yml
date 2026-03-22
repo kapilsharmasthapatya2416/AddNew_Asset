@@ -159,6 +159,8 @@ jobs:
           Copy-Item -Path '.next' -Destination "$deploymentDir\.next" -Recurse
           Copy-Item -Path 'public' -Destination "$deploymentDir\public" -Recurse
           Copy-Item -Path 'package.json' -Destination "$deploymentDir\package.json"
+          # Always copy the current .env file
+          Copy-Item -Path '.env' -Destination "$deploymentDir\.env"
           
           # Copy Next.js configuration
           if (Test-Path 'next.config.ts') {
