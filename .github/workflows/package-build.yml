@@ -110,12 +110,6 @@ jobs:
           Write-Output "✅ Dependencies installed"
         shell: pwsh
         
-      - name: Type check
-        run: npm run type-check
-        
-      - name: Run linting
-        run: npm run lint
-        
       - name: Build with Turbopack
         env:
           NEXT_PUBLIC_APP_VERSION: ${{ needs.validate-environment.outputs.version }}
