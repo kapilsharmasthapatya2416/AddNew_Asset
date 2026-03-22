@@ -1,0 +1,248 @@
+name: Package Build - NTIS UI (Turbopack)
+
+on:
+  # Composite workflow trigger from ntis-devops
+  workflow_call:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+        type: string
+      branch:
+        description: 'Branch to build from'
+        required: false
+        type: string
+        default: 'main'
+        
+  # Independent manual trigger
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.2.3.0)'
+        required: true
+        type: string
+      branch:
+        description: 'Branch to build from'
+        required: false
+        type: choice
+        options:
+          - main
+          - qa
+          - dev
+        default: main
+        
+env:
+  NODE_VERSION: '20.x'
+  RELEASE_VERSION: ${{ github.event.inputs.version || github.ref_name }}
+  TARGET_BRANCH: ${{ github.event.inputs.branch || 'main' }}
+
+jobs:
+  validate-environment:
+    name: Validate Build Environment
+    runs-on: [self-hosted, package]
+    outputs:
+      version: ${{ steps.version-setup.outputs.version }}
+      artifact-name: ${{ steps.version-setup.outputs.artifact-name }}
+      environment: ${{ steps.version-setup.outputs.environment }}
+      branch: ${{ steps.version-setup.outputs.branch }}
+    steps:
+      - name: Checkout NTIS-UI
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+      
+      - name: Setup version and validation
+        id: version-setup
+        run: |
+          # Extract version from tag if triggered by push
+          if ('${{ github.event_name }}' -eq 'push' -and '${{ github.ref }}' -match 'refs/tags/v(.*)') {
+            $version = $matches[1]
+            Write-Output "Detected version from tag: $version"
+          } else {
+            $version = '${{ env.RELEASE_VERSION }}'
+            Write-Output "Using input version: $version"
+          }
+          
+          # Determine branch and environment from repository variable
+          $branch = '${{ env.TARGET_BRANCH }}'
+          $branchEnvMap = '${{ vars.BRANCH_ENV_MAP }}' | ConvertFrom-Json
+          $environment = if ($branchEnvMap.PSObject.Properties[$branch]) { 
+            $branchEnvMap.$branch 
+          } else { 
+            'production' 
+          }
+          
+          # Validate semantic version
+          if ($version -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+            Write-Error "Invalid version format: $version. Expected: x.y.z.w"
+            exit 1
+          }
+          
+          $artifactName = "ntis-ui-$environment-v$version"
+          
+          Write-Output "version=$version" >> $env:GITHUB_OUTPUT
+          Write-Output "artifact-name=$artifactName" >> $env:GITHUB_OUTPUT
+          Write-Output "environment=$environment" >> $env:GITHUB_OUTPUT
+          Write-Output "branch=$branch" >> $env:GITHUB_OUTPUT
+          
+          Write-Output "🏗️ Building NTIS-UI v$version for production"
+          Write-Output "📦 Artifact name: $artifactName"
+        shell: pwsh
+
+  build-ui:
+    name: Build UI with Turbopack
+    runs-on: [self-hosted, package]
+    needs: validate-environment
+    steps:
+      - name: Checkout NTIS-UI
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          Write-Output "📦 Installing dependencies..."
+          npm ci
+          Write-Output "✅ Dependencies installed"
+        shell: pwsh
+        
+      - name: Type check
+        run: npm run type-check
+        
+      - name: Run linting
+        run: npm run lint
+        
+      - name: Build with Turbopack
+        env:
+          NEXT_PUBLIC_APP_VERSION: ${{ needs.validate-environment.outputs.version }}
+        run: |
+          $version = '${{ needs.validate-environment.outputs.version }}'
+          Write-Output "🚀 Starting Turbopack build for production v$version..."
+          npm run build:production
+          Write-Output "✅ Turbopack build completed successfully"
+        shell: pwsh
+        
+      - name: Analyze build output
+        run: |
+          if (Test-Path '.next') {
+            $buildSize = (Get-ChildItem -Path '.next' -Recurse | Measure-Object -Property Length -Sum).Sum
+            $buildSizeMB = [math]::Round($buildSize / 1MB, 2)
+            Write-Output "📊 Build output size: $buildSizeMB MB"
+            
+            # Check for critical build artifacts
+            $staticDir = '.next/static'
+            $serverDir = '.next/server'
+            
+            if (Test-Path $staticDir) {
+              $staticFiles = Get-ChildItem -Path $staticDir -File -Recurse | Measure-Object
+              Write-Output "📁 Static files: $($staticFiles.Count)"
+            }
+            
+            if (Test-Path $serverDir) {
+              Write-Output "✅ Server-side artifacts generated"
+            }
+          } else {
+            Write-Error "❌ Build failed - .next directory not found"
+            exit 1
+          }
+        shell: pwsh
+        
+      - name: Create deployment package
+        run: |
+          $version = '${{ needs.validate-environment.outputs.version }}'
+          $deploymentDir = "ntis-ui-v$version"
+          
+          Write-Output "📦 Creating deployment package: $deploymentDir"
+          
+          # Create deployment directory
+          New-Item -ItemType Directory -Path $deploymentDir -Force | Out-Null
+          
+          # Copy essential files
+          Copy-Item -Path '.next' -Destination "$deploymentDir\.next" -Recurse
+          Copy-Item -Path 'public' -Destination "$deploymentDir\public" -Recurse
+          Copy-Item -Path 'package.json' -Destination "$deploymentDir\package.json"
+          
+          # Copy Next.js configuration
+          if (Test-Path 'next.config.ts') {
+            Copy-Item -Path 'next.config.ts' -Destination "$deploymentDir\next.config.ts"
+          }
+          
+          Write-Output "✅ Deployment package created"
+        shell: pwsh
+        
+      - name: Create zip archive
+        run: |
+          $version = '${{ needs.validate-environment.outputs.version }}'
+          $environment = '${{ needs.validate-environment.outputs.environment }}'
+          $deploymentDir = "ntis-ui-v$version"
+          
+          Write-Output "📦 Creating zip archive..."
+          
+          $zipFile = "ntis-ui-$environment-v$version.zip"
+          Compress-Archive -Path "$deploymentDir/*" -DestinationPath $zipFile -Force
+          $zipSize = [math]::Round((Get-Item $zipFile).Length / 1MB, 2)
+          Write-Output "✅ Created $zipFile ($zipSize MB)"
+        shell: pwsh
+        
+      - name: Upload to Azure Blob Storage
+        run: |
+          $version = '${{ needs.validate-environment.outputs.version }}'
+          $environment = '${{ needs.validate-environment.outputs.environment }}'
+          $containerName = '${{ vars.PACKAGE_CONTAINER_NAME }}'
+          $connectionString = '${{ secrets.PACKAGE_CONNECTION_STRING }}'
+          
+          # Target path: {env}/{version}/ui/
+          $basePath = "$environment/$version/ui"
+          
+          Write-Output "📤 Uploading to Azure Blob Storage..."
+          Write-Output "   Container: $containerName"
+          Write-Output "   Path: $basePath"
+          
+          # Upload UI zip
+          $zipFile = "ntis-ui-$environment-v$version.zip"
+          $zipBlob = "$basePath/$zipFile".Replace('\', '/')
+          az storage blob upload `
+            --connection-string "$connectionString" `
+            --container-name "$containerName" `
+            --file $zipFile `
+            --name $zipBlob `
+            --overwrite
+          Write-Output "   ✅ Uploaded: $zipBlob"
+          
+          Write-Output ""
+          Write-Output "🎉 Upload complete!"
+          Write-Output "   Location: $containerName/$basePath"
+          
+  build-summary:
+    name: Build Summary
+    runs-on: [self-hosted, package]
+    needs: [validate-environment, build-ui]
+    if: always()
+    steps:
+      - name: Summarize build results
+        run: |
+          $version = '${{ needs.validate-environment.outputs.version }}'
+          $buildStatus = '${{ needs.build-ui.result }}'
+          
+          Write-Output "📋 NTIS-UI Build Summary"
+          Write-Output "========================"
+          Write-Output "Version: v$version"
+          Write-Output "Environment: production"
+          Write-Output "Build Tool: Next.js with Turbopack"
+          Write-Output "Build Status: $buildStatus"
+          Write-Output "Artifact: ${{ needs.validate-environment.outputs.artifact-name }}"
+          Write-Output ""
+          
+          if ($buildStatus -eq 'success') {
+            Write-Output "🎉 NTIS-UI build completed successfully!"
+            Write-Output "📦 Production artifacts are ready for deployment"
+            Write-Output "🚀 Turbopack optimization applied"
+          } else {
+            Write-Warning "⚠️ NTIS-UI build encountered issues"
+            Write-Output "Please check the build logs for details"
+          }
+        shell: pwsh

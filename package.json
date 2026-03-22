@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:turbo": "next dev --turbo",
     "build": "next build",
+    "build:turbo": "next build --turbo",
+    "build:production": "NODE_ENV=production next build --turbo",
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
