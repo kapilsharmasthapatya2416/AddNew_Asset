@@ -9,6 +9,10 @@ inputs:
     description: Branch being built.
     required: false
     default: main
+  path-mode:
+    description: Upload path mode. Use standalone for repo-local runs and orchestrated for ntis-devops runs.
+    required: false
+    default: standalone
   branch-env-map:
     description: JSON mapping of branch names to environment names.
     required: true
@@ -156,9 +160,10 @@ runs:
       run: |
         $version = '${{ steps.version_setup.outputs.version }}'
         $environment = '${{ steps.version_setup.outputs.environment }}'
+        $pathMode = '${{ inputs.path-mode }}'
         $containerName = '${{ inputs.package-container-name }}'
         $connectionString = '${{ inputs.package-connection-string }}'
-        $basePath = "$environment/$version/ui"
+        $basePath = if ($pathMode -eq 'orchestrated') { "$environment/$version/ui" } else { "ui/$version" }
         $zipFile = "ntis-ui-$environment-v$version.zip"
         $zipBlob = "$basePath/$zipFile".Replace('\\', '/')
 
@@ -174,4 +179,3 @@ runs:
           --overwrite
 
         Write-Output "Uploaded: $zipBlob"
-
