@@ -37,12 +37,12 @@ vi.mock("@/components/common/Drawer", () => ({
   ) : null
 }));
 vi.mock("@/components/common", () => ({
-  Input: ({ name, label, fullWidth, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { name: string; label?: string; fullWidth?: boolean }) => (
+  Input: ({ name, label, fullWidth: _fullWidth, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { name: string; label?: string; fullWidth?: boolean }) => (
     <input {...props} name={name} data-testid={name} aria-label={label || name} />
   ),
   ValidationMessage: ({ message, visible }: { message?: string; visible?: boolean }) => visible && message ? <div>{message}</div> : null,
-  CancelButton: ({ label, fullWidth, isLoading, ...rest }: { label: string; fullWidth?: boolean; isLoading?: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...rest}>{label}</button>,
-  SaveButton: ({ label, fullWidth, isLoading, ...rest }: { label: string; fullWidth?: boolean; isLoading?: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...rest}>{label}</button>,
+  CancelButton: ({ label, fullWidth: _fullWidth, isLoading: _isLoading, ...rest }: { label: string; fullWidth?: boolean; isLoading?: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...rest}>{label}</button>,
+  SaveButton: ({ label, fullWidth: _fullWidth, isLoading: _isLoading, ...rest }: { label: string; fullWidth?: boolean; isLoading?: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...rest}>{label}</button>,
   ToggleSwitch: ({ checked, onChange }: { checked: boolean; onChange: () => void }) => (
     <input 
       type="checkbox" 
