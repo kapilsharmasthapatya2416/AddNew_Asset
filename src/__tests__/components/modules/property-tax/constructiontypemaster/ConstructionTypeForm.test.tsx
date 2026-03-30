@@ -148,19 +148,20 @@ describe("ConstructionTypeForm", () => {
     expect(mockRouterPush).toHaveBeenCalled();
   });
 
-  it("sanitizes construction code to alphanumeric only", async () => {
+  it("sanitizes construction code to alphanumeric, spaces, and hyphens", async () => {
     render(<ConstructionTypeForm constructionTypeId={null} />);
-    const input = screen.getByTestId("constructionCode");
-    fireEvent.change(input, { target: { value: "ABC-123" } });
-    // The component should strip non-alphanumeric characters
-    // The mock input will receive the sanitised value from the onChange handler
+    const input = screen.getByTestId("constructionCode") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "AB C-123@#$" } });
+    // The component should strip disallowed characters while preserving spaces and hyphens
+    expect(input.value).toBe("AB C-12");
   });
 
   it("limits construction code length to 7 characters", async () => {
     render(<ConstructionTypeForm constructionTypeId={null} />);
-    const input = screen.getByTestId("constructionCode");
+    const input = screen.getByTestId("constructionCode") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "ABCDEFGHIJ" } });
     // The component should truncate to max 7 characters
+    expect(input.value).toBe("ABCDEFG");
   });
 
   it("handles API error on submit", async () => {

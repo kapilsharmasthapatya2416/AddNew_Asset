@@ -271,7 +271,6 @@ export async function getConstructionTypeById(
  * await createConstructionType({
  *   constructionCode: "CT001",
  *   description: "Wood Frame",
- *   searchKey: "WOOD",
  *   searchSequence: 1,
  *   isActive: true
  * });
