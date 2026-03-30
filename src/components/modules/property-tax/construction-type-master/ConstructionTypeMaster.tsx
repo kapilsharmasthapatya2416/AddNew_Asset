@@ -181,7 +181,7 @@ export function ConstructionTypeMaster({
                   setSearch(sanitized);
                 }}
                 placeholder={t("list.filters.search") || "Search Construction Type..."}
-                className="mb-0 w-100 text-gray-900"
+                className="mb-0 w-full text-gray-900"
               />
             </div>
           }

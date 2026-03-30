@@ -145,22 +145,6 @@ export function Select({
           disabled && "opacity-50 cursor-not-allowed",
           className
         )}
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        onBlur={(e) => {
-          const nextTarget = e.relatedTarget;
- 
-          // If focus leaves the window or there is no related target,
-          // close the dropdown safely without calling contains(null).
-          if (!nextTarget || !(nextTarget instanceof Node)) {
-            setOpen(false);
-            return;
-          }
- 
-          if (!selectRef.current?.contains(nextTarget)) {
-            setOpen(false);
-          }
-        }}
       >
         <button
           type="button"
@@ -173,6 +157,21 @@ export function Select({
             disabled && "opacity-50 cursor-not-allowed"
           )}
           onClick={() => !disabled && setOpen((o) => !o)}
+          onKeyDown={handleKeyDown}
+          onBlur={(e) => {
+            const nextTarget = e.relatedTarget;
+
+            // If focus leaves the window or there is no related target,
+            // close the dropdown safely without calling contains(null).
+            if (!nextTarget || !(nextTarget instanceof Node)) {
+              setOpen(false);
+              return;
+            }
+
+            if (!selectRef.current?.contains(nextTarget)) {
+              setOpen(false);
+            }
+          }}
           disabled={disabled}
           aria-label={ariaLabel}
         >

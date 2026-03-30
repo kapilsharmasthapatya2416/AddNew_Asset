@@ -484,7 +484,7 @@ export async function deleteConstructionType(
 ): Promise<void> {
   try {
     if (constructionTypeId <= 0) {
-      throw new Error("Valid constructionType is required");
+      throw new Error("Valid constructionTypeId is required");
     }
 
     const response = await apiClient.delete<void>(

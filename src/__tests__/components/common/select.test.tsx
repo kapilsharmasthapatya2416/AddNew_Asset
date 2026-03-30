@@ -63,10 +63,10 @@ describe("Select", () => {
   });
 
   it("applies custom className", () => {
-    render(<Select options={options} className="custom-class" />);
-    // The custom class is applied to the select root (the second div)
-    const selectDiv = document.querySelector("div[tabindex='0']");
-    expect(selectDiv).toHaveClass("custom-class");
+    const { container } = render(<Select options={options} className="custom-class" />);
+    // The custom class is applied to the select wrapper div (inside the flex container)
+    const selectWrapper = container.querySelector(".relative.w-full");
+    expect(selectWrapper).toHaveClass("custom-class");
   });
 
   it("renders with selectSize 'sm' and 'md'", () => {
@@ -87,14 +87,11 @@ describe("Select", () => {
 
   it("closes dropdown on blur", () => {
     render(<Select options={options} />);
-    // The select root is the div with tabindex=0
-    const selectDiv = document.querySelector("div[tabindex='0']");
     const button = screen.getByRole("button");
     fireEvent.click(button);
     expect(screen.getByRole("listbox")).toBeInTheDocument();
-    if (selectDiv) {
-      fireEvent.blur(selectDiv);
-    }
+    // Blur the button to close the dropdown
+    fireEvent.blur(button);
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 

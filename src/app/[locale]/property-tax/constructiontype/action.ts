@@ -113,6 +113,7 @@ export async function deleteConstructionTypeAction(
     return {
       success: false,
       message: "Valid Construction Type ID is required",
+      statusCode: 400,
     };
   }
 
