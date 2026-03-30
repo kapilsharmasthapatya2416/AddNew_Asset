@@ -42,8 +42,10 @@ export function Select({
   const [open, setOpen] = useState(false);
   const [internalValue, setInternalValue] = useState(value || "");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [openUpward, setOpenUpward] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
  
  
   React.useEffect(() => {
@@ -72,6 +74,20 @@ export function Select({
       }
     }
   }, [highlightedIndex, open]);
+
+  // Calculate if dropdown should open upward based on viewport space
+  React.useEffect(() => {
+    if (open && buttonRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const dropdownHeight = 240; // max-h-60 = 240px
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - buttonRect.bottom;
+      const spaceAbove = buttonRect.top;
+
+      // Open upward if not enough space below and more space above
+      setOpenUpward(spaceBelow < dropdownHeight && spaceAbove > spaceBelow);
+    }
+  }, [open]);
  
  
   const handleSelect = (val: string) => {
@@ -147,6 +163,7 @@ export function Select({
         )}
       >
         <button
+          ref={buttonRef}
           type="button"
           className={cn(
             "flex items-center justify-between w-full border text-sm rounded-md bg-white focus:outline-none focus:ring-2 transition-all",
@@ -190,7 +207,10 @@ export function Select({
         {open && (
           <ul
             ref={listRef}
-            className="absolute z-50 mt-1 w-full text-gray-800 text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+            className={cn(
+              "absolute z-50 w-full text-gray-800 text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto",
+              openUpward ? "bottom-full mb-1" : "top-full mt-1"
+            )}
             role="listbox"
             onMouseDown={(e) => e.preventDefault()}
           >
