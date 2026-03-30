@@ -1,6 +1,6 @@
 "use client";
  
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useId } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
  
@@ -46,6 +46,7 @@ export function Select({
   const selectRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const listboxId = useId();
  
  
   React.useEffect(() => {
@@ -55,8 +56,12 @@ export function Select({
   // Initialize highlighted index when opening
   React.useEffect(() => {
     if (open) {
-      const index = options.findIndex((opt) => opt.value === internalValue);
-      setHighlightedIndex(index >= 0 ? index : 0);
+      if (options.length === 0) {
+        setHighlightedIndex(-1);
+      } else {
+        const index = options.findIndex((opt) => opt.value === internalValue);
+        setHighlightedIndex(index >= 0 ? index : 0);
+      }
     } else {
       setHighlightedIndex(-1);
     }
@@ -119,16 +124,25 @@ export function Select({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setHighlightedIndex((prev) => Math.min(prev + 1, options.length - 1));
+        if (options.length > 0) {
+          setHighlightedIndex((prev) => Math.min(prev + 1, options.length - 1));
+        }
         break;
       case "ArrowUp":
         e.preventDefault();
-        setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+        if (options.length > 0) {
+          setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+        }
         break;
       case "Enter":
       case " ":
         e.preventDefault();
-        if (highlightedIndex >= 0 && !options[highlightedIndex].disabled) {
+        if (
+          highlightedIndex >= 0 &&
+          highlightedIndex < options.length &&
+          options[highlightedIndex] &&
+          !options[highlightedIndex].disabled
+        ) {
           handleSelect(options[highlightedIndex].value);
         }
         break;
@@ -191,6 +205,9 @@ export function Select({
           }}
           disabled={disabled}
           aria-label={ariaLabel}
+          aria-expanded={open}
+          aria-haspopup="listbox"
+          aria-controls={listboxId}
         >
           <span
             className={cn(
@@ -207,6 +224,7 @@ export function Select({
         {open && (
           <ul
             ref={listRef}
+            id={listboxId}
             className={cn(
               "absolute z-50 w-full text-gray-800 text-sm bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto",
               openUpward ? "bottom-full mb-1" : "top-full mt-1"
