@@ -15,20 +15,20 @@ interface QuickDataEntryPageProps {
 }
 
 export async function closeDrawer(formData: FormData) {
-  const locale = formData.get('locale') as string;
-  const wardNo = formData.get('wardNo') as string;
-  const propertyNo = formData.get('propertyNo') as string;
-  const partitionNo = formData.get('partitionNo') as string;
-  const propertyId = formData.get('propertyId') as string;
+    const locale = formData.get('locale') as string;
+    const wardNo = formData.get('wardNo') as string;
+    const propertyNo = formData.get('propertyNo') as string;
+    const partitionNo = formData.get('partitionNo') as string;
+    const propertyId = formData.get('propertyId') as string;
 
-  const query = new URLSearchParams();
-  if (wardNo) query.set('wardNo', wardNo);
-  if (propertyNo) query.set('propertyNo', propertyNo);
-  if (partitionNo) query.set('partitionNo', partitionNo);
-  if (propertyId) query.set('propertyId', propertyId);
+    const query = new URLSearchParams();
+    if (wardNo) query.set('wardNo', wardNo);
+    if (propertyNo) query.set('propertyNo', propertyNo);
+    if (partitionNo) query.set('partitionNo', partitionNo);
+    if (propertyId) query.set('propertyId', propertyId);
 
-  const queryString = query.toString();
-  redirect(`/${locale}/property-tax/ptis${queryString ? `?${queryString}` : ''}`);
+    const queryString = query.toString();
+    redirect(`/${locale}/property-tax/ptis${queryString ? `?${queryString}` : ''}`);
 }
 
 export const dynamic = 'force-dynamic';
@@ -39,7 +39,11 @@ export default async function QuickDataEntryPage({ params, searchParams }: Quick
 
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <PropertyFormPage params={params} searchParams={searchParams} />
+            <PropertyFormPage
+                params={params as unknown as Promise<{ propertyId: string; locale: string; }>}
+                searchParams={searchParams as unknown as Promise<{ [key: string]: string | string[] | undefined; }>}
+            />
         </Suspense>
     );
-}   
+}
+

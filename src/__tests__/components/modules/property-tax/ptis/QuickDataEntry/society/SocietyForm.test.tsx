@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import SocietyForm from '@/components/modules/property-tax/ptis/QuickDataEntry/society/SocietyForm';
 import { toast } from 'sonner';
 import { updatePropertySocietyDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action';
@@ -63,7 +63,7 @@ describe('SocietyForm', () => {
   });
 
   it('renders correctly with initial data', () => {
-    render(<SocietyForm societyData={mockData as any} propertyIdSearch={123} />);
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
     
     expect(screen.getByDisplayValue('Gokuldham')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Jethalal')).toBeInTheDocument();
@@ -72,9 +72,9 @@ describe('SocietyForm', () => {
   });
 
   it('submits form with valid data successfully', async () => {
-    (updatePropertySocietyDetailsAction as any).mockResolvedValue({ success: true });
+    (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({ success: true });
     
-    render(<SocietyForm societyData={mockData as any} propertyIdSearch={123} />);
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
 
     // Click submit button (the test will pass original mockData which is valid)
     const submitBtn = screen.getByRole('button', { name: /Update/i });
@@ -87,9 +87,9 @@ describe('SocietyForm', () => {
   });
 
   it('handles server action error correctly', async () => {
-    (updatePropertySocietyDetailsAction as any).mockRejectedValue(new Error('Update failed'));
+    (updatePropertySocietyDetailsAction as Mock).mockRejectedValue(new Error('Update failed'));
 
-    render(<SocietyForm societyData={mockData as any} propertyIdSearch={123} />);
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
     
     const submitBtn = screen.getByRole('button', { name: /Update/i });
     fireEvent.click(submitBtn);
@@ -100,7 +100,7 @@ describe('SocietyForm', () => {
   });
 
   it('stops submission and shows validation error for invalid name', async () => {
-    render(<SocietyForm societyData={mockData as any} propertyIdSearch={123} />);
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
     
     // Change builderName to something containing invalid characters
     const builderInput = screen.getByDisplayValue('Asit Modi');
@@ -116,7 +116,7 @@ describe('SocietyForm', () => {
   });
 
   it('stops submission and shows validation error for invalid email format', async () => {
-    render(<SocietyForm societyData={mockData as any} propertyIdSearch={123} />);
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
     
     const emailInput = screen.getByDisplayValue('test@example.com');
     // Intentionally pass an invalid email format
@@ -132,7 +132,7 @@ describe('SocietyForm', () => {
   });
 
   it('stops submission and shows validation error for short mobile', async () => {
-    render(<SocietyForm societyData={{...mockData, managerMobileNo: '123'} as any} propertyIdSearch={123} />);
+    render(<SocietyForm societyData={{...mockData, managerMobileNo: '123'} as never} propertyIdSearch={123} />);
     
     const submitBtn = screen.getByRole('button', { name: /Update/i });
     fireEvent.click(submitBtn);
@@ -143,4 +143,117 @@ describe('SocietyForm', () => {
     });
   });
 
+  it('stops submission and shows validation error for invalid land owner name', async () => {
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
+    
+    // Change landOwnerName to invalid
+    const input = screen.getByDisplayValue('Jethalal');
+    fireEvent.change(input, { target: { value: 'Jetha123', name: 'landOwnerName' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(updatePropertySocietyDetailsAction).not.toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Invalid Land Owner Name'));
+    });
+  });
+
+  it('stops submission and shows validation error for invalid manager name', async () => {
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
+    
+    // Change managerName to invalid
+    const input = screen.getByDisplayValue('Iyer');
+    fireEvent.change(input, { target: { value: 'Iyer123', name: 'managerName' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(updatePropertySocietyDetailsAction).not.toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Invalid Manager Name'));
+    });
+  });
+
+  it('stops submission and shows validation error for invalid secretary name', async () => {
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
+    
+    // Change secretaryName to invalid
+    const input = screen.getByDisplayValue('Bhide');
+    fireEvent.change(input, { target: { value: 'Bhide123', name: 'secretaryName' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(updatePropertySocietyDetailsAction).not.toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Invalid Secretary Name'));
+    });
+  });
+
+  it('stops submission and shows validation error for invalid manager email format', async () => {
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
+    
+    const emailInput = screen.getByDisplayValue('test3@example.com');
+    fireEvent.change(emailInput, { target: { value: 'test@invalid@.com', name: 'managerEmailId' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(updatePropertySocietyDetailsAction).not.toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Invalid Manager Email'));
+    });
+  });
+
+  it('stops submission and shows validation error for invalid secretary email format', async () => {
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
+    
+    const emailInput = screen.getByDisplayValue('test2@example.com');
+    fireEvent.change(emailInput, { target: { value: 'test@invalid@.com', name: 'secretaryEmailId' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(updatePropertySocietyDetailsAction).not.toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Invalid Secretary Email'));
+    });
+  });
+
+  it('stops submission and shows validation error for short secretary mobile', async () => {
+    render(<SocietyForm societyData={{...mockData, secretaryMobileNo: '123'} as never} propertyIdSearch={123} />);
+    
+    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(updatePropertySocietyDetailsAction).not.toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Secretary Mobile Number must be 10 digits'));
+    });
+  });
+
+  it('handles manager mobile digit change and backspace', async () => {
+    const { container } = render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
+    
+    const inputs = container.querySelectorAll('#manager-mobile-container input');
+    
+    // Change digit
+    fireEvent.change(inputs[0], { target: { value: '9' } });
+    
+    // Test backspace
+    fireEvent.keyDown(inputs[1], { key: 'Backspace', code: 'Backspace' });
+  });
+
+  it('handles secretary mobile digit change and backspace', async () => {
+    const { container } = render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
+    
+    const inputs = container.querySelectorAll('#secretary-mobile-container input');
+    
+    // Change digit
+    fireEvent.change(inputs[0], { target: { value: '9' } });
+    
+    // Test backspace
+    fireEvent.keyDown(inputs[1], { key: 'Backspace', code: 'Backspace' });
+  });
 });

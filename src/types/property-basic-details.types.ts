@@ -372,7 +372,7 @@ export interface PropertyBasicDetailsResponse {
     success: boolean;
     message: string;
     items: PropertyBasicDetailsApiItem;
-    errors: any | null;
+    errors: unknown | null;
 }
 
 export interface WingItem {

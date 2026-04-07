@@ -27,7 +27,7 @@ export interface PropertySocietyDetailsResponse {
   success: boolean;
   message: string;
   items: PropertySocietyDetailsApiItem;
-  errors: any | null;
+  errors: unknown | null;
 }
 
 export interface UpdatePropertySocietyDetailsDto {

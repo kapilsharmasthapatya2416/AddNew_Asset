@@ -170,6 +170,7 @@ const PropertyFormView = ({
                                     value={categoryId}
                                     placeholder={t('property.select')}
                                     onChange={handleCategoryChange}
+                                    className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                 />
                             </div>
 
@@ -186,6 +187,7 @@ const PropertyFormView = ({
                                     value={wingId}
                                     placeholder={t('property.select')}
                                     onChange={handleWingChange}
+                                    className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                 />
                             </div>
 
@@ -243,8 +245,9 @@ const PropertyFormView = ({
                                     name="propertyDescription"
                                     options={propertyDescriptionOptions}
                                     placeholder={t('property.select')}
-                                    value={propertyTypeId || '2'}
+                                    value={propertyTypeId}
                                     onChange={handlePropertyDescriptionChange}
+                                    className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                 />
                             </div>
 
@@ -304,7 +307,7 @@ const PropertyFormView = ({
                                     className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                 />
                             </div>
-                            
+
                             {/* Residential Toilet */}
                             <div className="space-y-1.5">
                                 <Label

@@ -143,7 +143,7 @@ const SocietyForm = ({ societyData, propertyIdSearch }: SocietyFormProps) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
             <Tabs value="society">
                 <Tabs.TabPanel value="society" className="mt-0 p-4 space-y-3">
                     <div className="bg-white rounded-xl shadow-md border-2 border-purple-100 p-4">

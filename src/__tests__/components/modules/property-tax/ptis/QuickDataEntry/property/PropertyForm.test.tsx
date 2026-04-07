@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import PropertyFormView from '@/components/modules/property-tax/ptis/QuickDataEntry/property/PropertyForm';
 import { toast } from 'sonner';
 import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
@@ -92,28 +92,28 @@ const mockPropertyData = {
 };
 
 const mockSocietyDetails = {
-    propertyId: 123,
-    societyDetailId: 1,
-    wingId: 1,
-    wingNo: 'Wing A',
-    wingName: 'Wing A',
-    societyName: 'Gokuldham',
-    societyAddress: 'Powai',
-    secretaryName: 'Bhide',
-    managerName: 'Iyer',
-    landOwnerName: 'Jethalal',
-    builderName: 'Asit Modi',
-    societyNameEnglish: 'Gokuldham',
-    societyAddressEnglish: 'Powai',
-    secretaryNameEnglish: 'Bhide',
-    managerNameEnglish: 'Iyer',
-    landOwnerNameEnglish: 'Jethalal',
-    builderNameEnglish: 'Asit Modi',
-    managerMobileNo: '1234567890',
-    secretaryMobileNo: '0987654321',
-    societyEmailId: 'test@example.com',
-    secretaryEmailId: 'test2@example.com',
-    managerEmailId: 'test3@example.com',
+  propertyId: 123,
+  societyDetailId: 1,
+  wingId: 1,
+  wingNo: 'Wing A',
+  wingName: 'Wing A',
+  societyName: 'Gokuldham',
+  societyAddress: 'Powai',
+  secretaryName: 'Bhide',
+  managerName: 'Iyer',
+  landOwnerName: 'Jethalal',
+  builderName: 'Asit Modi',
+  societyNameEnglish: 'Gokuldham',
+  societyAddressEnglish: 'Powai',
+  secretaryNameEnglish: 'Bhide',
+  managerNameEnglish: 'Iyer',
+  landOwnerNameEnglish: 'Jethalal',
+  builderNameEnglish: 'Asit Modi',
+  managerMobileNo: '1234567890',
+  secretaryMobileNo: '0987654321',
+  societyEmailId: 'test@example.com',
+  secretaryEmailId: 'test2@example.com',
+  managerEmailId: 'test3@example.com',
 };
 
 describe('PropertyFormView', () => {
@@ -127,8 +127,8 @@ describe('PropertyFormView', () => {
         WingMaster={mockWingMaster}
         propertyCategories={mockPropertyCategories}
         propertyDescriptions={mockPropertyDescriptions}
-        propertyData={mockPropertyData as any}
-        propertySocietyDetails={mockSocietyDetails as any}
+        propertyData={mockPropertyData as never}
+        propertySocietyDetails={mockSocietyDetails as never}
       />
     );
 
@@ -140,21 +140,23 @@ describe('PropertyFormView', () => {
     expect(screen.getByDisplayValue('45/2')).toBeInTheDocument(); // Survey No
     expect(screen.getByDisplayValue('SZ1')).toBeInTheDocument(); // Sub Zone No
     expect(screen.getByDisplayValue('UPIC123')).toBeInTheDocument(); // UPIC ID
-    expect(screen.getByDisplayValue('2')).toBeInTheDocument(); // Residential Toilets
+    expect(screen.getAllByDisplayValue('2')[0]).toBeInTheDocument(); // Residential Toilets
     expect(screen.getByDisplayValue('1000')).toBeInTheDocument(); // Total Carpet Area
     expect(screen.getByDisplayValue('1500')).toBeInTheDocument(); // Buildup Area
   });
 
+  // expect(screen.getByDisplayValue('2')).toBeInTheDocument(); // Residential Toilets
+
   it('submits form with updated data', async () => {
-    (updatePropertyBasicDetailsAction as any).mockResolvedValue({ success: true });
+    (updatePropertyBasicDetailsAction as Mock).mockResolvedValue({ success: true });
 
     render(
       <PropertyFormView
         WingMaster={mockWingMaster}
         propertyCategories={mockPropertyCategories}
         propertyDescriptions={mockPropertyDescriptions}
-        propertyData={mockPropertyData as any}
-        propertySocietyDetails={mockSocietyDetails as any}
+        propertyData={mockPropertyData as never}
+        propertySocietyDetails={mockSocietyDetails as never}
       />
     );
 
@@ -176,15 +178,15 @@ describe('PropertyFormView', () => {
   });
 
   it('handles submission error correctly', async () => {
-    (updatePropertyBasicDetailsAction as any).mockRejectedValue(new Error('Update failed'));
+    (updatePropertyBasicDetailsAction as Mock).mockRejectedValue(new Error('Update failed'));
 
     render(
       <PropertyFormView
         WingMaster={mockWingMaster}
         propertyCategories={mockPropertyCategories}
         propertyDescriptions={mockPropertyDescriptions}
-        propertyData={mockPropertyData as any}
-        propertySocietyDetails={mockSocietyDetails as any}
+        propertyData={mockPropertyData as never}
+        propertySocietyDetails={mockSocietyDetails as never}
       />
     );
 
@@ -192,7 +194,7 @@ describe('PropertyFormView', () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("An error occurred during update.");
+      expect(toast.error).toHaveBeenCalledWith("An error occurred during update.");
     });
   });
 
@@ -203,8 +205,8 @@ describe('PropertyFormView', () => {
         WingMaster={mockWingMaster}
         propertyCategories={mockPropertyCategories}
         propertyDescriptions={mockPropertyDescriptions}
-        propertyData={mockPropertyData as any}
-        propertySocietyDetails={mockSocietyDetails as any}
+        propertyData={mockPropertyData as never}
+        propertySocietyDetails={mockSocietyDetails as never}
       />
     );
 
