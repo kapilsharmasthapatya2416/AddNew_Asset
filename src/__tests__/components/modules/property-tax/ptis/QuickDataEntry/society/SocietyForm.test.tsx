@@ -20,9 +20,28 @@ vi.mock('next-intl', () => ({
       'society.secretaryName': 'Secretary Name',
       'society.secretaryEmail': 'Secretary Email',
       'society.secretaryMobile': 'Secretary Mobile',
+      'society.updateButton': 'Update',
+      'society.updateSuccess': 'Society details updated successfully',
+      'society.updateError': 'An error occurred during update.',
+      'society.validation.landOwnerName': 'Invalid Land Owner Name. Only letters, spaces, and . , \' - are allowed.',
+      'society.validation.builderName': 'Invalid Builder Name. Only letters, spaces, and . , \' - are allowed.',
+      'society.validation.managerName': 'Invalid Manager Name. Only letters, spaces, and . , \' - are allowed.',
+      'society.validation.secretaryName': 'Invalid Secretary Name. Only letters, spaces, and . , \' - are allowed.',
+      'society.validation.societyEmail': 'Invalid Society Email address format.',
+      'society.validation.managerEmail': 'Invalid Manager Email address format.',
+      'society.validation.secretaryEmail': 'Invalid Secretary Email address format.',
+      'society.validation.managerMobile': 'Manager Mobile Number must be 10 digits.',
+      'society.validation.secretaryMobile': 'Secretary Mobile Number must be 10 digits.',
     };
     return translations[key] || key;
   },
+}));
+
+// Mock useConfirm
+vi.mock('@/components/common/ConfirmProvider', () => ({
+  useConfirm: () => ({
+    confirm: vi.fn(({ onConfirm }) => onConfirm()),
+  }),
 }));
 
 // Mock sonner
@@ -76,7 +95,6 @@ describe('SocietyForm', () => {
 
     render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
 
-    // Click submit button (the test will pass original mockData which is valid)
     const submitBtn = screen.getByRole('button', { name: /Update/i });
     fireEvent.click(submitBtn);
 
@@ -99,10 +117,28 @@ describe('SocietyForm', () => {
     });
   });
 
-  it('stops submission and shows validation error for invalid name', async () => {
+  it('submits form with Unicode (Hindi/Marathi) names successfully', async () => {
+    (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({ success: true });
+    
+    render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
+    
+    // Change builderName to a Hindi name
+    const builderInput = screen.getByDisplayValue('Asit Modi');
+    fireEvent.change(builderInput, { target: { value: 'राजेश शिंदे', name: 'builderName' } });
+    
+    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    fireEvent.click(submitBtn);
+    
+    await waitFor(() => {
+      expect(updatePropertySocietyDetailsAction).toHaveBeenCalled();
+      expect(toast.success).toHaveBeenCalledWith("Society details updated successfully");
+    });
+  });
+
+  it('stops submission and shows validation error for invalid characters (non-letters)', async () => {
     render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} />);
 
-    // Change builderName to something containing invalid characters
+    // Change builderName to something containing invalid characters (numbers)
     const builderInput = screen.getByDisplayValue('Asit Modi');
     fireEvent.change(builderInput, { target: { value: 'Asit123', name: 'builderName' } });
 
@@ -111,7 +147,7 @@ describe('SocietyForm', () => {
 
     await waitFor(() => {
       expect(updatePropertySocietyDetailsAction).not.toHaveBeenCalled();
-      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Invalid Builder Name'));
+      expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Only letters, spaces, and . , \' - are allowed.'));
     });
   });
 

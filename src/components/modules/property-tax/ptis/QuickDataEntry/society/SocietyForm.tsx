@@ -2,10 +2,11 @@
 import { AddButton, Input, Tabs } from "@/components/common"
 import { Label } from "@/components/common/label"
 import { useTranslations } from "next-intl";
-import { PropertySocietyDetailsApiItem, UpdatePropertySocietyDetailsDto } from "@/types/property-Society-details.type";
+import { PropertySocietyDetailsApiItem, UpdatePropertySocietyDetailsDto } from "@/types/property-Society-details.types";
 import { updatePropertySocietyDetailsAction } from "@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useConfirm } from "@/components/common/ConfirmProvider";
 
 interface SocietyFormProps {
     societyData: PropertySocietyDetailsApiItem | null;
@@ -15,6 +16,7 @@ interface SocietyFormProps {
 const SocietyForm = ({ societyData, propertyIdSearch }: SocietyFormProps) => {
 
     const t = useTranslations("quickDataEntry");
+    const { confirm } = useConfirm();
     const [isUpdating, setIsUpdating] = useState(false);
 
     // Mobile States
@@ -30,7 +32,6 @@ const SocietyForm = ({ societyData, propertyIdSearch }: SocietyFormProps) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsUpdating(true);
 
         const formData = new FormData(e.currentTarget);
         const pid = societyData?.propertyId || propertyIdSearch;
@@ -51,53 +52,44 @@ const SocietyForm = ({ societyData, propertyIdSearch }: SocietyFormProps) => {
         const builderName = String(formData.get("builderName") ?? "").trim();
 
         // Validation regexes
-        const textRegex = /^[a-zA-Z\s.,'-]+$/;
+        const textRegex = /^[\p{L}\p{M}\s.,'-]+$/u;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const mobileRegex = /^[0-9]{10}$/;
 
         if (landOwnerName && !textRegex.test(landOwnerName)) {
-            toast.error("Invalid Land Owner Name. Only alphabets are allowed.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.landOwnerName'));
             return;
         }
         if (builderName && !textRegex.test(builderName)) {
-            toast.error("Invalid Builder Name. Only alphabets are allowed.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.builderName'));
             return;
         }
         if (managerName && !textRegex.test(managerName)) {
-            toast.error("Invalid Manager Name. Only alphabets are allowed.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.managerName'));
             return;
         }
         if (secretaryName && !textRegex.test(secretaryName)) {
-            toast.error("Invalid Secretary Name. Only alphabets are allowed.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.secretaryName'));
             return;
         }
         if (societyEmailId && !emailRegex.test(societyEmailId)) {
-            toast.error("Invalid Society Email address format.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.societyEmail'));
             return;
         }
         if (managerEmailId && !emailRegex.test(managerEmailId)) {
-            toast.error("Invalid Manager Email address format.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.managerEmail'));
             return;
         }
         if (secretaryEmailId && !emailRegex.test(secretaryEmailId)) {
-            toast.error("Invalid Secretary Email address format.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.secretaryEmail'));
             return;
         }
         if (managerMobileStr && !mobileRegex.test(managerMobileStr)) {
-            toast.error("Manager Mobile Number must be 10 digits.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.managerMobile'));
             return;
         }
         if (secretaryMobileStr && !mobileRegex.test(secretaryMobileStr)) {
-            toast.error("Secretary Mobile Number must be 10 digits.");
-            setIsUpdating(false);
+            toast.error(t('society.validation.secretaryMobile'));
             return;
         }
 
@@ -131,15 +123,24 @@ const SocietyForm = ({ societyData, propertyIdSearch }: SocietyFormProps) => {
             builderNameEnglish: builderName || null,
         };
 
-        try {
-            await updatePropertySocietyDetailsAction(pid, payload);
-            toast.success("Society details updated successfully");
-        } catch (err) {
-            console.error("Submission error:", err);
-            toast.error("An error occurred during update.");
-        } finally {
-            setIsUpdating(false);
-        }
+        confirm({
+            variant: "update",
+            title: t('society.updateConfirmTitle'),
+            description: t('society.updateConfirmText'),
+            confirmText: t('society.updateConfirmButton'),
+            onConfirm: async () => {
+                setIsUpdating(true);
+                try {
+                    await updatePropertySocietyDetailsAction(pid, payload);
+                    toast.success(t('society.updateSuccess'));
+                } catch (err) {
+                    console.error("Submission error:", err);
+                    toast.error(t('society.updateError'));
+                } finally {
+                    setIsUpdating(false);
+                }
+            }
+        });
     };
 
     return (
@@ -369,7 +370,7 @@ const SocietyForm = ({ societyData, propertyIdSearch }: SocietyFormProps) => {
 
                         </div>
                         <div className="flex justify-end space-x-2 mt-4">
-                            <AddButton label="Update" type="submit" isLoading={isUpdating} />
+                            <AddButton label={t('society.updateButton')} type="submit" isLoading={isUpdating} />
                         </div>
                     </div>
                 </Tabs.TabPanel>

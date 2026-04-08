@@ -259,7 +259,13 @@
         "length": "Length",
         "width": "Width",
         "enterLength": "Enter length (ft)",
-        "enterWidth": "Enter width (ft)"
+        "enterWidth": "Enter width (ft)",
+        "updateConfirmTitle": "Confirm Update",
+        "updateConfirmText": "Are you sure you want to update the property details?",
+        "updateConfirmButton": "Yes, Update",
+        "updateSuccess": "Property basic details updated successfully",
+        "updateError": "An error occurred during update.",
+        "updateButton": "Update"
     },
     "kyc": {
         "title": "Owner & Contact Information",
@@ -316,7 +322,24 @@
         "managerEmail": "Manager Email",
         "managerEmailPlaceholder": "Enter manager email",
         "managerMobileNo": "Manager Mobile No",
-        "societyAddressPlaceholder": "Enter society address"
+        "societyAddressPlaceholder": "Enter society address",
+        "updateConfirmTitle": "Confirm Update",
+        "updateConfirmText": "Are you sure you want to update the society details?",
+        "updateConfirmButton": "Yes, Update",
+        "updateSuccess": "Society details updated successfully",
+        "updateError": "An error occurred during update.",
+        "updateButton": "Update",
+        "validation": {
+            "landOwnerName": "Invalid Land Owner Name. Only letters, spaces, and . , ' - are allowed.",
+            "builderName": "Invalid Builder Name. Only letters, spaces, and . , ' - are allowed.",
+            "managerName": "Invalid Manager Name. Only letters, spaces, and . , ' - are allowed.",
+            "secretaryName": "Invalid Secretary Name. Only letters, spaces, and . , ' - are allowed.",
+            "societyEmail": "Invalid Society Email address format.",
+            "managerEmail": "Invalid Manager Email address format.",
+            "secretaryEmail": "Invalid Secretary Email address format.",
+            "managerMobile": "Manager Mobile Number must be 10 digits.",
+            "secretaryMobile": "Secretary Mobile Number must be 10 digits."
+        }
     },
     "building": {
         "billDate": "Bill Date",

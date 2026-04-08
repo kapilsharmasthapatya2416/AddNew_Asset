@@ -28,7 +28,8 @@ export async function closeDrawer(formData: FormData) {
     if (propertyId) query.set('propertyId', propertyId);
 
     const queryString = query.toString();
-    redirect(`/${locale}/property-tax/ptis${queryString ? `?${queryString}` : ''}`);
+    // closeDrawer
+    redirect(`/${locale}/property-tax/ptis?${queryString}`);
 }
 
 export const dynamic = 'force-dynamic';

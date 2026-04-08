@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Tabs, Input, AddButton, SearchSelect } from '@/components/common';
 import { Label } from '@/components/common/label';
+import { useConfirm } from '@/components/common/ConfirmProvider';
 
 
 import { PropertySocietyDetailsApiItem } from '@/types/property-Society-details.type';
@@ -35,6 +36,7 @@ const PropertyFormView = ({
 }: PropertyFormViewProps) => {
 
     const t = useTranslations('quickDataEntry');
+    const { confirm } = useConfirm();
 
     // ✅ State (clear naming)
     const [propertyDescriptionList] = useState(initialPropertyDescriptionList);
@@ -89,7 +91,6 @@ const PropertyFormView = ({
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsUpdating(true);
 
         const formData = new FormData(e.currentTarget);
         const pId = propertyData?.propertyId ?? 0;
@@ -123,15 +124,24 @@ const PropertyFormView = ({
             wingName: propertySocietyDetails?.wingName || null,
         };
 
-        try {
-            await updatePropertyBasicDetailsAction(pId, payload);
-            toast.success("Property basic details updated successfully");
-        } catch (err) {
-            console.error("Submission error:", err);
-            toast.error("An error occurred during update.");
-        } finally {
-            setIsUpdating(false);
-        }
+        confirm({
+            variant: "update",
+            title: t('property.updateConfirmTitle'),
+            description: t('property.updateConfirmText'),
+            confirmText: t('property.updateConfirmButton'),
+            onConfirm: async () => {
+                setIsUpdating(true);
+                try {
+                    await updatePropertyBasicDetailsAction(pId, payload);
+                    toast.success(t('property.updateSuccess'));
+                } catch (err) {
+                    console.error("Submission error:", err);
+                    toast.error(t('property.updateError'));
+                } finally {
+                    setIsUpdating(false);
+                }
+            }
+        });
     };
 
     return (
@@ -377,7 +387,7 @@ const PropertyFormView = ({
                             </div>
                         </div>
                         <div className="flex justify-end space-x-2 mt-4">
-                            <AddButton label="Update" type='submit' isLoading={isUpdating} />
+                            <AddButton label={t('property.updateButton')} type='submit' isLoading={isUpdating} />
                         </div>
                     </div>
                 </Tabs.TabPanel>

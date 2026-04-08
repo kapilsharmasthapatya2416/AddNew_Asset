@@ -84,6 +84,7 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
 
     return (
         <div className="quick-data-drawer-root">
+
             <style dangerouslySetInnerHTML={{
                 __html: `
                 .quick-data-drawer-root div.fixed.right-0 {
@@ -128,6 +129,7 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
                     align-items: center !important;
                 }
             `}} />
+
             <Drawer
                 open={true}
                 onClose={handleClose}
@@ -158,10 +160,10 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
                                     return (
                                         <Link
                                             key={tab.href}
-                                            href={`${tab.href}?${queryString}`}
+                                            href={`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/${tab.href}?${queryString}`}
                                             shallow={true}
                                             className={[
-                                                'inline-flex items- gap-1 px-2 py-2 text-[11px] rounded-md border font-semibold transition-all hover:shadow-md',
+                                                'inline-flex gap-1 px-2 py-2 text-[11px] rounded-md border font-semibold transition-all hover:shadow-md',
                                                 isActive
                                                     ? `${activeStyles} shadow-md`
                                                     : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50'

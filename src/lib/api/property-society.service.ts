@@ -1,13 +1,15 @@
 /* ---------------- PROPERTY SOCIETY DETAILS ---------------- */
 
 import { apiClient } from "@/services/api.service";
-import {
-    PropertySocietyDetailsApiItem,
-    PropertySocietyDetailsResponse,
-    UpdatePropertySocietyDetailsDto
-} from "../../types/property-Society-details.type";
+
 
 import { ActionResult } from "@/types/property-basic-details.types";
+
+import { 
+    PropertySocietyDetailsApiItem, 
+    PropertySocietyDetailsResponse,
+     UpdatePropertySocietyDetailsDto
+     } from "@/types/property-Society-details.types";
 
 export async function getPropertySocietyDetails(propertyId: number): Promise<PropertySocietyDetailsApiItem | null> {
     const response = await apiClient.get<PropertySocietyDetailsResponse>(`/Property/${propertyId}/society-details`);
