@@ -3,10 +3,9 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Home, Building2, FileText } from 'lucide-react';
+import { Building, Building2, FileText, Home, Layers, Percent, Users } from 'lucide-react';
 import { Drawer } from '@/components/common/Drawer';
-
-// Users, Layers, Percent, Building,
+import { cn } from '@/lib/utils/cn';
 
 interface Tab {
     label: string;
@@ -16,7 +15,12 @@ interface Tab {
 
 const TABS: Tab[] = [
     { label: 'Property', href: 'Property', icon: Home },
-    { label: 'Society', href: 'Society', icon: Building2 }
+    { label: 'KYC', href: 'Kyc', icon: Users },
+    { label: 'Society', href: 'Society', icon: Building2 },
+    { label: 'Building Permission', href: 'Building', icon: Building },
+    { label: 'Floor', href: 'FloorSubmission', icon: Layers },
+    { label: 'Discount', href: 'Discount', icon: Percent },
+    { label: 'Old Details', href: 'OldDetails', icon: FileText },
 ];
 
 interface DrawerShellProps {
@@ -72,52 +76,25 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
     );
 
     return (
-        <div className="quick-data-drawer-root">
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .quick-data-drawer-root div.fixed.right-0 {
-                    width: 97vw !important;
-                }
-                @media (min-width: 768px) {
-                    .quick-data-drawer-root div.fixed.right-0 {
-                        width: 1000px !important;
-                    }
-                }
-                @media (min-width: 1024px) {
-                    .quick-data-drawer-root div.fixed.right-0 {
-                        width: 1100px !important;
-                    }
-                }
-                @media (min-width: 1280px) {
-                    .quick-data-drawer-root div.fixed.right-0 {
-                        width: 1200px !important;
-                    }
-                }
-
-                .quick-data-drawer-root div.fixed.right-0 > div:first-child {
-                    background-color: #2563eb !important;
-                    border-bottom: 1px solid #1d4ed8 !important;
-                    padding-top: 10px !important;
-                    padding-bottom: 10px !important;
-                    display: flex !important;
-                    align-items: center !important;
-                }
-                .quick-data-drawer-root div.fixed.right-0 > div:first-child h2 {
-                    color: white !important;
-                }
-                .quick-data-drawer-root div.fixed.right-0 > div:first-child button {
-                    color: white !important;
-                    opacity: 0.8;
-                }
-                .quick-data-drawer-root div.fixed.right-0 > div:first-child button:hover {
-                    opacity: 1;
-                    background-color: rgba(255, 255, 255, 0.1) !important;
-                }
-                .quick-data-drawer-root div.fixed.right-0 > div:first-child .flex.items-start.gap-3 {
-                    align-items: center !important;
-                }
-            `}} />
+        <div className={cn(
+            "[&_div.fixed.right-0]:!w-[97vw]",
+            "md:[&_div.fixed.right-0]:!w-[1000px]",
+            "lg:[&_div.fixed.right-0]:!w-[1100px]",
+            "xl:[&_div.fixed.right-0]:!w-[1200px]",
+            "[&_div.fixed.right-0>div:first-child]:!bg-[#2563eb]",
+            "[&_div.fixed.right-0>div:first-child]:!border-b",
+            "[&_div.fixed.right-0>div:first-child]:!border-[#1d4ed8]",
+            "[&_div.fixed.right-0>div:first-child]:!pt-[10px]",
+            "[&_div.fixed.right-0>div:first-child]:!pb-[10px]",
+            "[&_div.fixed.right-0>div:first-child]:!flex",
+            "[&_div.fixed.right-0>div:first-child]:!items-center",
+            "[&_div.fixed.right-0>div:first-child_h2]:!text-white",
+            "[&_div.fixed.right-0>div:first-child_button]:!text-white",
+            "[&_div.fixed.right-0>div:first-child_button]:opacity-80",
+            "[&_div.fixed.right-0>div:first-child_button]:hover:opacity-100",
+            "[&_div.fixed.right-0>div:first-child_button]:hover:!bg-white/10",
+            "[&_div.fixed.right-0>div:first-child_.flex.items-start.gap-3]:!items-center"
+        )}>
 
             <Drawer
                 open={true}
@@ -151,14 +128,14 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
                                             key={tab.href}
                                             href={`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/${tab.href}?${queryString}`}
                                             shallow={true}
-                                            className={[
+                                            className={cn(
                                                 'inline-flex gap-1 px-2 py-2 text-[11px] rounded-md border font-semibold transition-all hover:shadow-md',
                                                 isActive
                                                     ? `${activeStyles} shadow-md`
                                                     : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                                            ].join(' ')}
+                                            )}
                                         >
-                                            <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                                            <Icon className={cn("w-3.5 h-3.5", isActive ? 'text-white' : 'text-gray-400')} />
                                             <span className="whitespace-nowrap">{tab.label}</span>
                                         </Link>
                                     );
