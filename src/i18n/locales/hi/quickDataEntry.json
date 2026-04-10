@@ -199,20 +199,20 @@
         "property": "संपत्ति",
         "partition": "विभाजन",
         "close": "बंद करें"
-    },
+    },    
     "tabs": {
-        "property": "संपत्ति",
-        "kyc": "केवाईसी",
-        "society": "सोसाइटी",
-        "building": "भवन",
-        "floor": "मंजिल",
-        "discount": "छूट",
-        "oldDetails": "पुराने विवरण"
+        "Property": "संपत्ति",
+        "Kyc": "केवाईसी",
+        "Society": "सोसाइटी",
+        "BuildingPermission": "भवन अनुमति",
+        "FloorSubmission": "मंजिल",
+        "Discount": "छूट",
+        "OldDetails": "पुराने विवरण"
     },
     "property": {
         "title": "संपत्ति जानकारी",
         "division": "विभाग",
-        "divisionPlaceholder": "डिवीजन दर्ज करें",        
+        "divisionPlaceholder": "डिवीजन दर्ज करें",
         "flatShopNoPlaceholder": "फ्लैट नं. / दुकान नं. दर्ज करें",
         "plotNoPlaceholder": "उदा., प्लॉट-१५६",
         "wing": "विंग",

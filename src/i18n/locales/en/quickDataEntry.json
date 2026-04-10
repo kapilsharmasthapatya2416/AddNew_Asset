@@ -201,13 +201,13 @@
         "close": "Close"
     },
     "tabs": {
-        "property": "Property",
-        "kyc": "KYC",
-        "society": "Society",
-        "building": "Building",
-        "floor": "Floor",
-        "discount": "Discount",
-        "oldDetails": "Old Details"
+        "Property": "Property",
+        "KYC": "KYC",
+        "Society": "Society",
+        "BuildingPermission": "Building Permission",
+        "FloorSubmission": "Floor",
+        "Discount": "Discount",
+        "Old Details": "Old Details"
     },
     "property": {
         "title": "Property Information",

@@ -3,24 +3,32 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Building, Building2, FileText, Home, Layers, Percent, Users } from 'lucide-react';
+import { 
+    Building2, 
+    FileText, 
+    Home, 
+    User, 
+    Building, 
+    Layers, 
+    Percent 
+} from 'lucide-react';
 import { Drawer } from '@/components/common/Drawer';
 import { cn } from '@/lib/utils/cn';
 
 interface Tab {
-    label: string;
-    href: string;        // segment key, e.g. "Property"
+    label: string;      // translation key in tabs namespace
+    href: string;       // segment key, e.g. "Property"
     icon: React.ElementType;
 }
 
 const TABS: Tab[] = [
     { label: 'Property', href: 'Property', icon: Home },
-    { label: 'KYC', href: 'Kyc', icon: Users },
+    { label: 'Kyc', href: 'Kyc', icon: User },
     { label: 'Society', href: 'Society', icon: Building2 },
-    { label: 'Building Permission', href: 'Building', icon: Building },
-    { label: 'Floor', href: 'FloorSubmission', icon: Layers },
+    { label: 'BuildingPermission', href: 'Building', icon: Building },
+    { label: 'FloorSubmission', href: 'FloorSubmission', icon: Layers },
     { label: 'Discount', href: 'Discount', icon: Percent },
-    { label: 'Old Details', href: 'OldDetails', icon: FileText },
+    { label: 'OldDetails', href: 'OldDetails', icon: FileText },
 ];
 
 interface DrawerShellProps {
@@ -32,7 +40,10 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const router = useRouter();
+    
+    // Scoped translations
     const t = useTranslations("quickDataEntry");
+    const tTabs = useTranslations("quickDataEntry.tabs");
     const tCommon = useTranslations("common");
 
     const wardNo = searchParams.get('wardNo') ?? '';
@@ -40,10 +51,12 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
     const partitionNo = searchParams.get('partitionNo') ?? '';
     const propertyId = searchParams.get('propertyId') ?? '';
 
-    const queryString = new URLSearchParams({ propertyId, wardNo, propertyNo, partitionNo, }).toString();
-
-    // Determine which segment is active
-    const activeSegment = pathname.split('/').pop() ?? '';
+    const queryString = new URLSearchParams({ 
+        propertyId, 
+        wardNo, 
+        propertyNo, 
+        partitionNo 
+    }).toString();
 
     // Hide header and tabs on Renter page
     const isRenterPage = pathname.includes('/Renter');
@@ -102,13 +115,12 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
                 title={!isRenterPage ? drawerTitle : null}
                 width="xl"
             >
-                {/* <div className="flex flex-col h-full bg-[#f4f7fe]"> */}
-                <div className='bg-white border-slate-300 shadow-sm overflow-x-auto no-scrollbar'>
+                <div className='bg-white flex flex-col h-full border-slate-300 shadow-sm overflow-hidden'>
                     {!isRenterPage && (
-                        <div className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10 shadow-sm">
-                            <nav className="flex md:grid w-full grid-cols-7 gap-2">
+                        <div className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10 shadow-sm overflow-x-auto no-scrollbar">
+                            <nav className="flex items-center gap-2 min-w-max md:grid md:grid-cols-7">
                                 {TABS.map((tab) => {
-                                    const isActive = activeSegment === tab.href || pathname === `/${tab.href}`;
+                                    const isActive = pathname.split('/').some(segment => segment.toLowerCase() === tab.href.toLowerCase());
                                     const Icon = tab.icon;
 
                                     let activeStyles = '';
@@ -129,14 +141,14 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
                                             href={`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/${tab.href}?${queryString}`}
                                             shallow={true}
                                             className={cn(
-                                                'inline-flex gap-1 px-2 py-2 text-[11px] rounded-md border font-semibold transition-all hover:shadow-md',
+                                                'inline-flex items-center justify-center gap-2 px-4 py-2 text-[12px] rounded-md border font-bold transition-all hover:shadow-md h-[36px]',
                                                 isActive
                                                     ? `${activeStyles} shadow-md`
-                                                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                                    : 'bg-white text-gray-400 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                                             )}
                                         >
-                                            <Icon className={cn("w-3.5 h-3.5", isActive ? 'text-white' : 'text-gray-400')} />
-                                            <span className="whitespace-nowrap">{tab.label}</span>
+                                            <Icon className={cn("w-4 h-4", isActive ? 'text-white' : 'text-gray-400')} />
+                                            <span className="whitespace-nowrap">{tTabs(tab.label)}</span>
                                         </Link>
                                     );
                                 })}

@@ -1,7 +1,11 @@
 "use server";
 
 import {
-    getPropertyBasicDetails, getPropertyCategories, getPropertyTypes, getWingMaster, updatePropertyBasicDetails
+    getPropertyBasicDetails,
+    getPropertyCategories,
+    getPropertyTypes,
+    getWingMaster,
+    updatePropertyBasicDetails
 } from "@/lib/api/property-basic-details.service";
 
 import {

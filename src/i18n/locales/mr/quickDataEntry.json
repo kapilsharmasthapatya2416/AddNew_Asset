@@ -201,13 +201,13 @@
         "close": "बंद करा"
     },
     "tabs": {
-        "property": "मालमत्ता",
-        "kyc": "केवायसी",
-        "society": "सोसायटी",
-        "building": "इमारत",
-        "floor": "मजला",
-        "discount": "सवलत",
-        "oldDetails": "जुने तपशील"
+        "Property": "मालमत्ता",
+        "Kyc": "केवायसी",
+        "Society": "सोसायटी",
+        "BuildingPermission": "इमारत परवानगी",
+        "FloorSubmission": "मजला",
+        "Discount": "सवलत",
+        "OldDetails": "जुने तपशील"
     },
     "property": {
         "title": "मालमत्ता माहिती",

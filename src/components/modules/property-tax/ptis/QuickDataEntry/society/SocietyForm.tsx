@@ -2,7 +2,11 @@
 import { AddButton, Input, Tabs } from "@/components/common"
 import { Label } from "@/components/common/label"
 import { useTranslations } from "next-intl";
-import { PropertySocietyDetailsApiItem, UpdatePropertySocietyDetailsDto } from "@/types/property-Society-details.types";
+import {
+    PropertySocietyDetailsApiItem,
+    UpdatePropertySocietyDetailsDto
+} from "@/types/property-society-details.types";
+
 import { updatePropertySocietyDetailsAction } from "@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -132,7 +136,14 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
             onConfirm: async () => {
                 setIsUpdating(true);
                 try {
-                    await updatePropertySocietyDetailsAction(locale, pid, payload);
+                    const result = await updatePropertySocietyDetailsAction(locale, pid, payload);
+
+                    if (!result?.success) {
+                        console.error("Submission error:", result?.error);
+                        toast.error(result?.error || t('society.updateError'));
+                        return;
+                    }
+
                     toast.success(t('society.updateSuccess'));
                 } catch (err) {
                     console.error("Submission error:", err);

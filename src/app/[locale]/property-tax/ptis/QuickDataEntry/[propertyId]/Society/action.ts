@@ -1,7 +1,8 @@
 'use server';
 
 import { getPropertySocietyDetails, updatePropertySocietyDetails } from '@/lib/api/property-society.service';
-import { UpdatePropertySocietyDetailsDto } from '@/types/property-Society-details.types';
+import { UpdatePropertySocietyDetailsDto } from '@/types/property-society-details.types';
+
 import { revalidatePath } from 'next/cache';
 
 /**  Action to update property society details*/

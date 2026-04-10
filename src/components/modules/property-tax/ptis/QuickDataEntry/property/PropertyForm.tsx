@@ -6,11 +6,13 @@ import { Tabs, Input, AddButton, SearchSelect } from '@/components/common';
 import { Label } from '@/components/common/label';
 import { useConfirm } from '@/components/common/ConfirmProvider';
 
-
-import { PropertySocietyDetailsApiItem } from '@/types/property-Society-details.types';
+import { PropertySocietyDetailsApiItem } from '@/types/property-society-details.types';
 
 import { toast } from 'sonner';
-import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
+import { 
+    updatePropertyBasicDetailsAction 
+} from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
+
 import {
     PropertyBasicDetailsApiItem,
     PropertyCategoryApiItem,
@@ -91,6 +93,8 @@ const PropertyFormView = ({
         setWingName(selectedWing?.wingNo || '');
     };
 
+
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -123,11 +127,11 @@ const PropertyFormView = ({
 
             // wingNo: String(formData.get("wingName") ?? "").trim() || null,
 
-            noOfResidentialToilets: Number(formData.get("noOfResidentialToilets")),
-            noOfCommercialToilets: Number(formData.get("noOfCommercialToilets")),
-            totalBuiltupAreaSqFeet: Number(formData.get("totalBuiltupAreaSqFeet")),
-            totalCarpetAreaSqFeet: Number(formData.get("totalCarpetAreaSqFeet")),
-            plotArea: Number(formData.get("plotArea")),
+            noOfResidentialToilets: Number(formData.get("noOfResidentialToilets")) || null,
+            noOfCommercialToilets: Number(formData.get("noOfCommercialToilets")) || null,
+            totalBuiltupAreaSqFeet: Number(formData.get("totalBuiltupAreaSqFeet")) || null,
+            totalCarpetAreaSqFeet: Number(formData.get("totalCarpetAreaSqFeet")) || null,
+            plotArea: Number(formData.get("plotArea")) || null,
 
             plotAreaFtLength: propertyData?.plotAreaFtLength || null,
             plotAreaFtWidth: propertyData?.plotAreaFtWidth || null,
@@ -241,6 +245,9 @@ const PropertyFormView = ({
                                 <Input
                                     id="pd-plot"
                                     name="plotNo"
+                                    type="number"
+                                    step="any"
+                                    min="0"
                                     placeholder={t('property.plotNoPlaceholder')}
                                     defaultValue={propertyData?.plotNo ?? ''}
                                     className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"

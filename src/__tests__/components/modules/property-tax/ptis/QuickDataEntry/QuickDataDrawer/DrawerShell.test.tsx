@@ -1,6 +1,6 @@
 import DrawerShell from '@/components/modules/property-tax/ptis/QuickDataEntry/QuickDataDrawer/DrawerShell';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { usePathname } from 'next/navigation';
 
 // Mock next/navigation
@@ -19,32 +19,37 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock next-intl
-vi.mock('next-intl', () => ({
-    useTranslations: (namespace: string) => (key: string) => {
-        const translations: Record<string, Record<string, string>> = {
-            'common': {
-                'app.assessmentSystem': 'PTIS Assessment',
-                'buttons.close': 'Close'
-            },
-            'quickDataEntry': {
-                'roomSubmission.info.ward': 'Ward',
-                'roomSubmission.info.property': 'Property',
-                'roomSubmission.info.partition': 'Partition'
-            }
-        };
-        return translations[namespace]?.[key] || key;
-    },
-}));
+vi.mock('next-intl', () => {
+    const translations: Record<string, string> = {
+        'common.app.assessmentSystem': 'PTIS Assessment',
+        'quickDataEntry.roomSubmission.info.ward': 'Ward',
+        'quickDataEntry.roomSubmission.info.property': 'Property',
+        'quickDataEntry.roomSubmission.info.partition': 'Partition',
+        'quickDataEntry.tabs.property': 'Property',
+        'quickDataEntry.tabs.kyc': 'KYC',
+        'quickDataEntry.tabs.society': 'Society',
+        'quickDataEntry.tabs.building': 'Building Permission',
+        'quickDataEntry.tabs.floor': 'Floor',
+        'quickDataEntry.tabs.discount': 'Discount',
+        'quickDataEntry.tabs.oldDetails': 'Old Details'
+    };
+    return {
+        useTranslations: (namespace: string) => (key: string) => {
+            const fullKey = namespace ? `${namespace}.${key}` : key;
+            return translations[fullKey] || key;
+        },
+    };
+});
 
 // Mock icons
 vi.mock('lucide-react', () => ({
     Home: () => <div data-testid="icon-home" />,
-    Users: () => <div data-testid="icon-users" />,
+    User: () => <div data-testid="icon-user" />,
     Building2: () => <div data-testid="icon-building2" />,
+    Building: () => <div data-testid="icon-building" />,
     Layers: () => <div data-testid="icon-layers" />,
     Percent: () => <div data-testid="icon-percent" />,
     FileText: () => <div data-testid="icon-filetext" />,
-    Building: () => <div data-testid="icon-building" />,
     X: () => <div data-testid="icon-x" />,
 }));
 
@@ -66,24 +71,21 @@ describe('DrawerShell', () => {
         expect(screen.getByText((content) => content.includes('Partition') && content.includes('0'))).toBeInTheDocument();
     });
 
-    it('renders all navigation tabs', () => {
+    it('renders all 7 localized navigation tabs', () => {
         render(
             <DrawerShell locale="en">
                 <div>Content</div>
             </DrawerShell>
         );
 
-        expect(screen.getByText('Property')).toBeInTheDocument();
-        expect(screen.getByText('KYC')).toBeInTheDocument();
-        expect(screen.getByText('Society')).toBeInTheDocument();
-        expect(screen.getByText('Building Permission')).toBeInTheDocument();
-        expect(screen.getByText('Floor')).toBeInTheDocument();
-        expect(screen.getByText('Discount')).toBeInTheDocument();
-        expect(screen.getByText('Old Details')).toBeInTheDocument();
+        const tabNames = ['Property', 'KYC', 'Society', 'Building Permission', 'Floor', 'Discount', 'Old Details'];
+        tabNames.forEach(name => {
+            expect(screen.getByText(name)).toBeInTheDocument();
+        });
     });
 
-    it('highlights the active tab based on pathname', () => {
-        // Path ends with /Society
+    it('highlights the Society tab as active when pathname includes /Society', () => {
+        // Path ends with /Society in mock
         render(
             <DrawerShell locale="en">
                 <div>Content</div>
@@ -91,7 +93,20 @@ describe('DrawerShell', () => {
         );
 
         const societyTab = screen.getByRole('link', { name: /society/i });
-        expect(societyTab).toHaveClass('bg-purple-600'); // Based on current code logic
+        expect(societyTab).toHaveClass('bg-purple-600');
+    });
+
+    it('highlights the Kyc tab as active when pathname includes /Kyc', () => {
+        vi.mocked(usePathname).mockReturnValueOnce('/en/property-tax/ptis/QuickDataEntry/123/Kyc');
+
+        render(
+            <DrawerShell locale="en">
+                <div>Content</div>
+            </DrawerShell>
+        );
+
+        const kycTab = screen.getByRole('link', { name: /kyc/i });
+        expect(kycTab).toHaveClass('bg-green-600');
     });
 
     it('calls router.push when the close button is clicked', () => {
@@ -101,6 +116,7 @@ describe('DrawerShell', () => {
             </DrawerShell>
         );
 
+        // Finding close button - in Drawer it's the button containing the X icon
         const closeButton = screen.getByTestId('icon-x').closest('button')!;
         fireEvent.click(closeButton);
 
