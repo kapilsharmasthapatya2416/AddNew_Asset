@@ -1,4 +1,5 @@
 import DrawerShell from '@/components/modules/property-tax/ptis/QuickDataEntry/QuickDataDrawer/DrawerShell';
+import { Suspense } from 'react';
 
 interface QuickDataEntryLayoutProps {
     children: React.ReactNode;
@@ -12,10 +13,10 @@ export default async function QuickDataEntryLayout({
     const { locale } = await params;
 
     return (
-        // <Suspense fallback={null}>
-        <DrawerShell locale={locale}>
-            {children}
-        </DrawerShell>
-        // </Suspense>
+        <Suspense fallback={null}>
+            <DrawerShell locale={locale}>
+                {children}
+            </DrawerShell>
+        </Suspense>
     );
 }

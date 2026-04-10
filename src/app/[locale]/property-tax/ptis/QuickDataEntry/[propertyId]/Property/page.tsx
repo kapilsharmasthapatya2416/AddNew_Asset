@@ -23,7 +23,7 @@ interface PageProps {
 
 export default async function PropertyFormPage({ params }: PageProps): Promise<React.JSX.Element> {
 
-    const { locale, propertyId } = await params;
+    const { locale, propertyId } = await params;    
     setRequestLocale(locale);
 
     // ✅ Parallel API calls with clear naming
@@ -49,7 +49,6 @@ export default async function PropertyFormPage({ params }: PageProps): Promise<R
     const WingMasterList = WingMaster.success ? WingMaster.data : [];
 
     return (
-        <Suspense fallback={<div>Loading Property...</div>}>
             <PropertyFormView
                 WingMaster={WingMasterList}
                 propertyCategories={propertyCategoryList}
@@ -58,6 +57,5 @@ export default async function PropertyFormPage({ params }: PageProps): Promise<R
                 propertySocietyDetails={propertySocietyDetails}
                 locale={locale}
             />
-         </Suspense>
     );
 }

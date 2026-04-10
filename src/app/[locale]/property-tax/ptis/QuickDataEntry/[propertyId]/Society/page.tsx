@@ -21,12 +21,10 @@ export default async function SocietyFormPage({ params }: PageProps) {
     const propertySocietyDetails = await getPropertySocietyDetailsAction(Number(propertyId));    
 
     return (
-        <Suspense fallback={<div>Loading Society...</div>}>
             <SocietyForm
                 societyData={propertySocietyDetails}
                 propertyIdSearch={Number(propertyId)}
                 locale={locale}
             />
-        </Suspense>
     )
 }

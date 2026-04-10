@@ -9,8 +9,8 @@ import { useConfirm } from '@/components/common/ConfirmProvider';
 import { PropertySocietyDetailsApiItem } from '@/types/property-society-details.types';
 
 import { toast } from 'sonner';
-import { 
-    updatePropertyBasicDetailsAction 
+import {
+    updatePropertyBasicDetailsAction
 } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
 
 import {
