@@ -47,6 +47,7 @@ export function Select({
   const listRef = useRef<HTMLUListElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listboxId = useId();
+  const optionIdPrefix = useId();
  
  
   React.useEffect(() => {
@@ -208,6 +209,7 @@ export function Select({
           aria-expanded={open}
           aria-haspopup="listbox"
           aria-controls={listboxId}
+          aria-activedescendant={open && highlightedIndex >= 0 ? `${optionIdPrefix}-${highlightedIndex}` : undefined}
         >
           <span
             className={cn(
@@ -235,6 +237,7 @@ export function Select({
             {options.map((opt, index) => (
               <li
                 key={opt.value}
+                id={`${optionIdPrefix}-${index}`}
                 className={cn(
                   "px-4 py-2 cursor-pointer transition-colors",
                   index === highlightedIndex ? "bg-blue-100" : "hover:bg-blue-50",

@@ -67,19 +67,22 @@ export default function ConstructionTypeForm({
     (data: ConstructionTypeFormModel): Partial<Record<keyof ConstructionTypeFormModel, string>> => {
       const e: Partial<Record<keyof ConstructionTypeFormModel, string>> = {};
 
-      if (!data.constructionCode.trim()) {
+      const constructionCode = data.constructionCode.trim();
+      const description = data.description.trim();
+
+      if (!constructionCode) {
         e.constructionCode = t("form.validation.constructionCodeRequired");
-      } else if (data.constructionCode.length > CONSTRUCTION_CODE_MAX) {
+      } else if (constructionCode.length > CONSTRUCTION_CODE_MAX) {
         e.constructionCode = t("form.validation.constructionCodeMaxLength");
-      } else if (!CONSTRUCTION_CODE_REGEX.test(data.constructionCode)) {
+      } else if (!CONSTRUCTION_CODE_REGEX.test(constructionCode)) {
         e.constructionCode = t("form.validation.constructionCodeFormat");
       }
 
-      if (!data.description.trim()) {
+      if (!description) {
         e.description = t("form.validation.descriptionRequired");
-      } else if (data.description.length > DESCRIPTION_MAX) {
+      } else if (description.length > DESCRIPTION_MAX) {
         e.description = t("form.validation.descriptionMaxLength");
-      } else if (!DESCRIPTION_REGEX.test(data.description)) {
+      } else if (!DESCRIPTION_REGEX.test(description)) {
         e.description = t("form.validation.descriptionFormat");
       }
 
