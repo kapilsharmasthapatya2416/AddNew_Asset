@@ -15,13 +15,11 @@ export function decodeCookieValue(raw: string | undefined): string | undefined {
 export function getCookieValue(name: string): string | undefined {
   if (typeof document === 'undefined') return undefined;
 
-  const cookieEntry = document.cookie
-    .split('; ')
-    .find((part) => {
-      const separatorIndex = part.indexOf('=');
-      const cookieName = separatorIndex === -1 ? part : part.slice(0, separatorIndex);
-      return cookieName === name;
-    });
+  const cookieEntry = document.cookie.split('; ').find((part) => {
+    const separatorIndex = part.indexOf('=');
+    const cookieName = separatorIndex === -1 ? part : part.slice(0, separatorIndex);
+    return cookieName === name;
+  });
 
   if (!cookieEntry) return undefined;
 

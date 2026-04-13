@@ -31,7 +31,9 @@ describe('LoginForm', () => {
 
   it('renders default branding when ulbData is omitted', () => {
     renderWithIntl(<LoginForm locale="en" />);
-    expect(screen.getByRole('heading', { level: 1, name: /Sthapatya Consultant/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: /Sthapatya Consultant/i })
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();
     expect(screen.getByText(String(enCommon.login.title))).toBeInTheDocument();
   });
@@ -50,7 +52,9 @@ describe('LoginForm', () => {
         }}
       />
     );
-    expect(screen.getByRole('heading', { level: 1, name: 'Test Municipal Council' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Test Municipal Council' })
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: 'परिक्षा' })).toBeInTheDocument();
   });
 
@@ -101,11 +105,16 @@ describe('LoginForm', () => {
     const usernameInput = screen.getByPlaceholderText(String(enCommon.login.usernamePlaceholder));
     expect(usernameInput).toHaveValue('preuser');
 
-    await user.type(screen.getByPlaceholderText(String(enCommon.login.passwordPlaceholder)), 'secret');
+    await user.type(
+      screen.getByPlaceholderText(String(enCommon.login.passwordPlaceholder)),
+      'secret'
+    );
     await user.click(screen.getByRole('button', { name: String(enCommon.login.signIn) }));
 
     await waitFor(() => {
-      expect(screen.getByText(String(enCommon.login.errors.invalidCredentials))).toBeInTheDocument();
+      expect(
+        screen.getByText(String(enCommon.login.errors.invalidCredentials))
+      ).toBeInTheDocument();
     });
 
     expect(mockLoginAction).toHaveBeenCalled();
@@ -121,7 +130,9 @@ describe('LoginForm', () => {
     renderWithIntl(<LoginForm locale="en" />);
 
     const passwordInput = screen.getByPlaceholderText(String(enCommon.login.passwordPlaceholder));
-    expect(screen.queryByRole('button', { name: String(enCommon.login.showPassword) })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: String(enCommon.login.showPassword) })
+    ).not.toBeInTheDocument();
 
     await user.type(passwordInput, 'x');
     const toggle = screen.getByRole('button', { name: String(enCommon.login.showPassword) });
@@ -148,7 +159,9 @@ describe('LoginForm', () => {
     await user.click(screen.getByRole('button', { name: String(enCommon.login.signIn) }));
 
     await waitFor(() => {
-      expect(screen.getByText(String(enCommon.login.errors.invalidCredentials))).toBeInTheDocument();
+      expect(
+        screen.getByText(String(enCommon.login.errors.invalidCredentials))
+      ).toBeInTheDocument();
     });
   });
 
@@ -164,7 +177,9 @@ describe('LoginForm', () => {
     await user.click(screen.getByRole('button', { name: String(enCommon.login.signIn) }));
 
     await waitFor(() => {
-      expect(screen.getByText(String(enCommon.login.errors.credentialsRequired))).toBeInTheDocument();
+      expect(
+        screen.getByText(String(enCommon.login.errors.credentialsRequired))
+      ).toBeInTheDocument();
     });
   });
 });

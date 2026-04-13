@@ -3,15 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import {
-  User,
-  Settings,
-  Lock,
-  Globe,
-  ChevronDown,
-  LogOut,
-  Router,
-} from 'lucide-react';
+import { User, Settings, Lock, Globe, ChevronDown, LogOut, Router } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { UlbMaster } from '@/types/master.types';
 import { Badge, Button, Card } from '@/components/common';
@@ -92,7 +84,10 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
 
   const title = useMemo(() => sanitizeInput(ulbData?.ulbName ?? '') || '', [ulbData?.ulbName]);
 
-  const localName = useMemo(() => sanitizeInput(ulbData?.ulbNameLocal ?? '') || '', [ulbData?.ulbNameLocal]);
+  const localName = useMemo(
+    () => sanitizeInput(ulbData?.ulbNameLocal ?? '') || '',
+    [ulbData?.ulbNameLocal]
+  );
 
   const locale = getLocaleFromPathname(pathname);
   const showLocalCouncilName = locale !== 'en' && Boolean(localName);
@@ -162,7 +157,7 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
     }
     const currentLocale = getLocaleFromPathname(pathname);
     await logoutAction(currentLocale);
-  }, [pathname]);
+  }, [logoutAction, pathname]);
 
   const goProfile = useCallback(() => {
     const loc = getLocaleFromPathname(pathname);
@@ -228,13 +223,18 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
               {title ? (
                 <h1
                   className="truncate text-sm sm:text-base md:text-2xl font-extrabold text-white"
-                  style={{ fontFamily: 'Georgia, "Times New Roman", serif', letterSpacing: '0.5px' }}
+                  style={{
+                    fontFamily: 'Georgia, "Times New Roman", serif',
+                    letterSpacing: '0.5px',
+                  }}
                 >
                   {title}
                 </h1>
               ) : null}
               {showLocalCouncilName ? (
-                <p className="mt-0.5 truncate text-[10px] sm:text-xs text-blue-100/90 font-medium">{localName}</p>
+                <p className="mt-0.5 truncate text-[10px] sm:text-xs text-blue-100/90 font-medium">
+                  {localName}
+                </p>
               ) : null}
 
               <p className="mt-1 flex flex-wrap gap-1 text-[10px] sm:text-xs md:text-sm text-gray-200">
@@ -245,7 +245,10 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
             </div>
           </div>
 
-          <div ref={menuRef} className="relative z-[60] flex shrink-0 items-center self-center overflow-visible pl-1 md:pl-2">
+          <div
+            ref={menuRef}
+            className="relative z-[60] flex shrink-0 items-center self-center overflow-visible pl-1 md:pl-2"
+          >
             <Button
               type="button"
               variant="ghost"
@@ -264,14 +267,21 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
             >
               <span className="flex w-full min-w-0 flex-row items-center justify-between gap-3">
                 <span className="flex min-w-0 flex-1 flex-col items-start justify-center gap-0.5 leading-tight">
-                  <span className="w-full truncate text-left text-xs font-semibold md:text-sm">{displayName}</span>
+                  <span className="w-full truncate text-left text-xs font-semibold md:text-sm">
+                    {displayName}
+                  </span>
                   {idSubtitle ? (
                     <span className="w-full truncate text-left text-[10px] text-blue-100/90 md:text-xs">
                       {idSubtitle}
                     </span>
                   ) : null}
                 </span>
-                <Badge variant="outline" size="lg" className={avatarBadgeClass} aria-hidden={!userInitial}>
+                <Badge
+                  variant="outline"
+                  size="lg"
+                  className={avatarBadgeClass}
+                  aria-hidden={!userInitial}
+                >
                   {userInitial || <User className="h-4 w-4" strokeWidth={2} aria-hidden />}
                 </Badge>
               </span>
@@ -279,7 +289,11 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
 
             {menuOpen ? (
               <>
-                <div className="fixed inset-0 z-[55] bg-black/20" aria-hidden onClick={() => setMenuOpen(false)} />
+                <div
+                  className="fixed inset-0 z-[55] bg-black/20"
+                  aria-hidden
+                  onClick={() => setMenuOpen(false)}
+                />
                 <Card
                   id="header-user-menu"
                   role="dialog"
@@ -292,28 +306,53 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
                     <div className="flex min-w-0 flex-1 flex-col">
                       <span className="truncate text-sm font-semibold">{displayName}</span>
                       {ulbCodeRaw ? (
-                        <span className="truncate text-xs uppercase tracking-wide text-blue-200/90">{ulbCodeRaw}</span>
+                        <span className="truncate text-xs uppercase tracking-wide text-blue-200/90">
+                          {ulbCodeRaw}
+                        </span>
                       ) : null}
                     </div>
-                    <Badge variant="outline" size="lg" className={avatarBadgeMenuClass} aria-hidden={!userInitial}>
+                    <Badge
+                      variant="outline"
+                      size="lg"
+                      className={avatarBadgeMenuClass}
+                      aria-hidden={!userInitial}
+                    >
                       {userInitial || <User className="h-5 w-5" strokeWidth={2} aria-hidden />}
                     </Badge>
                   </div>
 
                   <nav className="py-1" aria-label={t('userMenu.openUserMenu')}>
-                    <Button type="button" variant="ghost" size="sm" className={menuNavBtnClass} onClick={goProfile}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className={menuNavBtnClass}
+                      onClick={goProfile}
+                    >
                       <span className="flex w-full items-center gap-3">
                         <User className="h-4 w-4 shrink-0 text-blue-200" aria-hidden />
                         {t('userMenu.myProfile')}
                       </span>
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" className={menuNavBtnClass} onClick={goSettings}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className={menuNavBtnClass}
+                      onClick={goSettings}
+                    >
                       <span className="flex w-full items-center gap-3">
                         <Settings className="h-4 w-4 shrink-0 text-blue-200" aria-hidden />
                         {t('userMenu.settings')}
                       </span>
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" className={menuNavBtnClass} onClick={goChangePassword}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className={menuNavBtnClass}
+                      onClick={goChangePassword}
+                    >
                       <span className="flex w-full items-center gap-3">
                         <Lock className="h-4 w-4 shrink-0 text-blue-200" aria-hidden />
                         {t('userMenu.changePassword')}
@@ -362,7 +401,9 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
                               role="option"
                               aria-selected={locale === code}
                               className={`h-auto w-full rounded-lg px-3 py-2 text-left text-xs !justify-start hover:bg-white/10 sm:text-sm ${
-                                locale === code ? 'bg-white/10 font-medium !text-white' : '!text-blue-50/95'
+                                locale === code
+                                  ? 'bg-white/10 font-medium !text-white'
+                                  : '!text-blue-50/95'
                               }`}
                               onClick={() => pickLocale(code)}
                             >
@@ -378,7 +419,9 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
                     <Router className="mt-0.5 h-4 w-4 shrink-0 text-blue-200" aria-hidden />
                     <div className="min-w-0">
                       <p className="text-xs font-medium text-blue-200/90">{t('userMenu.yourIp')}</p>
-                      <p className="mt-0.5 break-all font-mono text-xs text-blue-50/90">{ipDisplay}</p>
+                      <p className="mt-0.5 break-all font-mono text-xs text-blue-50/90">
+                        {ipDisplay}
+                      </p>
                     </div>
                   </div>
 
