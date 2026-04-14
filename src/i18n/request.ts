@@ -17,10 +17,11 @@ export default getRequestConfig(async ({ locale }) => {
   const validatedLocale = validateLocale(locale);
 
   // Load all translation files
-  const [commonMessages, dashboardMessages, modulesMessages] = await Promise.all([
+  const [commonMessages, dashboardMessages, modulesMessages,taxZoningMessages] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
+   import(`./locales/${validatedLocale}/taxzoning.json`).then((m) => m.default),
   ]);
 
   return {
@@ -29,6 +30,7 @@ export default getRequestConfig(async ({ locale }) => {
       common: commonMessages,
       dashboard: dashboardMessages,
       modules: modulesMessages,
+       taxZoning: taxZoningMessages.taxZoning,
     },
   };
 });
