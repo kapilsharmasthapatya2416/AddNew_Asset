@@ -27,12 +27,7 @@ vi.mock('next-intl', () => {
         'quickDataEntry.roomSubmission.info.property': 'Property',
         'quickDataEntry.roomSubmission.info.partition': 'Partition',
         'quickDataEntry.tabs.Property': 'Property',
-        'quickDataEntry.tabs.Kyc': 'KYC',
         'quickDataEntry.tabs.Society': 'Society',
-        'quickDataEntry.tabs.BuildingPermission': 'Building Permission',
-        'quickDataEntry.tabs.FloorSubmission': 'Floor',
-        'quickDataEntry.tabs.Discount': 'Discount',
-        'quickDataEntry.tabs.OldDetails': 'Old Details'
     };
     return {
         useTranslations: (namespace: string) => (key: string) => {
@@ -72,14 +67,14 @@ describe('DrawerShell', () => {
         expect(screen.getByText((content) => content.includes('Partition') && content.includes('0'))).toBeInTheDocument();
     });
 
-    it('renders all 7 localized navigation tabs', () => {
+    it('renders the 2 localized navigation tabs', () => {
         render(
             <DrawerShell locale="en">
                 <div>Content</div>
             </DrawerShell>
         );
-
-        const tabNames = ['Property', 'KYC', 'Society', 'Building Permission', 'Floor', 'Discount', 'Old Details'];
+ 
+        const tabNames = ['Property', 'Society'];
         tabNames.forEach(name => {
             expect(screen.getByText(name)).toBeInTheDocument();
         });
@@ -97,8 +92,8 @@ describe('DrawerShell', () => {
         expect(societyTab).toHaveClass('bg-purple-600');
     });
 
-    it('highlights the Kyc tab as active when pathname includes /Kyc', () => {
-        vi.mocked(usePathname).mockReturnValueOnce('/en/property-tax/ptis/QuickDataEntry/123/Kyc');
+    it('highlights the Property tab as active when pathname includes /Property', () => {
+        vi.mocked(usePathname).mockReturnValueOnce('/en/property-tax/ptis/QuickDataEntry/123/Property');
 
         render(
             <DrawerShell locale="en">
@@ -106,8 +101,8 @@ describe('DrawerShell', () => {
             </DrawerShell>
         );
 
-        const kycTab = screen.getByRole('link', { name: /kyc/i });
-        expect(kycTab).toHaveClass('bg-green-600');
+        const propertyTab = screen.getByRole('link', { name: /property/i });
+        expect(propertyTab).toHaveClass('bg-blue-600');
     });
 
     it('calls router.push when the close button is clicked', () => {

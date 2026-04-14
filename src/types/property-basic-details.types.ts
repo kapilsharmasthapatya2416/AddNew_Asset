@@ -186,4 +186,4 @@ export type ActionResult<T = unknown> =
     | { success: false; error: string };
 
 //  Represents a collection of tax amounts by tax name.
-export type TaxAmounts = Record<string, number | undefined>;//type property-basi-detilas
+export type TaxAmounts = Record<string, number | undefined>;

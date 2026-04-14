@@ -8,6 +8,7 @@ import { updatePropertySocietyDetailsAction } from '@/app/[locale]/property-tax/
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn(),
+    refresh: vi.fn(), // ✅ add this
   })),
 }));
 
@@ -126,16 +127,16 @@ describe('SocietyForm', () => {
 
   it('submits form with Unicode (Hindi/Marathi) names successfully', async () => {
     (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({ success: true });
-    
+
     render(<SocietyForm societyData={mockData as never} propertyIdSearch={123} locale="en" />);
-    
+
     // Change builderName to a Hindi name
     const builderInput = screen.getByDisplayValue('Asit Modi');
     fireEvent.change(builderInput, { target: { value: 'राजेश शिंदे', name: 'builderName' } });
-    
+
     const submitBtn = screen.getByRole('button', { name: /Update/i });
     fireEvent.click(submitBtn);
-    
+
     await waitFor(() => {
       expect(updatePropertySocietyDetailsAction).toHaveBeenCalledWith('en', 123, expect.anything());
       expect(toast.success).toHaveBeenCalledWith("Society details updated successfully");

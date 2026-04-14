@@ -8,6 +8,7 @@ import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/pt
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn(),
+    refresh: vi.fn(), // ✅ add this
   })),
 }));
 

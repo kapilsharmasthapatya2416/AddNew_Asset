@@ -7,11 +7,7 @@ import { useTranslations } from 'next-intl';
 import {
     Building2,
     FileText,
-    Home,
-    User,
-    Building,
-    Layers,
-    Percent
+    Home
 } from 'lucide-react';
 import { Drawer } from '@/components/common/Drawer';
 import { cn } from '@/lib/utils/cn';
@@ -24,12 +20,7 @@ interface Tab {
 
 const TABS: Tab[] = [
     { label: 'Property', href: 'Property', icon: Home },
-    { label: 'Kyc', href: 'Kyc', icon: User },
-    { label: 'Society', href: 'Society', icon: Building2 },
-    { label: 'BuildingPermission', href: 'Building', icon: Building },
-    { label: 'FloorSubmission', href: 'FloorSubmission', icon: Layers },
-    { label: 'Discount', href: 'Discount', icon: Percent },
-    { label: 'OldDetails', href: 'OldDetails', icon: FileText },
+    { label: 'Society', href: 'Society', icon: Building2 },   
 ];
 
 interface DrawerShellProps {
@@ -139,25 +130,10 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
                                     switch (tab.href) {
                                         case 'Property':
                                             activeStyles = 'bg-blue-600 text-white border-blue-700 shadow-blue-100';
-                                            break;
-                                        case 'Kyc':
-                                            activeStyles = 'bg-green-600 text-white border-green-700 shadow-green-100';
-                                            break;
+                                            break;                                       
                                         case 'Society':
                                             activeStyles = 'bg-purple-600 text-white border-purple-700 shadow-purple-100';
-                                            break;
-                                        case 'Building':
-                                            activeStyles = 'bg-orange-600 text-white border-orange-700 shadow-orange-100';
-                                            break;
-                                        case 'FloorSubmission':
-                                            activeStyles = 'bg-indigo-600 text-white border-indigo-700 shadow-indigo-100';
-                                            break;
-                                        case 'Discount':
-                                            activeStyles = 'bg-cyan-600 text-white border-cyan-700 shadow-cyan-100';
-                                            break;
-                                        case 'OldDetails':
-                                            activeStyles = 'bg-slate-600 text-white border-slate-700 shadow-slate-100';
-                                            break;
+                                            break;                                      
                                         default:
                                             activeStyles = 'bg-gray-600 text-white border-gray-700 shadow-gray-100';
                                     }

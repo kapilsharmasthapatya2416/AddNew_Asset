@@ -90,6 +90,20 @@ const PropertyFormView = ({
         setWingName(selectedWing?.wingNo || '');
     };
 
+    const parseOptionalNumber = (value: FormDataEntryValue | null): number | null => {
+        const normalized = typeof value === "string" ? value.trim() : value;
+        if (normalized === null || normalized === "") {
+            return null;
+        }
+        const parsed = Number(normalized);
+        return Number.isNaN(parsed) ? null : parsed;
+    };
+
+    const parseId = (value: any): number | null => {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -104,8 +118,8 @@ const PropertyFormView = ({
         const payload: UpdatePropertyBasicDetailsDto = {
             wardId: propertyData?.wardId ?? 0,
             taxZoneId: propertyData?.taxZoneId ?? 0,
-            categoryId: Number(categoryId),
-            propertyTypeId: Number(propertyTypeId) || null,
+            categoryId: parseId(categoryId),
+            propertyTypeId: parseId(propertyTypeId) || null,
 
             wingId: selectedWing?.id ?? null,
             wingNo: selectedWing?.wingNo ?? null,
@@ -125,13 +139,13 @@ const PropertyFormView = ({
 
             // wingNo: String(formData.get("wingName") ?? "").trim() || null,
 
-            noOfResidentialToilets: Number(formData.get("noOfResidentialToilets")),
-            noOfCommercialToilets: Number(formData.get("noOfCommercialToilets")),
-            totalBuiltupAreaSqFeet: Number(formData.get("totalBuiltupAreaSqFeet")),
-            totalCarpetAreaSqFeet: Number(formData.get("totalCarpetAreaSqFeet")),
-            totalBuiltupAreaSqMeter: Number(formData.get("totalBuiltupAreaSqMeter")),
-            totalCarpetAreaSqMeter: Number(formData.get("totalCarpetAreaSqMeter")),
-            plotArea: Number(formData.get("plotArea")),
+            noOfResidentialToilets: parseOptionalNumber(formData.get("noOfResidentialToilets")),
+            noOfCommercialToilets: parseOptionalNumber(formData.get("noOfCommercialToilets")),
+            totalBuiltupAreaSqFeet: parseOptionalNumber(formData.get("totalBuiltupAreaSqFeet")),
+            totalCarpetAreaSqFeet: parseOptionalNumber(formData.get("totalCarpetAreaSqFeet")),
+            totalBuiltupAreaSqMeter: parseOptionalNumber(formData.get("totalBuiltupAreaSqMeter")),
+            totalCarpetAreaSqMeter: parseOptionalNumber(formData.get("totalCarpetAreaSqMeter")),
+            plotArea: parseOptionalNumber(formData.get("plotArea")),
 
             plotAreaFtLength: propertyData?.plotAreaFtLength || null,
             plotAreaFtWidth: propertyData?.plotAreaFtWidth || null,
