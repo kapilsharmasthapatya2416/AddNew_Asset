@@ -1,5 +1,3 @@
-import React from "react";
-import { MapPin } from "lucide-react";
 import type { Column } from "@/components/common/MasterTable";
 import type { TaxZone } from "@/types/taxzone.types";
 

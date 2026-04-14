@@ -259,7 +259,6 @@ export default function TaxZoneMaster({
           data={tableRows}
           loading={loadingAll}
           pageNumber={effectivePageNumber}
-          height="lg"
           pageSize={pageSize}
           totalCount={effectiveTotalCount}
           totalPages={effectiveTotalPages}
