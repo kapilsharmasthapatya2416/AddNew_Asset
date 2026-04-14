@@ -1,0 +1,43 @@
+{
+  "depreciationMaster": {
+    "title": "घटती किंमत मास्टर",
+    "subtitle": "मालमत्ता कर मूल्यांकन प्रणाली",
+    "assessmentYear": "मूल्यांकन वर्ष",
+    "createRange": "रेंज तयार करा",
+    "min": "किमान वर्ष",
+    "max": "कमाल वर्ष",
+    "addRange": "रेंज जोडा",
+    "rangesAllYears": "सर्व वर्षांची रेंज",
+    "noRangesFound": "कोणतीही रेंज सापडली नाही",
+    "deleteRange": "रेंज हटवा",
+    "deleteRangeConfirmTitle": "रेंज हटवायची?",
+    "deleteRangeConfirmDesc": "वर्ष {year} साठी {min}-{max} रेंज हटवा?",
+    "cancel": "रद्द करा",
+    "updateRates": "दर अपडेट करा",
+    "changesReverted": "बदल मागे घेतले",
+    "createDepChart": "दर जोडण्यासाठी घटती किंमत चार्ट तयार करा",
+    "yearRange": "वर्ष रेंज",
+    "action": "क्रिया",
+    "currencySymbol": "₹",
+    "deleteRow": "ओळ हटवा",
+    "minPlaceholder": "किमान वर्ष प्रविष्ट करा",
+    "maxPlaceholder": "कमाल वर्ष प्रविष्ट करा",
+    "deleteRangeConfirm": "रेंज हटवा",
+    "noRanges": "कोणतीही रेंज सापडली नाही",
+    "success": {
+      "deleted": "रेंज यशस्वीरित्या हटवली.",
+      "updated": "दर यशस्वीरित्या अद्ययावत केले.",
+      "added": "रेंज यशस्वीरित्या तयार केली."
+    },
+   "errors": {
+      "load": "घटती किंमत डेटा लोड करण्यात अयशस्वी.",
+      "add": "रेंज जोडण्यात अयशस्वी.",
+      "update": "दर अद्ययावत करण्यात अयशस्वी.",
+      "delete": "रेंज हटवण्यात अयशस्वी.",
+      "exists": "ही रेंज आधीच अस्तित्वात आहे.",
+      "minMax": "कृपया किमान आणि कमाल वर्ष दोन्ही प्रविष्ट करा.",
+      "invalidRange": "किमान वर्ष कमाल वर्षापेक्षा कमी असावे."
+      
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "depreciationMaster": {
+    "title": "Depreciation Master",
+    "subtitle": "Property Tax Assessment System",
+    "assessmentYear": "Assessment Year",
+    "createRange": "Create Range",
+    "min": "Min Year",
+    "max": "Max Year",
+    "deleteRow": "Delete Row",
+    "addRange": "Add Range",
+    "currencySymbol": "₹",
+    "rangesAllYears": "Ranges (All Years)",
+    "noRangesFound": "No ranges found",
+    "deleteRange": "Delete Range",
+    "deleteRangeConfirmTitle": "Delete Range?",
+    "deleteRangeConfirmDesc": "Delete range {min}-{max} for Year {year}?",
+    "cancel": "Cancel",
+    "updateRates": "Update Rates",
+    "changesReverted": "Changes reverted",
+    "createDepChart": "Create Depreciation Chart For Adding Rates",
+    "yearRange": "Year Range",
+    "action": "Action",
+    "minPlaceholder": "Enter minimum year",
+    "maxPlaceholder": "Enter maximum year",
+    "deleteRangeConfirm": "Delete",
+    "success": {
+      "deleted": "Range deleted successfully.",
+      "updated": "Rates updated successfully.",
+      "added": "Range added successfully."
+        
+    },
+    "noRanges": "No ranges found",
+    "errors": {
+      "load": "Failed to load depreciation data.",
+      "add": "Failed to add range.",
+      "update": "Failed to update rates.",
+      "delete": "Failed to delete range.",
+      "exists": "This range already exists.",
+      "minMax": "Please enter both minimum and maximum year.",
+      "invalidRange": "Minimum year must be less than maximum year."
+    }
+  }
+}

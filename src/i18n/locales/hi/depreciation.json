@@ -1,0 +1,43 @@
+{
+  "depreciationMaster": {
+    "title": "मूल्यह्रास मास्टर",
+    "subtitle": "संपत्ति कर मूल्यांकन प्रणाली",
+    "assessmentYear": "मूल्यांकन वर्ष",
+    "createRange": "रेंज बनाएं",
+    "min": "न्यूनतम वर्ष",
+    "max": "अधिकतम वर्ष",
+    "addRange": "रेंज जोड़ें",
+    "deleteRow": "पंक्ति हटाएं",
+    "currencySymbol": "₹",
+    "rangesAllYears": "सभी वर्षों की रेंज",
+    "noRangesFound": "कोई रेंज नहीं मिली",
+    "deleteRange": "रेंज हटाएं",
+    "deleteRangeConfirmTitle": "रेंज हटाएं?",
+    "deleteRangeConfirmDesc": "वर्ष {year} के लिए {min}-{max} रेंज हटाएं?",
+    "cancel": "रद्द करें",
+    "updateRates": "रेंज अपडेट करें",
+    "changesReverted": "परिवर्तन वापस लिए गए",
+    "createDepChart": "दर जोड़ने के लिए मूल्यह्रास चार्ट बनाएं",
+    "yearRange": "वर्ष रेंज",
+    "minPlaceholder": "न्यूनतम वर्ष दर्ज करें",
+    "maxPlaceholder": "अधिकतम वर्ष दर्ज करें",
+    "deleteRangeConfirm": "हटाएं",
+    "noRanges": "कोई रेंज नहीं मिली",
+    "success": {
+      "deleted": "रेंज सफलतापूर्वक हटाई गई।",
+      "updated": "रेंज सफलतापूर्वक अपडेट की गईं।",
+      "added": "रेंज सफलतापूर्वक बनाई गई।"
+    },
+   "errors": {
+      "load": "मूल्यह्रास डेटा लोड करने में विफल।",
+      "add": "रेंज जोड़ने में विफल।",
+      "update": "दर अपडेट करने में विफल।",
+      "delete": "रेंज हटाने में विफल।",
+      "exists": "यह रेंज पहले से मौजूद है।",
+      "minMax": "कृपया न्यूनतम और अधिकतम वर्ष दोनों दर्ज करें।",
+      "invalidRange": "न्यूनतम वर्ष अधिकतम वर्ष से कम होना चाहिए।"
+      
+    }
+
+  }
+}
