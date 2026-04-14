@@ -140,9 +140,12 @@ const locale=useLocale()
 
     importedChanges.forEach(change => {
       if (change.status === "Updated") {
-        // Replace existing record with updated one
+        // Replace existing record with updated one using stable identity (wardId + property range)
+        // This matches the same criteria used in import logic to find existingRecord
         const index = combinedRecords.findIndex(r =>
-          r.wardId === change.wardId && r.taxZoneId === change.taxZoneId
+          r.wardId === change.wardId && 
+          r.fromProperty === change.fromProperty && 
+          r.toProperty === change.toProperty
         );
         if (index !== -1) {
           combinedRecords[index] = change;
@@ -385,9 +388,9 @@ const locale=useLocale()
 
           if (Number(fromProperty) > Number(toProperty)) return;
 
-          const key = `${taxZoneId}_${wardId}_${fromProperty}_${toProperty}`;
+          const key = `${wardId}_${fromProperty}_${toProperty}`;
 
-          // Skip duplicates within file
+          // Skip duplicates within file using the same identity as update matching
           if (seenKeys.has(key)) return;
           seenKeys.add(key);
 
@@ -659,8 +662,6 @@ const locale=useLocale()
             propertyId: 0,
           };
 
-          console.log(`🔄 Processing ${row.status} record:`, payload);
-
           let result;
 
           // ✅ Use appropriate action based on record status
@@ -671,17 +672,14 @@ const locale=useLocale()
             // Call UPDATE action for existing records
             result = await updateTaxZoningAction(payload);
           } else {
-            console.warn(`⚠️ Unknown record status: ${row.status}`);
             continue;
           }
 
           if (result.success) {
             if (row.status === "Updated") {
               updateCount++;
-              console.log(`✅ Updated record: Ward ${row.wardId}, Zone ${row.taxZoneId}`);
             } else {
               newCount++;
-              console.log(`✅ Created record: Ward ${row.wardId}, Zone ${row.taxZoneId}`);
             }
           } else {
             console.error(`❌ Failed to process ${row.status} record:`, {
@@ -721,9 +719,7 @@ const locale=useLocale()
         setImportedChanges([]);
         setHasImportedData(false);
 
-        // 🔄 Force refresh page data to reflect database changes
-        console.log("🔄 Refreshing page to show updated data...");
-
+        // Force refresh page data to reflect database changes
         // Add a small delay to ensure database changes are committed
         setTimeout(() => {
           router.refresh();

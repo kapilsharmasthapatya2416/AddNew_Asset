@@ -17,8 +17,8 @@ export const DESCRIPTION_SANITIZE = /[^\p{L}\p{M}\s\/,.\-()0-9\u200C\u200D]/gu;
 
 //taxZone
 
-export const TEXT_SANITIZE = /[^\p{L}\p{M}\p{N}\s,./-]/gu; // Allow Unicode letters, marks, numbers, spaces, and basic punctuation
-export const TEXT_ALLOWED = /^[\p{L}\p{M}\p{N}\s,./-]+$/u; // Validation for allowed characters
+export const TEXT_SANITIZE = /[^\p{L}\p{M}\p{N}\s,.\/-]/gu; // Allow Unicode letters, marks, numbers, spaces, and basic punctuation
+export const TEXT_ALLOWED = /^[\p{L}\p{M}\p{N}\s,.\/-]+$/u; // Validation for allowed characters
 
 // RVRateMaster - Positive decimal validation (only numbers > 0 with decimals allowed)
 export const POSITIVE_DECIMAL_REGEX = /^(?!0(\.0+)?$)\d+(\.\d+)?$/;
@@ -87,7 +87,7 @@ export const hasErrors = (errors: Record<string, string>) => Object.keys(errors)
  */
 export const commonValidations = {
   /**
-   * Validation for codes (required, alphanumeric, max length)
+   * Validation for codes (required, alphanumeric with hyphens, max length 50)
    */
   code: (
     label: string,
@@ -95,13 +95,13 @@ export const commonValidations = {
   ): Validator => (value: unknown) => {
     const strVal = String(value || "");
     if (!strVal || !strVal.trim()) return t('validation.required', { label });
-    if (!/^[a-zA-Z0-9-]+$/.test(strVal)) return t('validation.alphanumeric', { label });
-    if (strVal.length > 50) return t('validation.tooLong', { label });
+    if (!/^[a-zA-Z0-9-]+$/.test(strVal)) return t('validation.alphanumericUnderscore', { label });
+    if (strVal.length > 50) return t('validation.maxChars', { label, count: 50 });
     return undefined;
   },
 
   /**
-   * Validation for names (required, max length)
+   * Validation for names (required, max length 100)
    */
   name: (
     label: string,
@@ -109,7 +109,7 @@ export const commonValidations = {
   ): Validator => (value: unknown) => {
     const strVal = String(value || "");
     if (!strVal || !strVal.trim()) return t('validation.required', { label });
-    if (strVal.length > 100) return t('validation.tooLong', { label });
+    if (strVal.length > 100) return t('validation.maxChars', { label, count: 100 });
     return undefined;
   },
 
