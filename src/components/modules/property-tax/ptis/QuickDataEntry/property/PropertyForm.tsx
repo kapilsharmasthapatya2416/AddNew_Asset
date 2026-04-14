@@ -147,10 +147,10 @@ const PropertyFormView = ({
             totalCarpetAreaSqMeter: parseOptionalNumber(formData.get("totalCarpetAreaSqMeter")),
             plotArea: parseOptionalNumber(formData.get("plotArea")),
 
-            plotAreaFtLength: propertyData?.plotAreaFtLength || null,
-            plotAreaFtWidth: propertyData?.plotAreaFtWidth || null,
-            plotAreaMtrLength: propertyData?.plotAreaMtrLength || null,
-            plotAreaMtrWidth: propertyData?.plotAreaMtrWidth || null,
+            plotAreaFtLength: propertyData?.plotAreaFtLength ?? null,
+            plotAreaFtWidth: propertyData?.plotAreaFtWidth ?? null,
+            plotAreaMtrLength: propertyData?.plotAreaMtrLength ?? null,
+            plotAreaMtrWidth: propertyData?.plotAreaMtrWidth ?? null,
         };
 
         confirm({
