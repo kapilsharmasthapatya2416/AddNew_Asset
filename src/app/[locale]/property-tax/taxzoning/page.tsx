@@ -4,14 +4,14 @@ import { fetchTaxZonePagedAction, fetchWardPagedAction, getTaxZonningPropertyNoP
 
 
 interface PageProps {
-  searchParams: Promise<{
+  searchParams: {
     page?: string;
     pageSize?: string;
-  }>;
+  };
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  const params = await searchParams;
+  const params = searchParams;
 
   const pageNumber = Number(params.page) || 1;
   const pageSize = Number(params.pageSize) || 10;

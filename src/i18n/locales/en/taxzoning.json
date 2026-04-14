@@ -36,7 +36,8 @@
       "noPropertiesToPreview": "No properties to preview",
       "selectZoneWardProperty": "Select zone, ward, and property range",
       "multipleWardsSelected": "Multiple Wards Selected",
-      "multipleWardsMessage": "Property range fields are disabled when multiple wards are selected. Select a single ward to configure property ranges."
+      "multipleWardsMessage": "Property range fields are disabled when multiple wards are selected. Select a single ward to configure property ranges.",
+      "notSpecified": "Not specified"
     },
     "buttons": {
       "exportCSV": "Export CSV",

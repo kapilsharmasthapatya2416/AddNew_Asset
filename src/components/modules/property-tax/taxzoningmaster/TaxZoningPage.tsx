@@ -200,8 +200,12 @@ const locale=useLocale()
       return;
     }
 
-    const selectedWard = ward[0];
-    getTaxZonningByWardAction(selectedWard, 100).then((res) => {
+    const selectedWardId = ward[0];
+    // Map wardId to wardNo for the API call
+    const wardData = wardsData.items.find(w => String(w.wardId) === selectedWardId);
+    if (!wardData) return;
+    
+    getTaxZonningByWardAction(wardData.wardNo, 100).then((res) => {
       if (!res.success) return;
 
       const options = res.data.items
@@ -215,7 +219,7 @@ const locale=useLocale()
 
       setPropertyOptionsByWard(options);
     });
-  }, [ward]);
+  }, [ward, wardsData]);
 
   /* ================= PREVIEW ================= */
   // const previewData: PreviewRow[] = useMemo(() => {
@@ -255,7 +259,7 @@ const locale=useLocale()
     return Array.from({ length: to - from + 1 }, (_, index) => ({
       taxZoneId: taxZoneNoDisplay,
       wardNo: wardNoDisplay,
-      propertyNo: String(from + index).padStart(2, "0"), // 19 → 25
+      propertyNo: String(from + index).padStart(3, "0"), // 019 → 025
     }));
   }, [zone, ward, fromProps, toProps, wardsData, taxZones]);
 
@@ -954,7 +958,7 @@ const locale=useLocale()
                   <p className="text-sm text-gray-900">
                     {fromProps.length && toProps.length
                       ? `${fromProps} → ${toProps}`
-                      : "Not specified"}
+                      : t('preview.notSpecified')}
                   </p>
                 </div>
               </div>

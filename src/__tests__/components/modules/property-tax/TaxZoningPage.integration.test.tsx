@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
+import type { ReactNode } from "react";
 import TaxZoningPage from "@/components/modules/property-tax/taxzoningmaster/TaxZoningPage";
 import { TaxZone, Ward } from "@/types/taxzoning.types";
 
@@ -8,7 +9,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), refresh: 
 vi.mock("next-intl", () => ({
     useTranslations: () => (key: string) => key,
     useLocale: () => "en",
-    NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    NextIntlClientProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 

@@ -17,10 +17,11 @@ export async function fetchTaxZonePagedAction(
       throw error; // preserve message & status
     }
 
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     throw new ApiError(
       500,
-      "Unable to load Tax Zones",
-      "fetchTaxZonePagedAction: Unknown error"
+      errorMessage,
+      "fetchTaxZonePagedAction: Failed to load Tax Zones"
     );
   }
 }
@@ -35,10 +36,11 @@ export async function fetchWardPagedAction(
       throw error;
     }
 
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     throw new ApiError(
       500,
-      "Unable to load Wards",
-      "fetchWardPagedAction: Unknown error"
+      errorMessage,
+      "fetchWardPagedAction: Failed to load Wards"
     );
   }
 }
@@ -67,7 +69,7 @@ export async function getTaxZonningPagedAction(
 
     return {
       success: false,
-      error: "Failed to fetch TaxZonning data",
+      error: error instanceof Error ? error.message : "Failed to fetch TaxZonning data",
       statusCode: 500,
     };
   }
@@ -94,7 +96,7 @@ export async function getTaxZonningPropertyNoPagedAction(
 
     return {
       success: false,
-      error: "Failed to fetch TaxZonning Property No data",
+      error: error instanceof Error ? error.message : "Failed to fetch TaxZonning Property No data",
       statusCode: 500,
     };
   }
@@ -152,7 +154,7 @@ export async function getTaxZonningByWardAction(
 
     return {
       success: false,
-      error: "Failed to fetch TaxZonning by Ward",
+      error: error instanceof Error ? error.message : "Failed to fetch TaxZonning by Ward",
     };
   }
 }

@@ -51,8 +51,7 @@ export type ActionResult<T> =
   | { success: true; data: T }
   | { success: false; error: string; statusCode?: number };
 
-
-  export interface TaxZoningFormModel {
+export interface TaxZoningFormModel {
   taxZoneId: number;
   wardId: number;
   propertyNo: string;      // can be comma separated if needed
