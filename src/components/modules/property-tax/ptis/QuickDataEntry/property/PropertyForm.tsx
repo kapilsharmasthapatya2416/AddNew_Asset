@@ -6,13 +6,8 @@ import { Tabs, Input, AddButton, SearchSelect } from '@/components/common';
 import { Label } from '@/components/common/label';
 import { useConfirm } from '@/components/common/ConfirmProvider';
 
-import { PropertySocietyDetailsApiItem } from '@/types/property-society-details.types';
-
 import { toast } from 'sonner';
-import {
-    updatePropertyBasicDetailsAction
-} from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
-
+import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
 import {
     PropertyBasicDetailsApiItem,
     PropertyCategoryApiItem,
@@ -20,6 +15,7 @@ import {
     UpdatePropertyBasicDetailsDto,
     WingItem
 } from '@/types/property-basic-details.types';
+import { PropertySocietyDetailsApiItem } from '@/types/property-society-details.types';
 
 interface PropertyFormViewProps {
     WingMaster: WingItem[],
@@ -66,17 +62,17 @@ const PropertyFormView = ({
 
     const categoryOptions = propertyCategoryList.map((item) => ({
         label: item.propertyCategoryName,
-        value: String(item.propertyCategoryId),
+        value: String(item.id),
     }));
 
     const wingOptions = wingList.map((item) => ({
         label: item.wingNo,
-        value: String(item.wingId),
+        value: String(item.id),
     }));
 
     const propertyDescriptionOptions = propertyDescriptionList.map((item) => ({
         label: item.propertyDescription,
-        value: String(item.propertyTypeId),
+        value: String(item.id),
     }));
 
     const handlePropertyDescriptionChange = (_name: string, value: string) => {
@@ -89,11 +85,9 @@ const PropertyFormView = ({
 
     const handleWingChange = (_name: string, value: string) => {
         setWingId(value);
-        const selectedWing = wingList.find((w) => String(w.wingId) === value);
+        const selectedWing = wingList.find((w) => String(w.id) === value);
         setWingName(selectedWing?.wingNo || '');
     };
-
-
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -104,19 +98,22 @@ const PropertyFormView = ({
         const selectedWingIdValue = String(formData.get("wingId") ?? "").trim();
         const selectedWingId = selectedWingIdValue ? Number(selectedWingIdValue) : null;
 
-        const selectedWing = wingList.find((wing) => wing.wingId === selectedWingId);
+        const selectedWing = wingList.find((wing) => wing.id === selectedWingId);
 
         const payload: UpdatePropertyBasicDetailsDto = {
             wardId: propertyData?.wardId ?? 0,
             taxZoneId: propertyData?.taxZoneId ?? 0,
-            categoryId: Number(formData.get("categoryId")) || null,
+            categoryId: Number(categoryId),
             propertyTypeId: Number(propertyTypeId) || null,
 
-            wingId: selectedWing?.wingId ?? null,
+            wingId: selectedWing?.id ?? null,
             wingNo: selectedWing?.wingNo ?? null,
 
             // wingId: Number(formData.get("    ")) || null,
             wingName: propertySocietyDetails?.wingName || null,
+
+            moujaId: propertyData?.moujaId ?? null,
+            moujaName: propertyData?.moujaName ?? null,
 
             partitionNo: propertyData?.partitionNo || null,
             flatOrShopNo: String(formData.get("flatOrShopNo") ?? "").trim() || null,
@@ -127,11 +124,13 @@ const PropertyFormView = ({
 
             // wingNo: String(formData.get("wingName") ?? "").trim() || null,
 
-            noOfResidentialToilets: Number(formData.get("noOfResidentialToilets")) || null,
-            noOfCommercialToilets: Number(formData.get("noOfCommercialToilets")) || null,
-            totalBuiltupAreaSqFeet: Number(formData.get("totalBuiltupAreaSqFeet")) || null,
-            totalCarpetAreaSqFeet: Number(formData.get("totalCarpetAreaSqFeet")) || null,
-            plotArea: Number(formData.get("plotArea")) || null,
+            noOfResidentialToilets: Number(formData.get("noOfResidentialToilets")),
+            noOfCommercialToilets: Number(formData.get("noOfCommercialToilets")),
+            totalBuiltupAreaSqFeet: Number(formData.get("totalBuiltupAreaSqFeet")),
+            totalCarpetAreaSqFeet: Number(formData.get("totalCarpetAreaSqFeet")),
+            totalBuiltupAreaSqMeter: Number(formData.get("totalBuiltupAreaSqMeter")),
+            totalCarpetAreaSqMeter: Number(formData.get("totalCarpetAreaSqMeter")),
+            plotArea: Number(formData.get("plotArea")),
 
             plotAreaFtLength: propertyData?.plotAreaFtLength || null,
             plotAreaFtWidth: propertyData?.plotAreaFtWidth || null,
@@ -156,6 +155,7 @@ const PropertyFormView = ({
                     }
 
                     toast.success(t('property.updateSuccess'));
+
                 } catch (err) {
                     console.error("Submission error:", err);
                     toast.error(t('property.updateError'));
@@ -186,6 +186,21 @@ const PropertyFormView = ({
                                     name="division"
                                     placeholder={t('property.divisionPlaceholder')}
                                     defaultValue={propertyData?.division?.toString() ?? ''}
+                                    className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                />
+                            </div>
+
+                            {/* Mouja */}
+                            <div className="space-y-1.5">
+                                <Label htmlFor="pd-mouja" className="text-xs font-semibold text-gray-700">
+                                    {t('property.mouja')}
+                                </Label>
+                                <Input
+                                    readOnly
+                                    id="pd-mouja"
+                                    name="moujaName"
+                                    placeholder={t('property.mouja')}
+                                    defaultValue={propertyData?.moujaName ?? ''}
                                     className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                 />
                             </div>
@@ -245,9 +260,6 @@ const PropertyFormView = ({
                                 <Input
                                     id="pd-plot"
                                     name="plotNo"
-                                    type="number"
-                                    step="any"
-                                    min="0"
                                     placeholder={t('property.plotNoPlaceholder')}
                                     defaultValue={propertyData?.plotNo ?? ''}
                                     className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
@@ -408,6 +420,38 @@ const PropertyFormView = ({
                                     type="number"
                                     placeholder="1350"
                                     defaultValue={propertyData?.totalBuiltupAreaSqFeet ?? ''}
+                                    className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                />
+                            </div>
+
+                            {/* Total Carpet Area SqMeter */}
+                            <div className="space-y-1.5">
+                                <Label htmlFor="pd-carpetarea-mtr" className="text-xs font-semibold text-gray-700">
+                                    {t('property.totalCarpetArea')} (Mtr)
+                                </Label>
+                                <Input
+                                    readOnly
+                                    id="pd-carpetarea-mtr"
+                                    name="totalCarpetAreaSqMeter"
+                                    type="number"
+                                    placeholder="22.66"
+                                    defaultValue={propertyData?.totalCarpetAreaSqMeter ?? ''}
+                                    className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                />
+                            </div>
+
+                            {/* Buildup Area SqMeter */}
+                            <div className="space-y-1.5">
+                                <Label htmlFor="pd-builduparea-mtr" className="text-xs font-semibold text-gray-700">
+                                    {t('property.buildupArea')} (Mtr)
+                                </Label>
+                                <Input
+                                    readOnly
+                                    id="pd-builduparea-mtr"
+                                    name="totalBuiltupAreaSqMeter"
+                                    type="number"
+                                    placeholder="27.19"
+                                    defaultValue={propertyData?.totalBuiltupAreaSqMeter ?? ''}
                                     className="h-9 text-sm border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                 />
                             </div>

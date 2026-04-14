@@ -22,7 +22,7 @@ export async function getPropertyTypes(pageSize: number = 200, searchTerm?: stri
     params.append("SearchTerm", searchTerm.trim());
   }
 
-  const response = await apiClient.get<PropertyTypeApiResponse>(`/PropertyType?${params.toString()}`);
+  const response = await apiClient.get<PropertyTypeApiResponse>(`/PropertyTypeMaster?${params.toString()}`);
   if (!response.success || !response.data) return [];
   return response.data.items ?? [];
 }

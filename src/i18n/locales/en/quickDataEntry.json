@@ -213,6 +213,7 @@
         "title": "Property Information",
         "division": "Division",
         "wing": "Wing",
+        "mouja": "Mouja",
         "flatShopNo": "Flat No / Shop No",
         "propertyDescription": "Property Description",
         "divisionPlaceholder": "Enter division",

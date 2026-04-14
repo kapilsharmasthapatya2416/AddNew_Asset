@@ -1,6 +1,6 @@
 // PROPERTY API TYPES    
 
-// Represents an owner type item from the OwnerType API.
+//  Represents a property category item from PropertyCategory API. Endpoint: GET /api/PropertyCategory
 export interface OwnerTypeApiItem {
     ownerTypeId: number;
     ownerType: string;
@@ -21,7 +21,7 @@ export interface OwnerTypeApiResponse {
 }
 
 export interface PropertyTypeApiItem {
-    propertyTypeId: number;
+    id: number;
     propertyDescription: string;
     type: string;
     propertyTypeGroup: string;
@@ -44,9 +44,9 @@ export interface PropertyTypeApiResponse {
     hasNext: boolean;
 }
 
-// Represents an owner type item from the OwnerType API.
+//  Represents a property category item from PropertyCategory API. Endpoint: GET /api/PropertyCategory
 export interface PropertyCategoryApiItem {
-    propertyCategoryId: number;
+    id: number;
     propertyCategoryName: string;
     isActive: boolean;
     createdDate: string;
@@ -81,13 +81,13 @@ export interface PropertyBasicDetailsApiItem {
     categoryName: string;
     propertyTypeId: number;
     propertyDescription: string;
-    upicId: string;
+    upicId: string | null;
     subZoneNo: string;
-    wingNo: string;
-    wingId: number;
-    wingName: string | null;
-    noOfResidentialToilets: number;
-    noOfCommercialToilets: number;
+    moujaId: number | null;
+    moujaName: string | null;
+    wingNo: string | null;
+    noOfResidentialToilets: number | null;
+    noOfCommercialToilets: number | null;
     totalCarpetAreaSqMeter: number;
     totalBuiltupAreaSqMeter: number;
     totalCarpetAreaSqFeet: number;
@@ -97,6 +97,8 @@ export interface PropertyBasicDetailsApiItem {
     plotAreaFtWidth: number;
     plotAreaMtrLength: number;
     plotAreaMtrWidth: number;
+    wingId: number | null;
+    wingName: string | null;
 }
 
 export interface TypeOfUseApiItem {
@@ -124,11 +126,15 @@ export interface UpdatePropertyBasicDetailsDto {
     surveyNo: string | null;
     upicId: string | null;
     subZoneNo: string | null;
+    moujaId: number | null;
+    moujaName: string | null;
     wingNo: string | null;
     noOfResidentialToilets: number | null;
     noOfCommercialToilets: number | null;
     totalBuiltupAreaSqFeet: number | null;
     totalCarpetAreaSqFeet: number | null;
+    totalBuiltupAreaSqMeter: number | null;
+    totalCarpetAreaSqMeter: number | null;
     plotArea: number | null;
     plotAreaFtLength: number | null;
     plotAreaFtWidth: number | null;
@@ -147,7 +153,7 @@ export interface PropertyBasicDetailsResponse {
 }
 
 export interface WingItem {
-    wingId: number;
+    id: number;
     wingNo: string;
     sequenceNo: number;
     isActive: boolean;
@@ -180,4 +186,4 @@ export type ActionResult<T = unknown> =
     | { success: false; error: string };
 
 //  Represents a collection of tax amounts by tax name.
-export type TaxAmounts = Record<string, number | undefined>;
+export type TaxAmounts = Record<string, number | undefined>;//type property-basi-detilas
