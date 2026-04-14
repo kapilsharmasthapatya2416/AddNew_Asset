@@ -2,6 +2,8 @@ import TaxZoningPage from "@/components/modules/property-tax/taxzoningmaster/Tax
 
 import { fetchTaxZonePagedAction, fetchWardPagedAction, getTaxZonningPropertyNoPagedAction } from "./tax-zone.actions";
 
+// Force dynamic rendering - this page requires runtime API data
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   searchParams: {
