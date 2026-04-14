@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Tabs, Input, AddButton, SearchSelect } from '@/components/common';
 import { Label } from '@/components/common/label';
 import { useConfirm } from '@/components/common/ConfirmProvider';
-
+import { useRouter } from "next/navigation";
 import { toast } from 'sonner';
 import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
 import {
@@ -16,6 +16,7 @@ import {
     WingItem
 } from '@/types/property-basic-details.types';
 import { PropertySocietyDetailsApiItem } from '@/types/property-society-details.types';
+
 
 interface PropertyFormViewProps {
     WingMaster: WingItem[],
@@ -37,7 +38,7 @@ const PropertyFormView = ({
 
     const t = useTranslations('quickDataEntry');
     const { confirm } = useConfirm();
-
+    const router = useRouter();
     // ✅ State (clear naming)
     const [propertyDescriptionList] = useState(initialPropertyDescriptionList);
     const [propertyCategoryList] = useState(initialPropertyCategoryList);
@@ -155,7 +156,7 @@ const PropertyFormView = ({
                     }
 
                     toast.success(t('property.updateSuccess'));
-
+                    router.refresh();
                 } catch (err) {
                     console.error("Submission error:", err);
                     toast.error(t('property.updateError'));
@@ -427,7 +428,7 @@ const PropertyFormView = ({
                             {/* Total Carpet Area SqMeter */}
                             <div className="space-y-1.5">
                                 <Label htmlFor="pd-carpetarea-mtr" className="text-xs font-semibold text-gray-700">
-                                    {t('property.totalCarpetArea')} (Mtr)
+                                    {t('property.totalCarpetArea')}
                                 </Label>
                                 <Input
                                     readOnly
@@ -443,7 +444,7 @@ const PropertyFormView = ({
                             {/* Buildup Area SqMeter */}
                             <div className="space-y-1.5">
                                 <Label htmlFor="pd-builduparea-mtr" className="text-xs font-semibold text-gray-700">
-                                    {t('property.buildupArea')} (Mtr)
+                                    {t('property.buildupArea')}
                                 </Label>
                                 <Input
                                     readOnly

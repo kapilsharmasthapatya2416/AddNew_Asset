@@ -13,6 +13,7 @@ vi.mock('next/navigation', () => ({
         partitionNo: '0',
         propertyId: '123'
     })),
+    useParams: vi.fn(() => ({ propertyId: '123' })),
     useRouter: () => ({
         push: mockPush
     }),

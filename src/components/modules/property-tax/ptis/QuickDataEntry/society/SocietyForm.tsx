@@ -2,6 +2,7 @@
 import { AddButton, Input, Tabs } from "@/components/common"
 import { Label } from "@/components/common/label"
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import {
     PropertySocietyDetailsApiItem,
     UpdatePropertySocietyDetailsDto
@@ -21,6 +22,7 @@ interface SocietyFormProps {
 const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps) => {
 
     const t = useTranslations("quickDataEntry");
+    const router = useRouter();
     const { confirm } = useConfirm();
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -145,6 +147,7 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
                     }
 
                     toast.success(t('society.updateSuccess'));
+                     router.refresh();
                 } catch (err) {
                     console.error("Submission error:", err);
                     toast.error(t('society.updateError'));

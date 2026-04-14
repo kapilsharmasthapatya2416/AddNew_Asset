@@ -4,6 +4,13 @@ import PropertyFormView from '@/components/modules/property-tax/ptis/QuickDataEn
 import { toast } from 'sonner';
 import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
 
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+  })),
+}));
+
 // Mock next-intl
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -56,16 +63,16 @@ vi.mock('@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/a
 }));
 
 const mockWingMaster = [
-  { wingId: 1, wingNo: 'Wing A', sequenceNo: 1, isActive: true, createdDate: '', updatedDate: null },
+  { id: 1, wingNo: 'Wing A', sequenceNo: 1, isActive: true, createdDate: '', updatedDate: null },
 ];
 
 const mockPropertyCategories = [
-  { propertyCategoryId: 1, propertyCategoryName: 'Residential', isActive: true, createdDate: '', updatedDate: null },
+  { id: 1, propertyCategoryName: 'Residential', isActive: true, createdDate: '', updatedDate: null },
 ];
 
 const mockPropertyDescriptions = [
-  { propertyTypeId: 1, propertyDescription: 'Empty Plot', type: 'Residential', propertyTypeGroup: '', searchKey: '', searchSequence: 1, propertyTypeCategoryId: null, isActive: true, createdDate: '', updatedDate: null },
-  { propertyTypeId: 2, propertyDescription: 'Normal Home', type: 'Residential', propertyTypeGroup: '', searchKey: '', searchSequence: 2, propertyTypeCategoryId: null, isActive: true, createdDate: '', updatedDate: null },
+  { id: 1, propertyDescription: 'Empty Plot', type: 'Residential', propertyTypeGroup: '', searchKey: '', searchSequence: 1, propertyTypeCategoryId: null, isActive: true, createdDate: '', updatedDate: null },
+  { id: 2, propertyDescription: 'Normal Home', type: 'Residential', propertyTypeGroup: '', searchKey: '', searchSequence: 2, propertyTypeCategoryId: null, isActive: true, createdDate: '', updatedDate: null },
 ];
 
 const mockPropertyData = {
@@ -230,10 +237,10 @@ describe('PropertyFormView', () => {
     const upicInput = screen.getByLabelText(/UPIC ID/i);
     expect(upicInput).toHaveAttribute('readOnly');
 
-    const carpetAreaInput = screen.getByLabelText(/Total Carpet Area/i);
-    expect(carpetAreaInput).toHaveAttribute('readOnly');
+    const carpetAreaInputs = screen.getAllByLabelText(/Total Carpet Area/i);
+    expect(carpetAreaInputs[0]).toHaveAttribute('readOnly');
 
-    const buildUpAreaInput = screen.getByLabelText(/Buildup Area/i);
-    expect(buildUpAreaInput).toHaveAttribute('readOnly');
+    const buildUpAreaInputs = screen.getAllByLabelText(/Buildup Area/i);
+    expect(buildUpAreaInputs[0]).toHaveAttribute('readOnly');
   });
 });
