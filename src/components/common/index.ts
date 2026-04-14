@@ -1,3 +1,5 @@
+export { Select } from './select';
+export type { Option, SelectProps } from './select';
 /**
  * Common components barrel export
  * Centralized exports for all reusable UI components
@@ -91,3 +93,9 @@ export type { MatrixCellInputProps } from './MatrixCellInput';
 
 export { ConfirmProvider, useConfirm } from './ConfirmProvider';
 export type { ConfirmContextType, ConfirmOptions, ConfirmVariant, ConfirmMeta } from './ConfirmProvider';
+
+export { Checkbox } from './checkbox';
+export type { CheckboxProps } from '@/types/common.types';
+
+export {RadioGroup, RadioGroupItem} from './radio-group';
+export type { RadioGroupProps, RadioGroupItemProps } from '@/types/common.types';
