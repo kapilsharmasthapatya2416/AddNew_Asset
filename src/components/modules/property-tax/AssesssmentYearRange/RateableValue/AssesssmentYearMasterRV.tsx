@@ -158,16 +158,15 @@ export default function AssessmentYearMaster({ paginatedData }: AssessmentYearMa
                   <DeleteButton onClick={() => handleDelete(pt)} />
                 </div>
               )
-            }}
+            }}    
+            headerTitle=" "
             headerExtra={
-              <div className="flex flex-col md:flex-row justify-end items-center gap-3 w-full">
-                <div className="flex justify-end">
-                  </div>
-                  <AddButton
-                    label={t("addNewRange")}
-                    onClick={() => router.push(`${base}/add`)}
-                  />
-                </div>
+              <div className="flex justify-end items-center w-full">
+                <AddButton
+                  label={t("addNewRange")}
+                  onClick={() => router.push(`${base}/add`)}
+                />
+              </div>
             }
             containerClassName="border-0 rounded-none shadow-none bg-transparent"
           />
