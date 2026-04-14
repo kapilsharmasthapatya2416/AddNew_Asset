@@ -28,6 +28,7 @@ import {
   AgeFactorCVMasterQueryParams,
   BulkAgeFactorCVMasterCreate,
   BulkAgeFactorCVMasterUpdate,
+  AssessmentYearCV,
   AssessmentYearPagedResponseCV,
   FloorPagedResponse,
   ConstructionType
@@ -38,7 +39,7 @@ import { appConfig } from '@/config/app.config';
 
 
 
-function isPagedResponse(value: unknown): value is PagedResponse<FloorFactorCVMaster> {
+function isPagedResponse<T = unknown>(value: unknown): value is PagedResponse<T> {
   if (typeof value !== "object" || value === null) {
     return false;
   }
@@ -290,7 +291,7 @@ export async function getFloorFactorCVMasterWithPagination(
  * @param payload The creation payload
  * @returns Promise resolving to ApiResponse containing the created record
  */
-export async function createFloorWeightageCv(payload: FloorFactorCVMasterCreate): Promise<ApiResponse<any>> {
+export async function createFloorWeightageCv(payload: FloorFactorCVMasterCreate): Promise<ApiResponse<unknown>> {
   try {
     // Validate required fields
     if (!payload.floorId || payload.floorId <= 0) {
@@ -317,7 +318,7 @@ export async function createFloorWeightageCv(payload: FloorFactorCVMasterCreate)
 
     console.log('Service calling API POST:', '/FloorFactorCVMaster', requestPayload);
 
-    return await apiClient.post<any>('/FloorFactorCVMaster', requestPayload);
+    return await apiClient.post<unknown>('/FloorFactorCVMaster', requestPayload);
   } catch (error) {
     console.error('Error creating Floor Factor CV Master:', error);
     throw error;
@@ -331,7 +332,7 @@ export async function createFloorWeightageCv(payload: FloorFactorCVMasterCreate)
  */
 export async function bulkCreateFloorWeightageCv(
   payload: BulkFloorFactorCVMasterCreate
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<unknown>> {
   try {
     if (!payload || !payload.floorFactors || payload.floorFactors.length === 0) {
       throw new Error('Valid payload with floorFactors is required for bulk create');
@@ -350,7 +351,7 @@ export async function bulkCreateFloorWeightageCv(
 
     console.log('Service calling API POST bulk:', '/FloorFactorCVMaster/bulk', requestPayload);
 
-    return await apiClient.post<any>('/FloorFactorCVMaster/bulk', requestPayload);
+    return await apiClient.post<unknown>('/FloorFactorCVMaster/bulk', requestPayload);
   } catch (error) {
     console.error('Error in bulk creating Floor Factor CV Master:', error);
     throw error;
@@ -643,7 +644,7 @@ export async function getNatureFactorCVMasterWithPagination(
  */
 export async function createNatureFactorCVMaster(
   payload: NatureFactorCVMasterCreate
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<unknown>> {
   try {
     // Validate required fields
     if (!payload.constructionTypeId || payload.constructionTypeId <= 0) {
@@ -666,7 +667,7 @@ export async function createNatureFactorCVMaster(
 
     console.log('Service calling API POST:', '/NatureFactorCVMaster', requestPayload);
 
-    return await apiClient.post<any>('/NatureFactorCVMaster', requestPayload);
+    return await apiClient.post<unknown>('/NatureFactorCVMaster', requestPayload);
   } catch (error) {
     console.error('Error creating Nature Factor CV Master:', error);
     throw error;
@@ -680,7 +681,7 @@ export async function createNatureFactorCVMaster(
  */
 export async function bulkCreateNatureFactorCVMaster(
   payload: BulkNatureFactorCVMasterCreate
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<unknown>> {
   try {
     if (!payload || !payload.natureFactors || payload.natureFactors.length === 0) {
       throw new Error('Valid payload with natureFactors is required for bulk create');
@@ -698,7 +699,7 @@ export async function bulkCreateNatureFactorCVMaster(
 
     console.log('Service calling API POST bulk:', '/NatureFactorCVMaster/bulk', requestPayload);
 
-    return await apiClient.post<any>('/NatureFactorCVMaster/bulk', requestPayload);
+    return await apiClient.post<unknown>('/NatureFactorCVMaster/bulk', requestPayload);
   } catch (error) {
     console.error('Error in bulk creating Nature Factor CV Master:', error);
     throw error;
@@ -901,7 +902,7 @@ export async function updateUseFactorCVMaster(
  */
 export async function createUseFactorCVMaster(
   payload: UseFactorCVMasterCreate
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<unknown>> {
   try {
     if (!payload.typeOfUseId || payload.typeOfUseId <= 0) {
       throw new Error('typeOfUseId is required');
@@ -924,7 +925,7 @@ export async function createUseFactorCVMaster(
 
     console.log('Service calling API POST:', '/UseFactorCVMaster', requestPayload);
 
-    return await apiClient.post<any>('/UseFactorCVMaster', requestPayload);
+    return await apiClient.post<unknown>('/UseFactorCVMaster', requestPayload);
   } catch (error) {
     console.error('Error creating Use Factor CV Master:', error);
     throw error;
@@ -938,7 +939,7 @@ export async function createUseFactorCVMaster(
  */
 export async function bulkCreateUseFactorCVMaster(
   payload: BulkUseFactorCVMasterCreate
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<unknown>> {
   try {
     if (!payload || !payload.useFactors || payload.useFactors.length === 0) {
       throw new Error('Valid payload with useFactors is required for bulk create');
@@ -957,7 +958,7 @@ export async function bulkCreateUseFactorCVMaster(
 
     console.log('Service calling API POST bulk:', '/UseFactorCVMaster/bulk', requestPayload);
 
-    return await apiClient.post<any>('/UseFactorCVMaster/bulk', requestPayload);
+    return await apiClient.post<unknown>('/UseFactorCVMaster/bulk', requestPayload);
   } catch (error) {
     console.error('Error in bulk creating Use Factor CV Master:', error);
     throw error;
@@ -1159,7 +1160,7 @@ export async function updateAgeFactorCVMaster(
  */
 export async function createAgeFactorCVMaster(
   payload: AgeFactorCVMasterCreate
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<unknown>> {
   try {
     if (!payload.constructionTypeId || payload.constructionTypeId <= 0) {
       throw new Error('constructionTypeId is required');
@@ -1178,7 +1179,7 @@ export async function createAgeFactorCVMaster(
       yearRangeCVId: payload.yearRangeCVId,
     };
 
-    return await apiClient.post<any>('/AgeFactorCVMaster', requestPayload);
+    return await apiClient.post<unknown>('/AgeFactorCVMaster', requestPayload);
   } catch (error) {
     console.error('Error creating Age Factor CV Master:', error);
     throw error;
@@ -1192,7 +1193,7 @@ export async function createAgeFactorCVMaster(
  */
 export async function bulkCreateAgeFactorCVMaster(
   payload: BulkAgeFactorCVMasterCreate
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<unknown>> {
   try {
     if (!payload || !payload.ageFactors || payload.ageFactors.length === 0) {
       throw new Error('Valid payload with ageFactors is required for bulk create');
@@ -1210,7 +1211,7 @@ export async function bulkCreateAgeFactorCVMaster(
       }))
     };
 
-    return await apiClient.post<any>('/AgeFactorCVMaster/bulk', requestPayload);
+    return await apiClient.post<unknown>('/AgeFactorCVMaster/bulk', requestPayload);
   } catch (error) {
     console.error('Error in bulk creating Age Factor CV Master:', error);
     throw error;
@@ -1261,11 +1262,11 @@ export async function bulkUpdateAgeFactorCVMaster(
  * @param id The ID of the record to delete
  * @returns Promise resolving to ApiResponse
  */
-export async function deleteAgeFactorCVMaster(id: number): Promise<ApiResponse<any>> {
+export async function deleteAgeFactorCVMaster(id: number): Promise<ApiResponse<unknown>> {
   if (id <= 0) {
     throw new Error('Valid AgeFactorCV ID is required');
   }
-  return apiClient.delete<any>(`/AgeFactorCVMaster/${id}`);
+  return apiClient.delete<unknown>(`/AgeFactorCVMaster/${id}`);
 }
 
 /**
@@ -1273,11 +1274,11 @@ export async function deleteAgeFactorCVMaster(id: number): Promise<ApiResponse<a
  * @param ids Array of AgeFactorCV IDs to delete
  * @returns Promise resolving to ApiResponse
  */
-export async function bulkDeleteAgeFactorCVMaster(ids: number[]): Promise<ApiResponse<any>> {
+export async function bulkDeleteAgeFactorCVMaster(ids: number[]): Promise<ApiResponse<unknown>> {
   if (!ids || ids.length === 0) {
     throw new Error('Valid list of IDs is required for bulk delete');
   }
-  return apiClient.delete<any>('/AgeFactorCVMaster/bulk', { body: JSON.stringify({ ids }) });
+  return apiClient.delete<unknown>('/AgeFactorCVMaster/bulk', { body: JSON.stringify({ ids }) });
 }
 
 
@@ -1316,23 +1317,31 @@ export async function getAssessmentYearsPagedServerCV(
 
   // Handle case where API might return items directly or in a different structure
   if (Array.isArray(data)) {
-    const items = data.map((item: any) => ({
+    const items = (data as AssessmentYearCV[]).map((item) => ({
       ...item,
       yearId: item.yearRangeCVId || item.yearId,
     }));
+    const totalCount = data.length;
+    const isFetchAllPageSize = pageSize <= 0;
+    const effectivePageSize = isFetchAllPageSize
+      ? (totalCount > 0 ? totalCount : 1)
+      : pageSize;
+    const totalPages = isFetchAllPageSize
+      ? 1
+      : Math.ceil(totalCount / effectivePageSize);
     return {
       items,
-      totalCount: data.length,
+      totalCount,
       pageNumber: pageNumber,
-      pageSize: pageSize,
-      totalPages: Math.ceil(data.length / pageSize),
+      pageSize: effectivePageSize,
+      totalPages,
       hasPrevious: pageNumber > 1,
-      hasNext: pageNumber < Math.ceil(data.length / pageSize)
+      hasNext: isFetchAllPageSize ? false : pageNumber < totalPages
     };
   }
 
   if (data.items && Array.isArray(data.items)) {
-    data.items = data.items.map((item: any) => ({
+    data.items = (data.items as AssessmentYearCV[]).map((item) => ({
       ...item,
       yearId: item.yearRangeCVId || item.yearId,
     }));

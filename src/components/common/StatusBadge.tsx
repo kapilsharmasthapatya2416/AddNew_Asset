@@ -42,9 +42,13 @@ export function StatusBadge({
     }
   };
 
-  const Icon = variant === 'pending' || variant === 'warning' || (variant === 'status' && !isActive)
-    ? AlertCircle
-    : CheckCircle;
+  const Icon =
+    variant === 'pending' ||
+    variant === 'warning' ||
+    variant === 'error' ||
+    (variant === 'status' && !isActive)
+      ? AlertCircle
+      : CheckCircle;
 
   const displayLabel = label || (isActive ? activeLabel : inactiveLabel);
 

@@ -7,16 +7,16 @@ import { getAssessmentYearsPagedServerCV, getFloorPaged } from "@/lib/api/weight
 
 
 interface PageProps {
-  searchParams: Promise<{
+  searchParams?: {
     page?: string;
     pageSize?: string;
     q?: string;
     selectedYearRange?: string;
-  }>;
+  };
 }
 
 export default async function Page({ searchParams }: PageProps): Promise<React.ReactElement> {
-  const params = await searchParams;
+  const params = searchParams ?? {};
   const pageNumber = Number(params.page) || 1;
   const pageSize = Number(params.pageSize) || 10;
   const searchTerm = params.q || undefined;

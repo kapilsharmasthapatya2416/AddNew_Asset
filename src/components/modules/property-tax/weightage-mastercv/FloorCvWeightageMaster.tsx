@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { MasterTable, Column } from "@/components/common/MasterTable";
@@ -87,10 +87,10 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
     const currentSearchTerm = searchParams.get("q") || "";
 
     // Toast functions
-    const addToast = (type: 'success' | 'error' | 'info' | 'warning', message: string) => {
+    const addToast = useCallback((type: 'success' | 'error' | 'info' | 'warning', message: string) => {
         const id = Date.now().toString();
         setToasts(prev => [...prev, { id, type, message }]);
-    };
+    }, []);
 
     const removeToast = (id: string) => {
         setToasts(prev => prev.filter(toast => toast.id !== id));
@@ -105,8 +105,7 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
         } else if (!hasNewRecords) {
             hasShownWarningRef.current = false;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [hasNewRecords, t]);
+    }, [hasNewRecords, tW, addToast]);
 
     /* ================= URL BUILDER ================= */
     // const buildUrl = React.useCallback(
@@ -238,9 +237,9 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
                     delete updated[rowUid];
                     return updated;
                 });
-                // Refresh the page after a short delay
+                // Refresh route data after a short delay without forcing a full page reload
                 setTimeout(() => {
-                    window.location.reload();
+                    router.refresh();
                 }, 1000);
             } else {
                 addToast('error', result.message || (row.floorFactorId === 0 ? tW('common.messages.createFailed') : tW('common.messages.updateFailed')));
@@ -394,7 +393,7 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
         }
         // Validation for From/To floor selection
         if (fromFloor && toFloor && parseInt(fromFloor) > parseInt(toFloor)) {
-            addToast('error', tW('common.messages.fromFloorGreaterError'));
+            addToast('error', t('messages.fromFloorGreaterError'));
             return;
         }
         const updatedRows: Record<string, FloorFactorCVMaster> = {};
@@ -533,7 +532,7 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
                 addToast('success', tW('common.messages.bulkOperationSuccess', { message: successMsg.join(', ') }));
                 setEditableRows({});
                 setTimeout(() => {
-                    window.location.reload();
+                    router.refresh();
                 }, 1500);
             } else if (totalSuccess > 0 && errorCount > 0) {
                 const successMsg = [];
@@ -543,7 +542,7 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
                 addToast('warning', tW('common.messages.bulkOperationPartialSuccess', { message: successMsg.join(', ') }));
                 setEditableRows({});
                 setTimeout(() => {
-                    window.location.reload();
+                    router.refresh();
                 }, 1500);
             } else if (errorCount > 0) {
                 addToast('error', tW('common.messages.bulkOperationFailed'));
@@ -582,7 +581,7 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
             if (result && result.success) {
                 addToast('success', tW('common.messages.recordsGeneratedSuccess', { count: newRecords.length }));
                 setTimeout(() => {
-                    window.location.reload();
+                    router.refresh();
                 }, 1500);
             } else {
                 addToast('error', result?.message || tW('common.messages.generationFailed'));
@@ -652,18 +651,30 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
 
         const params = new URLSearchParams();
         params.set("page", "1");
-        if (value) params.set("selectedYearRange", value);
+        params.set("pageSize", String(pageSize));
+        
+        if (currentSearchTerm) {
+            params.set("q", currentSearchTerm);
+        }
+        
+        if (value) {
+            params.set("selectedYearRange", value);
+        }
 
         router.push(`/${locale}/property-tax/weightage-master?${params.toString()}`);
     };
 
     // Derived states for button enable/disable logic
     // Apply button should be disabled unless all filter values are selected/valid
+    // It stays enabled for open-ended ranges and only rejects explicitly invalid bounded ranges
+    const isRangeInvalid =
+        !!fromFloor &&
+        !!toFloor &&
+        parseInt(fromFloor) > parseInt(toFloor);
     const isApplyDisabled =
-        !fromFloor ||
-        !toFloor ||
         !liftStatus ||
-        parseFloat(factorValue) <= 0;
+        parseFloat(factorValue) <= 0 ||
+        isRangeInvalid;
     const isBulkUpdateDisabled = Object.keys(editableRows).length === 0 || isBulkUpdating;
     // const isSingleUpdateDisabled = isBulkUpdating || isUpdating;
 
@@ -690,7 +701,7 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
                     <div className="flex items-center gap-1 text-sm">
                         {tCommon("table.showing")} {totalCount === 0 ? 0 : ((pageNumber || 1) - 1) * (pageSize || 10) + 1} {tCommon("table.to")}
                         <Select
-                            options={Array.from(new Set([10, 20, 30, 40, 50, totalCount])).filter(s => s > 0).map(s => ({
+                            options={Array.from(new Set([10, 20, 30, 40, 50, Math.min(totalCount, 100)])).filter(s => s > 0).map(s => ({
                                 label: String(s),
                                 value: String(s)
                             }))}
@@ -786,7 +797,7 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
                                     </div>
                                 )}
                                 <AddButton
-                                    label={isGeneratingAll ? "Generating..." : tW('common.buttons.generateAll')}
+                                    label={isGeneratingAll ? tW('common.buttons.generating') : tW('common.buttons.generateAll')}
                                     size="sm"
                                     onClick={handleGenerateAll}
                                     disabled={!hasNewRecords || isGeneratingAll || isBulkUpdating || isUpdating}

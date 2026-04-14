@@ -12,7 +12,7 @@ export interface MatrixCellInputProps {
   colorClass?: string;
   className?: string;
   readOnly?: boolean;
-  onCellChange?: (rowId: string, columnId: string, value: string | number) => void;
+  onCellChange?: (rowId: string, columnId: string, value: number) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
  

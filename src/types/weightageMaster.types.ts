@@ -337,7 +337,7 @@ export interface BulkAgeFactorCVMasterUpdate {
   ageFactors: AgeFactorCVBulkUpdateItem[];
 }
 
-//depenacy master service types
+//dependency master service types
 export interface AssessmentYearCV {
   yearRangeCVId: number;
   yearId?: number; // Optional for backward compatibility
