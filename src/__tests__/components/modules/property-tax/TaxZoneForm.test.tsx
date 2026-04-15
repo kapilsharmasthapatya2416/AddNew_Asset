@@ -220,7 +220,9 @@ describe("TaxZoneForm", () => {
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith("This record already exists");
-        expect(screen.getByText("This record already exists")).toBeInTheDocument();
+        // Both fields should show the duplicate error
+        const errorMessages = screen.getAllByText("This record already exists");
+        expect(errorMessages).toHaveLength(2); // One for taxZoneNo, one for taxZoneType
       });
     });
 
