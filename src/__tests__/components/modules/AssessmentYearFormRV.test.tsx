@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
 import AssessmentYearFormRV from '@/components/modules/property-tax/AssessmentYearRange/RateableValue/AssessmentYearFormRV';
 import * as actions from '@/app/[locale]/property-tax/assessment-year-range/rateablevalue/action';
+import type { AssessmentYearRV } from '@/types/assessmentYearMaster.types';
 
 // Mock dependencies
 vi.mock('next/navigation', () => ({
@@ -39,7 +40,7 @@ describe('AssessmentYearFormRV', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useRouter as any).mockReturnValue(mockRouter);
+    (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockRouter);
     vi.spyOn(actions, 'checkAssessmentYearOverlap').mockResolvedValue({ hasOverlap: false });
   });
 
@@ -57,7 +58,7 @@ describe('AssessmentYearFormRV', () => {
     });
 
     it('should render form in edit mode with initial data', () => {
-      const initialData: any = {
+      const initialData: AssessmentYearRV = {
         yearId: 1,
         yearRangeRVId: 1,
         fromYear: 2023,
@@ -155,7 +156,7 @@ describe('AssessmentYearFormRV', () => {
   describe('Form Submission', () => {
     it('should create new record successfully', async () => {
       const user = userEvent.setup();
-      vi.spyOn(actions, 'createAssessmentYearAction').mockResolvedValue({ success: true, data: {} as any });
+      vi.spyOn(actions, 'createAssessmentYearAction').mockResolvedValue({ success: true, data: {} as AssessmentYearRV });
       
       render(
         <AssessmentYearFormRV
@@ -188,7 +189,7 @@ describe('AssessmentYearFormRV', () => {
 
     it('should update existing record successfully', async () => {
       const user = userEvent.setup();
-      const initialData: any = {
+      const initialData: AssessmentYearRV = {
         yearId: 1,
         yearRangeRVId: 1,
         fromYear: 2023,
@@ -198,7 +199,7 @@ describe('AssessmentYearFormRV', () => {
         updatedDate: new Date().toISOString(),
       };
 
-      vi.spyOn(actions, 'updateAssessmentYearAction').mockResolvedValue({ success: true, data: {} as any });
+      vi.spyOn(actions, 'updateAssessmentYearAction').mockResolvedValue({ success: true, data: {} as AssessmentYearRV });
       
       render(
         <AssessmentYearFormRV

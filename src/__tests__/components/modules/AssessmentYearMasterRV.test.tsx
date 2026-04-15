@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
 import AssessmentYearMasterRV from '@/components/modules/property-tax/AssessmentYearRange/RateableValue/AssessmentYearMasterRV';
 import * as actions from '@/app/[locale]/property-tax/assessment-year-range/rateablevalue/action';
-import { AssessmentYearPagedResponseRV } from '@/types/assessmentYearMaster.types';
+import type { AssessmentYearPagedResponseRV, AssessmentYearRV } from '@/types/assessmentYearMaster.types';
 
 // Mock dependencies
 vi.mock('next/navigation', () => ({
@@ -37,9 +37,9 @@ vi.mock('@/components/common', () => ({
       }
     }),
   }),
-  AddButton: ({ onClick, label }: any) => <button onClick={onClick}>{label}</button>,
-  EditButton: ({ onClick }: any) => <button onClick={onClick}>Edit</button>,
-  DeleteButton: ({ onClick }: any) => <button onClick={onClick}>Delete</button>,
+  AddButton: ({ onClick, label }: { onClick: () => void; label: string }) => <button onClick={onClick}>{label}</button>,
+  EditButton: ({ onClick }: { onClick: () => void }) => <button onClick={onClick}>Edit</button>,
+  DeleteButton: ({ onClick }: { onClick: () => void }) => <button onClick={onClick}>Delete</button>,
 }));
 
 describe('AssessmentYearMasterRV', () => {
@@ -79,7 +79,7 @@ describe('AssessmentYearMasterRV', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useRouter as any).mockReturnValue(mockRouter);
+    (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockRouter);
   });
 
   describe('Component Rendering', () => {
@@ -271,7 +271,7 @@ describe('AssessmentYearMasterRV', () => {
   describe('Error Handling', () => {
     it('should handle missing data gracefully', () => {
       const invalidData = {
-        items: null as any,
+        items: null as unknown as AssessmentYearRV[],
         totalCount: 0,
         pageNumber: 1,
         pageSize: 10,

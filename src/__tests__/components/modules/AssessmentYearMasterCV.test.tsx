@@ -37,9 +37,9 @@ vi.mock('@/components/common', () => ({
       }
     }),
   }),
-  AddButton: ({ onClick, label }: any) => <button onClick={onClick}>{label}</button>,
-  EditButton: ({ onClick }: any) => <button onClick={onClick}>Edit</button>,
-  DeleteButton: ({ onClick }: any) => <button onClick={onClick}>Delete</button>,
+  AddButton: ({ onClick, label }: { onClick: () => void; label: string }) => <button onClick={onClick}>{label}</button>,
+  EditButton: ({ onClick }: { onClick: () => void }) => <button onClick={onClick}>Edit</button>,
+  DeleteButton: ({ onClick }: { onClick: () => void }) => <button onClick={onClick}>Delete</button>,
 }));
 
 describe('AssessmentYearMasterCV', () => {
@@ -79,7 +79,7 @@ describe('AssessmentYearMasterCV', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useRouter as any).mockReturnValue(mockRouter);
+    (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockRouter);
   });
 
   describe('Component Rendering', () => {

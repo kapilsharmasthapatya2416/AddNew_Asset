@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
 import AssessmentYearFormCV from '@/components/modules/property-tax/AssessmentYearRange/CapitalValue/AssessmentYearFormCV';
 import * as actions from '@/app/[locale]/property-tax/assessment-year-range/capitalvalue/action';
+import type { AssessmentYearCV } from '@/types/assessmentYearMaster.types';
 
 // Mock dependencies
 vi.mock('next/navigation', () => ({
@@ -39,7 +40,7 @@ describe('AssessmentYearFormCV', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useRouter as any).mockReturnValue(mockRouter);
+    (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockRouter);
     vi.spyOn(actions, 'checkAssessmentYearOverlapCV').mockResolvedValue({ hasOverlap: false });
   });
 
@@ -57,7 +58,7 @@ describe('AssessmentYearFormCV', () => {
     });
 
     it('should render form in edit mode with initial data', () => {
-      const initialData: any = {
+      const initialData: AssessmentYearCV = {
         yearId: 1,
         yearRangeCVId: 1,
         fromYear: 2023,
@@ -81,7 +82,7 @@ describe('AssessmentYearFormCV', () => {
     });
 
     it('should render active status toggle in edit mode', () => {
-      const initialData: any = {
+      const initialData: AssessmentYearCV = {
         yearId: 1,
         yearRangeCVId: 1,
         fromYear: 2023,
@@ -211,7 +212,7 @@ describe('AssessmentYearFormCV', () => {
   describe('Form Submission', () => {
     it('should create new record successfully', async () => {
       const user = userEvent.setup();
-      vi.spyOn(actions, 'createAssessmentYearActionCV').mockResolvedValue({ success: true, data: {} as any });
+      vi.spyOn(actions, 'createAssessmentYearActionCV').mockResolvedValue({ success: true, data: {} as AssessmentYearCV });
       
       render(
         <AssessmentYearFormCV
@@ -244,7 +245,7 @@ describe('AssessmentYearFormCV', () => {
 
     it('should update existing record successfully', async () => {
       const user = userEvent.setup();
-      const initialData: any = {
+      const initialData: AssessmentYearCV = {
         yearId: 1,
         yearRangeCVId: 1,
         fromYear: 2023,
@@ -254,7 +255,7 @@ describe('AssessmentYearFormCV', () => {
         updatedDate: new Date().toISOString(),
       };
 
-      vi.spyOn(actions, 'updateAssessmentYearActionCV').mockResolvedValue({ success: true, data: {} as any });
+      vi.spyOn(actions, 'updateAssessmentYearActionCV').mockResolvedValue({ success: true, data: {} as AssessmentYearCV });
       
       render(
         <AssessmentYearFormCV
@@ -307,7 +308,7 @@ describe('AssessmentYearFormCV', () => {
   describe('User Interactions', () => {
     it('should toggle active status', async () => {
       const user = userEvent.setup();
-      const initialData: any = {
+      const initialData: AssessmentYearCV = {
         yearId: 1,
         yearRangeCVId: 1,
         fromYear: 2023,
@@ -388,7 +389,7 @@ describe('AssessmentYearFormCV', () => {
     it('should disable submit button while submitting', async () => {
       const user = userEvent.setup();
       vi.spyOn(actions, 'createAssessmentYearActionCV').mockImplementation(
-        () => new Promise(resolve => setTimeout(() => resolve({ success: true, data: {} as any }), 100))
+        () => new Promise(resolve => setTimeout(() => resolve({ success: true, data: {} as AssessmentYearCV }), 100))
       );
       
       render(
