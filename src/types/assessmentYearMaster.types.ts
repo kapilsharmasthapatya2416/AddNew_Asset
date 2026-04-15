@@ -44,3 +44,4 @@ export interface AssessmentYearPagedResponseCV {
   hasPrevious?: boolean;
   hasNext?: boolean;
 }
+
