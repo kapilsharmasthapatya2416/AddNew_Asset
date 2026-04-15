@@ -17,6 +17,7 @@ interface PageProps {
 export default async function Page({ searchParams }: PageProps) {
   const params = await searchParams;
 
+  
   const pageNumber = Number(params.page) || 1;
   const pageSize = Number(params.pageSize) || 10;
   const search = params.search ?? "";
@@ -31,6 +32,7 @@ export default async function Page({ searchParams }: PageProps) {
           pageSize={result.pageSize}
           totalCount={result.totalCount}
           totalPages={result.totalPages}
+          search={search}
         />
      
   );

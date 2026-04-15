@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2, MapPin, X } from "lucide-react";
 import { toast } from "sonner";

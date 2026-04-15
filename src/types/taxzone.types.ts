@@ -25,6 +25,15 @@ export interface TaxZone {
   [key: string]: unknown;
 }
 
+export interface TaxZoneMasterProps {
+  data: TaxZone[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  search?: string;
+}
+
 export interface PagedResponse<T> {
   items: T[];
   totalCount: number;

@@ -7,7 +7,7 @@ import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { MasterTable } from "@/components/common/MasterTable";
 import TableHeader from "@/components/common/TableHeader";
-import type { TaxZone } from "@/types/taxzone.types";
+import type { TaxZone, TaxZoneMasterProps } from "@/types/taxzone.types";
 import { deleteTaxZoneAction } from "@/app/[locale]/property-tax/taxzone/action";
 import { useConfirm } from "@/components/common/ConfirmProvider";
 import { PageContainer, SearchInput } from "@/components/common";
@@ -16,32 +16,21 @@ import { useTranslations, useLocale } from "next-intl";
 import { getTaxZoneColumns } from "./columns";
 import { TEXT_SANITIZE } from "@/lib/utils/validation";
 
-export interface TaxZoneMasterProps {
-  data: TaxZone[];
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-}
-
 export default function TaxZoneMaster({
   data,
   pageNumber,
   pageSize,
   totalCount,
   totalPages,
+  search: initialSearch = "",
 }: TaxZoneMasterProps) {
   const router = useRouter();
   const { confirm } = useConfirm();
 
-  const [search, setSearch] = useState(() => {
-    if (typeof window === 'undefined') return "";
-    const params = new URLSearchParams(window.location.search);
-    return params.get("search") ?? "";
-  });
+  const [search, setSearch] = useState(initialSearch);
 
   // const searchActive = search.trim().length > 0;
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [, setAllRecords] = useState<TaxZone[] | null>(null);
   const [loadingAll] = useState(false);
