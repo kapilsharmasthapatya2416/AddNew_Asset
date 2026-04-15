@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils/cn";
 import { saveTaxZone } from "@/app/[locale]/property-tax/taxzone/action";
 import { Drawer } from "@/components/common/Drawer";
 import { useTranslations, useLocale } from "next-intl";
-import { CONSTRUCTION_CODE_REGEX, TEXT_ALLOWED, TEXT_SANITIZE } from "@/lib/utils/validation";
+import { TEXT_ALLOWED, TEXT_SANITIZE } from "@/lib/utils/validation";
 
 
 
@@ -60,7 +60,7 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
       e.taxZoneNo = t("form.validation.zoneNoRequired")
     } else if (data.taxZoneNo.length > ZONE_NO_MAX) {
       e.taxZoneNo = t("form.validation.zoneNoMax");
-    } else if (!CONSTRUCTION_CODE_REGEX.test(data.taxZoneNo)) {
+    } else if (!TEXT_ALLOWED.test(data.taxZoneNo)) {
       e.taxZoneNo = t("form.validation.zoneNoFormat")
     }
 
@@ -157,7 +157,7 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
           // Show duplicate error for both fields
           setErrors({
             taxZoneNo: t("form.validation.duplicateRecord") || "This record already exists",
-           // taxZoneType: t("form.validation.duplicateRecord") || "This record already exists",
+            taxZoneType: t("form.validation.duplicateRecord") || "This record already exists",
           });
           toast.error(
             res.message || 
