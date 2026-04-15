@@ -58,11 +58,11 @@ export function Button({
   type = "button",
   ...props
 }: ButtonProps): React.ReactElement {
-  const sizeClasses: Record<ButtonSize, string> = {
-    xs: "h-7 px-2.5 text-xs gap-1.5",
-    sm: "h-8 px-3 text-sm gap-2",
-    md: "h-10 px-4 text-sm gap-2",
-    lg: "h-12 px-6 text-base gap-2.5",
+   const sizeClasses: Record<ButtonSize, string> = {
+    xs: "h-7 px-2.5 text-xs gap-1.5 whitespace-nowrap",
+    sm: "h-8 px-3 text-sm gap-2 whitespace-nowrap",
+    md: "h-10 px-4 text-sm gap-2 whitespace-nowrap",
+    lg: "h-12 px-6 text-base gap-2.5 whitespace-nowrap",
   };
 
   const iconSizes: Record<ButtonSize, string> = {

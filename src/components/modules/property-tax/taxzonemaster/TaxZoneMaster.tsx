@@ -32,9 +32,6 @@ export default function TaxZoneMaster({
   // const searchActive = search.trim().length > 0;
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [, setAllRecords] = useState<TaxZone[] | null>(null);
-  const [loadingAll] = useState(false);
-
   const t = useTranslations("taxZone");
   //const tCommon = useTranslations("common");
   const locale = useLocale();
@@ -126,7 +123,7 @@ export default function TaxZoneMaster({
           await deleteTaxZoneAction(fd);
 
           toast.success(t("delete.success"));
-          setAllRecords(null);
+
           router.refresh();
         }
         catch (error) {
@@ -151,9 +148,10 @@ export default function TaxZoneMaster({
                 value={search}
                 onChange={handleSearchChange}
                 placeholder={t("list.filters.search")}
-                className="mb-0 w-100 text-gray-900"
+                className="mb-0 w-full text-gray-900"
               />
               <AddButton
+              size="sm"
                 label={t("list.buttons.add")}
                 onClick={() => router.push(`/${locale}/property-tax/taxzone/add`)}
               />
@@ -164,7 +162,7 @@ export default function TaxZoneMaster({
         <MasterTable<TaxZone>
           columns={columns}
           data={tableRows}
-          loading={loadingAll}
+          loading={false}
           pageNumber={effectivePageNumber}
           pageSize={pageSize}
           totalCount={effectiveTotalCount}

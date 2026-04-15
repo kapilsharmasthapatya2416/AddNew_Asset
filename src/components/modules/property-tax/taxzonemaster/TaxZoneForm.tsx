@@ -219,8 +219,7 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
       }
     >
       <form id="form" onSubmit={handleSubmit} className="space-y-6 bg-[#F8FAFF] p-5">
-        {isEdit && (
-         <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-4 space-y-4">
+        <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-4 space-y-4">
           <div
             className={cn(
               "rounded-xl p-2 flex items-center justify-between transition-colors",
@@ -251,12 +250,10 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
               </div>
             </div>
 
-            {isEdit && (
-              <ToggleSwitch checked={formData.isActive} onChange={handleToggleStatus} showPopup={false} />
-            )}
+            <ToggleSwitch checked={formData.isActive} onChange={handleToggleStatus} showPopup={false} />
           </div>
         </div>
-)}
+
         <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-5 space-y-4">
           <Input
             name="taxZoneNo"
