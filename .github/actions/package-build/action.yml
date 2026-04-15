@@ -1,4 +1,4 @@
-﻿name: NTIS UI Package Build
+name: NTIS UI Package Build
 description: Build, package, and upload the NTIS UI artifact.
 
 inputs:
