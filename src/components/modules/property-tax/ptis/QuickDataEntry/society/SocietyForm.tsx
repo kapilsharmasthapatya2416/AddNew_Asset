@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useConfirm } from "@/components/common/ConfirmProvider";
 
+import { societyValidations, validateForm, hasErrors } from "@/lib/utils/validation";
+
 interface SocietyFormProps {
     societyData: PropertySocietyDetailsApiItem | null;
     propertyIdSearch: number;
@@ -58,45 +60,37 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
         const landOwnerName = String(formData.get("landOwnerName") ?? "").trim();
         const builderName = String(formData.get("builderName") ?? "").trim();
 
-        // Validation regexes
-        const textRegex = /^[\p{L}\p{M}\s.,'-]+$/u;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const mobileRegex = /^[0-9]{10}$/;
+        const validationSchema = {
+            landOwnerName: societyValidations.personName("landOwnerName", t),
+            builderName: societyValidations.personName("builderName", t),
+            managerName: societyValidations.personName("managerName", t),
+            secretaryName: societyValidations.personName("secretaryName", t),
 
-        if (landOwnerName && !textRegex.test(landOwnerName)) {
-            toast.error(t('society.validation.landOwnerName'));
-            return;
-        }
-        if (builderName && !textRegex.test(builderName)) {
-            toast.error(t('society.validation.builderName'));
-            return;
-        }
-        if (managerName && !textRegex.test(managerName)) {
-            toast.error(t('society.validation.managerName'));
-            return;
-        }
-        if (secretaryName && !textRegex.test(secretaryName)) {
-            toast.error(t('society.validation.secretaryName'));
-            return;
-        }
-        if (societyEmailId && !emailRegex.test(societyEmailId)) {
-            toast.error(t('society.validation.societyEmail'));
-            return;
-        }
-        if (managerEmailId && !emailRegex.test(managerEmailId)) {
-            toast.error(t('society.validation.managerEmail'));
-            return;
-        }
-        if (secretaryEmailId && !emailRegex.test(secretaryEmailId)) {
-            toast.error(t('society.validation.secretaryEmail'));
-            return;
-        }
-        if (managerMobileStr && !mobileRegex.test(managerMobileStr)) {
-            toast.error(t('society.validation.managerMobile'));
-            return;
-        }
-        if (secretaryMobileStr && !mobileRegex.test(secretaryMobileStr)) {
-            toast.error(t('society.validation.secretaryMobile'));
+            societyEmailId: societyValidations.email("societyEmail", t),
+            managerEmailId: societyValidations.email("managerEmail", t),
+            secretaryEmailId: societyValidations.email("secretaryEmail", t),
+
+            managerMobileStr: societyValidations.mobile10("managerMobile", t),
+            secretaryMobileStr: societyValidations.mobile10("secretaryMobile", t),
+        };
+
+        const errors = validateForm(
+            {
+                landOwnerName,
+                builderName,
+                managerName,
+                secretaryName,
+                societyEmailId,
+                managerEmailId,
+                secretaryEmailId,
+                managerMobileStr,
+                secretaryMobileStr,
+            },
+            validationSchema
+        );
+
+        if (hasErrors(errors)) {
+            toast.error(Object.values(errors)[0]);
             return;
         }
 
@@ -121,7 +115,6 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
             landOwnerName: landOwnerName || null,
             builderName: builderName || null,
 
-            // Also include english fields if relevant, but based on the input mapping:
             societyNameEnglish: societyName || null,
             societyAddressEnglish: societyAddress || null,
             secretaryNameEnglish: secretaryName || null,
@@ -132,9 +125,9 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
 
         confirm({
             variant: "update",
-            title: t('society.updateConfirmTitle'),
-            description: t('society.updateConfirmText'),
-            confirmText: t('society.updateConfirmButton'),
+            title: t("society.updateConfirmTitle"),
+            description: t("society.updateConfirmText"),
+            confirmText: t("society.updateConfirmButton"),
             onConfirm: async () => {
                 setIsUpdating(true);
                 try {
@@ -142,19 +135,19 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
 
                     if (!result?.success) {
                         console.error("Submission error:", result?.error);
-                        toast.error(result?.error || t('society.updateError'));
+                        toast.error(result?.error || t("society.updateError"));
                         return;
                     }
 
-                    toast.success(t('society.updateSuccess'));
-                     router.refresh();
+                    toast.success(t("society.updateSuccess"));
+                    router.refresh();
                 } catch (err) {
                     console.error("Submission error:", err);
-                    toast.error(t('society.updateError'));
+                    toast.error(t("society.updateError"));
                 } finally {
                     setIsUpdating(false);
                 }
-            }
+            },
         });
     };
 
@@ -267,25 +260,31 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
                                 <Label htmlFor="manager-mobile-0" className="text-xs font-semibold text-gray-700">
                                     {t('society.managerMobileNo')}
                                 </Label>
-                                <div className="flex items-center gap-1 p-1 bg-white border border-purple-200 rounded-md h-9 focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200">
-                                    <span className="flex items-center justify-center px-1 text-[10px] text-gray-600 font-semibold bg-gray-50 border border-purple-100 rounded h-full">+91</span>
-                                    <div className="flex gap-1 flex-1 h-full">
+
+                                <div className="flex items-center gap-1 p-1 bg-white border border-purple-200 rounded-md h-10 focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200">
+                                    <span className="flex shrink-0 items-center justify-center w-10 h-7 text-[10px] font-semibold text-gray-600 bg-gray-50 border border-purple-100 rounded-md">
+                                        +91
+                                    </span>
+
+                                    <div className="flex items-center justify-between flex-1 min-w-0 gap-1">
                                         {Array.from({ length: 10 }).map((_, i) => (
-                                            <input
+                                            <Input
                                                 key={i}
-                                                id={i === 0 ? "manager-mobile-0" : undefined}
+                                                id={i === 0 ? 'manager-mobile-0' : undefined}
                                                 type="text"
                                                 maxLength={1}
                                                 inputMode="numeric"
                                                 pattern="[0-9]"
                                                 value={managerMobileDigits[i]}
                                                 onChange={(e) => {
-                                                    const val = e.target.value.replace(/\D/, "");
-                                                    setManagerMobileDigits(prev => {
+                                                    const val = e.target.value.replace(/\D/g, '').slice(0, 1);
+
+                                                    setManagerMobileDigits((prev) => {
                                                         const next = [...prev];
                                                         next[i] = val;
                                                         return next;
                                                     });
+
                                                     if (val) {
                                                         const container = document.getElementById('manager-mobile-container');
                                                         const inputs = container?.querySelectorAll('input');
@@ -295,7 +294,7 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
                                                     }
                                                 }}
                                                 onKeyDown={(e) => {
-                                                    if (e.key === "Backspace" && !managerMobileDigits[i]) {
+                                                    if (e.key === 'Backspace' && !managerMobileDigits[i]) {
                                                         const container = document.getElementById('manager-mobile-container');
                                                         const inputs = container?.querySelectorAll('input');
                                                         if (inputs && inputs[i - 1]) {
@@ -303,7 +302,7 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
                                                         }
                                                     }
                                                 }}
-                                                className="flex-1 min-w-0 w-full h-full text-center text-xs font-semibold text-gray-900 border border-purple-100 rounded bg-white outline-none focus:border-purple-500"
+                                                className=" h-7 w-7 sm:w-7 shrink-0 px-0 py-0 text-center text-xs font-semibold text-gray-900 border border-gray-200 rounded-md bg-white shadow-none focus:border-purple-400 focus:ring-1 focus:ring-purple-200 hover:border-gray-300"
                                             />
                                         ))}
                                     </div>
@@ -340,11 +339,15 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
                                 <Label htmlFor="secretary-mobile-0" className="text-xs font-semibold text-gray-700">
                                     {t('society.secretaryMobile')}
                                 </Label>
-                                <div className="flex items-center gap-1 p-1 bg-white border border-purple-200 rounded-md h-9 focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200">
-                                    <span className="flex items-center justify-center px-1 text-[10px] text-gray-600 font-semibold bg-gray-100 border border-purple-100 rounded h-full">+91</span>
-                                    <div className="flex gap-1 flex-1 h-full">
+
+                                <div className="flex items-center gap-1 p-1 bg-white border border-purple-200 rounded-md h-10 focus-within:border-purple-500 focus-within:ring-2 focus-within:ring-purple-200">
+                                    <span className="flex shrink-0 items-center justify-center w-10 h-7 text-[10px] font-semibold text-gray-600 bg-gray-50 border border-purple-100 rounded-md">
+                                        +91
+                                    </span>
+
+                                    <div className="flex items-center justify-between flex-1 min-w-0 gap-1">
                                         {Array.from({ length: 10 }).map((_, i) => (
-                                            <input
+                                            <Input
                                                 key={i}
                                                 id={i === 0 ? "secretary-mobile-0" : undefined}
                                                 type="text"
@@ -376,7 +379,7 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
                                                         }
                                                     }
                                                 }}
-                                                className="flex-1 min-w-0 w-full h-full text-center text-xs font-semibold text-gray-900 border border-purple-100 rounded bg-white outline-none focus:border-purple-500"
+                                                className=" h-7 w-7 sm:w-7 shrink-0 px-0 py-0 text-center text-xs font-semibold text-gray-900 border border-gray-200 rounded-md bg-white shadow-none focus:border-purple-400 focus:ring-1 focus:ring-purple-200 hover:border-gray-300"
                                             />
                                         ))}
                                     </div>

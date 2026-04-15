@@ -225,7 +225,7 @@ const PropertyFormView = ({
                                 <Label htmlFor="pd-category" className="text-xs font-semibold text-gray-700">
                                     {t('property.category')}
                                 </Label>
-                                <input type="hidden" name="categoryId" value={categoryId} />
+                                <Input type="hidden" name="categoryId" value={categoryId} />
                                 <SearchSelect
                                     name="category"
                                     options={categoryOptions}
