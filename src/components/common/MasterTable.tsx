@@ -89,6 +89,12 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   footerLeftContent?: React.ReactNode;
   footerRightContent?: React.ReactNode;
   pageSizeOptions?: number[];
+  /** Custom className for the footer container */
+  footerClassName?: string;
+  /** Custom className for the footer left section */
+  footerLeftClassName?: string;
+  /** Custom className for the footer right section */
+  footerRightClassName?: string;
 
   paginationConfig?: PaginationConfig;
 }
@@ -177,6 +183,9 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   footerLeftContent,
   footerRightContent,
   pageSizeOptions = [5, 10, 20, 50],
+  footerClassName,
+  footerLeftClassName,
+  footerRightClassName,
   paginationConfig,
 }: MasterTableProps<T>): React.ReactElement {
   const t = useTranslations('common');
@@ -347,9 +356,9 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
 
         {/* ================= FOOTER / PAGINATION ================= */}
         {(hasFooter || isPaginationEnabled || isPageSizeEnabled) && (
-          <div className="bg-[#F8FAFF] border-t border-[#DCEAFF] rounded-b-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm">
+          <div className={cn("bg-[#F8FAFF] border-t border-[#DCEAFF] rounded-b-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm", footerClassName)}>
             {/* LEFT SIDE: Custom Content OR Info Text + PageSize */}
-            <div className="flex items-center gap-4 text-sm text-[#6B7280]">
+            <div className={cn("flex items-center gap-4 text-sm text-[#6B7280]", footerLeftClassName)}>
               {footerLeftContent
                 ? footerLeftContent
                 : (isPaginationEnabled || isPageSizeEnabled) && (
@@ -382,7 +391,7 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
             </div>
 
             {/* RIGHT SIDE: Custom Content + Pagination Controls */}
-            <div className="flex items-center justify-between md:justify-end gap-2 w-full md:w-auto">
+            <div className={cn("flex items-center justify-between md:justify-end gap-2 w-full md:w-auto", footerRightClassName)}>
               {footerRightContent}
 
               {/* RIGHT SIDE: Pagination Controls */}

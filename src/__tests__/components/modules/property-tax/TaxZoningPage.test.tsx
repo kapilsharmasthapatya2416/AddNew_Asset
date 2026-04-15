@@ -53,6 +53,22 @@ const mockWardsData = {
   pageNumber: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false,
 };
 
+const mockAllProperties = {
+  success: true as const,
+  data: {
+    items: [
+      { taxZoneId: 1, wardId: 1, taxZone: "TZ001", wardNo: "W001", propertyNo: "100", fromProperty: "100", toProperty: "200", isActive: true, createdDate: "2024-01-01", updatedDate: null },
+      { taxZoneId: 1, wardId: 1, taxZone: "TZ001", wardNo: "W001", propertyNo: "200", fromProperty: "100", toProperty: "200", isActive: true, createdDate: "2024-01-01", updatedDate: null },
+    ],
+    pageNumber: 1,
+    pageSize: 10,
+    totalCount: 2,
+    totalPages: 1,
+    hasPrevious: false,
+    hasNext: false,
+  },
+};
+
 const mockData: TaxZonningPropertyNo[] = [
   {
     taxZoneId: 1, wardId: 1, taxZone: "TZ001", wardNo: "W001", propertyNo: "100", fromProperty: "100", toProperty: "200", isActive: true, createdDate: "2024-01-01", updatedDate: null,
@@ -88,6 +104,7 @@ describe("TaxZoningPage", () => {
         totalPages={1}
         taxZones={mockTaxZones}
         wardsData={mockWardsData}
+        allProperties={mockAllProperties}
         {...props}
       />
     );

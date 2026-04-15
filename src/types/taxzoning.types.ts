@@ -94,5 +94,5 @@ export type TaxZoningPageProps = {
   totalPages: number;
   taxZones: PagedResponse<TaxZone>;
   wardsData: PagedResponse<Ward>;
-  wardProperties: ActionResult<PagedResponse<TaxZonning>>;
+  allProperties: ActionResult<PagedResponse<TaxZonning>>;
 };

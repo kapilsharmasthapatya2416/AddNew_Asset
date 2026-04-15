@@ -58,6 +58,18 @@ describe("TaxZoningPage Integration", () => {
                 totalPages={1}
                 taxZones={mockTaxZones}
                 wardsData={mockWardsData}
+                allProperties={{
+                    success: true,
+                    data: {
+                        items: mockDataWithRecord,
+                        pageNumber: 1,
+                        pageSize: 10,
+                        totalCount: 1,
+                        totalPages: 1,
+                        hasPrevious: false,
+                        hasNext: false,
+                    },
+                }}
             />
         );
 

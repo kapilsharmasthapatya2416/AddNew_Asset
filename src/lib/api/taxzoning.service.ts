@@ -84,6 +84,26 @@ export async function getTaxZonningByWardServer(
   return response.data;
 }
 
+export async function getAllTaxZonningServer(
+  pageNumber: number,
+  pageSize: number
+): Promise<PagedResponse<TaxZonning>> {
+  const params = new URLSearchParams({
+    PageNumber: pageNumber.toString(),
+    PageSize: pageSize.toString(),
+  });
+
+  const response = await apiClient.get<PagedResponse<TaxZonning>>(
+    `/TaxZonning/GetAll?${params.toString()}`
+  );
+
+  if (!response.success || !response.data) {
+    throw new Error(response.error || "Failed to fetch all Tax Zonning data");
+  }
+
+  return response.data;
+}
+
 export async function getTaxZonningPropertyNoServer(
   pageNumber: number,
   pageSize: number

@@ -13,13 +13,14 @@ import { useRouter } from "next/navigation";
 import {
   createTaxZoningAction,
   updateTaxZoningAction,
-} from "@/app/[locale]/property-tax/taxzoning/tax-zone.actions";
+} from "@/app/[locale]/property-tax/taxzoning/actions";
 import { TaxZonning, PreviewRow, ZoningRecord, SelectOption, TaxZoningPageProps } from "@/types/taxzoning.types";
 
 
 
 import { MultiSelectDropdown } from "@/components/common/Dropdown";
-import { getPreviewColumns, getTaxZoningColumns } from "./taxzoning.columns";
+import { getPreviewColumns, getTaxZoningColumns } from "./TaxZoningColumns";
+
 
 /* ================= COMPONENT ================= */
 export default function TaxZoningPage({
@@ -30,7 +31,7 @@ export default function TaxZoningPage({
   totalPages,
   taxZones,
   wardsData,
-  wardProperties,
+  allProperties,
 }: TaxZoningPageProps) {
   const t = useTranslations('taxZoning');
 
@@ -44,8 +45,7 @@ export default function TaxZoningPage({
 
   const [zone, setZone] = useState("");
   const [ward, setWard] = useState<string[]>([]);
-  // const [fromProps, setFromProps] = useState<string[]>([]);
-  // const [toProps, setToProps] = useState<string[]>([]);
+
   const [fromProps, setFromProps] = useState("");
   const [toProps, setToProps] = useState("");
 
@@ -163,7 +163,7 @@ export default function TaxZoningPage({
 
   /* ================= LOAD PROPERTIES ================= */
 
-  // Navigate to URL with wardNo when ward selection changes
+  // Filter properties by selected ward - client-side filtering from cached server data
   useEffect(() => {
     if (ward.length !== 1) {
       setPropertyOptionsByWard([]);
@@ -174,33 +174,23 @@ export default function TaxZoningPage({
 
     const selectedWardId = ward[0];
     const wardData = wardsData.items.find(w => String(w.wardId) === selectedWardId);
-    if (!wardData) return;
-    
-    // Only navigate if wardNo is different from current URL param
-    const currentParams = new URLSearchParams(window.location.search);
-    const currentWardNo = currentParams.get('wardNo');
-    
-    if (currentWardNo !== wardData.wardNo) {
-      currentParams.set('wardNo', wardData.wardNo);
-      const newUrl = `/${locale}/property-tax/taxzoning?${currentParams.toString()}`;
-      router.replace(newUrl);
-    }
-  }, [ward, wardsData, router, locale]);
-
-  // Process ward properties data when it arrives from server
-  useEffect(() => {
-    if (ward.length !== 1) {
+    if (!wardData) {
       setPropertyOptionsByWard([]);
       return;
     }
 
-    // Check if wardProperties exists and has data
-    if (!wardProperties || !wardProperties.success || !wardProperties.data || !wardProperties.data.items) {
+    // Check if allProperties exists and has data
+    if (!allProperties || !allProperties.success || !allProperties.data || !allProperties.data.items) {
       setPropertyOptionsByWard([]);
       return;
     }
 
-    const options = wardProperties.data.items
+    // Filter properties by selected ward's wardNo
+    const filteredItems = allProperties.data.items.filter(
+      (i: TaxZonning) => i.wardNo === wardData.wardNo
+    );
+
+    const options = filteredItems
       .map((i: TaxZonning) => {
         const v = i.propertyNo.padStart(3, "0");
         return { label: v, value: v };
@@ -210,7 +200,7 @@ export default function TaxZoningPage({
       );
 
     setPropertyOptionsByWard(options);
-  }, [wardProperties, ward]);
+  }, [ward, wardsData, allProperties]);
 
 
 
@@ -732,10 +722,10 @@ export default function TaxZoningPage({
             <Card
               variant="default"
               padding="none"
-              className="border border-blue-200 rounded-xl shadow-sm h-[500px] flex flex-col"
+              className="border border-blue-200 rounded-xl shadow-sm h-[400px] flex flex-col"
             >
               {/* ================= HEADER ================= */}
-              <CardHeader className="flex items-center gap-2 px-4 py-3 border-b bg-[#F8FAFF] rounded-t-xl">
+              <CardHeader className="flex items-center gap-2 px-4 py-3 border-b bg-[#F8FAFF] rounded-t-xl mb-0">
                 <MapPin className="w-4 h-4 text-blue-600" />
                 <CardTitle className="text-sm font-semibold text-[#1E3A8A]">
                   {t('form.update')} {t('title')}
@@ -746,42 +736,44 @@ export default function TaxZoningPage({
               <CardContent className="p-4 space-y-4 flex-1">
 
                 {/* Tax Zone */}
-                <div>
-                  <Label required>
-                    {t('form.taxZone')}
-                  </Label>
-                  <Select
-                    value={zone}
-                    onChange={setZone}
-                    options={zoneOptions}
-                    placeholder={t('form.selectTaxZone')}
-                  />
-                  <ValidationMessage
-                    visible={submitted && !isTaxZoneValid}
-                    message={t('messages.taxZoneRequired')}
-                  />
-                </div>
-
-                {/* Ward */}
-                <div>
-                  <Label required>
-                    {t('form.ward')}
-                  </Label>
-
-                  <div className={cn(!zone && "opacity-60 cursor-not-allowed pointer-events-none")}>
-                    <MultiSelectDropdown
-                      options={wardOptions}
-                      value={ward}
-                      onChange={setWard}
-                      placeholder={zone ? t('form.selectWard') : t('form.selectTaxZone')}
-                      className="text-gray-700"
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label required>
+                      {t('form.taxZone')}
+                    </Label>
+                    <Select
+                      value={zone}
+                      onChange={setZone}
+                      options={zoneOptions}
+                      placeholder={t('form.selectTaxZone')}
+                    />
+                    <ValidationMessage
+                      visible={submitted && !isTaxZoneValid}
+                      message={t('messages.taxZoneRequired')}
                     />
                   </div>
 
-                  <ValidationMessage
-                    visible={submitted && !isWardValid}
-                    message={t('messages.wardRequired')}
-                  />
+                  {/* Ward */}
+                  <div>
+                    <Label required>
+                      {t('form.ward')}
+                    </Label>
+
+                    <div className={cn(!zone && "opacity-60 cursor-not-allowed pointer-events-none")}>
+                      <MultiSelectDropdown
+                        options={wardOptions}
+                        value={ward}
+                        onChange={setWard}
+                        placeholder={zone ? t('form.selectWard') : t('form.selectTaxZone')}
+                        className="text-gray-700"
+                      />
+                    </div>
+
+                    <ValidationMessage
+                      visible={submitted && !isWardValid}
+                      message={t('messages.wardRequired')}
+                    />
+                  </div>
                 </div>
 
 
@@ -871,10 +863,10 @@ export default function TaxZoningPage({
           <Card
             variant="default"
             padding="none"
-            className="border border-blue-200 rounded-xl shadow-sm min-h-[480px] max-h-[500px]"
+            className="border border-blue-200 rounded-xl shadow-sm min-h-[400px] max-h-[500px]"
           >
             {/* ================= HEADER ================= */}
-            <CardHeader className="flex items-center justify-between px-4 py-3 border-b bg-[#F8FAFF] rounded-t-xl">
+            <CardHeader className="flex items-center justify-between px-4 py-3 border-b bg-[#F8FAFF] rounded-t-xl mb-0">
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-semibold text-[#1E3A8A]">
@@ -887,41 +879,48 @@ export default function TaxZoningPage({
               </span>
             </CardHeader>
 
-            {/* ================= SUMMARY STRIP ================= */}
-            <CardContent className="px-4 pt-4 pb-3">
-              <div className="grid grid-cols-3 gap-3">
-                {/* Zone */}
-                <div className="border border-blue-200 bg-[#F1F7FF] rounded-md px-3 py-2">
-                  <p className="text-xs font-semibold text-blue-700">{t('form.taxZone')}</p>
-                  <p className="text-sm text-gray-900">
-                    {zone ? (taxZones.items.find(z => String(z.taxZoneId) === zone)?.taxZoneNo || zone) : t('form.selectTaxZone')}
-                  </p>
-                </div>
+            <div className="grid grid-cols-3 gap-3 px-4 py-3">
 
-                {/* Ward */}
-                <div className="border border-blue-200 bg-[#F1F7FF] rounded-md px-3 py-2">
-                  <p className="text-xs font-semibold text-blue-700">{t('form.ward')}</p>
-                  <p className="text-sm text-gray-900">
-                    {Array.isArray(ward) && ward.length > 0
-                      ? ward.map(wardId => wardsData.items.find(w => String(w.wardId) === wardId)?.wardNo || wardId).join(", ")
-                      : t('form.selectWard')}
-                  </p>
-                </div>
-
-                {/* Property Range */}
-                <div className="border border-blue-200 bg-[#F1F7FF] rounded-md px-3 py-2">
-                  <p className="text-xs font-semibold text-blue-700">
-                    {t('columns.propertyNo')}
-                  </p>
-                  <p className="text-sm text-gray-900">
-                    {fromProps.length && toProps.length
-                      ? `${fromProps} → ${toProps}`
-                      : t('preview.notSpecified')}
-                  </p>
-                </div>
+              {/* Zone */}
+              <div className="border border-blue-200 bg-[#F1F7FF] rounded-md px-2 py-1 flex justify-between items-center gap-2">
+                <p className="text-[12px] font-semibold text-blue-700">
+                  {t('form.taxZone')}
+                </p>
+                <p className="text-[12px] text-gray-900">
+                  {zone
+                    ? (taxZones.items.find(z => String(z.taxZoneId) === zone)?.taxZoneNo || zone)
+                    : t('form.selectTaxZone')}
+                </p>
               </div>
-            </CardContent>
 
+              {/* Ward */}
+              <div className="border border-blue-200 bg-[#F1F7FF] rounded-md px-2 py-1 flex justify-between items-center gap-2">
+                <p className="text-[12px] font-semibold text-blue-700">
+                  {t('form.ward')}
+                </p>
+                <p className="text-[12px] text-gray-900 text-right">
+                  {Array.isArray(ward) && ward.length > 0
+                    ? ward.map(wardId =>
+                      wardsData.items.find(w => String(w.wardId) === wardId)?.wardNo || wardId
+                    ).join(", ")
+                    : t('form.selectWard')}
+                </p>
+              </div>
+
+
+              {/* Property Range */}
+              <div className="border border-blue-200 bg-[#F1F7FF] rounded-md px-2 py-1 flex justify-between items-center gap-2">
+                <p className="text-[12px] font-semibold text-blue-700">
+                  {t('columns.propertyNo')}
+                </p>
+                <p className="text-[12px] text-gray-900">
+                  {fromProps.length && toProps.length
+                    ? `${fromProps} → ${toProps}`
+                    : t('preview.notSpecified')}
+                </p>
+              </div>
+
+            </div>
             {/* ================= TABLE ================= */}
             <div className="mx-4 mb-4 overflow-hidden">
 
@@ -953,6 +952,12 @@ export default function TaxZoningPage({
                   totalCount={previewData.length}
                   totalPages={Math.ceil(previewData.length / PREVIEW_PAGE_SIZE)}
                   onPageChange={(p) => setPreviewPage(p)}
+                  paginationConfig={{
+                    enabled: true,
+                    showPageSizeSelector: false,
+                  }}
+                  footerClassName="px-4 py-2"
+
                 />
               )}
 
@@ -963,6 +968,7 @@ export default function TaxZoningPage({
         {/* ================= ZONING RECORDS ================= */}
         <MasterTable
           headerTitle=""
+          height="xs"
           columns={columns}
           data={tableRecords}
           pageNumber={currentPage}
@@ -1003,6 +1009,7 @@ export default function TaxZoningPage({
 
 
                   <AddButton
+                    size="sm"
                     label={t('form.bulkUpdate')}
                     disabled={!hasImportedData || saving}
                     onClick={handleBulkUpdate}
@@ -1011,6 +1018,7 @@ export default function TaxZoningPage({
 
                   {hasImportedData && (
                     <CancelButton
+                      size="sm"
                       label={t('form.clearImported')}
                       onClick={handleClearImported}
                       className="px-3 py-1.5 text-xs rounded-md"
@@ -1028,6 +1036,7 @@ export default function TaxZoningPage({
                     onChange={handleImportFile}
                   />
                   <ImportButton
+                    size="sm"
                     label={t('buttons.importFile')}
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -1038,6 +1047,7 @@ export default function TaxZoningPage({
 
                 {/* EXPORT */}
                 <ExportButton
+                  size="sm"
                   label={t('buttons.exportCSV')}
                   onClick={handleExportCSV} />
 
