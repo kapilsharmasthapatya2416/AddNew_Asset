@@ -2,7 +2,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createTaxZone, updateTaxZone, deleteTaxZone, ApiError } from "@/lib/api/taxzone.services";
+import { createTaxZone, updateTaxZone, deleteTaxZone, getTaxZonePagedServer, getTaxZoneById, ApiError } from "@/lib/api/taxzone.services";
+import type { PagedResponse, TaxZone } from "@/types/taxzone.types";
+
+export async function getTaxZonePagedAction(
+  pageNumber: number,
+  pageSize: number,
+  searchTerm?: string
+): Promise<PagedResponse<TaxZone>> {
+  return await getTaxZonePagedServer(pageNumber, pageSize, searchTerm);
+}
+
+export async function getTaxZoneByIdAction(taxZoneId: string | number): Promise<TaxZone> {
+  return await getTaxZoneById(taxZoneId);
+}
 
 export async function deleteTaxZoneAction(formData: FormData) {
   const taxZoneId = formData.get("taxZoneId") as string;

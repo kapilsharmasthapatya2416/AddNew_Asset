@@ -1,6 +1,6 @@
 
 import { TaxZoneMaster } from "@/components/modules/property-tax/taxzonemaster";
-import { getTaxZonePagedServer } from "@/lib/api/taxzone.services";
+import { getTaxZonePagedAction } from "./action";
 
 
 export const dynamic = "force-dynamic";
@@ -22,7 +22,7 @@ export default async function Page({ searchParams }: PageProps) {
   const pageSize = Number(params.pageSize) || 10;
   const search = params.search ?? "";
 
-  const result = await getTaxZonePagedServer(pageNumber, pageSize, search);
+  const result = await getTaxZonePagedAction(pageNumber, pageSize, search);
 
   return (
     

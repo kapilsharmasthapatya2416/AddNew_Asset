@@ -1,5 +1,5 @@
 import TaxZoneForm from "@/components/modules/property-tax/taxzonemaster/TaxZoneForm";
-import { getTaxZoneById } from "@/lib/api/taxzone.services";
+import { getTaxZoneByIdAction } from "../../action";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -12,9 +12,9 @@ export default async function EditPage({ params }: PageProps) {
   const { taxZoneId } = await params;
 
   // ✅ Fetch data server-side by tax zone ID
-  let taxZoneData: Awaited<ReturnType<typeof getTaxZoneById>> | null = null;
+  let taxZoneData: Awaited<ReturnType<typeof getTaxZoneByIdAction>> | null = null;
   try {
-    taxZoneData = await getTaxZoneById(taxZoneId);
+    taxZoneData = await getTaxZoneByIdAction(taxZoneId);
   } catch (error) {
     console.error("Failed to fetch tax zone:", error);
     notFound();
