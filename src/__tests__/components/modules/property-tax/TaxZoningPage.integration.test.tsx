@@ -5,7 +5,7 @@ import TaxZoningPage from "@/components/modules/property-tax/taxzoningmaster/Tax
 import { TaxZone, Ward } from "@/types/taxzoning.types";
 
 // Mock imports
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }) }));
 vi.mock("next-intl", () => ({
     useTranslations: () => (key: string) => key,
     useLocale: () => "en",

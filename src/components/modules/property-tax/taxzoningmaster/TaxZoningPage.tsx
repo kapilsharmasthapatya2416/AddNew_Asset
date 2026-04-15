@@ -71,13 +71,13 @@ export default function TaxZoningPage({
 
   const changePage = (p: number) => {
     setCurrentPage(p);
-    router.push(`/${locale}/property-tax/taxzoning?page=${p}&pageSize=${pageSizes}`);
+    router.replace(`/${locale}/property-tax/taxzoning?page=${p}&pageSize=${pageSizes}`);
   };
 
   const changePageSize = (size: number) => {
     setPageSize(String(size));
     setCurrentPage(1);
-    router.push(`/${locale}/property-tax/taxzoning?page=1&pageSize=${size}`);
+    router.replace(`/${locale}/property-tax/taxzoning?page=1&pageSize=${size}`);
   };
 
 

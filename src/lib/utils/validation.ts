@@ -95,7 +95,7 @@ export const commonValidations = {
   ): Validator => (value: unknown) => {
     const strVal = String(value || "");
     if (!strVal || !strVal.trim()) return t('validation.required', { label });
-    if (!/^[a-zA-Z0-9-]+$/.test(strVal)) return t('validation.alphanumericUnderscore', { label });
+    if (!/^[a-zA-Z0-9_-]+$/.test(strVal)) return t('validation.alphanumericUnderscore', { label });
     if (strVal.length > 50) return t('validation.maxChars', { label, count: 50 });
     return undefined;
   },

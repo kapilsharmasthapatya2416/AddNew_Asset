@@ -34,11 +34,13 @@ export async function fetchWardPagedAction(
     if (error instanceof ApiError) {
       throw error;
     }
-
+    // Preserve the original error message and stack if possible
+    const message = error instanceof Error ? error.message : "Unable to load Wards";
+    const details = error instanceof Error && error.stack ? error.stack : String(error);
     throw new ApiError(
       500,
-      "Unable to load Wards",
-      "fetchWardPagedAction: Unknown error"
+      message,
+      `fetchWardPagedAction: ${details}`
     );
   }
 }
