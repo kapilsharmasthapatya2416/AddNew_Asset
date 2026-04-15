@@ -241,8 +241,8 @@ const PropertyFormView = ({
                                 <Label htmlFor="pd-wing" className="text-xs font-semibold text-gray-700">
                                     {t('property.wing')}
                                 </Label>
-                                <input type="hidden" name="wingId" value={wingId} />
-                                <input type="hidden" name="wingName" value={wingName} />
+                                <Input type="hidden" name="wingId" value={wingId} />
+                                <Input type="hidden" name="wingName" value={wingName} />
                                 <SearchSelect
                                     name="wing"
                                     options={wingOptions}
@@ -303,7 +303,7 @@ const PropertyFormView = ({
                                     {t('property.propertyDescription')}
                                 </Label>
 
-                                <input type="hidden" name="propertyTypeId" value={propertyTypeId} />
+                                <Input type="hidden" name="propertyTypeId" value={propertyTypeId} />
                                 <SearchSelect
                                     name="propertyDescription"
                                     options={propertyDescriptionOptions}
