@@ -12,7 +12,9 @@
 
       "filters": {
         "show": "Show",
-        "search": "Search by Zone No, Zone Type, Remark..."
+        "search": "Search by Zone No, Zone Type, Remark...",
+        "searching": "Searching...",
+        "recordsFound": "Found {count} records"
       },
 
       "table": {

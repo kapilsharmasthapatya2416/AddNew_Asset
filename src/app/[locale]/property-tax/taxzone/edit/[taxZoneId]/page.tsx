@@ -12,7 +12,7 @@ export default async function EditPage({ params }: PageProps) {
   const { taxZoneId } = await params;
 
   // ✅ Fetch data server-side by tax zone ID
-  let taxZoneData = null;
+  let taxZoneData: Awaited<ReturnType<typeof getTaxZoneById>> | null = null;
   try {
     taxZoneData = await getTaxZoneById(taxZoneId);
   } catch (error) {

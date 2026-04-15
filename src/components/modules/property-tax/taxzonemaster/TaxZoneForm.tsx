@@ -135,6 +135,7 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
       fd.append("taxZoneType", formData.taxZoneType);
       fd.append("remark", formData.remark);
       fd.append("isActive", String(formData.isActive));
+      fd.append("locale", locale);
 
       const res = await saveTaxZone(isEdit ? String(formData.taxZoneId) : "", fd);
 

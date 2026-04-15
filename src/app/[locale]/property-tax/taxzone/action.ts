@@ -6,13 +6,15 @@ import { createTaxZone, updateTaxZone, deleteTaxZone, ApiError } from "@/lib/api
 
 export async function deleteTaxZoneAction(formData: FormData) {
   const taxZoneId = formData.get("taxZoneId") as string;
+  const locale = formData.get("locale") as string;
   if (!taxZoneId) throw new Error("taxZoneId is required");
 
   await deleteTaxZone(taxZoneId);
-  revalidatePath("/[locale]/property-tax/taxzone");
+  revalidatePath(`/${locale}/property-tax/taxzone`);
 }
 
 export async function saveTaxZone(id: string, formData: FormData) {
+  const locale = formData.get("locale") as string;
   const payload = {
     taxZoneId: id ? Number(id) : undefined,
     taxZoneNo: formData.get("taxZoneNo") as string,
@@ -24,11 +26,11 @@ export async function saveTaxZone(id: string, formData: FormData) {
   try {
     if (id) {
       await updateTaxZone(payload);
-      revalidatePath("/[locale]/property-tax/taxzone");
+      revalidatePath(`/${locale}/property-tax/taxzone`);
       return { ok: true, mode: "update" as const };
     } else {
       await createTaxZone(payload);
-      revalidatePath("/[locale]/property-tax/taxzone");
+      revalidatePath(`/${locale}/property-tax/taxzone`);
       return { ok: true, mode: "create" as const };
     }
   } catch (error) {
