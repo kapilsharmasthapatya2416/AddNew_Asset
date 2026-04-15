@@ -41,6 +41,7 @@ export interface Column<T extends Record<string, unknown> = Record<string, unkno
   render?: (value: T[keyof T] | undefined, row: T, rowIndex: number) => React.ReactNode;
   headerClassName?: string;
   cellClassName?: string;
+  align?: 'left' | 'center' | 'right';
 }
 
 export interface MasterTableProps<T extends Record<string, unknown> = Record<string, unknown>> {
@@ -245,7 +246,8 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                 key={String(col.key)}
                 style={{ width: col.width }}
                 className={cn(
-                  'px-2 py-3 text-center text-sm font-semibold text-[#1E3A8A]',
+                  'px-2 py-3 text-sm font-semibold text-[#1E3A8A]',
+                  col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left',
                   index === 0 && 'rounded-tl-lg',
                   !hasActions && index === columns.length - 1 && 'rounded-tr-lg',
                   col.headerClassName
@@ -295,7 +297,11 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                   return (
                     <td
                       key={String(col.key)}
-                      className={cn('px-2 py-2 text-gray-700 text-center', col.cellClassName)}
+                      className={cn(
+                        'px-2 py-2 text-gray-700',
+                        col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left',
+                        col.cellClassName
+                      )}
                     >
                       {col.render ? (
                         col.render(value, row, i)

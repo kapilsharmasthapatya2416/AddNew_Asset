@@ -118,6 +118,9 @@ export default function TaxZoningPage({
         );
         if (index !== -1) {
           combinedRecords[index] = change;
+        } else {
+          // If the range changed, index will be -1. Append it so the UI shows the change.
+          combinedRecords.push(change);
         }
       } else if (change.status === "New") {
         // Add new record
@@ -300,13 +303,17 @@ export default function TaxZoningPage({
           return;
         }
 
-        // Check headers
+        // Robust header validation: allow localized OR stable English keys
         const headers = data[0].map((h: string) => h?.toString().trim().toLowerCase());
-        const isValidHeader = headers.length === REQUIRED_HEADERS.length &&
-          headers.every((h: string, i: number) => h === REQUIRED_HEADERS[i]);
+        const STABLE_HEADERS = ['wardno', 'fromproperty', 'toproperty', 'taxzoneno'];
+        const LOCAL_HEADERS = REQUIRED_HEADERS;
+        
+        const isValidHeader = headers.length === STABLE_HEADERS.length &&
+          headers.every((h: string, i: number) => h === STABLE_HEADERS[i] || h === LOCAL_HEADERS[i]);
 
         if (!isValidHeader) {
           toast.error(t('messages.invalidFileFormat'));
+          console.error("Header mismatch:", { received: headers, expected_local: LOCAL_HEADERS, expected_stable: STABLE_HEADERS });
           return;
         }
 

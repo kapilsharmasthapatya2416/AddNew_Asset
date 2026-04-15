@@ -15,7 +15,7 @@ vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 // Mock actions
 const mockUpdateTaxZoningAction = vi.fn();
-vi.mock("@/app/[locale]/property-tax/taxzoning/tax-zone.actions", () => ({
+vi.mock("@/app/[locale]/property-tax/taxzoning/actions", () => ({
     createTaxZoningAction: vi.fn(),
     updateTaxZoningAction: (...args: unknown[]) => mockUpdateTaxZoningAction(...args),
     getTaxZonningByWardAction: vi.fn().mockResolvedValue({ success: true, data: { items: [], totalCount: 0 } }),

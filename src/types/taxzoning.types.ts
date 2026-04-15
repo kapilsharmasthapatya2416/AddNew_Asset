@@ -35,18 +35,7 @@ export interface TaxZonning {
   updatedDate: string | null;
 }
 
-export type TaxZonningPropertyNo = {
-  taxZoneId: number;
-  wardId: number;
-  taxZone: string;
-  wardNo: string;
-  propertyNo: string;
-  fromProperty: string;
-  toProperty: string;
-  isActive: boolean;
-  createdDate: string | null;
-  updatedDate: string | null;
-};
+export type TaxZonningPropertyNo = TaxZonning;
 
 // src/types/action-result.ts
 export type ActionResult<T> =

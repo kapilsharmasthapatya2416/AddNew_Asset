@@ -1,3 +1,4 @@
+import { MainLayout } from "@/components/layout";
 import TaxZoningPage from "@/components/modules/property-tax/taxzoningmaster/TaxZoningPage";
 
 import { fetchTaxZonePagedAction, fetchWardPagedAction, getAllTaxZonningAction, getTaxZonningPropertyNoPagedAction } from "./actions";
@@ -38,15 +39,17 @@ export default async function Page({ searchParams }: PageProps) {
   const totalPages = result.success && result.data ? result.data.totalPages : 1;
 
   return (
-    <TaxZoningPage
-      data={tableData}
-      pageNumber={pageNumber}
-      pageSize={pageSize}
-      totalCount={totalCount}
-      totalPages={totalPages}
-      taxZones={taxZonesResult}
-      wardsData={wardsDataResult}
-      allProperties={allPropertiesOptions}
-    />
+    <MainLayout>
+      <TaxZoningPage
+        data={tableData}
+        pageNumber={pageNumber}
+        pageSize={pageSize}
+        totalCount={totalCount}
+        totalPages={totalPages}
+        taxZones={taxZonesResult}
+        wardsData={wardsDataResult}
+        allProperties={allPropertiesOptions}
+      />
+    </MainLayout>
   );
 }

@@ -34,7 +34,7 @@ vi.mock("sonner", () => ({
 const mockUpdateTaxZoningAction = vi.fn();
 const mockGetTaxZonningByWardAction = vi.fn();
 
-vi.mock("@/app/[locale]/property-tax/taxzoning/tax-zone.actions", () => ({
+vi.mock("@/app/[locale]/property-tax/taxzoning/actions", () => ({
   createTaxZoningAction: vi.fn(),
   updateTaxZoningAction: (...args: unknown[]) => mockUpdateTaxZoningAction(...args),
   getTaxZonningByWardAction: (...args: unknown[]) => mockGetTaxZonningByWardAction(...args),

@@ -33,7 +33,9 @@
     "invalidEmail": "अवैध ईमेल पत्ता",
     "minLength": "किमान {count} वर्ण आवश्यक आहेत",
     "maxLength": "कमाल {count} वर्णांची परवानगी आहे",
-    "invalidFormat": "अवैध स्वरूप"
+    "alphanumericUnderscore": "{label} अल्फान्यूमेरिक असणे आवश्यक आहे (अंडरस्कोर आणि हायफनला परवानगी आहे)",
+    "invalidFormat": "अवैध स्वरूप",
+    "mustBeNumber": "एक वैध संख्या असणे आवश्यक आहे"
   },
   "errors": {
     "generic": "काहीतरी चूक झाली",
