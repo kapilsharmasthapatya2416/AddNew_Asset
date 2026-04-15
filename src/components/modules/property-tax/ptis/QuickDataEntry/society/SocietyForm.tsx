@@ -3,8 +3,8 @@ import { AddButton, Input, Tabs } from "@/components/common"
 import { Label } from "@/components/common/label"
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import {
-    PropertySocietyDetailsApiItem,
+import {    
+    SocietyFormProps,
     UpdatePropertySocietyDetailsDto
 } from "@/types/property-society-details.types";
 
@@ -14,12 +14,6 @@ import { useState } from "react";
 import { useConfirm } from "@/components/common/ConfirmProvider";
 
 import { societyValidations, validateForm, hasErrors } from "@/lib/utils/validation";
-
-interface SocietyFormProps {
-    societyData: PropertySocietyDetailsApiItem | null;
-    propertyIdSearch: number;
-    locale: string;
-}
 
 const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps) => {
 

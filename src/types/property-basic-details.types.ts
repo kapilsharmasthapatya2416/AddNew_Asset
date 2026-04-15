@@ -1,4 +1,5 @@
 // PROPERTY API TYPES    
+import { PropertySocietyDetailsApiItem } from "./property-society-details.types";
 
 //  Represents a property category item from PropertyCategory API. Endpoint: GET /api/PropertyCategory
 export interface OwnerTypeApiItem {
@@ -179,6 +180,26 @@ export interface TaxDetailsApiResponse {
         taxAmounts: TaxAmounts;
     };
     errors: string[] | null;
+}
+
+export interface PropertyFormViewProps {
+    WingMaster: WingItem[],
+    propertyCategories: PropertyCategoryApiItem[],
+    propertyDescriptions: PropertyTypeApiItem[],
+    propertyData: PropertyBasicDetailsApiItem | null;
+    propertySocietyDetails: PropertySocietyDetailsApiItem | null;
+    locale: string;
+}
+
+export interface Tab {
+    label: string;
+    href: string;
+    icon: React.ElementType;
+}
+
+export interface DrawerShellProps {
+    children: React.ReactNode;
+    locale: string;
 }
 
 export type ActionResult<T = unknown> =

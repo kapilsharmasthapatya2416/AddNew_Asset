@@ -9,23 +9,9 @@ import { useRouter } from "next/navigation";
 import { toast } from 'sonner';
 import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
 import {
-    PropertyBasicDetailsApiItem,
-    PropertyCategoryApiItem,
-    PropertyTypeApiItem,
+    PropertyFormViewProps,
     UpdatePropertyBasicDetailsDto,
-    WingItem
 } from '@/types/property-basic-details.types';
-import { PropertySocietyDetailsApiItem } from '@/types/property-society-details.types';
-
-
-interface PropertyFormViewProps {
-    WingMaster: WingItem[],
-    propertyCategories: PropertyCategoryApiItem[],
-    propertyDescriptions: PropertyTypeApiItem[],
-    propertyData: PropertyBasicDetailsApiItem | null;
-    propertySocietyDetails: PropertySocietyDetailsApiItem | null;
-    locale: string;
-}
 
 const PropertyFormView = ({
     WingMaster: initialWingMaster,
@@ -110,9 +96,9 @@ const PropertyFormView = ({
         const formData = new FormData(e.currentTarget);
         const pId = propertyData?.propertyId ?? 0;
 
-        const selectedWingIdValue = String(formData.get("wingId") ?? "").trim();
-        const selectedWingId = selectedWingIdValue ? Number(selectedWingIdValue) : null;
-
+        // const selectedWingIdValue = String(formData.get("wingId") ?? "").trim();
+        // const selectedWingId = selectedWingIdValue ? Number(selectedWingIdValue) : null;
+        const selectedWingId = parseId(wingId);
         const selectedWing = wingList.find((wing) => wing.id === selectedWingId);
 
         const payload: UpdatePropertyBasicDetailsDto = {
@@ -123,10 +109,7 @@ const PropertyFormView = ({
 
             wingId: selectedWing?.id ?? null,
             wingNo: selectedWing?.wingNo ?? null,
-
-            // wingId: Number(formData.get("    ")) || null,
-            wingName: propertySocietyDetails?.wingName || null,
-
+            wingName: wingName || null,
             moujaId: propertyData?.moujaId ?? null,
             moujaName: propertyData?.moujaName ?? null,
 
@@ -225,7 +208,6 @@ const PropertyFormView = ({
                                 <Label htmlFor="pd-category" className="text-xs font-semibold text-gray-700">
                                     {t('property.category')}
                                 </Label>
-                                <Input type="hidden" name="categoryId" value={categoryId} />
                                 <SearchSelect
                                     name="category"
                                     options={categoryOptions}
@@ -241,8 +223,6 @@ const PropertyFormView = ({
                                 <Label htmlFor="pd-wing" className="text-xs font-semibold text-gray-700">
                                     {t('property.wing')}
                                 </Label>
-                                <Input type="hidden" name="wingId" value={wingId} />
-                                <Input type="hidden" name="wingName" value={wingName} />
                                 <SearchSelect
                                     name="wing"
                                     options={wingOptions}
@@ -302,8 +282,6 @@ const PropertyFormView = ({
                                 <Label htmlFor="pd-description" className="text-xs font-semibold text-gray-700">
                                     {t('property.propertyDescription')}
                                 </Label>
-
-                                <Input type="hidden" name="propertyTypeId" value={propertyTypeId} />
                                 <SearchSelect
                                     name="propertyDescription"
                                     options={propertyDescriptionOptions}

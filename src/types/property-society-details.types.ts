@@ -54,3 +54,9 @@ export interface UpdatePropertySocietyDetailsDto {
   secretaryEmailId: string | null;
   managerEmailId: string | null;
 }
+
+export interface SocietyFormProps {
+    societyData: PropertySocietyDetailsApiItem | null;
+    propertyIdSearch: number;
+    locale: string;
+}

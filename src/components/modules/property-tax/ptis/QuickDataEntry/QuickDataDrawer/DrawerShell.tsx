@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -11,22 +10,12 @@ import {
 } from 'lucide-react';
 import { Drawer } from '@/components/common/Drawer';
 import { cn } from '@/lib/utils/cn';
-
-interface Tab {
-    label: string;
-    href: string;
-    icon: React.ElementType;
-}
+import { DrawerShellProps, Tab } from '@/types/property-basic-details.types';
 
 const TABS: Tab[] = [
     { label: 'Property', href: 'Property', icon: Home },
-    { label: 'Society', href: 'Society', icon: Building2 },   
+    { label: 'Society', href: 'Society', icon: Building2 },
 ];
-
-interface DrawerShellProps {
-    children: React.ReactNode;
-    locale: string;
-}
 
 export default function DrawerShell({ children, locale }: DrawerShellProps) {
     const pathname = usePathname();
@@ -130,10 +119,10 @@ export default function DrawerShell({ children, locale }: DrawerShellProps) {
                                     switch (tab.href) {
                                         case 'Property':
                                             activeStyles = 'bg-blue-600 text-white border-blue-700 shadow-blue-100';
-                                            break;                                       
+                                            break;
                                         case 'Society':
                                             activeStyles = 'bg-purple-600 text-white border-purple-700 shadow-purple-100';
-                                            break;                                      
+                                            break;
                                         default:
                                             activeStyles = 'bg-gray-600 text-white border-gray-700 shadow-gray-100';
                                     }
