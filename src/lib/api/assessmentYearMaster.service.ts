@@ -12,39 +12,46 @@ export class ApiError extends Error {
   }
 }
  
-async function createFetchOptions(method: string = "GET", body?: unknown): Promise<RequestInit> {
-  const headers: Record<string, string> = {
-    "Accept": "application/json",
-  };
- 
-  if (body) {
-    headers["Content-Type"] = "application/json";
-  }
-  
+async function createFetchOptions(
+  method: string = "GET",
+  body?: unknown
+): Promise<RequestInit> {
+
   const options: RequestInit = {
     method,
     cache: "no-store",
-    headers,
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
   };
 
-  // For development with self-signed certificates, we need to use a custom agent
-  if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
+  // Only allow insecure TLS for explicitly opted-in local development usage.
+  if (
+    process.env.NODE_ENV === "development" &&
+    process.env.ALLOW_INSECURE_TLS === "true" &&
+    typeof window === "undefined"
+  ) {
     try {
-        const https = await import('https');
-        const agent = new https.Agent({
-          rejectUnauthorized: false,
-        });
-        // @ts-expect-error - Node.js fetch accepts agent
-        options.agent = agent;
+      // For development with self-signed certificates, we need to use a custom agent
+      const https = await import('https');
+
+      const agent = new https.Agent({
+        rejectUnauthorized: false,
+      });
+
+      // @ts-expect-error - Node.js fetch accepts agent
+      options.agent = agent;
     } catch {
-        // Ignore if https module is not available
+      // Ignore if https module is not available
     }
   }
-  
-  if (body) {
+
+  // Attach body if provided
+  if (body !== undefined && body !== null) {
     options.body = JSON.stringify(body);
   }
- 
+
   return options;
 }
  

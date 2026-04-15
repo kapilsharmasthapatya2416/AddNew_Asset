@@ -5,8 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { getAssessmentYearsPagedServer, createAssessmentYear, updateAssessmentYear, deleteAssessmentYear, ApiError } from "@/lib/api/assessmentYearMaster.service";
 import type { AssessmentYearRV } from "@/types/assessmentYearMaster.types";
 
-async function extractApiError(error: unknown, fallback: string) {
-  const t = await getTranslations("AssessmentYearMasterRV");
+function extractApiError(error: unknown, t: (key: string) => string, fallback: string) {
   try {
     if (error instanceof ApiError) {
       const text = (error.responseText || "").trim();
@@ -47,7 +46,11 @@ export async function checkAssessmentYearOverlap(fromYear: number, toYear: numbe
     return { hasOverlap };
   } catch (error) {
     console.error("Check overlap error:", error);
-    return { hasOverlap: false };
+    return {
+      hasOverlap: true,
+      error: true,
+      message: "Unable to validate assessment year range overlap."
+    };
   }
 }
 
@@ -68,7 +71,7 @@ export async function createAssessmentYearAction(data: Partial<AssessmentYearRV>
     revalidatePath("/property-tax/assessment-year-range/rateablevalue");
     return { success: true, data: res };
   } catch (error: unknown) {
-    const message = await extractApiError(error, t("failedToCreate"));
+    const message = extractApiError(error, t, t("failedToCreate"));
     return { success: false, error: message };
   }
 }
@@ -80,7 +83,7 @@ export async function updateAssessmentYearAction(data: AssessmentYearRV) {
     revalidatePath("/property-tax/assessment-year-range/rateablevalue");
     return { success: true, data: res };
   } catch (error: unknown) {
-    const message = await extractApiError(error, t("failedToUpdate"));
+    const message = extractApiError(error, t, t("failedToUpdate"));
     return { success: false, error: message };
   }
 }
@@ -100,7 +103,7 @@ export async function deleteAssessmentYearAction(id: number) {
           const parsed2 = JSON.parse(text);
           const code = parsed2.code || parsed2.errorCode;
           if (code === "LINKED_RECORD") {
-            const message = await extractApiError(error, t("failedToDelete"));
+            const message = extractApiError(error, t, t("failedToDelete"));
             return { success: false, code: "LINKED_RECORD", error: message };
           }
         }
@@ -108,7 +111,7 @@ export async function deleteAssessmentYearAction(id: number) {
     } catch {
       // ignore JSON parse / shape errors and fall back to generic handling
     }
-    const message = await extractApiError(error, t("failedToDelete"));
+    const message = extractApiError(error, t, t("failedToDelete"));
     return { success: false, error: message };
   }
 }

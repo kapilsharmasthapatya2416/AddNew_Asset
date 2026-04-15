@@ -1,5 +1,5 @@
 import { PageContainer } from "@/components/common";
-import AssessmentYearMaster from "@/components/modules/property-tax/AssesssmentYearRange/RateableValue/AssesssmentYearMasterRV";
+import AssessmentYearMaster from "@/components/modules/property-tax/AssessmentYearRange/RateableValue/AssessmentYearMasterRV";
 
 import { getAssessmentYearsPagedServer } from "@/lib/api/assessmentYearMaster.service";
 

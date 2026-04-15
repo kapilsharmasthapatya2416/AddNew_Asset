@@ -1,4 +1,4 @@
-import AssessmentYearFormCV from "@/components/modules/property-tax/AssesssmentYearRange/CapitalValue/AssessmentYearFormCV";
+import AssessmentYearFormCV from "@/components/modules/property-tax/AssessmentYearRange/CapitalValue/AssessmentYearFormCV";
 
 export default function AddAssessmentYearPageCV() {
   return (

@@ -139,9 +139,10 @@ export default function AssessmentYearMaster({ paginatedData }: AssessmentYearMa
             emptyText={t("emptyText")}
             renderActions={(row) => {
               const pt = row as unknown as AssessmentYearRV;
+              const editId = pt.yearId ?? pt.yearRangeRVId;
               return (
                 <div className="flex items-center justify-center gap-2">
-                  <EditButton onClick={() => router.push(`${base}/edit/${pt.yearId}`)} />
+                  <EditButton onClick={() => router.push(`${base}/edit/${editId}`)} />
                   <DeleteButton onClick={() => handleDelete(pt)} />
                 </div>
               )

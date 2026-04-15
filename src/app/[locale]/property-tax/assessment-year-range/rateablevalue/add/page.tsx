@@ -1,4 +1,4 @@
-import AssessmentYearForm from "@/components/modules/property-tax/AssesssmentYearRange/RateableValue/AssessmentYearFormRV";
+import AssessmentYearForm from "@/components/modules/property-tax/AssessmentYearRange/RateableValue/AssessmentYearFormRV";
 
 export default function AddAssessmentYearPage() {
   return (

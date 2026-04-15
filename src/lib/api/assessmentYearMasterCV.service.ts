@@ -14,12 +14,33 @@ export class ApiError extends Error {
   }
 }
 
-function createFetchOptions(method: string = "GET", body?: unknown): RequestInit {
+async function createFetchOptions(method: string = "GET", body?: unknown): Promise<RequestInit> {
   const options: RequestInit = {
     method,
     cache: "no-store",
     headers: { "Content-Type": "application/json" },
   };
+
+  // Only allow insecure TLS for explicitly opted-in local development usage.
+  if (
+    process.env.NODE_ENV === "development" &&
+    process.env.ALLOW_INSECURE_TLS === "true" &&
+    typeof window === "undefined"
+  ) {
+    try {
+      // For development with self-signed certificates, we need to use a custom agent
+      const https = await import('https');
+
+      const agent = new https.Agent({
+        rejectUnauthorized: false,
+      });
+
+      // @ts-expect-error - Node.js fetch accepts agent
+      options.agent = agent;
+    } catch {
+      // Ignore if https module is not available
+    }
+  }
 
   if (body) options.body = JSON.stringify(body);
   return options;
@@ -101,7 +122,7 @@ export async function getAssessmentYearsPagedServerCV(
 
 export async function createAssessmentYearCV(data: Partial<AssessmentYearCV>): Promise<AssessmentYearCV> {
   const payload = { ...data, yearRangeCVId: data.yearId };
-  const fetchOptions = createFetchOptions("POST", payload);
+  const fetchOptions = await createFetchOptions("POST", payload);
   const response = await fetch(
     `${appConfig.api.baseUrl}/AssessmentYearRangeCV`,
     fetchOptions
@@ -123,7 +144,7 @@ export async function updateAssessmentYearCV(data: AssessmentYearCV): Promise<As
     ...data,
     ...(data.yearId != null ? { yearRangeCVId: data.yearId } : {}),
   };
-  const fetchOptions = createFetchOptions("PUT", payload);
+  const fetchOptions = await createFetchOptions("PUT", payload);
   const response = await fetch(
     `${appConfig.api.baseUrl}/AssessmentYearRangeCV/${id}`,
     fetchOptions
@@ -135,7 +156,7 @@ export async function updateAssessmentYearCV(data: AssessmentYearCV): Promise<As
 }
 
 export async function deleteAssessmentYearCV(id: number): Promise<void> {
-  const fetchOptions = createFetchOptions("DELETE");
+  const fetchOptions = await createFetchOptions("DELETE");
   const response = await fetch(
     `${appConfig.api.baseUrl}/AssessmentYearRangeCV/${id}`,
     fetchOptions
@@ -144,7 +165,7 @@ export async function deleteAssessmentYearCV(id: number): Promise<void> {
 }
 
 export async function getAssessmentYearByIdCV(id: number): Promise<AssessmentYearCV> {
-  const fetchOptions = createFetchOptions("GET");
+  const fetchOptions = await createFetchOptions("GET");
   const response = await fetch(
     `${appConfig.api.baseUrl}/AssessmentYearRangeCV/${id}`,
     fetchOptions

@@ -1,4 +1,5 @@
-import AssessmentYearFormCV from "@/components/modules/property-tax/AssesssmentYearRange/CapitalValue/AssessmentYearFormCV";
+import { notFound } from "next/navigation";
+import AssessmentYearFormCV from "@/components/modules/property-tax/AssessmentYearRange/CapitalValue/AssessmentYearFormCV";
 import { getAssessmentYearByIdCV } from "@/lib/api/assessmentYearMasterCV.service";
 
 interface PageProps {
@@ -10,8 +11,7 @@ export default async function EditAssessmentYearPageCV({ params }: PageProps) {
   const id = Number(resolvedParams.id);
   // Guard against invalid id
   if (!resolvedParams.id || isNaN(id) || id <= 0) {
-    // Optionally, you can return a not-found state or redirect
-    return null;
+    notFound();
   }
   const data = await getAssessmentYearByIdCV(id);
 

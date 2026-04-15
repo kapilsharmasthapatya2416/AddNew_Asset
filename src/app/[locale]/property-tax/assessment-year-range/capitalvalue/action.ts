@@ -5,8 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { getAssessmentYearsPagedServerCV, createAssessmentYearCV, updateAssessmentYearCV, deleteAssessmentYearCV, ApiError } from "@/lib/api/assessmentYearMasterCV.service";
 import type { AssessmentYearCV } from "@/types/assessmentYearMaster.types";
 
-async function extractApiError(error: unknown, fallback: string) {
-  const t = await getTranslations("AssessmentYearMasterCV");
+function extractApiError(error: unknown, t: (key: string) => string, fallback: string) {
   try {
     if (error instanceof ApiError) {
       const text = (error.responseText || "").trim();
@@ -27,33 +26,43 @@ async function extractApiError(error: unknown, fallback: string) {
 
 export async function checkAssessmentYearOverlapCV(fromYear: number, toYear: number, excludeId?: number) {
   try {
- // Fetch all records by paginating through all available pages
+    // Fetch records page-by-page and stop as soon as an overlap is found
     const pageSize = 1000;
     let page = 1;
     let totalPages = 1;
-    const allItems: AssessmentYearCV[] = [];
+
     do {
       const res = await getAssessmentYearsPagedServerCV(page, pageSize);
       const items = res?.items || [];
-      allItems.push(...items);
+
+      const hasOverlap = items.some((item) => {
+        if (excludeId && item.yearId === excludeId) return false;
+
+        // Check for overlap:
+        // A range (StartA, EndA) overlaps with (StartB, EndB) if:
+        // StartA <= EndB AND EndA >= StartB
+        return fromYear <= item.toYear && toYear >= item.fromYear;
+      });
+
+      if (hasOverlap) {
+        return { hasOverlap: true };
+      }
+
       if (typeof res?.totalPages === "number" && res.totalPages > 0) {
         totalPages = res.totalPages;
       }
+
       page += 1;
     } while (page <= totalPages);
-    const hasOverlap = allItems.some((item) => {
-      if (excludeId && item.yearId === excludeId) return false;
-      
-      // Check for overlap:
-      // A range (StartA, EndA) overlaps with (StartB, EndB) if:
-      // StartA <= EndB AND EndA >= StartB
-      return (fromYear <= item.toYear && toYear >= item.fromYear);
-    });
 
-    return { hasOverlap };
+    return { hasOverlap: false };
   } catch (error) {
     console.error("Check overlap error:", error);
-    return { hasOverlap: false };
+    return {
+      hasOverlap: true,
+      error: true,
+      message: "Unable to validate assessment year range overlap."
+    };
   }
 }
 
@@ -74,7 +83,7 @@ export async function createAssessmentYearActionCV(data: Partial<AssessmentYearC
     revalidatePath("/property-tax/assessment-year-range/capitalvalue");
     return { success: true, data: res };
   } catch (error: unknown) {
-    const message = await extractApiError(error, t("failedToCreate"));
+    const message = extractApiError(error, t, t("failedToCreate"));
     return { success: false, error: message };
   }
 }
@@ -86,7 +95,7 @@ export async function updateAssessmentYearActionCV(data: AssessmentYearCV) {
     revalidatePath("/property-tax/assessment-year-range/capitalvalue");
     return { success: true, data: res };
   } catch (error: unknown) {
-    const message = await extractApiError(error, t("failedToUpdate"));
+    const message = extractApiError(error, t, t("failedToUpdate"));
     return { success: false, error: message };
   }
 }
@@ -98,7 +107,7 @@ export async function deleteAssessmentYearActionCV(id: number) {
     revalidatePath("/property-tax/assessment-year-range/capitalvalue");
     return { success: true };
   } catch (error: unknown) {
-    const message = await extractApiError(error, t("failedToDelete"));
+    const message = extractApiError(error, t, t("failedToDelete"));
     if (error instanceof ApiError && error.statusCode === 409) {
       return { success: false, code: "LINKED_RECORD", error: message };
     }
