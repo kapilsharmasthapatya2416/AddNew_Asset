@@ -163,7 +163,7 @@ export function Select({
  
       {/* Label */}
       {label && (
-        <span className="text-sm font-medium text-gray-700">
+        <span id={`${listboxId}-label`} className="text-sm font-medium text-gray-700">
           {label}
           {required && <span className="ml-1 text-red-500">*</span>}
         </span>
@@ -207,6 +207,7 @@ export function Select({
           }}
           disabled={disabled}
           aria-label={ariaLabel}
+          aria-labelledby={!ariaLabel && label ? `${listboxId}-label` : undefined}
           aria-expanded={open}
           aria-haspopup="listbox"
           aria-controls={listboxId}

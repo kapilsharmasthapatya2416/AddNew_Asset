@@ -112,7 +112,7 @@ export default function ConstructionTypeForm({
     }
 
     if (name === "constructionCode") {
-      // Only allow alphanumeric characters using shared sanitize regex
+      // Only allow alphanumeric characters and underscores using shared sanitize regex
       newValue = newValue.replace(CODE_SANITIZE, "");
       if (newValue.length > CONSTRUCTION_CODE_MAX) {
         newValue = newValue.substring(0, CONSTRUCTION_CODE_MAX);

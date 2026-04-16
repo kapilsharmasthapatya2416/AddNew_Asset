@@ -269,7 +269,7 @@ export function PageNumberButton({
 ---------------------------------------------------------- */
 
 export function SortAscButton(
-  { ["aria-label"]: ariaLabel, className = "", ...props }: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, className = "", ...props }: Omit<ButtonProps, "icon" | "variant" | "children">
 ): React.ReactElement {
   return (
     <Button
@@ -284,7 +284,7 @@ export function SortAscButton(
 }
 
 export function SortDescButton(
-  { ["aria-label"]: ariaLabel, className = "", ...props }: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, className = "", ...props }: Omit<ButtonProps, "icon" | "variant" | "children">
 ): React.ReactElement {
   return (
     <Button
@@ -299,7 +299,7 @@ export function SortDescButton(
 }
 
 export function SortDefaultButton(
-  { ["aria-label"]: ariaLabel, className = "", ...props }: Omit<ButtonProps, "icon" | "variant">
+  { ["aria-label"]: ariaLabel, className = "", ...props }: Omit<ButtonProps, "icon" | "variant" | "children">
 ): React.ReactElement {
   return (
     <Button
