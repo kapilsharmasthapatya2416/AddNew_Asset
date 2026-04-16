@@ -8,10 +8,10 @@
  * ### Constants (Regex & Sanitization)
  * - `CODE_REGEX` - Validates alphanumeric and underscore (A-Z, a-z, 0-9, _) - underscore only in between
  * - `CODE_SANITIZE` - Removes invalid characters for code fields
- * - `DESCRIPTION_REGEX` - Validates multilingual text with punctuation (&, -, /, etc.) - special chars only in between
+ * - `DESCRIPTION_REGEX` - Validates multilingual text with punctuation (&, -, /, etc.) - special chars only in between, single space only
  * - `DESCRIPTION_SANITIZE` - Removes invalid characters for descriptions
  * - `TEXT_SANITIZE` - Generic text sanitization
- * - `TEXT_ALLOWED` - Generic text validation
+ * - `TEXT_ALLOWED` - Generic text validation - single space only
  * - `SEARCH_KEY_REGEX` - Search key validation
  * 
  * ### Functions
@@ -40,13 +40,14 @@ export const CODE_SANITIZE = /[^A-Za-z0-9_]/g; // Remove any characters except a
 
 // Description: Allow all languages (Marathi, Hindi, English) with basic punctuation
 // Special characters (&, -, /, etc.) must be in between other characters
-export const DESCRIPTION_REGEX = /^[\p{L}\p{M}\p{N}]+([\p{L}\p{M}\p{N}\s\/,.\-()&]*[\p{L}\p{M}\p{N}]+)*$/u;
+// Only single space allowed between characters, no consecutive spaces
+export const DESCRIPTION_REGEX = /^[\p{L}\p{M}\p{N}]+(([\p{L}\p{M}\p{N}\/,.\-()&]|\s(?!\s))*[\p{L}\p{M}\p{N}]+)*$/u;
 export const DESCRIPTION_SANITIZE = /[^\p{L}\p{M}\p{N}\s\/,.\-()&]/gu;
 
 //taxZone
 
 export const TEXT_SANITIZE = /[^\p{L}\p{M}\p{N}\s,.\-\/&]/gu; // Allow Unicode letters, marks, numbers, spaces, and basic punctuation including &
-export const TEXT_ALLOWED = /^[\p{L}\p{M}\p{N}]+[\p{L}\p{M}\p{N}\s,.\-\/&]*[\p{L}\p{M}\p{N}]+$/u; // Validation for allowed characters, special chars in between
+export const TEXT_ALLOWED = /^[\p{L}\p{M}\p{N}]+(([\p{L}\p{M}\p{N},.\-\/&]|\s(?!\s))*[\p{L}\p{M}\p{N}]+)*$/u; // Validation for allowed characters, special chars in between, single space only
 
 export const SEARCH_KEY_REGEX = /^[A-Za-z0-9+\-]+$/;
 /**
@@ -112,6 +113,7 @@ export const commonValidations = {
   /**
    * Generic master description validation (multilingual support)
    * Special characters (&, -, /, etc.) must be in between other characters, not at start/end
+   * Only single space allowed between words, no consecutive spaces
    * Used for: Construction Description, Tax Zone Description, etc.
    * 
    * @param t - Translation function
