@@ -120,7 +120,8 @@
     "selectLanguage": "भाषा निवडा",
     "english": "English",
     "hindi": "हिंदी (Hindi)",
-    "marathi": "मराठी (Marathi)"
+    "marathi": "मराठी (Marathi)",
+    "switchFailed": "भाषा बदलण्यात अयशस्वी"
   },
   "userMenu": {
     "openUserMenu": "वापरकर्ता मेनू उघडा",

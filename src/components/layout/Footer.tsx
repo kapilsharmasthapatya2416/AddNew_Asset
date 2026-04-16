@@ -18,11 +18,10 @@ export async function Footer({ ulbData }: FooterProps) {
   const nameFromCookie = decodeCookieValue(cookieStore.get('ulb_name')?.value);
 
   const currentYear = new Date().getFullYear();
-  const ulbDisplayName = nameFromCookie
-    ? sanitizeInput(nameFromCookie)
-    : ulbData?.ulbName
-      ? sanitizeInput(ulbData.ulbName)
-      : '';
+  const sanitizedCookieName = nameFromCookie ? sanitizeInput(nameFromCookie) : '';
+  const sanitizedUlbName = ulbData?.ulbName ? sanitizeInput(ulbData.ulbName) : '';
+  const ulbDisplayName =
+    sanitizedCookieName || sanitizedUlbName || t('app.defaultUlbName');
 
   return (
     <footer className="relative z-30 mt-auto print:hidden transition-all duration-300">

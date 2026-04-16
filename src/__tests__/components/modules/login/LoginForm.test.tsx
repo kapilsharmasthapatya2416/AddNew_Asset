@@ -15,6 +15,14 @@ vi.mock('@/app/[locale]/login/actions', () => ({
   loginCredentialsFormAction: mockLoginAction,
 }));
 
+vi.mock('next/image', () => ({
+  default: (props: React.ComponentProps<'img'> & Record<string, unknown>) => {
+    const { unoptimized: _u, priority: _p, placeholder: _ph, blurDataURL: _b, fill: _f, loader: _l, ...rest } =
+      props;
+    return <img {...rest} alt={props.alt ?? ''} />;
+  },
+}));
+
 function renderWithIntl(ui: React.ReactElement) {
   return render(
     <NextIntlClientProvider locale="en" messages={{ common: enCommon as Record<string, unknown> }}>

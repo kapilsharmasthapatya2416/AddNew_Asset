@@ -23,6 +23,9 @@ function getAuthApiBaseUrl(): string {
 
 const LOCAL_HTTPS_RE = /^https:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//;
 
+/** Reused for dev localhost relaxed TLS so connection pools are not recreated per request. */
+let relaxedTlsDispatcher: import('undici').Dispatcher | undefined;
+
 async function authServerFetch(url: string, init: RequestInit): Promise<Response> {
   const useRelaxedTls =
     typeof window === 'undefined' &&
@@ -32,13 +35,15 @@ async function authServerFetch(url: string, init: RequestInit): Promise<Response
 
   if (useRelaxedTls) {
     const undici = await import('undici');
-    const agent = new undici.Agent({ connect: { rejectUnauthorized: false } });
+    if (!relaxedTlsDispatcher) {
+      relaxedTlsDispatcher = new undici.Agent({ connect: { rejectUnauthorized: false } });
+    }
     const res = await undici.fetch(url, {
       method: init.method,
       headers: init.headers,
       body: init.body === null ? undefined : init.body,
       signal: init.signal,
-      dispatcher: agent,
+      dispatcher: relaxedTlsDispatcher,
     } as import('undici').RequestInit);
     return res as unknown as Response;
   }
