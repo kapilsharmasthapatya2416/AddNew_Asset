@@ -107,9 +107,13 @@ async function completeLoginSession(
 }
 
 export async function validateCredentialsAction(formData: FormData) {
-  const username = ((formData.get('username') as string) || '').trim();
-  const password = (formData.get('password') as string) || '';
-  const locale = sanitizeLocale((formData.get('locale') as string) || 'en');
+  const usernameEntry = formData.get('username');
+  const passwordEntry = formData.get('password');
+  const localeEntry = formData.get('locale');
+
+  const username = typeof usernameEntry === 'string' ? usernameEntry.trim() : '';
+  const password = typeof passwordEntry === 'string' ? passwordEntry : '';
+  const locale = sanitizeLocale(typeof localeEntry === 'string' ? localeEntry : 'en');
 
   if (!username || !password) {
     return { success: false as const, errorCode: 'CREDENTIALS_REQUIRED' as const };

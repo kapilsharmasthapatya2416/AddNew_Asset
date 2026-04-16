@@ -1,9 +1,9 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef, useTransition } from 'react';
 import Image from 'next/image';
-import { User, Settings, Lock, Globe, ChevronDown, LogOut, Router } from 'lucide-react';
+import { User, Settings, Lock, Globe, ChevronDown, LogOut, Router, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { UlbMaster } from '@/types/master.types';
 import { Badge, Button, Card } from '@/components/common';
@@ -71,6 +71,7 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [isLogoutPending, startLogoutTransition] = useTransition();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const branding = ulbData as (UlbMaster & { logoUrl?: string }) | undefined;
@@ -142,30 +143,39 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
     [pathname, router, t]
   );
 
-  const handleLogout = useCallback(async () => {
+  const handleLogout = useCallback(() => {
     setMenuOpen(false);
     setLangOpen(false);
     const currentLocale = getLocaleFromPathname(pathname);
-    await logoutAction(currentLocale);
-  }, [logoutAction, pathname]);
+    startLogoutTransition(async () => {
+      await logoutAction(currentLocale);
+    });
+  }, [pathname, startLogoutTransition]);
+
+  const handleUnavailableAccountRoute = useCallback(
+    (routeName: 'profile' | 'settings' | 'change-password') => {
+      setMenuOpen(false);
+      setLangOpen(false);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `Navigation to "${routeName}" is disabled until the route is implemented (see PR / Copilot thread).`
+        );
+      }
+    },
+    []
+  );
 
   const goProfile = useCallback(() => {
-    const loc = getLocaleFromPathname(pathname);
-    router.push(`/${loc}/profile`);
-    setMenuOpen(false);
-  }, [pathname, router]);
+    handleUnavailableAccountRoute('profile');
+  }, [handleUnavailableAccountRoute]);
 
   const goSettings = useCallback(() => {
-    const loc = getLocaleFromPathname(pathname);
-    router.push(`/${loc}/settings`);
-    setMenuOpen(false);
-  }, [pathname, router]);
+    handleUnavailableAccountRoute('settings');
+  }, [handleUnavailableAccountRoute]);
 
   const goChangePassword = useCallback(() => {
-    const loc = getLocaleFromPathname(pathname);
-    router.push(`/${loc}/change-password`);
-    setMenuOpen(false);
-  }, [pathname, router]);
+    handleUnavailableAccountRoute('change-password');
+  }, [handleUnavailableAccountRoute]);
 
   const logoFallbackText = useMemo(() => {
     const code = sanitizeInput(ulbData?.ulbCode ?? '') || '';
@@ -178,7 +188,7 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
   const displayName = trimmedUserDisplayName || t('app.defaultUser');
   const userInitial = displayName.charAt(0).toUpperCase();
   const ulbCodeRaw = sanitizeInput(ulbData?.ulbCode ?? '') || '';
-  const idSubtitle = ulbCodeRaw ? `ID: ${ulbCodeRaw}-${new Date().getFullYear()}` : '';
+  const idSubtitle = ulbCodeRaw ? `ID: ${ulbCodeRaw}-${new Date().getUTCFullYear()}` : '';
   const ipDisplay = clientIp?.trim() || t('userMenu.ipUnavailable');
 
   return (
@@ -421,11 +431,16 @@ export function Header({ ulbData, userDisplayName, clientIp }: HeaderProps) {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-auto w-full rounded-xl px-3 py-2.5 !justify-start text-sm font-medium !text-orange-400 hover:!bg-orange-500/10"
-                      onClick={() => void handleLogout()}
+                      className="h-auto w-full rounded-xl px-3 py-2.5 !justify-start text-sm font-medium !text-orange-400 hover:!bg-orange-500/10 disabled:opacity-50"
+                      disabled={isLogoutPending}
+                      onClick={handleLogout}
                     >
                       <span className="flex w-full items-center gap-3">
-                        <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+                        {isLogoutPending ? (
+                          <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                        ) : (
+                          <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+                        )}
                         {t('userMenu.logout')}
                       </span>
                     </Button>
