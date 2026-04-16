@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation';
 import { LoginForm } from '@/components/modules/login/LoginForm';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
@@ -10,18 +9,6 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
   setRequestLocale(locale);
   const resolvedSearchParams = await searchParams;
   const t = await getTranslations('common');
-
-  const stepRaw = resolvedSearchParams?.step;
-  const stepStr =
-    typeof stepRaw === 'string' ? stepRaw : Array.isArray(stepRaw) ? stepRaw[0] : undefined;
-  if (stepStr === 'otp') {
-    redirect(`/${locale}/login`);
-  }
-
-  const fpRaw = resolvedSearchParams?.fp;
-  if (fpRaw) {
-    redirect(`/${locale}/login`);
-  }
 
   const usernameRaw = resolvedSearchParams?.username;
   const username =
