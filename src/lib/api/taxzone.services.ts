@@ -16,10 +16,12 @@ function createFetchOptions(method: string = "GET", body?: unknown): RequestInit
   const options: RequestInit = {
     method,
     cache: "no-store",
-    headers: { "Content-Type": "application/json" },
   };
 
-  if (body) options.body = JSON.stringify(body);
+  if (body) {
+    options.body = JSON.stringify(body);
+    options.headers = { "Content-Type": "application/json" };
+  }
 
   return options;
 }
@@ -88,8 +90,7 @@ export async function createTaxZone(data: TaxZoneFormModel): Promise<void> {
     taxZoneNo: data.taxZoneNo.trim(),
     taxZoneType: data.taxZoneType.trim(),
     remark: data.remark?.trim() || "",
-    createdBy: 1,
-    isActive: data.isActive, // ✅ added
+    isActive: data.isActive,
   };
 
   const fetchOptions = createFetchOptions("POST", payload);
@@ -109,8 +110,7 @@ export async function updateTaxZone(data: TaxZoneFormModel): Promise<void> {
     taxZoneNo: data.taxZoneNo.trim(),
     taxZoneType: data.taxZoneType.trim(),
     remark: data.remark?.trim() || "",
-    updatedBy: 1,
-    isActive: data.isActive, // ✅ added
+    isActive: data.isActive,
   };
 
   const fetchOptions = createFetchOptions("PUT", payload);
