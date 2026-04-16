@@ -2,7 +2,6 @@
 
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import 'server-only';
 
 import { authService } from '@/lib/api/auth.service';
 import { locales, defaultLocale } from '@/i18n/config';
