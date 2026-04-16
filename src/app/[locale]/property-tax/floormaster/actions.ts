@@ -150,7 +150,7 @@ export async function toggleFloorStatusAction(
 
 export async function checkFloorCodeExistsAction(
   floorCode: string,
-
+  excludeId?: number
 ): Promise<ActionResult<{ exists: boolean }>> {
 
   const code = floorCode.trim();
@@ -160,7 +160,14 @@ export async function checkFloorCodeExistsAction(
   }
 
   try {
-    const exists = await checkFloorCodeExists(code);
+    let exists = await checkFloorCodeExists(code);
+    if (exists && excludeId !== undefined) {
+      const current = await getFloorById(excludeId);
+      const currentCode = current.floorCode?.trim() ?? "";
+      if (currentCode === code) {
+        exists = false;
+      }
+    }
 
     return {
       success: true,
