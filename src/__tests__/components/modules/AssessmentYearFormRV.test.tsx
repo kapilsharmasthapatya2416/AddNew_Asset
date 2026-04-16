@@ -25,7 +25,6 @@ vi.mock('sonner', () => ({
 vi.mock('@/app/[locale]/property-tax/assessment-year-range/rateablevalue/action', () => ({
   createAssessmentYearAction: vi.fn(),
   updateAssessmentYearAction: vi.fn(),
-  checkAssessmentYearOverlap: vi.fn(),
 }));
 
 describe('AssessmentYearFormRV', () => {
@@ -41,7 +40,6 @@ describe('AssessmentYearFormRV', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockRouter);
-    vi.spyOn(actions, 'checkAssessmentYearOverlap').mockResolvedValue({ hasOverlap: false });
   });
 
   describe('Component Rendering', () => {
@@ -124,31 +122,6 @@ describe('AssessmentYearFormRV', () => {
       await waitFor(() => {
         expect(screen.getByText('fromYearFourDigits')).toBeInTheDocument();
         expect(screen.getByText('toYearFourDigits')).toBeInTheDocument();
-      });
-    });
-
-    it('should check for overlap and show error', async () => {
-      const user = userEvent.setup();
-      vi.spyOn(actions, 'checkAssessmentYearOverlap').mockResolvedValue({ hasOverlap: true });
-      
-      render(
-        <AssessmentYearFormRV
-          open={true}
-          onClose={mockOnClose}
-        />
-      );
-
-      const fromYearInput = screen.getByPlaceholderText('fromYearPlaceholder');
-      const toYearInput = screen.getByPlaceholderText('toYearPlaceholder');
-
-      await user.type(fromYearInput, '2023');
-      await user.type(toYearInput, '2024');
-
-      const saveButton = screen.getByRole('button', { name: /save/i });
-      await user.click(saveButton);
-
-      await waitFor(() => {
-        expect(screen.getAllByText('overlapError')).toHaveLength(2);
       });
     });
   });

@@ -10,7 +10,7 @@ import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { AssessmentYearCV, AssessmentYearFormCVProps } from "@/types/assessmentYearMaster.types";
 import { cn } from "@/lib/utils/cn";
 import { CancelButton, Drawer, SaveButton } from "@/components/common";
-import { createAssessmentYearActionCV, updateAssessmentYearActionCV, checkAssessmentYearOverlapCV } from "@/app/[locale]/property-tax/assessment-year-range/capitalvalue/action";
+import { createAssessmentYearActionCV, updateAssessmentYearActionCV } from "@/app/[locale]/property-tax/assessment-year-range/capitalvalue/action";
 
 export default function AssessmentYearFormCV({ open, onClose, onSuccess, initialData }: AssessmentYearFormCVProps) {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function AssessmentYearFormCV({ open, onClose, onSuccess, initial
     setErrors({});
   }, [initial]);
 
-  const validate = async () => {
+  const validate = () => {
     const newErrors: Record<string, string> = {};
     const yearRegex = /^\d{4}$/;
 
@@ -62,19 +62,8 @@ export default function AssessmentYearFormCV({ open, onClose, onSuccess, initial
     if (formData.fromYear && formData.toYear && !newErrors.fromYear && !newErrors.toYear) {
         if (formData.fromYear >= formData.toYear) {
           newErrors.toYear = t("toYearGreater");
-        } else {
-           // Overlap Check (Server Action)
-           const result = await checkAssessmentYearOverlapCV(
-            formData.fromYear,
-            formData.toYear,
-            initialData?.yearId ?? initialData?.yearRangeCVId
-           );
-
-           if (result.hasOverlap) {
-             newErrors.fromYear = t("overlapError");
-             newErrors.toYear = t("overlapError");
-           }
         }
+        // Overlap validation is handled by the backend (returns 409 Conflict)
     }
 
     setErrors(newErrors);
@@ -94,8 +83,8 @@ export default function AssessmentYearFormCV({ open, onClose, onSuccess, initial
     setIsSubmitting(true);
     
     try {
-      // Validate first (async)
-      const isValid = await validate();
+      // Validate first
+      const isValid = validate();
       if (!isValid) {
         return;
       }

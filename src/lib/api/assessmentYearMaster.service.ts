@@ -125,7 +125,11 @@ export async function updateAssessmentYear(data: AssessmentYearRV): Promise<Asse
   // Use yearRangeId or yearId as canonical identifier
   const id = data.yearRangeRVId ?? data.yearId;
   if (id == null) {
-    throw new Error("updateAssessmentYear: yearRangeRVId or yearId must be provided.");
+    throw new ApiError(
+      400,
+      "yearRangeRVId or yearId must be provided.",
+      "updateAssessmentYear: yearRangeRVId or yearId must be provided."
+    );
   }
 
   const payload = {

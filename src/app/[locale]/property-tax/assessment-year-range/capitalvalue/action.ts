@@ -21,32 +21,6 @@ function extractApiError(error: unknown, _t: (key: string) => string, fallback: 
   return fallback;
 }
 
-export async function checkAssessmentYearOverlapCV(fromYear: number, toYear: number, excludeId?: number) {
-  try {
-    // Use a single backend call for overlap validation to avoid one request per page.
-    const pageSize = Number.MAX_SAFE_INTEGER;
-    const res = await getAssessmentYearsPagedServerCV(1, pageSize);
-    const items = res?.items || [];
-
-    const hasOverlap = items.some((item) => {
-      if (excludeId && item.yearId === excludeId) return false;
-      // Check for overlap:
-      // A range (StartA, EndA) overlaps with (StartB, EndB) if:
-      // StartA <= EndB AND EndA >= StartB
-      return fromYear <= item.toYear && toYear >= item.fromYear;
-    });
-
-    return { hasOverlap };
-  } catch (error) {
-    console.error("Check overlap error:", error);
-    return {
-      hasOverlap: true,
-      error: true,
-      message: "Unable to validate assessment year range overlap."
-    };
-  }
-}
-
 export async function fetchAssessmentYearsActionCV(page: number, pageSize: number, search?: string) {
   try {
     const res = await getAssessmentYearsPagedServerCV(page, pageSize, search);
@@ -67,6 +41,9 @@ export async function createAssessmentYearActionCV(data: Partial<AssessmentYearC
     if (error instanceof ApiError && error.statusCode === 409) {
       return { success: false, error: t("duplicateRecordError") };
     }
+    if (error instanceof ApiError && error.statusCode === 500) {
+      return { success: false, error: t("overlapError") };
+    }
     const message = extractApiError(error, t, t("failedToCreate"));
     return { success: false, error: message };
   }
@@ -81,6 +58,9 @@ export async function updateAssessmentYearActionCV(data: AssessmentYearCV) {
   } catch (error: unknown) {
     if (error instanceof ApiError && error.statusCode === 409) {
       return { success: false, error: t("duplicateRecordError") };
+    }
+    if (error instanceof ApiError && error.statusCode === 500) {
+      return { success: false, error: t("overlapError") };
     }
     const message = extractApiError(error, t, t("failedToUpdate"));
     return { success: false, error: message };
