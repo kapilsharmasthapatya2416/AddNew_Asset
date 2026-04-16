@@ -66,7 +66,7 @@ export async function createFloorAction(
 ): Promise<ActionResult> {
   try {
     await createFloor(payload);
-    revalidatePath("/floormaster/floor");
+    revalidatePath("/property-tax/floormaster/floor");
 
     return {
       success: true,
@@ -86,7 +86,7 @@ export async function updateFloorAction(
 ): Promise<ActionResult> {
   try {
     await updateFloor(id, payload);
-    revalidatePath("/floormaster/floor");
+    revalidatePath("/property-tax/floormaster/floor");
 
     return {
       success: true,
@@ -105,7 +105,7 @@ export async function deleteFloorAction(
 ): Promise<ActionResult> {
   try {
     await deleteFloor(id);
-    revalidatePath("/floormaster/floor");
+    revalidatePath("/property-tax/floormaster/floor");
 
     return {
       success: true,
@@ -137,7 +137,7 @@ export async function toggleFloorStatusAction(
     };
 
     await updateFloor(id, payload);
-    revalidatePath("/floormaster/floor");
+    revalidatePath("/property-tax/floormaster/floor");
 
     return { success: true };
   } catch (error: unknown) {
@@ -150,7 +150,7 @@ export async function toggleFloorStatusAction(
 
 export async function checkFloorCodeExistsAction(
   floorCode: string,
-  excludeId?: number
+
 ): Promise<ActionResult<{ exists: boolean }>> {
 
   const code = floorCode.trim();
@@ -160,7 +160,7 @@ export async function checkFloorCodeExistsAction(
   }
 
   try {
-    const exists = await checkFloorCodeExists(code, excludeId);
+    const exists = await checkFloorCodeExists(code);
 
     return {
       success: true,
@@ -207,7 +207,7 @@ export async function createSubFloorAction(
 ): Promise<ActionResult> {
   try {
     await createSubFloor(payload);
-    revalidatePath("/floormaster/subfloor");
+    revalidatePath("/property-tax/floormaster/subfloor");
 
     return {
       success: true,
@@ -227,7 +227,7 @@ export async function updateSubFloorAction(
 ): Promise<ActionResult> {
   try {
     await updateSubFloor(id, payload);
-    revalidatePath("/floormaster/subfloor");
+    revalidatePath("/property-tax/floormaster/subfloor");
 
     return {
       success: true,
@@ -246,7 +246,7 @@ export async function deleteSubFloorAction(
 ): Promise<ActionResult> {
   try {
     await deleteSubFloor(id);
-    revalidatePath("/floormaster/subfloor");
+    revalidatePath("/property-tax/floormaster/subfloor");
 
     return {
       success: true,
@@ -274,7 +274,7 @@ export async function toggleSubFloorStatusAction(
     };
 
     await updateSubFloor(id, payload);
-    revalidatePath("/floormaster/subfloor");
+    revalidatePath("/property-tax/floormaster/subfloor");
 
     return { success: true };
   } catch (error: unknown) {
@@ -301,13 +301,18 @@ export async function checkSubFloorCodeExistsAction(
   }
 
   try {
-    const exists = await checkSubFloorCodeExists(code, excludeId);
-
+    let exists = await checkSubFloorCodeExists(code);
+    if (exists && excludeId !== undefined) {
+      const current = await getSubFloorById(excludeId);
+      const currentCode = current.subFloorCode?.trim() ?? "";
+      if (currentCode === code) {
+        exists = false;
+      }
+    }
     return {
       success: true,
       data: { exists },
     };
-
   } catch (error: unknown) {
     return {
       success: false,

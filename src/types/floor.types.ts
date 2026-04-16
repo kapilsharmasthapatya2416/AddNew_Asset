@@ -50,7 +50,7 @@ export type FloorPagedResponse = PagedResponse<Floor>;
 export interface SubFloorFormModel {
   subFloorCode: string;
   description: string;
-  subFloorPercentage: number;
+  subFloorPercentage?: number;
   isActive: boolean;
 }
 

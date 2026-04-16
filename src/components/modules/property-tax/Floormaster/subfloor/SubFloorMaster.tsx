@@ -14,10 +14,7 @@ import {
 import { toast } from "sonner";
 import { Select } from "@/components/common/select";
 import { PageContainer } from "@/components/common/PageContainer";
-import {
-  MasterTable,
-  type Column,
-} from "@/components/common/MasterTable";
+import { MasterTable } from "@/components/common/MasterTable";
 import { useConfirm } from "@/components/common/ConfirmProvider";
 
 import type {
@@ -132,7 +129,7 @@ const total = totalCount;
         },
       });
     },
-    [confirm, t, router]
+    [t, confirm, router]
   );
 
   /* ============================================================
