@@ -95,8 +95,9 @@ export async function getAssessmentYearsPagedServer(
     };
   }
  
-  if (data.items && Array.isArray(data.items)) {
-    data.items = data.items.map((item: unknown) => {
+  // Ensure data is a non-null object before accessing data.items
+  if (data && typeof data === "object" && Array.isArray((data as any).items)) {
+    (data as any).items = (data as any).items.map((item: unknown) => {
       const assessmentItem = item as AssessmentYearRV;
       return {
         ...assessmentItem,

@@ -189,9 +189,10 @@ export default function AssessmentYearFormCV({ open, onClose, onSuccess, initial
               )}
 
              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("fromYearLabel")} <span className="text-red-500">*</span></label>
                 <Input
                   type="number"
+                  label={t("fromYearLabel")}
+                  required
                   name="fromYear"
                   value={formData.fromYear?.toString() ?? ""}
                   onChange={(e) => setFormData({...formData, fromYear: e.target.value === "" ? undefined : Number(e.target.value)})}
@@ -202,9 +203,11 @@ export default function AssessmentYearFormCV({ open, onClose, onSuccess, initial
              </div>
              
              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("toYearLabel")} <span className="text-red-500">*</span></label>
+                
                 <Input
                   type="number"
+                  label={t("toYearLabel")}
+                  required
                   name="toYear"
                   value={formData.toYear?.toString() ?? ""}
                   onChange={(e) => setFormData({...formData, toYear: e.target.value === "" ? undefined : Number(e.target.value)})}
