@@ -1,5 +1,6 @@
 {
     "roomSubmission": {
+        "quickDataEntry": "Property Quick Data Entry",
         "title": "ROOM WISE SUBMISSION IN SQUARE METER",
         "floor": "Floor: {floorNumber}",
         "roomAllocationLogic": {
@@ -218,7 +219,7 @@
         "propertyDescription": "Property Description",
         "divisionPlaceholder": "Enter division",
         "flatShopNoPlaceholder": "Enter Flat No / Shop No",
-        "plotNoPlaceholder" : "e.g., Plot-156",
+        "plotNoPlaceholder": "e.g., Plot-156",
         "category": "Category",
         "subcategory": "Subcategory",
         "blockNo": "Block No",

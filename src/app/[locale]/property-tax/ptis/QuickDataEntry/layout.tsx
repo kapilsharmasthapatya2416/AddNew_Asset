@@ -57,7 +57,7 @@ export default function QuickDataEntryLayout({ children }: { children: React.Rea
         <div className="flex flex-col">
             <h2 className="flex items-center gap-2 text-[15px] font-bold leading-tight text-white">
                 <FileText className="h-4 w-4 text-white" />
-                {tCommon('app.assessmentSystem')}
+                {t('roomSubmission.quickDataEntry')}
             </h2>
             <div className="mt-1 flex items-center gap-1 text-[10px] font-medium text-white opacity-90">
                 <span>{t('roomSubmission.info.ward')}: {wardNo || '—'}</span>

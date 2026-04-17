@@ -1,5 +1,6 @@
 {
     "roomSubmission": {
+         "quickDataEntry": "संपत्ति त्वरित डेटा प्रविष्टि",
         "title": "वर्ग मीटर में कक्ष अनुसार विवरण",
         "floor": "तल: {floorNumber}",
         "roomAllocationLogic": {
