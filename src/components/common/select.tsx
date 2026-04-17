@@ -206,7 +206,7 @@ export function Select({
             }
           }}
           disabled={disabled}
-          aria-label={ariaLabel}
+          aria-label={ariaLabel ?? (!label ? placeholder : undefined)}
           aria-labelledby={!ariaLabel && label ? `${listboxId}-label` : undefined}
           aria-expanded={open}
           aria-haspopup="listbox"

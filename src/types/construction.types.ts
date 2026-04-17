@@ -1,7 +1,5 @@
 import { ApiResponse, PagedResponse } from "./common.types";
 
-// Re-export common types used by construction module
-// export type { PagedResponse };
 
 /** 
  * Form model for creating and editing construction types

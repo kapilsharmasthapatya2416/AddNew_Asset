@@ -117,7 +117,7 @@ export async function getConstruction(): Promise<ConstructionType[]> {
 
     if (!response.success) {
       throw new ApiError(
-        500,
+        response.statusCode ?? 500,
         response.error || "Failed to fetch construction types",
         "Fetch construction types failed"
       );
@@ -187,7 +187,7 @@ export async function getConstructionPaged(
 
     if (!response.success) {
       throw new ApiError(
-        500,
+        response.statusCode ?? 500,
         response.error || "Failed to fetch construction types",
         "Fetch construction types (paged) failed"
       );
@@ -513,25 +513,31 @@ export async function deleteConstructionType(
     );
 
     if (!response.success) {
-      // Infer status code from error message to provide accurate error handling
-      const errorMsg = (response.error || "").toLowerCase();
-      let statusCode = 500; // Default to server error
+      // Prefer the real HTTP status returned by ApiClient; fall back to
+      // message-based inference only when statusCode is absent (e.g. network errors).
+      let statusCode = response.statusCode;
 
-      if (errorMsg.includes("not found") || errorMsg.includes("does not exist")) {
-        statusCode = 404; // Not Found
-      } else if (
-        errorMsg.includes("in use") ||
-        errorMsg.includes("linked") ||
-        errorMsg.includes("referenced") ||
-        errorMsg.includes("associated") ||
-        errorMsg.includes("cannot delete")
-      ) {
-        statusCode = 409; // Conflict - record in use
-      } else if (
-        errorMsg.includes("invalid") ||
-        errorMsg.includes("bad request")
-      ) {
-        statusCode = 400; // Bad Request
+      if (!statusCode) {
+        const errorMsg = (response.error || "").toLowerCase();
+
+        if (errorMsg.includes("not found") || errorMsg.includes("does not exist")) {
+          statusCode = 404; // Not Found
+        } else if (
+          errorMsg.includes("in use") ||
+          errorMsg.includes("linked") ||
+          errorMsg.includes("referenced") ||
+          errorMsg.includes("associated") ||
+          errorMsg.includes("cannot delete")
+        ) {
+          statusCode = 409; // Conflict - record in use
+        } else if (
+          errorMsg.includes("invalid") ||
+          errorMsg.includes("bad request")
+        ) {
+          statusCode = 400; // Bad Request
+        } else {
+          statusCode = 500; // Default to server error
+        }
       }
 
       throw new ApiError(
