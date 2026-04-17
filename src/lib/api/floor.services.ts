@@ -201,6 +201,8 @@ export async function updateFloor(data: FloorFormModel): Promise<void> {
     if (!data.floorId || data.floorId <= 0) {
       throw new Error('Floor ID required');
     }
+    if (!data.floorCode?.trim()) throw new Error('floorCode required');
+    if (!data.description?.trim()) throw new Error('description required');
 
     const payload = {
       floorId: data.floorId,
@@ -208,7 +210,6 @@ export async function updateFloor(data: FloorFormModel): Promise<void> {
       description: data.description.trim(),
       sequenceNo: Number(data.sequenceNo) || 0,
       isActive: data.isActive,
-      
     };
 
     const response = await apiClient.put(`/Floor/${data.floorId}`, payload);
