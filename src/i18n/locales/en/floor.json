@@ -42,7 +42,15 @@
       "isActive": "Active",
       "activeStatusTitle": "Floor Status",
       "activeStatusOn": "This floor is currently active",
-      "activeStatusOff": "This floor is currently inactive"
+      "activeStatusOff": "This floor is currently inactive",
+      "validation": {
+        "codeRequired": "Code is required",
+        "codeFormat": "Code can only contain letters, numbers, and underscores (not at start/end)",
+        "codeMaxLength": "Code cannot exceed {count} characters",
+        "descriptionRequired": "Description is required",
+        "descriptionFormat": "Description contains invalid characters or formatting",
+        "descriptionMaxLength": "Description cannot exceed {count} characters"
+      }
     },
     "table": {
       "columns": {
@@ -77,11 +85,15 @@
       "floorIdPattern": "Only letters, numbers, /, _, - allowed",
       "duplicateFloorCode": "Floor Code already exists",
       "maxFloorGteSequence": "Max Floor must be >= Sequence No",
-        "maxChars": "Maximum {count} characters allowed",
-        "mustBeNumber": "Must be a valid number",
-        "duplicateSequenceNo": "Sequence number already exists",
-       "floorCodePattern": "Only letters, numbers, /, _, - allowed in floor code",
-       "duplicateCode": "Duplicate floor code not allowed"
+      "maxChars": "Maximum {count} characters allowed",
+      "mustBeNumber": "Must be a valid number",
+      "duplicateSequenceNo": "Sequence number already exists",
+      "floorCodePattern": "Only letters, numbers, /, _, - allowed in floor code",
+      "duplicateCode": "Duplicate floor code not allowed",
+      "required": "This field is required"
+    },
+    "note": {
+      "mandatory": "Fields marked with * are mandatory"
     }
   },
 
@@ -116,7 +128,15 @@
       "code": "Sub-Floor Code",
       "codePlaceholder": "e.g., SF01, SF02",
       "description": "Description",
-      "descriptionPlaceholder": "Enter sub-floor description or additional details"
+      "descriptionPlaceholder": "Enter sub-floor description or additional details",
+      "validation": {
+        "codeRequired": "Code is required",
+        "codeFormat": "Code can only contain letters, numbers, and underscores (not at start/end)",
+        "codeMaxLength": "Code cannot exceed {count} characters",
+        "descriptionRequired": "Description is required",
+        "descriptionFormat": "Description contains invalid characters or formatting",
+        "descriptionMaxLength": "Description cannot exceed {count} characters"
+      }
     },
     "table": {
       "columns": {
@@ -147,7 +167,11 @@
     },
     "validation": {
       "subFloorIdPattern": "Only letters, numbers, /, _, - allowed",
-      "duplicateCode": "Duplicate Sub-Floor Code not allowed"
+      "duplicateCode": "Duplicate Sub-Floor Code not allowed",
+      "required": "This field is required"
+    },
+    "note": {
+      "mandatory": "Fields marked with * are mandatory"
     }
   }
 }

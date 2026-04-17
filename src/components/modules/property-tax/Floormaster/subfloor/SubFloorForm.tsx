@@ -10,7 +10,7 @@ import { Drawer } from "@/components/common/Drawer";
 import { CancelButton, Input, SaveButton } from "@/components/common";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { cn } from "@/lib/utils/cn";
-import { validateForm, commonValidations, hasErrors, type Validator } from "@/lib/utils/validation";
+import { validateForm, commonValidations, hasErrors } from "@/lib/utils/validation";
 
 import type { SubFloor, SubFloorFormModel } from "@/types/floor.types";
 import {
@@ -97,18 +97,17 @@ export default function SubFloorForm(props: Props) {
 
   // Component-specific validators
   const subFloorValidators = useMemo(() => ({
-    subFloorCode: commonValidations.code(
-      t("form.code"),
-      (key: string, values?: Record<string, string | number | Date>) => tCommon(key, values)
+    subFloorCode: commonValidations.masterCode(
+      (key: string, values?: Record<string, string | number | Date>) => t(key, values),
+      CODE_MAX
     ),
-    description: commonValidations.description(
-      t("form.description"),
-      (key: string, values?: Record<string, string | number | Date>) => tCommon(key, values),
-      true // required
+    description: commonValidations.masterDescription(
+      (key: string, values?: Record<string, string | number | Date>) => t(key, values),
+      100
     ),
     isActive: (value: unknown) => {
       if (typeof value !== "boolean") {
-        return tCommon("validation.required");
+        return t("validation.required");
       }
       return undefined;
     },
@@ -351,7 +350,7 @@ export default function SubFloorForm(props: Props) {
          <div className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-700">
               <AlertCircle size={16} />
               <span>
-                {tCommon("note.mandatory")}
+                {t("note.mandatory")}
               </span>
             </div>
       </form>

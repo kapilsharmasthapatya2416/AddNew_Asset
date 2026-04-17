@@ -142,15 +142,7 @@ export default function FloorPage({
     ]
   );
 
-
-const start =
-  totalCount === 0
-    ? 0
-    : (pageNumber - 1) * pageSize + 1;
-
-
-const total = totalCount;
-
+  const total = totalCount;
 
   /* ============================================================
      PAGE SIZE
@@ -239,7 +231,7 @@ const total = totalCount;
         // Custom footer
        footerLeftContent={
   <div className="flex items-center gap-1 ">
-    {t('table.pagination.showing', { start })}
+    {t('table.pagination.showing')}
     <Select
       options={[5, 10, 20, 50].map((s) => ({ label: String(s), value: String(s) }))}
       value={String(pageSize)}

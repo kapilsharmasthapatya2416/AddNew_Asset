@@ -100,25 +100,24 @@ export default function FloorForm(props: Props) {
 
   // Component-specific validators
   const floorValidators = useMemo(() => ({
-    floorCode: commonValidations.code(
-      t("form.floorCode"),
-      (key: string, values?: Record<string, string | number | Date>) => tCommon(key, values)
+    floorCode: commonValidations.masterCode(
+      (key: string, values?: Record<string, string | number | Date>) => t(key, values),
+      CODE_MAX
     ),
-    description: commonValidations.description(
-      t("form.regionalName"),
-      (key: string, values?: Record<string, string | number | Date>) => tCommon(key, values),
-      true // required
+    description: commonValidations.masterDescription(
+      (key: string, values?: Record<string, string | number | Date>) => t(key, values),
+      100
     ),
     sequenceNo: (value: unknown) => {
       const numVal = Number(value);
       if (!Number.isFinite(numVal) || numVal <= 0) {
-        return tCommon("validation.mustBeNumber");
+        return t("validation.mustBeNumber");
       }
       return undefined;
     },
     isActive: (value: unknown) => {
       if (typeof value !== "boolean") {
-        return tCommon("validation.required");
+        return t("validation.required");
       }
       return undefined;
     },
@@ -172,7 +171,7 @@ export default function FloorForm(props: Props) {
     if (key === "sequenceNo" && !validationErrors.sequenceNo) {
       const result = await checkFloorSequenceExistsAction(
         formData.sequenceNo,
-        isEdit ? formData.floorCode : undefined
+        isEdit ? String(props.initialData.floorId) : undefined
       );
 
       if (!result.success)
@@ -435,7 +434,7 @@ export default function FloorForm(props: Props) {
         <div className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-700">
               <AlertCircle size={16} />
               <span>
-                {tCommon("note.mandatory")}
+                {t("note.mandatory")}
               </span>
             </div>
       </form>
