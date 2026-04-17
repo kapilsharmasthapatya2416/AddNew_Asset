@@ -101,6 +101,7 @@ function normalizeConstructionType(data: Record<string, unknown>): ConstructionT
     updatedDate: data.updatedDate != null ? String(data.updatedDate) : null,
   };
 }
+
 /**
  * Fetches all construction types from the API
  *
@@ -116,6 +117,7 @@ export async function getConstruction(): Promise<ConstructionType[]> {
     const response = await apiClient.get<unknown>("/ConstructionType");
 
     if (!response.success) {
+      // Use actual HTTP status from ApiClient instead of hardcoding 500
       throw new ApiError(
         response.statusCode ?? 500,
         response.error || "Failed to fetch construction types",
@@ -186,6 +188,7 @@ export async function getConstructionPaged(
     );
 
     if (!response.success) {
+      // Use actual HTTP status from ApiClient instead of hardcoding 500
       throw new ApiError(
         response.statusCode ?? 500,
         response.error || "Failed to fetch construction types",
@@ -217,6 +220,7 @@ export async function getConstructionPaged(
     throw error;
   }
 }
+
 /**
  * Fetches a single construction type by ID
  *
@@ -233,7 +237,6 @@ export async function getConstructionPaged(
  *   }
  * }
  */
-
 export async function getConstructionTypeById(
   constructionId: number
 ): Promise<ConstructionType> {
@@ -328,7 +331,7 @@ export async function createConstructionType(
         errorMsg.toLowerCase().includes("duplicate");
 
       throw new ApiError(
-        isDuplicate ? 409 : 500,
+        response.statusCode ?? (isDuplicate ? 409 : 500),
         response.error || "Failed to create construction type",
         "Create construction type failed"
       );
@@ -397,7 +400,6 @@ export async function createConstructionType(
  *   isActive: true
  * });
  */
-
 export async function updateConstructionType(
   data: ConstructionTypeFormModel
 ): Promise<void> {
@@ -437,7 +439,7 @@ export async function updateConstructionType(
         errorMsg.toLowerCase().includes("duplicate");
 
       throw new ApiError(
-        isDuplicate ? 409 : 500,
+        response.statusCode ?? (isDuplicate ? 409 : 500),
         response.error || "Failed to update construction type",
         "Update construction type failed"
       );
@@ -508,13 +510,14 @@ export async function deleteConstructionType(
       throw new Error("Valid constructionTypeId is required");
     }
 
+    // ApiClient handles 204 No Content and empty responses safely
     const response = await apiClient.delete<void>(
       `/ConstructionType/${encodeURIComponent(String(constructionTypeId))}`
     );
 
     if (!response.success) {
-      // Prefer the real HTTP status returned by ApiClient; fall back to
-      // message-based inference only when statusCode is absent (e.g. network errors).
+      // Use actual HTTP status from ApiClient first; fall back to message-based
+      // inference only when statusCode is absent (e.g. network errors)
       let statusCode = response.statusCode;
 
       if (!statusCode) {
@@ -546,6 +549,7 @@ export async function deleteConstructionType(
         `Delete construction type ${constructionTypeId} failed`
       );
     }
+    // Success: 204 No Content or 200 OK - no further action needed
   } catch (error) {
     console.error(
       `Error deleting construction type ${constructionTypeId}:`,
