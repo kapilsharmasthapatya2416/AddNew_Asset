@@ -27,9 +27,18 @@ export default function AssessmentYearMaster({ paginatedData }: AssessmentYearMa
 
   const data = useMemo(() => paginatedData.items || [], [paginatedData]);
 
-  // URL Params
-  const page = Number(searchParams.get("page")) || 1;
-  const pageSize = Number(searchParams.get("size")) || 10;
+
+  // URL Params - clamp/normalize to positive integers
+  const parsePositiveIntegerParam = (value: string | null, defaultValue: number, minValue = 1) => {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) {
+      return defaultValue;
+    }
+    return Math.max(minValue, Math.floor(parsed));
+  };
+
+  const page = parsePositiveIntegerParam(searchParams.get("page"), 1);
+  const pageSize = parsePositiveIntegerParam(searchParams.get("size"), 10);
 
 
   const handlePageChange = (newPage: number) => {

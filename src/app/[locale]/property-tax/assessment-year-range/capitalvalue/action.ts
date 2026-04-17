@@ -31,11 +31,15 @@ export async function fetchAssessmentYearsActionCV(page: number, pageSize: numbe
   }
 }
 
-export async function createAssessmentYearActionCV(data: Partial<AssessmentYearCV>) {
+export async function createAssessmentYearActionCV(data: Partial<AssessmentYearCV>, locale?: string) {
   const t = await getTranslations("AssessmentYearMasterCV");
   try {
     const res = await createAssessmentYearCV(data);
-    revalidatePath("/property-tax/assessment-year-range/capitalvalue");
+    if (locale) {
+      revalidatePath(`/${locale}/property-tax/assessment-year-range/capitalvalue`);
+    } else {
+      revalidatePath("/property-tax/assessment-year-range/capitalvalue");
+    }
     return { success: true, data: res };
   } catch (error: unknown) {
     if (error instanceof ApiError) {
@@ -65,11 +69,15 @@ export async function createAssessmentYearActionCV(data: Partial<AssessmentYearC
   }
 }
 
-export async function updateAssessmentYearActionCV(data: AssessmentYearCV) {
+export async function updateAssessmentYearActionCV(data: AssessmentYearCV, locale?: string) {
   const t = await getTranslations("AssessmentYearMasterCV");
   try {
     const res = await updateAssessmentYearCV(data);
-    revalidatePath("/property-tax/assessment-year-range/capitalvalue");
+    if (locale) {
+      revalidatePath(`/${locale}/property-tax/assessment-year-range/capitalvalue`);
+    } else {
+      revalidatePath("/property-tax/assessment-year-range/capitalvalue");
+    }
     return { success: true, data: res };
   } catch (error: unknown) {
     if (error instanceof ApiError) {
@@ -99,11 +107,15 @@ export async function updateAssessmentYearActionCV(data: AssessmentYearCV) {
   }
 }
 
-export async function deleteAssessmentYearActionCV(id: number) {
+export async function deleteAssessmentYearActionCV(id: number, locale?: string) {
   const t = await getTranslations("AssessmentYearMasterCV");
   try {
     await deleteAssessmentYearCV(id);
-    revalidatePath("/property-tax/assessment-year-range/capitalvalue");
+    if (locale) {
+      revalidatePath(`/${locale}/property-tax/assessment-year-range/capitalvalue`);
+    } else {
+      revalidatePath("/property-tax/assessment-year-range/capitalvalue");
+    }
     return { success: true };
   } catch (error: unknown) {
     const message = extractApiError(error, t, t("failedToDelete"));

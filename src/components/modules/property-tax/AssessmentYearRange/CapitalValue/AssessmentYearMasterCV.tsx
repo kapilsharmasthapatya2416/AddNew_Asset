@@ -52,11 +52,11 @@ export default function AssessmentYearMasterCV({
 
   /* ================= URL PARAMS ================= */
 
-  const page =
-    Number(searchParams.get("page")) || 1;
-
-  const pageSize =
-    Number(searchParams.get("size")) || 10;
+  // Clamp/normalize pagination params to positive integers
+  const rawPage = Number(searchParams.get("page"));
+  const rawSize = Number(searchParams.get("size"));
+  const page = Number.isFinite(rawPage) && rawPage >= 1 ? Math.floor(rawPage) : 1;
+  const pageSize = Number.isFinite(rawSize) && rawSize >= 1 && rawSize <= 100 ? Math.floor(rawSize) : 10;
 
   /* ================= PAGE CHANGE ================= */
 

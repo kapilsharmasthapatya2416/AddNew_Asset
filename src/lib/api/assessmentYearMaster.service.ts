@@ -74,7 +74,7 @@ export async function getAssessmentYearsPagedServer(
       const assessmentItem = item as AssessmentYearRV;
       return {
         ...assessmentItem,
-        yearId: assessmentItem.yearRangeRVId || assessmentItem.yearId,
+        yearId: assessmentItem.yearRangeRVId ?? assessmentItem.yearId,
       } as AssessmentYearRV;
     });
 
@@ -102,7 +102,7 @@ export async function getAssessmentYearsPagedServer(
       const assessmentItem = item as AssessmentYearRV;
       return {
         ...assessmentItem,
-        yearId: assessmentItem.yearRangeRVId || assessmentItem.yearId,
+        yearId: assessmentItem.yearRangeRVId ?? assessmentItem.yearId,
       } as AssessmentYearRV;
     });
   }
@@ -127,7 +127,7 @@ export async function createAssessmentYear(data: Partial<AssessmentYearRV>): Pro
   } else {
     item = resJson as Record<string, unknown>;
   }
-  return { ...item, yearId: (item.yearRangeRVId as number) || (item.yearId as number) } as AssessmentYearRV;
+  return { ...item, yearId: (item.yearRangeRVId as number) ?? (item.yearId as number) } as AssessmentYearRV;
 }
  
 export async function updateAssessmentYear(data: AssessmentYearRV): Promise<AssessmentYearRV> {
@@ -160,7 +160,7 @@ export async function updateAssessmentYear(data: AssessmentYearRV): Promise<Asse
   } else {
     item = resJson as Record<string, unknown>;
   }
-  return { ...item, yearId: (item.yearRangeRVId as number) || (item.yearId as number) } as AssessmentYearRV;
+  return { ...item, yearId: (item.yearRangeRVId as number) ?? (item.yearId as number) } as AssessmentYearRV;
 }
  
 export async function deleteAssessmentYear(id: number): Promise<void> {
@@ -188,5 +188,5 @@ export async function getAssessmentYearById(id: number): Promise<AssessmentYearR
   } else {
     item = resJson as Record<string, unknown>;
   }
-  return { ...item, yearId: (item.yearRangeRVId as number) || (item.yearId as number) } as AssessmentYearRV;
+  return { ...item, yearId: (item.yearRangeRVId as number) ?? (item.yearId as number) } as AssessmentYearRV;
 }
