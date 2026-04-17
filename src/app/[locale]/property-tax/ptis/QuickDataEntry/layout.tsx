@@ -42,7 +42,6 @@ export default function QuickDataEntryLayout({ children }: { children: React.Rea
     }).toString();
 
     const t = useTranslations("quickDataEntry");
-    const tCommon = useTranslations("common");
     const isRenterPage = pathname.includes("/Renter");
 
     const handleClose = () => {
