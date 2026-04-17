@@ -39,7 +39,17 @@ class ApiClient {
       return undefined;
     }
 
-    return JSON.parse(text) as T;
+    // Guard against non-JSON bodies (HTML error pages, plain-text proxies, etc.).
+    // Attach the HTTP status so the caller can preserve it in ApiResponse.
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      const err = new Error(
+        `Non-JSON response (HTTP ${response.status}): ${text.slice(0, 200)}`
+      ) as Error & { httpStatus: number };
+      err.httpStatus = response.status;
+      throw err;
+    }
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
@@ -77,8 +87,11 @@ class ApiClient {
       };
     } catch (error) {
       clearTimeout(timeoutId);
+      // Preserve the HTTP status when parseResponseBody throws for non-JSON bodies
+      const httpStatus = (error as { httpStatus?: number }).httpStatus;
       return {
         success: false,
+        ...(httpStatus !== undefined ? { statusCode: httpStatus } : {}),
         error: error instanceof Error ? error.message : 'Network error',
       };
     }

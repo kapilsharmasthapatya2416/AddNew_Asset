@@ -196,6 +196,11 @@
       "edit": "Edit",
       "delete": "Delete"
     },
+    "sort": {
+      "ascending": "Sort {column} ascending",
+      "descending": "Sort {column} descending",
+      "by": "Sort by {column}"
+    },
     "columns": {
       "srNo": "Sr. No.",
       "name": "Name",

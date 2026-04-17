@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import type { Column } from "@/components/common/MasterTable";
 import type { ConstructionType } from "@/types/construction.types";
 import { SortAscButton, SortDescButton, SortDefaultButton } from "@/components/common/ActionButtons";
@@ -12,12 +13,14 @@ function SortableHeader({
   sortBy,
   sortOrder,
   onSort,
+  tCommon,
 }: {
   label: string;
   columnKey: string;
   sortBy?: string;
   sortOrder?: string;
   onSort: (key: string) => void;
+  tCommon: (key: string, values?: Record<string, string>) => string;
 }): React.ReactElement {
   const isActive = sortBy === columnKey;
   const isAsc = isActive && sortOrder === "asc";
@@ -28,7 +31,7 @@ function SortableHeader({
       return (
         <SortAscButton
           onClick={() => onSort(columnKey)}
-          aria-label={`Sort ${label} ascending`}
+          aria-label={tCommon("table.sort.ascending", { column: label })}
         />
       );
     }
@@ -36,14 +39,14 @@ function SortableHeader({
       return (
         <SortDescButton
           onClick={() => onSort(columnKey)}
-          aria-label={`Sort ${label} descending`}
+          aria-label={tCommon("table.sort.descending", { column: label })}
         />
       );
     }
     return (
       <SortDefaultButton
         onClick={() => onSort(columnKey)}
-        aria-label={`Sort by ${label}`}
+        aria-label={tCommon("table.sort.by", { column: label })}
       />
     );
   };
@@ -70,6 +73,8 @@ export function getConstructionTypeColumns(
   sortOrder?: string,
   onSort?: (key: string) => void
 ): Column<ConstructionType>[] {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tCommon = useTranslations("common");
   // Only constructionCode and description are sortable (API limitation)
   const sortableColumns = ["constructionCode", "description"];
 
@@ -82,6 +87,9 @@ export function getConstructionTypeColumns(
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSort={onSort}
+          tCommon={(k, values) =>
+            tCommon.rich(k, values) as unknown as string
+          }
         />
       );
     }
