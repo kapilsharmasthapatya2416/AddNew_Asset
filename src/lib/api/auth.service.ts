@@ -124,6 +124,10 @@ function ulbStr(v: unknown): string {
   return v == null ? '' : String(v);
 }
 
+function ulbOptionalStr(value: unknown): string | null {
+  return value == null ? null : String(value);
+}
+
 /** Accepts flat camelCase, flat PascalCase (.NET Newtonsoft), or wrapped `{ data }` / `{ result }`. */
 function parseUlbConfigPayload(data: unknown): UlbConfigApiBody | null {
   if (data === null || data === undefined || typeof data !== 'object' || Array.isArray(data)) {
@@ -155,14 +159,14 @@ function parseUlbConfigPayload(data: unknown): UlbConfigApiBody | null {
     ulbId,
     ulbCode: ulbStr(readUlbField(o, 'ulbCode', 'UlbCode')),
     ulbName: ulbStr(readUlbField(o, 'ulbName', 'UlbName')),
-    ulbNameLocal: (readUlbField(o, 'ulbNameLocal', 'UlbNameLocal') as string | null | undefined) ?? null,
-    ulbLogo: (readUlbField(o, 'ulbLogo', 'UlbLogo') as string | null | undefined) ?? null,
-    emailId: (readUlbField(o, 'emailId', 'EmailId') as string | null | undefined) ?? null,
-    mobileNo: (readUlbField(o, 'mobileNo', 'MobileNo') as string | null | undefined) ?? null,
-    websiteUrl: (readUlbField(o, 'websiteUrl', 'WebsiteUrl') as string | null | undefined) ?? null,
-    ulbAddress: (readUlbField(o, 'ulbAddress', 'UlbAddress') as string | null | undefined) ?? null,
-    state: (readUlbField(o, 'state', 'State') as string | null | undefined) ?? null,
-    district: (readUlbField(o, 'district', 'District') as string | null | undefined) ?? null,
+    ulbNameLocal: ulbOptionalStr(readUlbField(o, 'ulbNameLocal', 'UlbNameLocal')),
+    ulbLogo: ulbOptionalStr(readUlbField(o, 'ulbLogo', 'UlbLogo')),
+    emailId: ulbOptionalStr(readUlbField(o, 'emailId', 'EmailId')),
+    mobileNo: ulbOptionalStr(readUlbField(o, 'mobileNo', 'MobileNo')),
+    websiteUrl: ulbOptionalStr(readUlbField(o, 'websiteUrl', 'WebsiteUrl')),
+    ulbAddress: ulbOptionalStr(readUlbField(o, 'ulbAddress', 'UlbAddress')),
+    state: ulbOptionalStr(readUlbField(o, 'state', 'State')),
+    district: ulbOptionalStr(readUlbField(o, 'district', 'District')),
   };
 }
 

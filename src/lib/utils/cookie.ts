@@ -1,9 +1,6 @@
+import { DEFAULT_ULB_CODE, DEFAULT_ULB_NAME } from '@/config/app-defaults';
 import type { UlbMaster } from '@/types/master.types';
 import { sanitizeInput } from '@/lib/utils/security';
-
-/** Align with `common.app.defaultUlbCode` / `defaultUlbName` in locale JSON (cookie fallback only). */
-const LAYOUT_SHELL_DEFAULT_ULB_CODE = 'TMC';
-const LAYOUT_SHELL_DEFAULT_ULB_NAME = 'Sthapatya Consultant (I) Pvt.Ltd';
 
 /** Decode a raw cookie value (shared by client readers and Server Component cookie store). */
 export function decodeCookieValue(raw: string | undefined): string | undefined {
@@ -19,11 +16,15 @@ export function decodeCookieValue(raw: string | undefined): string | undefined {
 export function getCookieValue(name: string): string | undefined {
   if (typeof document === 'undefined') return undefined;
 
-  const cookieEntry = document.cookie.split('; ').find((part) => {
-    const separatorIndex = part.indexOf('=');
-    const cookieName = separatorIndex === -1 ? part : part.slice(0, separatorIndex);
-    return cookieName === name;
-  });
+  const cookieEntry = document.cookie
+    .split(';')
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0)
+    .find((part) => {
+      const separatorIndex = part.indexOf('=');
+      const cookieName = separatorIndex === -1 ? part : part.slice(0, separatorIndex);
+      return cookieName === name;
+    });
 
   if (!cookieEntry) return undefined;
 
@@ -65,8 +66,8 @@ export type CookieStoreLike = {
 
 const DEFAULT_LAYOUT_ULB: UlbMaster = {
   id: 1,
-  ulbCode: LAYOUT_SHELL_DEFAULT_ULB_CODE,
-  ulbName: LAYOUT_SHELL_DEFAULT_ULB_NAME,
+  ulbCode: DEFAULT_ULB_CODE,
+  ulbName: DEFAULT_ULB_NAME,
   ulbTypeId: 1,
   isActive: true,
 };
