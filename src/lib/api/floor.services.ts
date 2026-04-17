@@ -329,8 +329,6 @@ export async function createSubFloor(
   const payload = {
     subFloorCode: data.subFloorCode.trim(),
     description: data.description.trim(),
-    subFloorPercentage:
-      Number(data.subFloorPercentage) || 0,
     isActive: data.isActive ?? true,
   };
 
@@ -353,8 +351,6 @@ export async function updateSubFloor(
   const payload = {
     subFloorCode: data.subFloorCode.trim(),
     description: data.description?.trim() ?? "",
-    subFloorPercentage:
-      Number(data.subFloorPercentage) || 0,
     isActive: data.isActive ?? true,
   };
 
