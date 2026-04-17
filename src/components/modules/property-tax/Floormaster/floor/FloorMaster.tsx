@@ -10,24 +10,17 @@ import { EditButton, DeleteButton } from "@/components/common/ActionButtons";
 import { useConfirm } from "@/components/common/ConfirmProvider";
 import { Select } from "@/components/common";
 
-import type { Floor, FloorPagedResponse } from "@/types/floor.types";
+import type { Floor, FloorMasterProps } from "@/types/floor.types";
 
 import { deleteFloorAction } from "@/app/[locale]/property-tax/floormaster/actions";
 import { floorColumns } from "./floorColumns";
-
-/* ================= PROPS ================= */
-interface Props {
-  floorPaged: FloorPagedResponse;
-  sortBy?: string;
-  sortOrder?: string;
-}
 
 /* ================= MAIN ================= */
 export default function FloorMaster({
   floorPaged,
   sortBy,
   sortOrder,
-}: Readonly<Props>) {
+}: Readonly<FloorMasterProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();

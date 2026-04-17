@@ -114,3 +114,21 @@ export interface SubFloorProps
 ===================================================== */
 export type FloorPagedResponse = PagedResponse<Floor>;
 export type SubFloorPagedResponse = PagedResponse<SubFloor>;
+
+/* =====================================================
+   FLOOR MASTER - COMPONENT PROPS
+===================================================== */
+export interface FloorMasterProps {
+  floorPaged: FloorPagedResponse;
+  sortBy?: string;
+  sortOrder?: string;
+}
+
+/* =====================================================
+   SUBFLOOR MASTER - COMPONENT PROPS
+===================================================== */
+export interface SubFloorMasterProps {
+  subFloorPaged: SubFloorPagedResponse;
+  sortBy?: string;
+  sortOrder?: string;
+}

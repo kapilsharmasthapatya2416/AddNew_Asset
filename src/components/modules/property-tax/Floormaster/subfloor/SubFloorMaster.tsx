@@ -19,21 +19,11 @@ import { DeleteButton, EditButton } from "@/components/common";
 
 import type {
   SubFloor,
-  SubFloorPagedResponse,
+  SubFloorMasterProps,
 } from "@/types/floor.types";
 
 import { deleteSubFloorAction } from "@/app/[locale]/property-tax/floormaster/actions";
 import { subFloorColumns } from "./subFloorColumns";
-
-/* ============================================================
-   PROPS
-============================================================ */
-
-interface Props {
-  subFloorPaged: SubFloorPagedResponse;
-  sortBy?: string;
-  sortOrder?: string;
-}
 
 /* ============================================================
    COMPONENT
@@ -43,7 +33,7 @@ export default function SubFloorMaster({
   subFloorPaged,
   sortBy,
   sortOrder,
-}: Readonly<Props>) {
+}: Readonly<SubFloorMasterProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale();
