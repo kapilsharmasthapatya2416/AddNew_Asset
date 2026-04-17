@@ -1,9 +1,9 @@
 "use client";
 
+import { Suspense, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Layers } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 
 import { PageContainer } from "@/components/common/PageContainer";
 import TableHeader from "@/components/common/TableHeader";
@@ -13,7 +13,7 @@ import { sanitizeInput } from "@/lib/utils/security";
 
 type TabKey = "floor" | "subfloor";
 
-export default function FloorMasterLayout({
+function FloorMasterLayoutContent({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -116,5 +116,17 @@ export default function FloorMasterLayout({
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+export default function FloorMasterLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
+      <FloorMasterLayoutContent>{children}</FloorMasterLayoutContent>
+    </Suspense>
   );
 }

@@ -1,4 +1,4 @@
-
+import { Suspense } from "react";
 import { fetchSubFloorPagedServerAction } from "@/app/[locale]/property-tax/floormaster/actions";
 import type { SubFloorPagedResponse } from "@/types/floor.types";
 import SubFloorMaster from "@/components/modules/property-tax/Floormaster/subfloor/SubFloorMaster";
@@ -36,10 +36,12 @@ export default async function Page({
     );
 
   return (
-    <SubFloorMaster 
-      subFloorPaged={result} 
-      sortBy={sortBy}
-      sortOrder={sortOrder}
-    />
+    <Suspense fallback={<div>Loading...</div>}>
+      <SubFloorMaster 
+        subFloorPaged={result} 
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+      />
+    </Suspense>
   );
 }

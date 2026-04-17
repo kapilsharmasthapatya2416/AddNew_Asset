@@ -54,7 +54,8 @@
         "codeMaxLength": "कोड {count} वर्णांपेक्षा जास्त असू शकत नाही",
         "descriptionRequired": "वर्णन आवश्यक आहे",
         "descriptionFormat": "वर्णनात अवैध वर्ण किंवा स्वरूपन आहे",
-        "descriptionMaxLength": "वर्णन {count} वर्णांपेक्षा जास्त असू शकत नाही"
+        "descriptionMaxLength": "वर्णन {count} वर्णांपेक्षा जास्त असू शकत नाही",
+        "mustBeActive": "नवीन फ्लोअर सक्रिय असणे आवश्यक आहे"
       }
     },
     "table": {

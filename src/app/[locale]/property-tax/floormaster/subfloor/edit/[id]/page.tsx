@@ -1,7 +1,8 @@
-
 import { SubFloorForm } from "@/components/modules/property-tax/Floormaster/subfloor";
 import { getSubFloorById } from "@/lib/api/floor.services";
 import React from "react";
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   readonly params: Promise<{ id: string }>;

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { fetchFloorPagedServerAction } from "@/app/[locale]/property-tax/floormaster/actions";
 import type { FloorPagedResponse } from "@/types/floor.types";
 import FloorMaster from "@/components/modules/property-tax/Floormaster/floor/FloorMaster";
@@ -35,10 +36,12 @@ export default async function Page({
     );
 
   return (
-    <FloorMaster 
-      floorPaged={result} 
-      sortBy={sortBy}
-      sortOrder={sortOrder}
-    />
+    <Suspense fallback={<div>Loading...</div>}>
+      <FloorMaster 
+        floorPaged={result} 
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+      />
+    </Suspense>
   );
 }

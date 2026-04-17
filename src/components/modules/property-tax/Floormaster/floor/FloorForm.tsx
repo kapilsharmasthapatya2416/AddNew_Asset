@@ -214,6 +214,12 @@ export default function FloorForm({
       handleClose();
       router.refresh();
 
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error && error.message
+          ? error.message
+          : t("apiErrors.operationFailed");
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
