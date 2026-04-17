@@ -1,11 +1,6 @@
 
 import { TaxZoneMaster } from "@/components/modules/property-tax/taxzonemaster";
 import { getTaxZonePagedAction } from "./action";
-
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 interface PageProps {
   searchParams: Promise<{
     page?: string;

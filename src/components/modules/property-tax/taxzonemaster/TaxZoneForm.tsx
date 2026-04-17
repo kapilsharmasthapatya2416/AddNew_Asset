@@ -97,8 +97,7 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
     }
 
     if (name === "taxZoneType" || name === "remark") {
-      newValue = newValue.replace(DESCRIPTION_SANITIZE, ""); // Sanitize (multilingual with punctuation)
-      newValue = newValue.replace(/\s{2,}/g, " "); // Replace consecutive spaces with single space
+      newValue = newValue.replace(DESCRIPTION_SANITIZE, ""); // Sanitize (multilingual with punctuation)    
     }
 
     setFormData((p) => ({ ...p, [name]: newValue }));
@@ -146,8 +145,8 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
       if (res?.ok) {
         toast.success(
           res.mode === "update"
-            ? t("form.messages.updateSuccess") || "Zone updated successfully"
-            : t("form.messages.createSuccess") || "Zone created successfully"
+            ? t("form.messages.updateSuccess") 
+            : t("form.messages.createSuccess") 
         );
         setOpen(false);
         router.push(`/${locale}/property-tax/taxzone`);
@@ -160,24 +159,23 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
         if (res.error === "duplicate") {
           // Show duplicate error for both fields
           setErrors({
-            taxZoneNo: t("form.validation.duplicateRecord") || "This record already exists",
-            taxZoneType: t("form.validation.duplicateRecord") || "This record already exists",
+            taxZoneNo: t("form.validation.duplicateRecord") ,
+            taxZoneType: t("form.validation.duplicateRecord") 
           });
           toast.error(
             res.message || 
-            t("form.validation.duplicateError") || 
-            "This record already exists. Please check Zone No and Zone Type - duplicates not allowed."
+            t("form.validation.duplicateError")
           );
         } else {
-          toast.error(res.message || t("form.messages.error") || "Something went wrong");
+          toast.error(res.message || t("form.messages.error"));
         }
         return;
       }
 
-      toast.error(t("form.messages.error") || "Something went wrong");
+      toast.error(t("form.messages.error"));
     } catch (err: unknown) {
       const error = err as Error;
-      toast.error(error?.message ?? t("form.messages.error") ?? "Something went wrong");
+      toast.error(error?.message ?? t("form.messages.error"));
     } finally {
       setIsSubmitting(false);
     }

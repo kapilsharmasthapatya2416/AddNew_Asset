@@ -63,14 +63,6 @@ export async function getTaxZonePagedServer(
 
 /** GET by id */
 export async function getTaxZoneById(taxZoneId: string | number): Promise<TaxZone> {
-   if (
-    taxZoneId === null ||
-    taxZoneId === undefined ||
-    (typeof taxZoneId === "string" && taxZoneId.trim() === "")
-  ) {
-    throw new Error("TaxZoneId is required");
-  }
-
   const fetchOptions = createFetchOptions("GET");
 
   const response = await fetch(
@@ -83,9 +75,6 @@ export async function getTaxZoneById(taxZoneId: string | number): Promise<TaxZon
 }
 
 export async function createTaxZone(data: TaxZoneFormModel): Promise<void> {
-  if (!data.taxZoneNo?.trim()) throw new Error("Zone No is required");
-  if (!data.taxZoneType?.trim()) throw new Error("Zone Type is required");
-
   const payload = {
     taxZoneNo: data.taxZoneNo.trim(),
     taxZoneType: data.taxZoneType.trim(),
@@ -101,10 +90,6 @@ export async function createTaxZone(data: TaxZoneFormModel): Promise<void> {
 
 
 export async function updateTaxZone(data: TaxZoneFormModel): Promise<void> {
-  if (data.taxZoneId == null) throw new Error("TaxZoneId is required for update");
-  if (!data.taxZoneNo?.trim()) throw new Error("Zone No is required");
-  if (!data.taxZoneType?.trim()) throw new Error("Zone Type is required");
-
   const payload = {
     taxZoneId: data.taxZoneId,
     taxZoneNo: data.taxZoneNo.trim(),
@@ -125,8 +110,6 @@ export async function updateTaxZone(data: TaxZoneFormModel): Promise<void> {
 
 /** DELETE */
 export async function deleteTaxZone(taxZoneId: string | number): Promise<void> {
-  if (taxZoneId == null) throw new Error("Valid taxZoneId is required");
-
   const fetchOptions = createFetchOptions("DELETE");
 
   const response = await fetch(
