@@ -2,19 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Building, CheckCircle2, Home, X} from "lucide-react";
+import { AlertCircle, Building, CheckCircle2, X} from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 import { Drawer } from "@/components/common/Drawer";
-import { CancelButton, Input, SaveButton, Tabs } from "@/components/common";
-import type { TabValue } from "@/components/common";
+import { CancelButton, Input, SaveButton } from "@/components/common";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { cn } from "@/lib/utils/cn";
-import { validateForm, commonValidations, hasErrors, type Validator } from "@/lib/utils/validation";
+import { validateForm, commonValidations, hasErrors } from "@/lib/utils/validation";
 
 import type { Floor, FloorFormModel } from "@/types/floor.types";
-import { Header } from '../../../../layout/Header';
 import {
   createFloorAction,
   updateFloorAction,
@@ -65,15 +63,6 @@ export default function FloorForm(props: Props) {
   const [open, setOpen] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkingCode, setCheckingCode] = useState(false);
-
-   const [mode,setMode]=useState<"single"|"range">("single");
-
-   const [rangeData, setRangeData] = useState({
-     start: "",
-     end: "",
-     suffix: ""
-   });
-
 
   // /* ================= INITIAL DATA ================= */
 
@@ -332,47 +321,6 @@ export default function FloorForm(props: Props) {
         onSubmit={handleSubmit}
         className="space-y-6 bg-[#F8FAFF] p-5"
       >
-        {/* Entry Mode Toggle - Available only for add mode */}
-        {!isEdit && (
-          <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-4">
-            <div className="mb-3">
-              <div className="text-sm font-medium text-gray-700 mb-2">
-                {t("form.entryMode")}
-              </div>
-            </div>
-            <Tabs
-            
-              value={mode}
-              onChange={(value: TabValue) => setMode(value as "single" | "range")}
-              variant="pills"
-              size="md"
-              fullWidth
-              items={[
-                {
-                  value: "single",
-                  label: (
-                    <div className="flex items-center gap-2">
-                      <Home size={16} />
-                      {t("form.singleFloor")}
-                    </div>
-                  ),
-                  content: null, // Not used since we handle content separately
-                },
-                {
-                  value: "range",
-                  label: (
-                    <div className="flex items-center gap-2 ">
-                      <Building size={16} />
-                      {t("form.floorRange")}
-                    </div>
-                  ),
-                  content: null, // Not used since we handle content separately
-                },
-              ]}
-            />
-          </div>
-        )}
-
         {/* Active Toggle - Show for edit mode */}
         {isEdit && (
           <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-4">
@@ -426,110 +374,65 @@ export default function FloorForm(props: Props) {
           </div>
         )}
 
-        {mode === "single" ? (
-          <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-5 space-y-4">
+        <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-5 space-y-4">
 
-            {/* Floor Code */}
-            <div className="flex flex-col">
-              <Input
-                name="floorCode"
-                label={t("form.floorCode")}
-                required
-                value={formData.floorCode}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                fullWidth
-                placeholder={t("form.floorCodePlaceholder")}
-              />
-              <ValidationMessage
-                message={errors.floorCode}
-                visible={showError("floorCode")}
-              />
-            </div>
-
-            {/* Regional Name */}
-            <div className="flex flex-col">
-              <Input
-                name="description"
-                label={t("form.regionalName")}
-                required
-                value={formData.description}
-                placeholder={t("form.regionalNamePlaceholder")}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                fullWidth
-              />
-              <ValidationMessage
-                message={errors.description}
-                visible={showError("description")}
-              />
-            </div>
-
-            {/* Sequence */}
-            <div className="flex flex-col">
-              <Input
-                name="sequenceNo"
-                label={t("form.sequenceNo")}
-                required
-                type="number"
-                value={formData.sequenceNo === 0 ? "" : formData.sequenceNo}
-                placeholder={t("form.sequenceNoPlaceholder")}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                fullWidth
-              />
-              <ValidationMessage
-                message={errors.sequenceNo}
-                visible={showError("sequenceNo")}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-5 space-y-4">
-
-            {/* Start */}
+          {/* Floor Code */}
+          <div className="flex flex-col">
             <Input
-              label="Start Number"
-              type="number"
-              value={rangeData.start}
-              onChange={(e) =>
-                setRangeData({ ...rangeData, start: e.target.value })
-              }
+              name="floorCode"
+              label={t("form.floorCode")}
+              required
+              value={formData.floorCode}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              fullWidth
+              placeholder={t("form.floorCodePlaceholder")}
             />
             <ValidationMessage
-              message={errors.startNumber}
-              visible={showError("startNumber")}
+              message={errors.floorCode}
+              visible={showError("floorCode")}
             />
+          </div>
 
-            {/* End */}
+          {/* Regional Name */}
+          <div className="flex flex-col">
             <Input
-              label="End Number"
-              type="number"
-              value={rangeData.end}
-              onChange={(e) =>
-                setRangeData({ ...rangeData, end: e.target.value })
-              }
+              name="description"
+              label={t("form.regionalName")}
+              required
+              value={formData.description}
+              placeholder={t("form.regionalNamePlaceholder")}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              fullWidth
             />
             <ValidationMessage
-              message={errors.endNumber}
-              visible={showError("endNumber")}
+              message={errors.description}
+              visible={showError("description")}
             />
-
-
-            {/* Suffix */}
-            <Input
-              label="Suffix (optional)"
-              value={rangeData.suffix}
-              onChange={(e) =>
-                setRangeData({ ...rangeData, suffix: e.target.value })
-              }
-            />
-            
           </div>
-        )}
 
+          {/* Sequence */}
+          <div className="flex flex-col">
+            <Input
+              name="sequenceNo"
+              label={t("form.sequenceNo")}
+              required
+              type="number"
+              value={formData.sequenceNo === 0 ? "" : formData.sequenceNo}
+              placeholder={t("form.sequenceNoPlaceholder")}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              fullWidth
+            />
+            <ValidationMessage
+              message={errors.sequenceNo}
+              visible={showError("sequenceNo")}
+            />
+          </div>
+        </div>
 
-         <div className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-700">
+        <div className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-700">
               <AlertCircle size={16} />
               <span>
                 {tCommon("note.mandatory")}
