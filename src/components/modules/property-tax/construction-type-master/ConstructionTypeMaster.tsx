@@ -105,7 +105,7 @@ export function ConstructionTypeMaster({
     [sortBy, sortOrder, router, buildUrl, pageSize, currentSearchTerm]
   );
 
-  const columns = getConstructionTypeColumns(t, sortBy, sortOrder, handleSort);
+  const columns = getConstructionTypeColumns(t, tCommon, sortBy, sortOrder, handleSort);
 
   /* ================= PAGINATION ================= */
   const changePage = (p: number): void => {

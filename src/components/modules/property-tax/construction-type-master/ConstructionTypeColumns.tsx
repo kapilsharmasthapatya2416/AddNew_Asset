@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslations } from "next-intl";
 import type { Column } from "@/components/common/MasterTable";
 import type { ConstructionType } from "@/types/construction.types";
 import { SortAscButton, SortDescButton, SortDefaultButton } from "@/components/common/ActionButtons";
@@ -61,21 +60,23 @@ function SortableHeader({
 }
 
 /**
- * Returns the table column configuration for Construction Type Master
- * @param t - Translation function from useTranslations("construction.constructionType")
- * @param sortBy - Current sort column
- * @param sortOrder - Current sort order (asc/desc)
- * @param onSort - Callback when column header is clicked for sorting
+ * Returns the table column configuration for Construction Type Master.
+ *
+ * @param t       - Translation function from useTranslations("construction.constructionType")
+ * @param tCommon - Translation function from useTranslations("common"); must be passed
+ *                  from a component/hook so that no hook is called inside this plain function.
+ * @param sortBy  - Current sort column key
+ * @param sortOrder - Current sort order ("asc" | "desc")
+ * @param onSort  - Callback invoked when a column header is clicked
  * @returns Array of column definitions
  */
 export function getConstructionTypeColumns(
   t: (key: string) => string,
+  tCommon: (key: string) => string,
   sortBy?: string,
   sortOrder?: string,
   onSort?: (key: string) => void
 ): Column<ConstructionType>[] {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tCommon = useTranslations("common");
   // Only constructionCode and description are sortable (API limitation)
   const sortableColumns = ["constructionCode", "description"];
 

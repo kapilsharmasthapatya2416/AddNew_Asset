@@ -52,6 +52,38 @@ class ApiClient {
     }
   }
 
+  /**
+   * Extracts a human-readable error message from a non-2xx response body.
+   *
+   * Priority order:
+   *  1. `message`  – most REST APIs
+   *  2. `error`    – Spring Boot, some Node frameworks
+   *  3. `title`    – RFC 7807 Problem Details
+   *  4. `detail`   – RFC 7807 Problem Details
+   *  5. `response.statusText` – HTTP reason phrase (e.g. "Not Found")
+   *  6. Generic fallback
+   *
+   * Each candidate is only used when it is a non-empty string.
+   */
+  private extractErrorMessage(
+    errBody: Record<string, unknown> | undefined,
+    statusText: string,
+  ): string {
+    const candidates = [
+      errBody?.message,
+      errBody?.error,
+      errBody?.title,
+      errBody?.detail,
+      statusText,
+    ];
+    for (const candidate of candidates) {
+      if (typeof candidate === 'string' && candidate.trim() !== '') {
+        return candidate.trim();
+      }
+    }
+    return 'An error occurred';
+  }
+
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
@@ -76,7 +108,7 @@ class ApiClient {
         return {
           success: false,
           statusCode: response.status,
-          error: (errBody?.message as string) || 'An error occurred',
+          error: this.extractErrorMessage(errBody, response.statusText),
         };
       }
 
