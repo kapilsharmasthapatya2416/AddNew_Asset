@@ -31,14 +31,18 @@ import { subFloorColumns } from "./subFloorColumns";
 
 interface Props {
   subFloorPaged: SubFloorPagedResponse;
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 /* ============================================================
    COMPONENT
 ============================================================ */
 
-export default function SubFloorPage({
+export default function SubFloorMaster({
   subFloorPaged,
+  sortBy,
+  sortOrder,
 }: Readonly<Props>) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,14 +68,20 @@ export default function SubFloorPage({
   ============================================================ */
 
   const buildUrl = useCallback(
-    (page: number, size: number, query?: string) => {
+    (
+      page: number,
+      size: number,
+      searchTerm?: string,
+      newSortBy?: string,
+      newSortOrder?: string
+    ) => {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("pageSize", String(size));
 
-      if (query?.trim()) {
-        params.set("q", query.trim());
-      }
+      if (searchTerm) params.set("q", searchTerm);
+      if (newSortBy) params.set("sortBy", newSortBy);
+      if (newSortOrder) params.set("sortOrder", newSortOrder);
 
       return `/${locale}/property-tax/floormaster/subfloor?${params.toString()}`;
     },
@@ -85,10 +95,10 @@ export default function SubFloorPage({
   const changePage = useCallback(
     (page: number) => {
       router.push(
-        buildUrl(page, pageSize, currentSearchTerm)
+        buildUrl(page, pageSize, currentSearchTerm, sortBy, sortOrder)
       );
     },
-    [router, pageSize, currentSearchTerm, buildUrl]
+    [router, pageSize, currentSearchTerm, sortBy, sortOrder, buildUrl]
   );
 
   /* ============================================================
@@ -182,7 +192,7 @@ export default function SubFloorPage({
             value={String(pageSize)}
             onChange={(val) =>
               router.push(
-                buildUrl(1, Number(val), currentSearchTerm)
+                buildUrl(1, Number(val), currentSearchTerm, sortBy, sortOrder)
               )
             }
             options={[10, 20, 30, 50].map((s) => ({

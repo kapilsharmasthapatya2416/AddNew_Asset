@@ -1,7 +1,7 @@
 
-import { getSubFloorPaged } from "@/lib/api/floor.services";
+import { fetchSubFloorPagedServerAction } from "@/app/[locale]/property-tax/floormaster/actions";
 import type { SubFloorPagedResponse } from "@/types/floor.types";
-import SubFloorPage from "@/components/modules/property-tax/Floormaster/subfloor/SubFloorMaster";
+import SubFloorMaster from "@/components/modules/property-tax/Floormaster/subfloor/SubFloorMaster";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +10,8 @@ interface PageProps {
     page?: string;
     pageSize?: string;
     q?: string;
+    sortBy?: string;
+    sortOrder?: string;
   }>;
 }
 
@@ -21,15 +23,23 @@ export default async function Page({
   const pageNumber = Number(params?.page) || 1;
   const pageSize = Number(params?.pageSize) || 10;
   const searchQuery = params?.q || "";
+  const sortBy = params?.sortBy;
+  const sortOrder = params?.sortOrder;
 
   const result: SubFloorPagedResponse =
-    await getSubFloorPaged(
+    await fetchSubFloorPagedServerAction(
       pageNumber,
       pageSize,
-      searchQuery
+      searchQuery,
+      sortBy,
+      sortOrder
     );
 
   return (
-    <SubFloorPage subFloorPaged={result} />
+    <SubFloorMaster 
+      subFloorPaged={result} 
+      sortBy={sortBy}
+      sortOrder={sortOrder}
+    />
   );
 }
