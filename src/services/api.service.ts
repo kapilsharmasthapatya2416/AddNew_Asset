@@ -17,9 +17,17 @@ class ApiClient {
   }
 
   /**
-   * Safely parses the response body as JSON.
+   * Checks if the Content-Type header indicates a JSON response.
+   */
+  private isJsonContentType(response: Response): boolean {
+    const contentType = response.headers.get('Content-Type') ?? '';
+    return contentType.includes('application/json');
+  }
+
+  /**
+   * Safely parses the response body as JSON when appropriate.
    * Returns `undefined` for empty-body responses (e.g. 204 No Content)
-   * instead of throwing "Unexpected end of JSON input".
+   * or non-JSON responses instead of throwing errors.
    */
   private async parseResponseBody<T>(response: Response): Promise<T | undefined> {
     // 204 No Content – body is intentionally absent
@@ -33,19 +41,44 @@ class ApiClient {
       return undefined;
     }
 
-    // Read the raw text first; if it's empty, skip JSON.parse
+    // Read the raw text first to check if body is empty
     const text = await response.text();
     if (!text || text.trim() === '') {
       return undefined;
     }
 
-    // Guard against non-JSON bodies (HTML error pages, plain-text proxies, etc.).
-    // Attach the HTTP status so the caller can preserve it in ApiResponse.
+    // For non-JSON Content-Type headers, handle based on response status
+    if (!this.isJsonContentType(response)) {
+      if (response.ok) {
+        // Successful non-JSON response (e.g., plain text "OK" from DELETE)
+        // Body already consumed above, just return undefined
+        return undefined;
+      }
+      // Error response with non-JSON body – use text in error message
+      const err = new Error(
+        text.trim() || response.statusText || 'An error occurred'
+      ) as Error & { httpStatus: number; rawText: string };
+      err.httpStatus = response.status;
+      err.rawText = text;
+      throw err;
+    }
+
+    // Content-Type indicates JSON - attempt to parse
     try {
       return JSON.parse(text) as T;
     } catch {
+      // JSON parsing failed. For successful responses (2xx), treat as non-JSON
+      // and return undefined instead of failing the entire request.
+      // This handles servers that incorrectly set Content-Type: application/json
+      // for plain text responses (e.g., DELETE returning "OK" or "Deleted")
+      if (response.ok) {
+        // Success response but invalid JSON - treat as empty/non-JSON response
+        return undefined;
+      }
+      
+      // Error response with invalid JSON - throw error with details
       const err = new Error(
-        `Non-JSON response (HTTP ${response.status}): ${text.slice(0, 200)}`
+        `Invalid JSON response (HTTP ${response.status}): ${text.slice(0, 200)}`
       ) as Error & { httpStatus: number };
       err.httpStatus = response.status;
       throw err;
