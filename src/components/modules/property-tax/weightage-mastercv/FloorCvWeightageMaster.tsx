@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { MasterTable, Column } from "@/components/common/MasterTable";
-import { MatrixCellInput } from "@/components/common/MatrixCellInput";
 import { Select, Option } from "@/components/common/select";
 import { Input } from "@/components/common/Input";
 import { FloorFactorCVMaster } from "@/types/weightageMaster.types";
@@ -18,6 +17,7 @@ import {
     bulkUpdateFloorFactorCVMasterAction
 } from "@/app/[locale]/property-tax/weightage-master/action";
 import { ToastContainer } from "@/components/common/Toast";
+import { getFloorCvWeightageMasterColumns } from "./floorCvWeightageMasterColumns";
 
 // Extend FloorFactorCVMaster to add index signature
 type FloorFactorCVMasterWithIndex = FloorFactorCVMaster & Record<string, unknown>;
@@ -262,79 +262,13 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
         addToast('info', tW('common.messages.changesDiscarded'));
     };
 
-    const columns: Column<FloorFactorCVMasterWithIndex>[] = [
-        {
-            key: "floorCode",
-            label: t('columns.floorCode'),
-            width: "10%",
-            render: (value) => String(value || "-"),
-        },
-        {
-            key: "floorDescription",
-            label: t('columns.description'),
-            width: "14%",
-            render: (value) => String(value || "-"),
-        },
-        {
-            key: "factorWithLift",
-            label: t('columns.factorWithLift'),
-            width: "14%",
-            render: (value, row) => {
-                const rowUid = getRowUid(row);
-                const editableValue = editableRows[rowUid]?.factorWithLift ?? (value as number);
-                return (
-                    <MatrixCellInput className="lg:w-26"
-                        value={editableValue}
-                        rowId={rowUid}
-                        columnId="factorWithLift"
-                        onCellChange={handleCellChange}
-                    />
-                );
-            },
-        },
-        {
-            key: "factorWithoutLift",
-            label: t('columns.factorWithoutLift'),
-            width: "14%",
-            render: (value, row) => {
-                const rowUid = getRowUid(row);
-                const editableValue = editableRows[rowUid]?.factorWithoutLift ?? (value as number);
-                return (
-                    <MatrixCellInput className="lg:w-26"
-                        value={editableValue}
-                        rowId={rowUid}
-                        columnId="factorWithoutLift"
-                        onCellChange={handleCellChange}
-                    />
-                );
-            },
-        },
-        {
-            key: "fromYear",
-            label: t('columns.assessmentYear'),
-            width: "14%",
-            render: (_value, row) => `${row.fromYear}-${row.toYear}`,
-        },
-        {
-            key: "isActive",
-            label: t('columns.status'),
-            width: "14%",
-            isStatus: true,
-            render: (value, row) => {
-                if (row.floorFactorId === 0) {
-                    return <StatusBadge variant="pending" />;
-                }
-                return (
-                    <StatusBadge
-                        variant="status"
-                        value={value as boolean}
-                        activeLabel={tW('common.labels.active')}
-                        inactiveLabel={tW('common.labels.inactive')}
-                    />
-                );
-            },
-        },
-    ];
+    const columns: Column<FloorFactorCVMasterWithIndex>[] = getFloorCvWeightageMasterColumns({
+        t,
+        tW,
+        editableRows,
+        handleCellChange,
+        getRowUid,
+    });
 
     const renderActions = (row: FloorFactorCVMaster) => {
         const rowUid = getRowUid(row);
