@@ -154,7 +154,7 @@ export async function deleteFloorAction(
   if (!floorId || floorId <= 0) {
     return {
       success: false,
-      message: "Valid Floor ID is required",
+      message: "floor.messages.validFloorIdRequired", // i18n key
       statusCode: 400,
     };
   }
@@ -168,7 +168,7 @@ export async function deleteFloorAction(
 
     return {
       success: true,
-      message: "Floor deleted successfully",
+      message: "floor.messages.deleteSuccess", // i18n key
     };
   } catch (error) {
     if (error instanceof ApiError) {
@@ -181,7 +181,7 @@ export async function deleteFloorAction(
 
     return {
       success: false,
-      message: "Failed to delete floor",
+      message: "floor.messages.deleteFailed", // i18n key
     };
   }
 }
@@ -317,7 +317,7 @@ export async function deleteSubFloorAction(
   if (!subFloorId || subFloorId <= 0) {
     return {
       success: false,
-      message: "Valid SubFloor ID is required",
+      message: "subfloor.messages.validSubFloorIdRequired", // i18n key
       statusCode: 400,
     };
   }
@@ -331,7 +331,7 @@ export async function deleteSubFloorAction(
 
     return {
       success: true,
-      message: "SubFloor deleted successfully",
+      message: "subfloor.messages.deleteSuccess", // i18n key
     };
   } catch (error) {
     if (error instanceof ApiError) {
@@ -344,7 +344,7 @@ export async function deleteSubFloorAction(
 
     return {
       success: false,
-      message: "Failed to delete subfloor",
+      message: "subfloor.messages.deleteFailed", // i18n key
     };
   }
 }

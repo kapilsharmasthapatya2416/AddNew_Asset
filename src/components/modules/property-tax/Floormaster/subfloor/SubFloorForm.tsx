@@ -1,28 +1,39 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { AlertCircle, Layers, CheckCircle2, X } from "lucide-react";
-import { toast } from "sonner";
-import { useTranslations, useLocale } from "next-intl";
+import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
+import { AlertCircle, CheckCircle2, Layers, X } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { Drawer } from "@/components/common/Drawer";
-import { CancelButton, Input, SaveButton } from "@/components/common";
-import { ToggleSwitch } from "@/components/common/ToggleSwitch";
-import { cn } from "@/lib/utils/cn";
-import { validateForm, commonValidations, hasErrors } from "@/lib/utils/validation";
+import { Drawer } from '@/components/common/Drawer';
+import {
+  Input,
+  CancelButton,
+  SaveButton,
+  ToggleSwitch,
+  ValidationMessage,
+} from '@/components/common';
 
-import type { SubFloor, SubFloorFormModel } from "@/types/floor.types";
 import {
   createSubFloorAction,
   updateSubFloorAction,
-} from "@/app/[locale]/property-tax/floormaster/actions";
+} from '@/app/[locale]/property-tax/floormaster/actions';
+
+import { SubFloorFormModel, SubFloor } from '@/types/floor.types';
+import { cn } from '@/lib/utils/cn';
+
+import type React from 'react';
+import {
+  CODE_REGEX,
+  CODE_SANITIZE,
+  DESCRIPTION_REGEX,
+  DESCRIPTION_SANITIZE,
+} from '@/lib/utils/validation';
 
 /* ================= CONSTANTS ================= */
-
 const CODE_MAX = 10;
-// Allow alphanumeric and underscore - validation will enforce "not at start/end" rule
-const CODE_REGEX = /^\w*$/;
+const DESCRIPTION_MAX = 100;
 
 /* ================= PROPS ================= */
 export interface SubFloorFormProps {
@@ -30,185 +41,174 @@ export interface SubFloorFormProps {
   initialData?: SubFloor;
 }
 
-function ValidationMessage({
-  message,
-  visible,
-}: Readonly<{
-  message?: string;
-  visible: boolean;
-}>) {
-  if (!visible || !message) return null;
-
-  return (
-    <div className="mt-1 flex items-center gap-2 text-sm text-red-600">
-      <AlertCircle size={16} />
-      <span>{message}</span>
-    </div>
-  );
-}
-
 /* ================= MAIN ================= */
-export default function SubFloorForm({
-  subFloorId,
-  initialData,
-}: Readonly<SubFloorFormProps>) {
+export default function SubFloorForm({ subFloorId, initialData }: Readonly<SubFloorFormProps>) {
   const router = useRouter();
+  const t = useTranslations('floor.subfloor');
+  const tCommon = useTranslations('common');
   const isEdit = Boolean(subFloorId);
-
-  const t = useTranslations("floor.subfloor");
-  const tCommon = useTranslations("common");
-  const locale = useLocale();
 
   const [open, setOpen] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedOnce, setSubmittedOnce] = useState(false);
+  const [isActive, setIsActive] = useState(initialData?.isActive ?? true);
 
-  const initial = useMemo<SubFloorFormModel>(() => {
-    if (!initialData) {
-      return {
-        subFloorCode: "",
-        description: "",
-        isActive: true,
-      };
-    }
+  const [formData, setFormData] = useState<SubFloorFormModel>({
+    subFloorId: initialData?.subFloorId,
+    subFloorCode: initialData?.subFloorCode ?? '',
+    description: initialData?.description ?? '',
+    isActive: initialData?.isActive ?? true,
+  });
 
-    return {
-      subFloorCode: initialData.subFloorCode ?? "",
-      description: initialData.description ?? "",
-      isActive: initialData.isActive ?? true,
-    };
-  }, [initialData]);
+  const [errors, setErrors] = useState<Partial<Record<keyof SubFloorFormModel, string>>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const [formData, setFormData] = useState(initial);
-  const [errors, setErrors] =
-    useState<Partial<Record<keyof SubFloorFormModel, string>>>({});
-  const [touched, setTouched] =
-    useState<Partial<Record<keyof SubFloorFormModel, boolean>>>({});
-
-  const isActive = formData.isActive;
-
-  useEffect(() => {
-    setFormData(initial);
-  }, [initial]);
+  const locale = useLocale();
 
   const handleClose = useCallback(() => {
     setOpen(false);
     router.push(`/${locale}/property-tax/floormaster/subfloor`);
-  }, [router, locale, setOpen]);
+  }, [router, locale]);
 
   /* ================= VALIDATION ================= */
-
-  // Component-specific validators
-  const subFloorValidators = useMemo(() => ({
-    subFloorCode: commonValidations.masterCode(
-      (key: string, values?: Record<string, string | number | Date>) => t(key, values),
-      CODE_MAX
-    ),
-    description: commonValidations.masterDescription(
-      (key: string, values?: Record<string, string | number | Date>) => t(key, values),
-      100
-    ),
-    isActive: (value: unknown) => {
-      if (typeof value !== "boolean") {
-        return t("validation.required");
-      }
-      return undefined;
-    },
-  }), [t, tCommon]);
-
   const validate = useCallback(
     (data: SubFloorFormModel) => {
-      return validateForm(data, subFloorValidators);
+      const e: Partial<Record<keyof SubFloorFormModel, string>> = {};
+
+      const code = data.subFloorCode.trim();
+      const description = data.description.trim();
+
+      if (!code) {
+        e.subFloorCode = t('form.validation.codeRequired');
+      } else if (code.length > CODE_MAX) {
+        e.subFloorCode = t('form.validation.codeMaxLength', { count: CODE_MAX });
+      } else if (!CODE_REGEX.test(code)) {
+        e.subFloorCode = t('form.validation.codeFormat');
+      }
+
+      if (!description) {
+        e.description = t('form.validation.descriptionRequired');
+      } else if (description.length > DESCRIPTION_MAX) {
+        e.description = t('form.validation.descriptionMaxLength', { count: DESCRIPTION_MAX });
+      } else if (!DESCRIPTION_REGEX.test(description)) {
+        e.description = t('form.validation.descriptionFormat');
+      }
+
+      if (!data.isActive && !isEdit) {
+        e.isActive = t('form.validation.mustBeActive');
+      }
+
+      return e;
     },
-    [subFloorValidators]
+    [isEdit, t]
   );
 
   const showError = (field: keyof SubFloorFormModel) =>
-    Boolean(touched[field] && errors[field]);
+    (submittedOnce || touched[field]) && !!errors[field];
 
   /* ================= CHANGE ================= */
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const key = name as keyof SubFloorFormModel;
+    let newValue = value;
 
-    if (key === "subFloorCode") {
-      if (value.length > CODE_MAX) return;
-      if (!CODE_REGEX.test(value) && value !== "") return;
+    if (name === 'description') {
+      newValue = newValue.replace(DESCRIPTION_SANITIZE, '');
+      if (newValue.length > DESCRIPTION_MAX) {
+        newValue = newValue.substring(0, DESCRIPTION_MAX);
+      }
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
+    if (name === 'subFloorCode') {
+      newValue = newValue.replace(CODE_SANITIZE, '');
+      if (newValue.length > CODE_MAX) {
+        newValue = newValue.substring(0, CODE_MAX);
+      }
+    }
+
+    setFormData((p) => ({
+      ...p,
+      [name]: newValue,
     }));
   };
 
   /* ================= BLUR ================= */
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setTouched((p) => ({ ...p, [name]: true }));
 
-  const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-    const key = e.target.name as keyof SubFloorFormModel;
+    const fieldErrors = validate({
+      ...formData,
+      [name]: value,
+    });
 
-    setTouched((prev) => ({ ...prev, [key]: true }));
+    setErrors((p) => {
+      const newErrors = { ...p };
+      const key = name as keyof SubFloorFormModel;
 
-    const validationErrors = validate(formData);
-    setErrors(validationErrors);
+      if (fieldErrors[key]) newErrors[key] = fieldErrors[key];
+      else delete newErrors[key];
 
-    // Note: Duplicate code check disabled until checkSubFloorCodeExistsAction is implemented
+      return newErrors;
+    });
+  };
+
+  /* ================= ERROR HELPER ================= */
+  const getErrorMessage = (result: { statusCode?: number; message?: string }) => {
+    if (result.statusCode === 409) return t('apiErrors.duplicateRecord');
+    if (result.statusCode === 400) return t('apiErrors.invalidData');
+    if (result.statusCode === 404) return t('apiErrors.notFound');
+    if (result.statusCode === 401 || result.statusCode === 403)
+      return tCommon('errors.unauthorized');
+    if (result.statusCode && result.statusCode >= 500) return tCommon('errors.serverError');
+    return result.message || t('apiErrors.operationFailed');
   };
 
   /* ================= SUBMIT ================= */
-
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmittedOnce(true);
 
-    const validationErrors = validate(formData);
-    setErrors(validationErrors);
+    const v = validate(formData);
+    setErrors(v);
 
-    if (hasErrors(validationErrors)) {
-      toast.error(tCommon("errors.fixValidation"));
-      return;
-    }
+    if (Object.keys(v).length) return;
 
     setIsSubmitting(true);
 
     try {
-      const payload: SubFloorFormModel = {
-        subFloorCode: formData.subFloorCode.trim(),
-        description: formData.description.trim(),
-        isActive: formData.isActive,
-      };
-
-      // Add subFloorId for updates
-      if (isEdit && initialData?.subFloorId) {
-        payload.subFloorId = initialData.subFloorId;
-      }
-
       const result = isEdit
-        ? await updateSubFloorAction(payload)
-        : await createSubFloorAction(payload);
+        ? await updateSubFloorAction(formData)
+        : await createSubFloorAction(formData);
 
-      if (!result.success) throw new Error(result.message);
+      if (!result.success) {
+        toast.error(getErrorMessage(result));
+        return;
+      }
 
       toast.success(
         isEdit
-          ? t("messages.updateSuccess")
-          : t("messages.createSuccess")
+          ? t('success.updated', { code: formData.subFloorCode })
+          : t('success.created', { code: formData.subFloorCode })
       );
 
       handleClose();
       router.refresh();
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : tCommon("errors.saveFailed")
-      );
+      toast.error(error instanceof Error ? error.message : t('apiErrors.operationFailed'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  /* ================= UI ================= */
+  const handleToggleStatus = () => {
+    setIsActive((prev) => {
+      const newValue = !prev;
+      setFormData((p) => ({ ...p, isActive: newValue }));
+      return newValue;
+    });
+  };
 
+  /* ================= UI ================= */
   return (
     <Drawer
       open={open}
@@ -221,123 +221,109 @@ export default function SubFloorForm({
           </div>
           <div>
             <div className="text-lg font-bold text-blue-900">
-              {isEdit ? t("form.editTitle") : t("form.addTitle")}
+              {isEdit ? t('form.editTitle') : t('form.addTitle')}
             </div>
             <div className="text-sm text-slate-500">
-              {isEdit
-                ? t("form.editSubtitle")
-                : t("form.addSubtitle")}
+              {isEdit ? t('form.editSubtitle') : t('form.addSubtitle')}
             </div>
           </div>
         </div>
       }
       footer={
         <>
-          <CancelButton label={tCommon("actions.cancel")} onClick={handleClose} />
+          <CancelButton
+            label={tCommon('buttons.cancel')}
+            onClick={handleClose}
+            disabled={isSubmitting}
+          />
           <SaveButton
-            label={isEdit ? tCommon("actions.update") : tCommon("actions.save")}
+            label={isEdit ? tCommon('actions.update') : tCommon('actions.save')}
             type="submit"
-            form="subfloor-form"
+            form="form"
             isLoading={isSubmitting}
           />
         </>
       }
     >
-      <form
-        id="subfloor-form"
-        onSubmit={handleSubmit}
-        className="space-y-6 bg-[#F8FAFF] p-5"
-      >
-        {/* Active Toggle - Show at top for edit mode */}
+      <form id="subfloor-form" onSubmit={handleSubmit} className="space-y-6 bg-[#F8FAFF] p-5">
+        {' '}
+        {/* Active Toggle - Show at top for edit mode */}{' '}
         {isEdit && (
           <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-4">
+            {' '}
             <div
               className={cn(
-                "rounded-xl p-3 flex items-center justify-between",
+                'rounded-xl p-3 flex items-center justify-between',
                 isActive
-                  ? "border border-blue-200 bg-[#F0F6FF]"
-                  : "border border-gray-200 bg-gray-50"
+                  ? 'border border-blue-200 bg-[#F0F6FF]'
+                  : 'border border-gray-200 bg-gray-50'
               )}
             >
+              {' '}
               <div className="flex items-center gap-3">
+                {' '}
                 <div
                   className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-full",
-                    isActive
-                      ? "bg-green-100 text-green-600"
-                      : "bg-gray-200 text-gray-900"
+                    'flex h-9 w-9 items-center justify-center rounded-full',
+                    isActive ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-900'
                   )}
                 >
-                  {isActive ? <CheckCircle2 size={18} /> : <X size={18} />}
-                </div>
-
+                  {' '}
+                  {isActive ? <CheckCircle2 size={18} /> : <X size={18} />}{' '}
+                </div>{' '}
                 <div>
+                  {' '}
                   <div className="font-medium text-gray-900">
-                    {t("form.activeStatusTitle")}
-                  </div>
+                    {' '}
+                    {t('form.activeStatusTitle')}{' '}
+                  </div>{' '}
                   <div className="text-sm text-gray-500">
-                    {isActive
-                      ? t("form.activeStatusOn")
-                      : t("form.activeStatusOff")}
-                  </div>
-                </div>
-              </div>
-
+                    {' '}
+                    {isActive ? t('form.activeStatusOn') : t('form.activeStatusOff')}{' '}
+                  </div>{' '}
+                </div>{' '}
+              </div>{' '}
               <ToggleSwitch
                 checked={isActive}
-                onChange={() =>
-                  setFormData((p) => ({
-                    ...p,
-                    isActive: !p.isActive,
-                  }))
-                }
+                onChange={() => setFormData((p) => ({ ...p, isActive: !p.isActive }))}
                 showPopup={false}
-              />
-            </div>
+              />{' '}
+            </div>{' '}
           </div>
-        )}
-
+        )}{' '}
         <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-5 space-y-4">
+          {' '}
           <Input
             name="subFloorCode"
-            label={t("form.code")}
+            label={t('form.code')}
             required
             value={formData.subFloorCode}
             onChange={handleChange}
             onBlur={handleBlur}
-            placeholder={t("form.codePlaceholder")}
+            placeholder={t('form.codePlaceholder')}
             fullWidth
             className="text-gray-700"
-          />
-          <ValidationMessage
-            message={errors.subFloorCode}
-            visible={showError("subFloorCode")}
-          />
-
+          />{' '}
+          <ValidationMessage message={errors.subFloorCode} visible={showError('subFloorCode')} />{' '}
           <Input
             name="description"
-            label={t("form.description")}
+            label={t('form.description')}
             required
             value={formData.description}
             onChange={handleChange}
             onBlur={handleBlur}
-            placeholder={t("form.descriptionPlaceholder")}
+            placeholder={t('form.descriptionPlaceholder')}
             fullWidth
             className="text-gray-700"
-          />
-          <ValidationMessage
-            message={errors.description}
-            visible={showError("description")}
-          />
-        </div>
-
+          />{' '}
+          <ValidationMessage message={errors.description} visible={showError('description')} />{' '}
+        </div>{' '}
         <div className="flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-700">
-          <AlertCircle size={16} />
-          <span>
-            {t("note.mandatory")}
-          </span>
-        </div>
+          {' '}
+          <AlertCircle size={16} /> <span> {t('note.mandatory')} </span>{' '}
+        </div>{' '}
       </form>
+   
     </Drawer>
   );
 }

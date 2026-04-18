@@ -86,7 +86,8 @@
       "deleteFailed": "Failed to delete floor. Please try again.",
       "deleteInUse": "You can't delete this floor because it is in use.",
       "deleteConfirm": "Are you sure you want to delete this floor?",
-      "noFloors": "No floors available. Add a new floor to get started."
+      "noFloors": "No floors available. Add a new floor to get started.",
+      "validFloorIdRequired": "Valid Floor ID is required"
     },
     "validation": {
       "floorIdPattern": "Only letters, numbers, /, _, - allowed",
@@ -180,7 +181,8 @@
       "deleteFailed": "Failed to delete sub-floor. Please try again.",
       "deleteInUse": "You can't delete this sub-floor because it is in use.",
       "deleteConfirm": "Are you sure you want to delete this sub-floor?",
-      "noSubFloors": "No sub-floors available. Add a new sub-floor to get started."
+      "noSubFloors": "No sub-floors available. Add a new sub-floor to get started.",
+      "validSubFloorIdRequired": "Valid SubFloor ID is required"
     },
     "validation": {
       "subFloorIdPattern": "Only letters, numbers, /, _, - allowed",
