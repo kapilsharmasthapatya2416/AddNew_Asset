@@ -124,7 +124,7 @@ export default function QuickDataEntryLayout({ children }: { children: React.Rea
                                             className={[
                                                 'inline-flex items-center gap-1 px-2 py-2 text-[11px] rounded-md border font-semibold transition-all hover:shadow-md',
                                                 isActive
-                                                    ? `bg-gradient-to-br ${gradientClass} text-white shadow-lg`
+                                                    ? `bg-linear-to-br ${gradientClass} text-white shadow-lg`
                                                     : 'bg-white text-gray-600 border-gray-300'
                                             ].join(' ')}
                                         >

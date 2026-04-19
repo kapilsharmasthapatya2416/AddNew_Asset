@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-
 import { setRequestLocale } from 'next-intl/server';
 import {
     getPropertyBasicDetailsAction,
@@ -10,8 +8,6 @@ import {
 import { getPropertySocietyDetailsAction } from '../Society/action';
 
 import PropertyFormView from '@/components/modules/property-tax/ptis/QuickDataEntry/property/PropertyForm';
-
-export const dynamic = 'force-dynamic';
 
 interface PageProps {
     params: Promise<{
@@ -49,7 +45,6 @@ export default async function PropertyFormPage({ params }: PageProps): Promise<R
     const WingMasterList = WingMaster.success ? WingMaster.data : [];
 
     return (
-        <Suspense fallback={<div>Loading Property...</div>}>
         <PropertyFormView
             WingMaster={WingMasterList}
             propertyCategories={propertyCategoryList}
@@ -58,6 +53,5 @@ export default async function PropertyFormPage({ params }: PageProps): Promise<R
             propertySocietyDetails={propertySocietyDetails}
             locale={locale}
         />
-         </Suspense>
     );
 }
