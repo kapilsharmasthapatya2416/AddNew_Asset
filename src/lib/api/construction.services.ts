@@ -1,3 +1,18 @@
+/**
+ * Parses a value into a boolean, accepting true/false, 'true'/'false', 1/0, and defaulting to false otherwise.
+ */
+function parseBoolean(value: unknown): boolean {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    const lower = value.trim().toLowerCase();
+    if (lower === 'true') return true;
+    if (lower === 'false') return false;
+    if (lower === '1') return true;
+    if (lower === '0') return false;
+  }
+  if (typeof value === 'number') return value === 1;
+  return false;
+}
 import {
   ConstructionType,
   ConstructionTypeCreatePayload,
@@ -96,7 +111,7 @@ function normalizeConstructionType(data: Record<string, unknown>): ConstructionT
     constructionCode,
     description,
     searchSequence: Number.isFinite(searchSequence) ? searchSequence : 0,
-    isActive: Boolean(data.isActive),
+    isActive: parseBoolean(data.isActive),
     createdDate: createdDateStr,
     updatedDate: data.updatedDate != null ? String(data.updatedDate) : null,
   };
@@ -506,7 +521,7 @@ export async function deleteConstructionType(
   constructionTypeId: number
 ): Promise<void> {
   try {
-    if (constructionTypeId <= 0) {
+    if (!Number.isFinite(constructionTypeId) || constructionTypeId <= 0) {
       throw new Error("Valid constructionTypeId is required");
     }
 

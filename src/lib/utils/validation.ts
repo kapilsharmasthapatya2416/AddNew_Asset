@@ -96,7 +96,7 @@ export const commonValidations = {
       maxLength?: string;
     }
   ): Validator => (value: unknown) => {
-    const strVal = String(value || "").trim();
+    const strVal = String(value ?? "").trim();
     
     const keys = {
       required: messageKeys?.required || 'form.validation.codeRequired',
@@ -129,7 +129,7 @@ export const commonValidations = {
       maxLength?: string;
     }
   ): Validator => (value: unknown) => {
-    const strVal = String(value || "").trim();
+    const strVal = String(value ?? "").trim();
     
     const keys = {
       required: messageKeys?.required || 'form.validation.descriptionRequired',
@@ -272,7 +272,7 @@ export const createMasterValidationSchema = (
     const messageKey = typeof config.activeStatus === 'object' 
       ? config.activeStatus.messageKey 
       : undefined;
-    schema.isActive = commonValidations.masterActiveStatus(t, isEdit, messageKey);
+    schema.activeStatus = commonValidations.masterActiveStatus(t, isEdit, messageKey);
   }
 
   return schema;
