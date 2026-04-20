@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { Tabs, Input, AddButton, SearchSelect } from '@/components/common';
 import { Label } from '@/components/common/label';
@@ -50,7 +50,7 @@ const PropertyFormView = ({
     const formRef = useRef<HTMLFormElement>(null);
     const [hasChanges, setHasChanges] = useState(false);
 
-    const checkFormChanges = () => {
+    const checkFormChanges = useCallback(() => {
         if (!formRef.current) return;
         const formData = new FormData(formRef.current);
 
@@ -67,11 +67,11 @@ const PropertyFormView = ({
             (parseOptionalNumber(formData.get("plotArea")) ?? 0) !== (propertyData?.plotArea ?? 0);
 
         setHasChanges(isChanged);
-    };
+    }, [categoryId, propertyTypeId, wingId, initialWingId, propertyData]);
 
     useEffect(() => {
         checkFormChanges();
-    }, [categoryId, propertyTypeId, wingId]);
+    }, [checkFormChanges]);
 
     const categoryOptions = propertyCategoryList.map((item) => ({
         label: item.propertyCategoryName,

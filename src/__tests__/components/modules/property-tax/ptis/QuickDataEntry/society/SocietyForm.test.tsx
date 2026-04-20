@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import SocietyForm from '@/components/modules/property-tax/ptis/QuickDataEntry/society/SocietyForm';
 import { PropertySocietyDetailsApiItem } from '@/types/property-society-details.types';
 import { toast } from 'sonner';
@@ -8,7 +8,28 @@ import { updatePropertySocietyDetailsAction } from '@/app/[locale]/property-tax/
 
 // Mock dependencies
 vi.mock('next-intl', () => ({
-    useTranslations: () => (key: string) => key,
+    useTranslations: () => (key: string) => {
+        const translations: Record<string, string> = {
+            'society.title': 'Society Details',
+            'society.landOwnerPlaceholder': 'Land Owner',
+            'society.builderNamePlaceholder': 'Builder Name',
+            'society.buildingSocietyNamePlaceholder': 'Society Name',
+            'society.societyEmailPlaceholder': 'Society Email',
+            'society.societyAddressPlaceholder': 'Society Address',
+            'society.managerNamePlaceholder': 'Manager Name',
+            'society.managerEmailPlaceholder': 'Manager Email',
+            'society.secretaryNamePlaceholder': 'Secretary Name',
+            'society.secretaryEmailPlaceholder': 'Secretary Email',
+            'common.saveChanges': 'Save Changes',
+            'footer.saving': 'Saving...',
+            'society.updateSuccess': 'Society details updated successfully',
+            'society.updateError': 'An error occurred during update.',
+            'society.updateConfirmTitle': 'Confirm Update',
+            'society.updateConfirmText': 'Are you sure?',
+            'society.updateConfirmButton': 'Yes, Update',
+        };
+        return translations[key] || key;
+    },
 }));
 
 vi.mock('next/navigation', () => ({
@@ -73,7 +94,7 @@ describe('SocietyForm', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        vi.mocked(useRouter).mockReturnValue(mockRouter);
+        vi.mocked(useRouter).mockReturnValue(mockRouter as unknown as ReturnType<typeof useRouter>);
     });
 
     describe('Rendering', () => {
@@ -86,16 +107,16 @@ describe('SocietyForm', () => {
                 />
             );
 
-            expect(screen.getByText('society.title')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.landOwnerPlaceholder')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.builderNamePlaceholder')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.buildingSocietyNamePlaceholder')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.societyEmailPlaceholder')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.societyAddressPlaceholder')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.managerNamePlaceholder')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.managerEmailPlaceholder')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.secretaryNamePlaceholder')).toBeInTheDocument();
-            expect(screen.getByPlaceholderText('society.secretaryEmailPlaceholder')).toBeInTheDocument();
+            expect(screen.getByText('Society Details')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Land Owner')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Builder Name')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Society Name')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Society Email')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Society Address')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Manager Name')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Manager Email')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Secretary Name')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Secretary Email')).toBeInTheDocument();
         });
 
         it('should render with default values when societyData is provided', () => {
@@ -107,9 +128,9 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const landOwnerInput = screen.getByPlaceholderText('society.landOwnerPlaceholder') as HTMLInputElement;
-            const builderInput = screen.getByPlaceholderText('society.builderNamePlaceholder') as HTMLInputElement;
-            const societyNameInput = screen.getByPlaceholderText('society.buildingSocietyNamePlaceholder') as HTMLInputElement;
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner') as HTMLInputElement;
+            const builderInput = screen.getByPlaceholderText('Builder Name') as HTMLInputElement;
+            const societyNameInput = screen.getByPlaceholderText('Society Name') as HTMLInputElement;
 
             expect(landOwnerInput.value).toBe('Land Owner');
             expect(builderInput.value).toBe('Builder Name');
@@ -154,6 +175,37 @@ describe('SocietyForm', () => {
             expect(managerInputs[1].value).toBe('8');
             expect(managerInputs[2].value).toBe('7');
             expect(managerInputs[9].value).toBe('0');
+        });
+    });
+
+    describe('Button States', () => {
+        it('should disable save button initially', () => {
+            render(
+                <SocietyForm
+                    societyData={mockSocietyData}
+                    propertyIdSearch={123}
+                    locale="en"
+                />
+            );
+
+            const submitBtn = screen.getByRole('button', { name: /Save Changes/i });
+            expect(submitBtn).toBeDisabled();
+        });
+
+        it('should enable save button when data is modified', () => {
+            render(
+                <SocietyForm
+                    societyData={mockSocietyData}
+                    propertyIdSearch={123}
+                    locale="en"
+                />
+            );
+
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
+            fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
+
+            const submitBtn = screen.getByRole('button', { name: /Save Changes/i });
+            expect(submitBtn).not.toBeDisabled();
         });
     });
 
@@ -224,22 +276,20 @@ describe('SocietyForm', () => {
 
     describe('Form Validation', () => {
         it('should show error toast for invalid email format', async () => {
-            const { updatePropertySocietyDetailsAction } = await import(
-                '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action'
-            );
+            (updatePropertySocietyDetailsAction as Mock).mockClear();
 
             render(
                 <SocietyForm
-                    societyData={null}
+                    societyData={mockSocietyData}
                     propertyIdSearch={123}
                     locale="en"
                 />
             );
 
-            const societyEmailInput = screen.getByPlaceholderText('society.societyEmailPlaceholder');
-            const submitButton = screen.getByText('society.updateButton');
-
+            const societyEmailInput = screen.getByPlaceholderText('Society Email');
             fireEvent.change(societyEmailInput, { target: { value: 'invalid-email' } });
+
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -250,9 +300,7 @@ describe('SocietyForm', () => {
         });
 
         it('should validate manager mobile number length', async () => {
-            const { updatePropertySocietyDetailsAction } = await import(
-                '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action'
-            );
+            (updatePropertySocietyDetailsAction as Mock).mockClear();
 
             render(
                 <SocietyForm
@@ -272,7 +320,7 @@ describe('SocietyForm', () => {
             fireEvent.change(inputs[3], { target: { value: '6' } });
             fireEvent.change(inputs[4], { target: { value: '5' } });
 
-            const submitButton = screen.getByText('society.updateButton');
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -285,9 +333,9 @@ describe('SocietyForm', () => {
 
     describe('Form Submission', () => {
         it('should submit form with valid data', async () => {
-            vi.mocked(updatePropertySocietyDetailsAction).mockResolvedValue({
+            (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({
                 success: true,
-            } as Awaited<ReturnType<typeof updatePropertySocietyDetailsAction>>);
+            });
 
             render(
                 <SocietyForm
@@ -297,7 +345,11 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const submitButton = screen.getByText('society.updateButton');
+            // Trigger some change to enable the button
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
+            fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
+
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -306,9 +358,9 @@ describe('SocietyForm', () => {
         });
 
         it('should show success toast on successful submission', async () => {
-            vi.mocked(updatePropertySocietyDetailsAction).mockResolvedValue({
+            (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({
                 success: true,
-            } as Awaited<ReturnType<typeof updatePropertySocietyDetailsAction>>);
+            });
 
             render(
                 <SocietyForm
@@ -318,18 +370,22 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const submitButton = screen.getByText('society.updateButton');
+            // Trigger some change to enable the button
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
+            fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
+
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
-                expect(toast.success).toHaveBeenCalledWith('society.updateSuccess');
+                expect(toast.success).toHaveBeenCalledWith('Society details updated successfully');
             });
         });
 
         it('should refresh router on successful submission', async () => {
-            vi.mocked(updatePropertySocietyDetailsAction).mockResolvedValue({
+            (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({
                 success: true,
-            } as Awaited<ReturnType<typeof updatePropertySocietyDetailsAction>>);
+            });
 
             render(
                 <SocietyForm
@@ -339,7 +395,11 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const submitButton = screen.getByText('society.updateButton');
+            // Trigger some change to enable the button
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
+            fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
+
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -348,10 +408,10 @@ describe('SocietyForm', () => {
         });
 
         it('should show error toast on submission failure', async () => {
-            vi.mocked(updatePropertySocietyDetailsAction).mockResolvedValue({
+            (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({
                 success: false,
                 error: 'Update failed',
-            } as Awaited<ReturnType<typeof updatePropertySocietyDetailsAction>>);
+            });
 
             render(
                 <SocietyForm
@@ -361,7 +421,11 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const submitButton = screen.getByText('society.updateButton');
+            // Trigger some change to enable the button
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
+            fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
+
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -370,7 +434,7 @@ describe('SocietyForm', () => {
         });
 
         it('should handle submission exception', async () => {
-            vi.mocked(updatePropertySocietyDetailsAction).mockRejectedValue(
+            (updatePropertySocietyDetailsAction as Mock).mockRejectedValue(
                 new Error('Network error')
             );
 
@@ -382,19 +446,23 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const submitButton = screen.getByText('society.updateButton');
+            // Trigger some change to enable the button
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
+            fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
+
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
-                expect(toast.error).toHaveBeenCalledWith('society.updateError');
+                expect(toast.error).toHaveBeenCalledWith('An error occurred during update.');
             });
         });
     });
 
     describe('Loading State', () => {
         it('should show loading state during submission', async () => {
-            vi.mocked(updatePropertySocietyDetailsAction).mockImplementation(
-                () => new Promise((resolve) => setTimeout(() => resolve({ success: true } as Awaited<ReturnType<typeof updatePropertySocietyDetailsAction>>), 100))
+            (updatePropertySocietyDetailsAction as Mock).mockImplementation(
+                () => new Promise((resolve) => setTimeout(() => resolve({ success: true }), 100))
             );
 
             render(
@@ -405,7 +473,11 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const submitButton = screen.getByText('society.updateButton');
+            // Trigger some change to enable the button
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
+            fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
+
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             // Button should be in loading state
@@ -417,9 +489,9 @@ describe('SocietyForm', () => {
 
     describe('Payload Construction', () => {
         it('should construct correct payload with all fields', async () => {
-            vi.mocked(updatePropertySocietyDetailsAction).mockResolvedValue({
+            (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({
                 success: true,
-            } as Awaited<ReturnType<typeof updatePropertySocietyDetailsAction>>);
+            });
 
             render(
                 <SocietyForm
@@ -429,7 +501,11 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const submitButton = screen.getByText('society.updateButton');
+            // Trigger some change to enable the button
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
+            fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
+
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -447,7 +523,7 @@ describe('SocietyForm', () => {
                         secretaryName: 'Jane Secretary',
                         secretaryEmailId: 'secretary@test.com',
                         secretaryMobileNo: '9876543211',
-                        landOwnerName: 'Land Owner',
+                        landOwnerName: 'New Owner',
                         builderName: 'Builder Name',
                     })
                 );
@@ -455,9 +531,9 @@ describe('SocietyForm', () => {
         });
 
         it('should use propertyIdSearch when societyData is null', async () => {
-            vi.mocked(updatePropertySocietyDetailsAction).mockResolvedValue({
+            (updatePropertySocietyDetailsAction as Mock).mockResolvedValue({
                 success: true,
-            } as Awaited<ReturnType<typeof updatePropertySocietyDetailsAction>>);
+            });
 
             render(
                 <SocietyForm
@@ -467,10 +543,10 @@ describe('SocietyForm', () => {
                 />
             );
 
-            const landOwnerInput = screen.getByPlaceholderText('society.landOwnerPlaceholder');
+            const landOwnerInput = screen.getByPlaceholderText('Land Owner');
             fireEvent.change(landOwnerInput, { target: { value: 'New Owner' } });
 
-            const submitButton = screen.getByText('society.updateButton');
+            const submitButton = screen.getByRole('button', { name: /Save Changes/i });
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -485,4 +561,5 @@ describe('SocietyForm', () => {
         });
     });
 });
+
 

@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useConfirm } from "@/components/common/ConfirmProvider";
 
 import { societyValidations, validateForm, hasErrors } from "@/lib/utils/validation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps) => {
 
@@ -37,7 +37,7 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
     const formRef = useRef<HTMLFormElement>(null);
     const [hasChanges, setHasChanges] = useState(false);
 
-    const checkFormChanges = () => {
+    const checkFormChanges = useCallback(() => {
         if (!formRef.current) return;
         const formData = new FormData(formRef.current);
 
@@ -70,11 +70,11 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
             (secretaryMobileStr || "") !== (societyData?.secretaryMobileNo || "");
 
         setHasChanges(isChanged);
-    };
+    }, [managerMobileDigits, secretaryMobileDigits, societyData]);
 
     useEffect(() => {
         checkFormChanges();
-    }, [managerMobileDigits, secretaryMobileDigits]);
+    }, [checkFormChanges]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

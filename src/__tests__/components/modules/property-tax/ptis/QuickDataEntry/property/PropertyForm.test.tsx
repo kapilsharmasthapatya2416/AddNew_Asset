@@ -38,6 +38,8 @@ vi.mock('next-intl', () => ({
       'property.updateConfirmTitle': 'Confirm Update',
       'property.updateConfirmText': 'Are you sure?',
       'property.updateConfirmButton': 'Yes, Update',
+      'common.saveChanges': 'Save Changes',
+      'footer.saving': 'Saving...',
     };
     return translations[key] || key;
   },
@@ -166,6 +168,41 @@ describe('PropertyFormView', () => {
     expect(screen.getByDisplayValue('1500')).toBeInTheDocument(); // Buildup Area
   });
 
+  it('disables save button initially', () => {
+    render(
+      <PropertyFormView
+        WingMaster={mockWingMaster}
+        propertyCategories={mockPropertyCategories}
+        propertyDescriptions={mockPropertyDescriptions}
+        propertyData={mockPropertyData as never}
+        propertySocietyDetails={mockSocietyDetails as never}
+        locale="en"
+      />
+    );
+
+    const submitBtn = screen.getByRole('button', { name: /Save Changes/i });
+    expect(submitBtn).toBeDisabled();
+  });
+
+  it('enables save button when data is modified', async () => {
+    render(
+      <PropertyFormView
+        WingMaster={mockWingMaster}
+        propertyCategories={mockPropertyCategories}
+        propertyDescriptions={mockPropertyDescriptions}
+        propertyData={mockPropertyData as never}
+        propertySocietyDetails={mockSocietyDetails as never}
+        locale="en"
+      />
+    );
+
+    const flatInput = screen.getByLabelText(/Flat\/Shop No/i);
+    fireEvent.change(flatInput, { target: { value: '202' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Save Changes/i });
+    expect(submitBtn).not.toBeDisabled();
+  });
+
   it('submits form with updated data', async () => {
     (updatePropertyBasicDetailsAction as Mock).mockResolvedValue({ success: true });
 
@@ -181,9 +218,9 @@ describe('PropertyFormView', () => {
     );
 
     const flatInput = screen.getByLabelText(/Flat\/Shop No/i);
-    fireEvent.change(flatInput, { target: { value: '202', name: 'flatOrShopNo' } });
+    fireEvent.change(flatInput, { target: { value: '202' } });
 
-    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    const submitBtn = screen.getByRole('button', { name: /Save Changes/i });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
@@ -199,7 +236,7 @@ describe('PropertyFormView', () => {
   });
 
   it('handles submission error correctly', async () => {
-    (updatePropertyBasicDetailsAction as Mock).mockRejectedValue(new Error('Update failed'));
+    (updatePropertyBasicDetailsAction as Mock).mockResolvedValue({ success: false, error: 'Update failed' });
 
     render(
       <PropertyFormView
@@ -212,11 +249,15 @@ describe('PropertyFormView', () => {
       />
     );
 
-    const submitBtn = screen.getByRole('button', { name: /Update/i });
+    // Enable button first
+    const flatInput = screen.getByLabelText(/Flat\/Shop No/i);
+    fireEvent.change(flatInput, { target: { value: '202' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Save Changes/i });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("An error occurred during update.");
+      expect(toast.error).toHaveBeenCalledWith("Update failed");
     });
   });
 
@@ -245,3 +286,4 @@ describe('PropertyFormView', () => {
     expect(buildUpAreaInputs[0]).toHaveAttribute('readOnly');
   });
 });
+
