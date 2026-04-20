@@ -150,7 +150,8 @@
         "codeMaxLength": "कोड {count} वर्णों से अधिक नहीं हो सकता",
         "descriptionRequired": "विवरण आवश्यक है",
         "descriptionFormat": "विवरण में अमान्य वर्ण या स्वरूपण है",
-        "descriptionMaxLength": "विवरण {count} वर्णों से अधिक नहीं हो सकता"
+        "descriptionMaxLength": "विवरण {count} वर्णों से अधिक नहीं हो सकता",
+        "mustBeActive": "नया सब-फ्लोर सक्रिय होना चाहिए"
       }
     },
     "table": {

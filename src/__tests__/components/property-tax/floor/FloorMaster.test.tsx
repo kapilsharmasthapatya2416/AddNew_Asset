@@ -2,9 +2,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextIntlClientProvider } from 'next-intl';
 
+// ── Hoisted mocks ─────────────────────────────────────────────────────────────
+const useRouterMock = vi.hoisted(() => vi.fn());
+
 // ── Module mocks (must be before imports that use them) ──────────────────────
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+  useRouter: useRouterMock,
   useSearchParams: () => ({ get: () => '' }),
 }));
 
@@ -111,6 +114,11 @@ function setup(pagedOverrides?: Partial<FloorPagedResponse>) {
 describe('FloorMaster', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Set default useRouter return value
+    useRouterMock.mockReturnValue({
+      push: vi.fn(),
+      refresh: vi.fn(),
+    });
   });
 
   it('renders floor data rows', () => {
@@ -178,7 +186,7 @@ describe('FloorMaster', () => {
 
   it('clicking Edit navigates to edit route', () => {
     const pushSpy = vi.fn();
-    vi.mocked(require('next/navigation').useRouter).mockReturnValue({
+    useRouterMock.mockReturnValue({
       push: pushSpy,
       refresh: vi.fn(),
     });

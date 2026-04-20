@@ -65,7 +65,11 @@ const messages = {
         notFound: 'Not found',
         operationFailed: 'Operation failed',
       },
-      messages: { deleteSuccess: 'Deleted' },
+      messages: {
+        createSuccess: 'Floor {code} created',
+        updateSuccess: 'Floor {code} updated',
+        deleteSuccess: 'Deleted',
+      },
     },
   },
 };

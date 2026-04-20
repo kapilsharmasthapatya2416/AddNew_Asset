@@ -154,7 +154,8 @@
         "codeMaxLength": "Code cannot exceed {count} characters",
         "descriptionRequired": "Description is required",
         "descriptionFormat": "Description contains invalid characters or formatting",
-        "descriptionMaxLength": "Description cannot exceed {count} characters"
+        "descriptionMaxLength": "Description cannot exceed {count} characters",
+        "mustBeActive": "New sub-floor must be active"
       }
     },
     "table": {

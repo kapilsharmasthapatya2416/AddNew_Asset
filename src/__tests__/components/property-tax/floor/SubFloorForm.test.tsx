@@ -67,7 +67,12 @@ const messages = {
         notFound: 'Not found',
         operationFailed: 'Operation failed',
       },
-      messages: { deleteSuccess: 'Deleted', deleteFailed: 'Delete failed' },
+      messages: {
+        createSuccess: 'SubFloor {code} created',
+        updateSuccess: 'SubFloor {code} updated',
+        deleteSuccess: 'Deleted',
+        deleteFailed: 'Delete failed',
+      },
       delete: {
         confirmTitle: 'Delete SubFloor {id}',
         confirmDescription: 'Are you sure?',
