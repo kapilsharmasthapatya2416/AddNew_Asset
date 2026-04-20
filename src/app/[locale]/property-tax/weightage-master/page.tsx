@@ -2,8 +2,6 @@ import React from "react";
 import FloorCvWeightageMaster from "@/components/modules/property-tax/weightage-mastercv/FloorCvWeightageMaster";
 import { fetchFloorFactorCVMasterPagedServerAction } from "./action";
 import { getAssessmentYearsPagedServerCV, getFloorPaged } from "@/lib/api/weightageMaster.service";
-// import { getFloorPaged } from "@/lib/api/floor.services";
-// import { getAssessmentYearsPagedServerCV } from "@/lib/api/assessmentYearMasterCV.service";
 
 
 interface PageProps {
@@ -16,9 +14,15 @@ interface PageProps {
 }
 
 export default async function Page({ searchParams }: PageProps): Promise<React.ReactElement> {
-  const params = searchParams ?? {};
-  const pageNumber = Number(params.page) || 1;
-  const pageSize = Number(params.pageSize) || 10;
+  const params =await searchParams ?? {};
+  // Clamp and sanitize pagination params
+  let pageNumber = Number(params.page);
+  let pageSize = Number(params.pageSize);
+  // Clamp pageNumber to at least 1
+  if (!Number.isFinite(pageNumber) || pageNumber < 1) pageNumber = 1;
+  // Clamp pageSize to between 1 and 100
+  if (!Number.isFinite(pageSize) || pageSize < 1) pageSize = 10;
+  else if (pageSize > 100) pageSize = 100;
   const searchTerm = params.q || undefined;
   const selectedYearRange = params.selectedYearRange || undefined;
 

@@ -63,7 +63,8 @@ export const getFloorCvWeightageMasterColumns = ({
             className="lg:w-26"
             value={editableValue}
             rowId={rowUid}
-            columnId="factorWithoutLift"
+           columnId="factorWithoutLift"
+            metaLabel={t('columns.factorWithoutLift')}
             onCellChange={handleCellChange}
           />
         );
