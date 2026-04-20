@@ -29,6 +29,7 @@ import {
   CODE_SANITIZE,
   DESCRIPTION_REGEX,
   DESCRIPTION_SANITIZE,
+  commonValidations,
 } from '@/lib/utils/validation';
 
 /* ================= CONSTANTS ================= */
@@ -94,8 +95,10 @@ export default function SubFloorForm({ subFloorId, initialData }: Readonly<SubFl
         e.description = t('form.validation.descriptionFormat');
       }
 
-      if (!data.isActive && !isEdit) {
-        e.isActive = t('form.validation.mustBeActive');
+      // Use commonValidations.masterActiveStatus for isActive validation
+      const isActiveError = commonValidations.masterActiveStatus(t, isEdit)(data.isActive);
+      if (isActiveError) {
+        e.isActive = isActiveError;
       }
 
       return e;
@@ -250,7 +253,7 @@ export default function SubFloorForm({ subFloorId, initialData }: Readonly<SubFl
         {/* Active Toggle - Show at top for edit mode */}{' '}
         {isEdit && (
           <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-4">
-            {' '}
+           
             <div
               className={cn(
                 'rounded-xl p-3 flex items-center justify-between',
@@ -259,36 +262,36 @@ export default function SubFloorForm({ subFloorId, initialData }: Readonly<SubFl
                   : 'border border-gray-200 bg-gray-50'
               )}
             >
-              {' '}
+            
               <div className="flex items-center gap-3">
-                {' '}
+           
                 <div
                   className={cn(
                     'flex h-9 w-9 items-center justify-center rounded-full',
                     isActive ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-900'
                   )}
                 >
-                  {' '}
+                
                   {isActive ? <CheckCircle2 size={18} /> : <X size={18} />}{' '}
-                </div>{' '}
+                </div>
                 <div>
-                  {' '}
+                  
                   <div className="font-medium text-gray-900">
-                    {' '}
-                    {t('form.activeStatusTitle')}{' '}
-                  </div>{' '}
+                    
+                    {t('form.activeStatusTitle')}
+                  </div>
                   <div className="text-sm text-gray-500">
-                    {' '}
+                    
                     {isActive ? t('form.activeStatusOn') : t('form.activeStatusOff')}{' '}
-                  </div>{' '}
-                </div>{' '}
-              </div>{' '}
+                  </div>
+                </div>
+              </div>
               <ToggleSwitch
                 checked={isActive}
                 onChange={() => setFormData((p) => ({ ...p, isActive: !p.isActive }))}
                 showPopup={false}
-              />{' '}
-            </div>{' '}
+              />
+            </div>
           </div>
         )}{' '}
         <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-5 space-y-4">

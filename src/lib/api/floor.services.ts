@@ -193,9 +193,8 @@ export async function createFloor(data: FloorFormModel): Promise<void> {
     const response = await apiClient.post('/Floor', payload);
 
     if (!response.success) {
-      const msg = (response.error || '').toLowerCase();
       throw new ApiError(
-        msg.includes('duplicate') ? 409 : 500,
+        response.statusCode || 500,
         response.error || '',
         'Create floor failed'
       );
@@ -240,13 +239,11 @@ export async function deleteFloor(floorId: number): Promise<void> {
     const response = await apiClient.delete(`/Floor/${floorId}`);
 
     if (!response.success) {
-      const msg = (response.error || '').toLowerCase();
-
-      let code = 500;
-      if (msg.includes('not found')) code = 404;
-      if (msg.includes('in use')) code = 409;
-
-      throw new ApiError(code, response.error || '', 'Delete floor failed');
+      throw new ApiError(
+        response.statusCode || 500,
+        response.error || '',
+        'Delete floor failed'
+      );
     }
   } catch (err) {
     console.error('Delete floor error:', err);
@@ -347,9 +344,8 @@ export async function createSubFloor(data: SubFloorFormModel): Promise<void> {
     const response = await apiClient.post('/SubFloor', payload);
 
     if (!response.success) {
-      const msg = (response.error || '').toLowerCase();
       throw new ApiError(
-        msg.includes('duplicate') ? 409 : 500,
+        response.statusCode || 500,
         response.error || '',
         'Create subfloor failed'
       );
@@ -399,13 +395,11 @@ export async function deleteSubFloor(subFloorId: number): Promise<void> {
     const response = await apiClient.delete(`/SubFloor/${subFloorId}`);
 
     if (!response.success) {
-      const msg = (response.error || '').toLowerCase();
-
-      let code = 500;
-      if (msg.includes('not found')) code = 404;
-      if (msg.includes('in use')) code = 409;
-
-      throw new ApiError(code, response.error || '', 'Delete subfloor failed');
+      throw new ApiError(
+        response.statusCode || 500,
+        response.error || '',
+        'Delete subfloor failed'
+      );
     }
   } catch (err) {
     console.error('Delete subfloor error:', err);
