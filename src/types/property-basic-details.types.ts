@@ -1,5 +1,6 @@
 // PROPERTY API TYPES    
 import { PropertySocietyDetailsApiItem } from "./property-society-details.types";
+ import type { ElementType, ReactNode } from "react";
 
 // Represents an owner type item from OwnerType API. Endpoint: GET /api/OwnerType
 export interface OwnerTypeApiItem {
@@ -194,11 +195,11 @@ export interface PropertyFormViewProps {
 export interface Tab {
     label: string;
     href: string;
-    icon: React.ElementType;
+    icon: ElementType;
 }
 
 export interface DrawerShellProps {
-    children: React.ReactNode;
+    children: ReactNode;
     locale: string;
 }
 export type ActionResult<T = unknown> =

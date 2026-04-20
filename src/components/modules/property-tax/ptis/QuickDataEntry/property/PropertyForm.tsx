@@ -144,7 +144,7 @@ const PropertyFormView = ({
             moujaId: propertyData?.moujaId ?? null,
             moujaName: propertyData?.moujaName ?? null,
 
-            partitionNo: propertyData?.partitionNo || null,
+            partitionNo: propertyData?.partitionNo ?? null,
             flatOrShopNo: String(formData.get("flatOrShopNo") ?? "").trim() || null,
             plotNo: String(formData.get("plotNo") ?? "").trim() || null,
             surveyNo: String(formData.get("surveyNo") ?? "").trim() || null,

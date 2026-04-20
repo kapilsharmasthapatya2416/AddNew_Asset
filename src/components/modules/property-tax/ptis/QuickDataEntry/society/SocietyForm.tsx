@@ -10,11 +10,10 @@ import {
 
 import { updatePropertySocietyDetailsAction } from "@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action";
 import { toast } from "sonner";
-import { useState } from "react";
 import { useConfirm } from "@/components/common/ConfirmProvider";
 
 import { societyValidations, validateForm, hasErrors } from "@/lib/utils/validation";
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback ,useState} from "react";
 
 const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps) => {
 
