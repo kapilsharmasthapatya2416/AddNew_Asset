@@ -140,6 +140,7 @@ export default function QuickDataEntryLayout({ children }: { children: React.Rea
                     <div className="flex-1 overflow-y-auto">
                         {children}
                     </div>
+                    
                 </div>
             </Drawer>
         </div>
