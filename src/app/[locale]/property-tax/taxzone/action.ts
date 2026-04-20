@@ -44,7 +44,6 @@ export async function saveTaxZone(id: string, formData: FormData) {
       return {
         ok: false,
         error: "invalid_id",
-        message: "Invalid ID format. ID must be a positive number.",
       };
     }
     

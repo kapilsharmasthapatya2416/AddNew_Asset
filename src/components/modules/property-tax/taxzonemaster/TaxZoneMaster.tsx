@@ -14,7 +14,7 @@ import { PageContainer, SearchInput } from "@/components/common";
 import { EditButton, DeleteButton, AddButton } from "@/components/common/ActionButtons";
 import { useTranslations, useLocale } from "next-intl";
 import { getTaxZoneColumns } from "./TaxZoneColumn";
-import { TEXT_SANITIZE } from "@/lib/utils/validation";
+import { TEXT_SANITIZE } from "@/lib/utils/validation-rules";
 
 export default function TaxZoneMaster({
   data,

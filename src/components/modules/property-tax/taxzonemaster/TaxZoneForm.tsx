@@ -10,7 +10,7 @@ import type { TaxZoneFormModel } from "@/types/taxzone.types";
 import { saveTaxZone } from "@/app/[locale]/property-tax/taxzone/action";
 import { Drawer } from "@/components/common/Drawer";
 import { useTranslations, useLocale } from "next-intl";
-import { CODE_REGEX, CODE_SANITIZE, DESCRIPTION_REGEX, DESCRIPTION_SANITIZE } from "@/lib/utils/validation";
+import { CODE_REGEX, CODE_SANITIZE, DESCRIPTION_REGEX, DESCRIPTION_SANITIZE } from "@/lib/utils/validation-rules";
 import { StatusToggleCard } from "./StatusToggleCard";
 import { FormFieldsSection } from "./FormFieldsSection";
 import { MandatoryFieldsNotice } from "./MandatoryFieldsNotice";
@@ -169,11 +169,12 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
             taxZoneType: t("form.validation.duplicateRecord") 
           });
           toast.error(
-            res.message || 
             t("form.validation.duplicateError")
           );
+        } else if (res.error === "invalid_id") {
+          toast.error(t("form.messages.invalidIdError"));
         } else {
-          toast.error(res.message || t("form.messages.error"));
+          toast.error(t("form.messages.error"));
         }
         return;
       }

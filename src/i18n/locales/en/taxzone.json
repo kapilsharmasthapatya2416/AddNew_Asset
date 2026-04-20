@@ -81,7 +81,8 @@
       "messages": {
         "createSuccess": "Zone created successfully",
         "updateSuccess": "Zone updated successfully",
-        "error": "Something went wrong"
+        "error": "Something went wrong",
+        "invalidIdError": "Invalid ID format. ID must be a positive number."
       }
     },
 
