@@ -18,7 +18,6 @@ import {
 
 import { FloorFormModel, Floor } from '@/types/floor.types';
 import { FloorFormFields } from './FloorFormFields';
-import { cn } from '@/lib/utils/cn';
 import type React from 'react';
 import {
   CODE_REGEX,

@@ -17,7 +17,6 @@ import {
 import { SubFloorFormModel, SubFloor } from '@/types/floor.types';
 import { SubFloorFormFields } from './SubFloorFormFields';
 import { StatusToggleField } from '../StatusToggleField';
-import { cn } from '@/lib/utils/cn';
 
 import type React from 'react';
 import {
