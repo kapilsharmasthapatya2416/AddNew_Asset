@@ -203,7 +203,6 @@ describe("TaxZoneForm", () => {
       mockSaveTaxZone.mockResolvedValueOnce({
         ok: false,
         error: "duplicate",
-        message: "This record already exists",
       });
       setup();
 
@@ -219,7 +218,7 @@ describe("TaxZoneForm", () => {
       fireEvent.click(saveButton);
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("This record already exists");
+        expect(toast.error).toHaveBeenCalledWith("This record already exists. Please check Zone No and Zone Type - duplicates not allowed.");
         // Both fields should show the duplicate error
         const errorMessages = screen.getAllByText("This record already exists");
         expect(errorMessages).toHaveLength(2); // One for taxZoneNo, one for taxZoneType
@@ -317,7 +316,6 @@ describe("TaxZoneForm", () => {
       mockSaveTaxZone.mockResolvedValueOnce({
         ok: false,
         error: "api_error",
-        message: "Server error occurred",
       });
       setup();
 
@@ -333,7 +331,7 @@ describe("TaxZoneForm", () => {
       fireEvent.click(saveButton);
 
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith("Server error occurred");
+        expect(toast.error).toHaveBeenCalledWith("Something went wrong");
       });
     });
   });
