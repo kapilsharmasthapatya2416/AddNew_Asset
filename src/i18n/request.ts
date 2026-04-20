@@ -21,7 +21,7 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
-    import(`./locales/${validatedLocale}/depreciation.json`).then((m) => m.default).catch(() => ({})),
+    import(`./locales/${validatedLocale}/depreciation.json`).then((m) => m.default)
 
   ]);
 

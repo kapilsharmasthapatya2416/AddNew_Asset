@@ -1,34 +1,43 @@
-import React from 'react';
-import { cn } from '@/lib/utils/cn';
+import React, { ReactNode, forwardRef } from "react";
+import { cn } from "@/lib/utils/cn";
+import { useTranslations } from "next-intl";
+import {
+  FirstPageButton,
+  LastPageButton,
+  NextPageButton,
+  PageNumberButton,
+  PrevPageButton,
+} from "./ActionButtons";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'bordered' | 'elevated';
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  variant?: "default" | "bordered" | "elevated";
+  padding?: "none" | "sm" | "md" | "lg";
 }
 
-/**
- * Card component for containing content
- * Provides different variants and padding options
- */
-export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ children, className, variant = 'default', padding = 'md', ...props }, ref) => {
-    const variants = {
-      default: 'bg-white',
-      bordered: 'bg-white border border-gray-200',
-      elevated: 'bg-white shadow-lg',
+export const Card = forwardRef<HTMLDivElement, CardProps & { children: ReactNode }>(
+  ({ children, variant = "default", padding = "md", className = "", ...props }, ref) => {
+    const variantClasses = {
+      default: "bg-white border border-gray-200",
+      bordered: "bg-white border-2 border-gray-300",
+      elevated: "bg-white shadow-lg border border-gray-100",
     };
 
-    const paddings = {
-      none: '',
-      sm: 'p-4',
-      md: 'p-6',
-      lg: 'p-8',
+    const paddingClasses = {
+      none: "",
+      sm: "p-3",
+      md: "p-6",
+      lg: "p-8",
     };
 
     return (
       <div
         ref={ref}
-        className={cn('rounded-lg', variants[variant], paddings[padding], className)}
+        className={cn(
+          "rounded-lg",
+          variantClasses[variant],
+          paddingClasses[padding],
+          className
+        )}
         {...props}
       >
         {children}
@@ -37,41 +46,250 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   }
 );
 
-Card.displayName = 'Card';
+Card.displayName = "Card";
 
-export const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ children, className, ...props }, ref) => {
-    return (
-      <div ref={ref} className={cn('mb-4', className)} {...props}>
-        {children}
-      </div>
-    );
-  }
-);
+/* ---------- Subcomponents ---------- */
 
-CardHeader.displayName = 'CardHeader';
+export const CardHeader = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ children, className = "", ...props }, ref) => (
+  <div ref={ref} className={cn("mb-4", className)} {...props}>
+    {children}
+  </div>
+));
 
-export const CardTitle = React.forwardRef<
+CardHeader.displayName = "CardHeader";
+
+export const CardTitle = forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
->(({ children, className, ...props }, ref) => {
+>(({ children, className = "", ...props }, ref) => (
+  <h3 ref={ref} className={cn("text-xl font-semibold text-gray-900", className)} {...props}>
+    {children}
+  </h3>
+));
+
+CardTitle.displayName = "CardTitle";
+
+export const CardContent = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ children, className = "", ...props }, ref) => (
+  <div ref={ref} className={className} {...props}>
+    {children}
+  </div>
+));
+
+CardContent.displayName = "CardContent";
+
+/* ---------- Card List ---------- */
+
+export interface CardListProps<T> {
+  data: T[];
+  renderCard: (item: T, index: number) => React.ReactNode;
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
+  pageSizeOptions?: number[];
+  emptyText?: string;
+  emptyIcon?: React.ReactNode;
+  maxHeightClassName?: string;
+  className?: string;
+}
+
+export function CardList<T>({
+  data,
+  renderCard,
+  pageNumber,
+  pageSize,
+  totalCount,
+  totalPages,
+  onPageChange,
+  onPageSizeChange,
+  pageSizeOptions,
+  emptyText,
+  emptyIcon,
+  maxHeightClassName = "max-h-[570px]",
+  className,
+}: CardListProps<T>) {
   return (
-    <h3 ref={ref} className={cn('text-xl font-semibold', className)} {...props}>
-      {children}
-    </h3>
-  );
-});
-
-CardTitle.displayName = 'CardTitle';
-
-export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ children, className, ...props }, ref) => {
-    return (
-      <div ref={ref} className={cn('', className)} {...props}>
-        {children}
+    <div className={cn("bg-white border border-[#DCEAFF] rounded-2xl shadow-sm overflow-hidden", className)}>
+      <div className="p-2">
+        <div className={cn("flex flex-wrap -mx-2 overflow-y-auto overflow-x-visible", maxHeightClassName)}>
+          {data.length === 0 ? (
+            <div className="w-full text-center py-8 text-gray-500">
+              {emptyIcon}
+              <p className="text-sm">{emptyText || "No data available"}</p>
+            </div>
+          ) : (
+            data.map((item, index) => renderCard(item, index))
+          )}
+        </div>
       </div>
-    );
-  }
-);
 
-CardContent.displayName = 'CardContent';
+      <CardPagination
+        pageNumber={pageNumber}
+        pageSize={pageSize}
+        totalCount={totalCount}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+        pageSizeOptions={pageSizeOptions}
+        className="border-t border-[#DCEAFF] rounded-none shadow-none"
+      />
+    </div>
+  );
+}
+
+/* ---------- Helpers ---------- */
+
+type PageToken = number | "dots";
+
+function buildPagination(current: number, total: number): PageToken[] {
+  const windowSize = 3;
+  const pages: PageToken[] = [];
+
+  let start = Math.max(1, current - Math.floor(windowSize / 2));
+  const end = Math.min(total, start + windowSize - 1);
+
+  // Shift window left if near the end
+  if (end - start < windowSize - 1) {
+    start = Math.max(1, end - windowSize + 1);
+  }
+
+  // Leading edge
+  if (start > 1) {
+    pages.push(1);
+    if (start > 2) pages.push("dots");
+  }
+
+  // Middle window
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  // Trailing edge
+  if (end < total) {
+    if (end < total - 1) pages.push("dots");
+    pages.push(total);
+  }
+
+  return pages;
+}
+
+/* ---------- Pagination Control ---------- */
+
+export interface CardPaginationProps {
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
+  pageSizeOptions?: number[];
+  className?: string;
+}
+
+export const CardPagination = ({
+  pageNumber,
+  pageSize,
+  totalCount,
+  totalPages,
+  onPageChange,
+  onPageSizeChange,
+  pageSizeOptions = [5, 10, 20, 50],
+  className = "",
+}: CardPaginationProps) => {
+  const t = useTranslations("common");
+
+  const pages = React.useMemo(
+    () => buildPagination(pageNumber, totalPages),
+    [pageNumber, totalPages]
+  );
+
+  return (
+    <div
+      className={cn(
+        "bg-[#F8FAFF] border border-[#DCEAFF] rounded-xl px-4 py-1 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm",
+        className
+      )}
+    >
+      <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+        {(() => {
+          const start = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+          const text = t("table.showingEntries", {
+            start: start,
+            end: "DROPDOWN_PLACEHOLDER",
+            total: totalCount,
+          });
+          const parts = text.split("DROPDOWN_PLACEHOLDER");
+          return (
+            <>
+              {parts[0]}
+              <select
+                value={pageSize}
+                onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
+                disabled={!onPageSizeChange}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed mx-1"
+              >
+                {pageSizeOptions.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+              {parts[1]}
+            </>
+          );
+        })()}
+      </div>
+
+      <div className="flex items-center justify-between md:justify-end gap-2 w-full md:w-auto">
+        <PrevPageButton
+          disabled={pageNumber <= 1}
+          onClick={() => onPageChange(pageNumber - 1)}
+        />
+
+        <span className="md:hidden text-sm font-semibold text-[#1E3A8A]">
+          {t("table.page", { current: pageNumber, total: totalPages })}
+        </span>
+
+        <div className="hidden md:flex items-center gap-1">
+          <FirstPageButton
+            disabled={pageNumber === 1}
+            onClick={() => onPageChange(1)}
+          />
+
+          {pages.map((p, i) =>
+            p === "dots" ? (
+              <span key={`dots-${i}`} className="px-2 text-[#94A3B8]">
+                ...
+              </span>
+            ) : (
+              <PageNumberButton
+                key={`page-${p}-${i}`}
+                page={p as number}
+                active={pageNumber === p}
+                onClick={() => onPageChange(p as number)}
+              />
+            )
+          )}
+
+          <LastPageButton
+            disabled={pageNumber === totalPages}
+            onClick={() => onPageChange(totalPages)}
+          />
+        </div>
+
+        <NextPageButton
+          disabled={pageNumber >= totalPages}
+          onClick={() => onPageChange(pageNumber + 1)}
+        />
+      </div>
+    </div>
+  );
+};

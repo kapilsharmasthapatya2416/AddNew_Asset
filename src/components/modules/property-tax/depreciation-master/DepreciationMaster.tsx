@@ -66,7 +66,7 @@ export default function DepreciationMaster({
   totalPages,
   locale: localeProp,
 }: Readonly<DepreciationMasterProps>): JSX.Element {
-  const t = useTranslations("depreciationMaster");
+  const t = useTranslations("depreciation.depreciationMaster");
   const { confirm } = useConfirm();
   const router = useRouter();
   const pathname = usePathname();

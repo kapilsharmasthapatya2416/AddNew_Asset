@@ -20,7 +20,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const { locale } = await params;
   const resolvedSearchParams = await searchParams;
 
-  // Parse pagination parameters for ranges (default 5 ranges per page)
+
   const pageNumber = Number(resolvedSearchParams?.page) || 1;
   const pageSize = Number(resolvedSearchParams?.pageSize) || 5;
 
@@ -28,7 +28,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const res = await fetchRangesPagedServerAction(pageNumber, pageSize);
   
   if (!res.success || !res.data) {
-    const t = await getTranslations('depreciationMaster.errors');
+    const t = await getTranslations('depreciation.depreciationMaster.errors');
     return <div>{t('load')}</div>;
   }
 
