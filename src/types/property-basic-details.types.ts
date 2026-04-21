@@ -184,9 +184,9 @@ export interface TaxDetailsApiResponse {
 }
 
 export interface PropertyFormViewProps {
-    WingMaster: WingItem[],
-    propertyCategories: PropertyCategoryApiItem[],
-    propertyDescriptions: PropertyTypeApiItem[],
+    WingMaster: WingItem[];
+    propertyCategories: PropertyCategoryApiItem[];
+    propertyDescriptions: PropertyTypeApiItem[];
     propertyData: PropertyBasicDetailsApiItem | null;
     propertySocietyDetails: PropertySocietyDetailsApiItem | null;
     locale: string;

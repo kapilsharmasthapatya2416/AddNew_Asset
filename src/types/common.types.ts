@@ -4,9 +4,7 @@ export interface ApiResponse<T = unknown> {
   error?: string;
   message?: string;
   /** The HTTP status code from the server response; absent for network/timeout errors */
-  statusCode?: number;
-  status?:number;
-  items?:T;
+  status?: number;
 }
 
 export interface PaginatedResponse<T> {

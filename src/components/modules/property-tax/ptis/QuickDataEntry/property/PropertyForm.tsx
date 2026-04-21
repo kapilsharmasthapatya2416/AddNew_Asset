@@ -54,17 +54,21 @@ const PropertyFormView = ({
         if (!formRef.current) return;
         const formData = new FormData(formRef.current);
 
+        const residentialToilets = parseOptionalNumber(formData.get("noOfResidentialToilets"));
+        const commercialToilets = parseOptionalNumber(formData.get("noOfCommercialToilets"));
+        const plotArea = parseOptionalNumber(formData.get("plotArea"));
+
         const isChanged =
-            categoryId !== (propertyData?.categoryId?.toString() ?? '') ||
-            propertyTypeId !== (propertyData?.propertyTypeId?.toString() ?? '') ||
-            wingId !== initialWingId ||
-            String(formData.get("flatOrShopNo") ?? "").trim() !== (propertyData?.flatOrShopNo ?? "") ||
             String(formData.get("plotNo") ?? "").trim() !== (propertyData?.plotNo ?? "") ||
+            String(formData.get("flatOrShopNo") ?? "").trim() !== (propertyData?.flatOrShopNo ?? "") ||
             String(formData.get("surveyNo") ?? "").trim() !== (propertyData?.surveyNo ?? "") ||
             String(formData.get("subZoneNo") ?? "").trim() !== (propertyData?.subZoneNo ?? "") ||
-            (parseOptionalNumber(formData.get("noOfResidentialToilets")) ?? 0) !== (propertyData?.noOfResidentialToilets ?? 0) ||
-            (parseOptionalNumber(formData.get("noOfCommercialToilets")) ?? 0) !== (propertyData?.noOfCommercialToilets ?? 0) ||
-            (parseOptionalNumber(formData.get("plotArea")) ?? 0) !== (propertyData?.plotArea ?? 0);
+            residentialToilets !== (propertyData?.noOfResidentialToilets ?? null) ||
+            commercialToilets !== (propertyData?.noOfCommercialToilets ?? null) ||
+            plotArea !== (propertyData?.plotArea ?? null) ||
+            categoryId !== (propertyData?.categoryId?.toString() ?? '') ||
+            propertyTypeId !== (propertyData?.propertyTypeId?.toString() ?? '') ||
+            wingId !== initialWingId;
 
         setHasChanges(isChanged);
     }, [categoryId, propertyTypeId, wingId, initialWingId, propertyData]);

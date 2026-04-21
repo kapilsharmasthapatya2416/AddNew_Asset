@@ -7,7 +7,9 @@ interface Props {
 }
 
 export async function QuickDataEntryServerLayout({
-    children,   
+    children,
+    locale: _locale,
+    propertyId: _propertyId,
 }: Props) {
 
     return (

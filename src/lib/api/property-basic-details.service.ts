@@ -24,6 +24,7 @@ export async function getPropertyTypes(pageSize: number = 200, searchTerm?: stri
   }
 
   const response = await apiClient.get<PropertyTypeApiResponse>(`/PropertyTypeMaster?${params.toString()}`);
+  console.log("response :", response);
   return handleApiResponse(response, "Failed to fetch property types").items ?? [];
 }
 

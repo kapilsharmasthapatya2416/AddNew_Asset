@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { FileText } from 'lucide-react';
 import { TabNavigation } from "./TabNavigation";
 import { cn } from '@/lib/utils/cn';
-import { Suspense, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 const DRAWER_CLASSNAME = cn(
     "[&_div.fixed.right-0]:!w-[97vw]",
@@ -80,10 +80,8 @@ function QuickDataEntryContent({
 
 export function QuickDataEntryClientWrapper({ children }: { children: ReactNode }) {
     return (
-        <Suspense fallback={null}>
             <QuickDataEntryContent>
                 {children}
             </QuickDataEntryContent>
-        </Suspense>
     );
 }

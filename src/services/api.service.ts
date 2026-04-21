@@ -38,12 +38,14 @@ class ApiClient {
         return {
           success: false,
           error: data.message || 'An error occurred',
+          status: response.status,
         };
       }
 
       return {
         success: true,
         data,
+        status: response.status,
       };
     } catch (error) {
       clearTimeout(timeoutId);

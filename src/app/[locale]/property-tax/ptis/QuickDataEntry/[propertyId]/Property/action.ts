@@ -45,9 +45,7 @@ export async function getPropertyCategoriesAction(): Promise<{ success: boolean;
 // Property Types
 export async function getPropertyTypesAction(search?: string): Promise<{ success: boolean; data: PropertyTypeApiItem[] }> {
     try {
-        const data = await getPropertyTypes(200, search);
-        console.log("data Wing ",data);
-        
+        const data = await getPropertyTypes(200, search);            
         return { success: true, data: data ?? [] };
     } catch (error) {
         console.error("Get property types error:", error);
