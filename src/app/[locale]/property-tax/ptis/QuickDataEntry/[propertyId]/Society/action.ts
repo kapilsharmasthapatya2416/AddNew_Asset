@@ -23,6 +23,6 @@ export async function getPropertySocietyDetailsAction(propertyId: number) {
     return await getPropertySocietyDetails(propertyId);
   } catch (error) {
     console.error('Action error fetching society details:', error);
-    return null;
+    throw error;
   }
 }
