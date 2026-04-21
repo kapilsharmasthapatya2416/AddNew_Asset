@@ -12,6 +12,8 @@
  * - `validateForm(data, schema)` - Generic form validation function
  * - `hasErrors(errors)` - Check if validation errors exist
  * - `validateRequiredStringFromFormData(formData, fieldName)` - Extract and validate required string from FormData
+ * - `getOptionalStringFromFormData(formData, fieldName)` - Safely extract optional string from FormData
+ * - `getBooleanFromFormData(formData, fieldName)` - Safely extract boolean from FormData
  */
 
 export type Validator = (value: unknown) => string | undefined;
@@ -39,13 +41,56 @@ export const validateRequiredStringFromFormData = (
     throw new Error(`Invalid or missing ${fieldName}`);
   }
 
-  return value;
+  return value.trim();
+};
+
+/**
+ * Safely extract an optional string from FormData
+ * Returns trimmed string or empty string if missing/invalid
+ * 
+ * @param formData - The FormData object
+ * @param fieldName - The name of the field to extract
+ * @returns Trimmed string value or empty string
+ * 
+ * @example
+ * const remark = getOptionalStringFromFormData(formData, "remark");
+ */
+export const getOptionalStringFromFormData = (
+  formData: FormData,
+  fieldName: string
+): string => {
+  const value = formData.get(fieldName);
+  
+  if (!value || typeof value !== "string") {
+    return "";
+  }
+  
+  return value.trim();
+};
+
+/**
+ * Safely extract a boolean from FormData
+ * Checks if the field value equals "true" (case-sensitive)
+ * 
+ * @param formData - The FormData object
+ * @param fieldName - The name of the field to extract
+ * @returns Boolean value
+ * 
+ * @example
+ * const isActive = getBooleanFromFormData(formData, "isActive");
+ */
+export const getBooleanFromFormData = (
+  formData: FormData,
+  fieldName: string
+): boolean => {
+  const value = formData.get(fieldName);
+  return typeof value === "string" && value === "true";
 };
 
 /**
  * Generic form validation function
  * 
- * @param data - Form data object
+ * @param data - Plain object with form field values (not FormData)
  * @param schema - Validation schema (field name -> validator function)
  * @returns Object with validation errors (field name -> error message)
  * 
@@ -54,7 +99,7 @@ export const validateRequiredStringFromFormData = (
  *   code: (value) => !value ? "Code is required" : undefined,
  *   description: (value) => !value ? "Description is required" : undefined,
  * };
- * const errors = validateForm(formData, schema);
+ * const errors = validateForm({ code: "ABC", description: "" }, schema);
  */
 export const validateForm = (
   data: unknown,

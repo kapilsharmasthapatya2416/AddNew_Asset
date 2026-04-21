@@ -4,7 +4,7 @@
 import { revalidatePath } from "next/cache";
 import { createTaxZone, updateTaxZone, deleteTaxZone, getTaxZonePagedServer, getTaxZoneById, ApiError } from "@/lib/api/taxzone.services";
 import type { PagedResponse, TaxZone } from "@/types/taxzone.types";
-import { validateRequiredStringFromFormData } from "@/lib/utils/validation-helpers";
+import { validateRequiredStringFromFormData, getOptionalStringFromFormData, getBooleanFromFormData } from "@/lib/utils/validation-helpers";
 
 export async function getTaxZonePagedAction(
   pageNumber: number,
@@ -34,21 +34,32 @@ export async function deleteTaxZoneAction(formData: FormData) {
 }
 
 export async function saveTaxZone(id: string, formData: FormData) {
-  // ✅ Use generic reusable validator with error handling
+  // ✅ Use generic reusable validators with proper type checking and trimming
   let locale: string;
+  let taxZoneNo: string;
+  let taxZoneType: string;
+  
   try {
     locale = validateRequiredStringFromFormData(formData, "locale");
   } catch {
-    return {
-      ok: false,
-      error: "invalid_locale",
-    };
+    return { ok: false, error: "invalid_locale" };
   }
   
-  const taxZoneNo = (formData.get("taxZoneNo") as string) || "";
-  const taxZoneType = (formData.get("taxZoneType") as string) || "";
-  const remark = (formData.get("remark") as string) || "";
-  const isActive = (formData.get("isActive") as string) === "true";
+  try {
+    taxZoneNo = validateRequiredStringFromFormData(formData, "taxZoneNo");
+  } catch {
+    return { ok: false, error: "invalid_taxZoneNo" };
+  }
+  
+  try {
+    taxZoneType = validateRequiredStringFromFormData(formData, "taxZoneType");
+  } catch {
+    return { ok: false, error: "invalid_taxZoneType" };
+  }
+  
+  // ✅ Optional fields - safely extract with type checking
+  const remark = getOptionalStringFromFormData(formData, "remark");
+  const isActive = getBooleanFromFormData(formData, "isActive");
   
   // ✅ Validate id parameter - must be empty or a valid number
   let numericId: number | undefined = undefined;

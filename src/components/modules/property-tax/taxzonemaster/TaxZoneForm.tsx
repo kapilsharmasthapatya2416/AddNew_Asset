@@ -228,13 +228,15 @@ export default function TaxZoneForm({ initialData }: TaxZoneFormProps) {
       }
     >
       <form id="form" onSubmit={handleSubmit} className="space-y-6 bg-[#F8FAFF] p-5">
-        <StatusToggleCard
-          isActive={formData.isActive}
-          onToggle={handleToggleStatus}
-          activeLabel={t("form.status.active")}
-          inactiveLabel={t("form.status.inactive")}
-          statusLabel={t("form.status.label")}
-        />
+        {isEdit && (
+          <StatusToggleCard
+            isActive={formData.isActive}
+            onToggle={handleToggleStatus}
+            activeLabel={t("form.status.active")}
+            inactiveLabel={t("form.status.inactive")}
+            statusLabel={t("form.status.label")}
+          />
+        )}
 
         <FormFieldsSection
           formData={formData}
