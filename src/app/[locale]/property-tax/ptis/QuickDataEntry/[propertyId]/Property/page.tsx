@@ -44,6 +44,7 @@ export default async function PropertyFormPage({ params }: PageProps): Promise<R
     const propertySocietyDetails = propertySociety;
     const WingMasterList = WingMaster.success ? WingMaster.data : [];
 
+
     return (
         <PropertyFormView
             WingMaster={WingMasterList}

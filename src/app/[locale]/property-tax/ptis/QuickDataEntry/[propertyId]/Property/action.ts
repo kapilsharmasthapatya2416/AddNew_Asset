@@ -22,11 +22,12 @@ import { revalidatePath } from "next/cache";
 // Property Basic Details
 export async function getPropertyBasicDetailsAction(propertyId: number): Promise<{ success: boolean; data: PropertyBasicDetailsApiItem | null }> {
     try {
-        const data = await getPropertyBasicDetails(propertyId);
+        const data = await getPropertyBasicDetails(propertyId);       
+        
         return { success: true, data };
     } catch (error) {
         console.error("Get property basic details error:", error);
-        return { success: false, data: null };
+        throw error;
     }
 }
 
@@ -45,6 +46,8 @@ export async function getPropertyCategoriesAction(): Promise<{ success: boolean;
 export async function getPropertyTypesAction(search?: string): Promise<{ success: boolean; data: PropertyTypeApiItem[] }> {
     try {
         const data = await getPropertyTypes(200, search);
+        console.log("data Wing ",data);
+        
         return { success: true, data: data ?? [] };
     } catch (error) {
         console.error("Get property types error:", error);

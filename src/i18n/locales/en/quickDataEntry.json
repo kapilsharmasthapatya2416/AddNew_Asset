@@ -268,7 +268,11 @@
         "updateConfirmButton": "Yes, Update",
         "updateSuccess": "Property basic details updated successfully",
         "updateError": "An error occurred during update.",
-        "updateButton": "Update"
+        "updateButton": "Update",
+        "loading": {
+            "message": "Loading property...",
+            "description": "Please wait while we fetch the tax property data"
+        }
     },
     "kyc": {
         "title": "Owner & Contact Information",
@@ -342,6 +346,10 @@
             "secretaryEmail": "Invalid Secretary Email address format.",
             "managerMobile": "Manager Mobile Number must be 10 digits.",
             "secretaryMobile": "Secretary Mobile Number must be 10 digits."
+        },
+        "loading": {
+            "message": "Loading society...",
+            "description": "Please wait while we fetch the society data"
         }
     },
     "building": {

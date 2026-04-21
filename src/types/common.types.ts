@@ -3,6 +3,10 @@ export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
   message?: string;
+  /** The HTTP status code from the server response; absent for network/timeout errors */
+  statusCode?: number;
+  status?:number;
+  items?:T;
 }
 
 export interface PaginatedResponse<T> {
@@ -64,8 +68,6 @@ export interface CheckboxProps extends Omit<
   onCheckedChange?: (checked: boolean) => void;
   value?: string;
 }
-
-
 
 export interface RadioGroupProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
