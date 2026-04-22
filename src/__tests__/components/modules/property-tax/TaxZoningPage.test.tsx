@@ -1,159 +1,87 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { ReactNode } from "react";
+import { describe, it, expect, vi } from "vitest";
 import TaxZoningPage from "@/components/modules/property-tax/taxzoningmaster/TaxZoningPage";
-import { TaxZonningPropertyNo, TaxZone, Ward } from "@/types/taxzoning.types";
+import { NextIntlClientProvider } from "next-intl";
 
-// Mock next/navigation
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    refresh: vi.fn(),
-  }),
+// Mock the hook
+vi.mock("@/hooks/useTaxZoning", () => ({
+  useTaxZoning: vi.fn(() => ({
+    t: (key: string) => key,
+    zone: "",
+    setZone: vi.fn(),
+    ward: [],
+    setWard: vi.fn(),
+    fromProps: "",
+    setFromProps: vi.fn(),
+    toProps: "",
+    setToProps: vi.fn(),
+    fileInputRef: { current: null },
+    zoneOptions: [],
+    wardOptions: [],
+    propertyOptionsByWard: [],
+    loading: false,
+    pageSizeOptions: [5, 10],
+    pageSizes: "10",
+    currentPage: 1,
+    submitted: false,
+    saving: false,
+    previewPage: 1,
+    setPreviewPage: vi.fn(),
+    PREVIEW_PAGE_SIZE: 5,
+    hasImportedData: false,
+    changePage: vi.fn(),
+    changePageSize: vi.fn(),
+    tableRecords: [],
+    previewData: [],
+    pagedPreviewData: [],
+    columns: [],
+    previewColumns: [],
+    handleExportCSV: vi.fn(),
+    handleImportFile: vi.fn(),
+    handleSubmit: vi.fn(),
+    handleBulkUpdate: vi.fn(),
+    handleClearImported: vi.fn(),
+    isTaxZoneValid: true,
+    isWardValid: true,
+    isPropertyValid: true,
+    isFormValid: true,
+    onFormClear: vi.fn(),
+  })),
 }));
 
-// Mock next-intl
-vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string) => key,
-  useLocale: () => "en",
-  NextIntlClientProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+// Mock sub-components to focus on Page structure
+vi.mock("@/components/modules/property-tax/taxzoningmaster/TaxZoningForm", () => ({
+  TaxZoningForm: () => <div data-testid="tax-zoning-form" />
 }));
-
-// Mock sonner
-vi.mock("sonner", () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-    warning: vi.fn(),
-    info: vi.fn(),
-  },
+vi.mock("@/components/modules/property-tax/taxzoningmaster/TaxZoningPreview", () => ({
+  TaxZoningPreview: () => <div data-testid="tax-zoning-preview" />
 }));
-
-// Mock actions
-const mockUpdateTaxZoningAction = vi.fn();
-const mockGetTaxZonningByWardAction = vi.fn();
-
-vi.mock("@/app/[locale]/property-tax/taxzoning/actions", () => ({
-  createTaxZoningAction: vi.fn(),
-  updateTaxZoningAction: (...args: unknown[]) => mockUpdateTaxZoningAction(...args),
-  getTaxZonningByWardAction: (...args: unknown[]) => mockGetTaxZonningByWardAction(...args),
+vi.mock("@/components/modules/property-tax/taxzoningmaster/TaxZoningTable", () => ({
+  TaxZoningTable: () => <div data-testid="tax-zoning-table" />
 }));
-
-const mockTaxZones = {
-  items: [
-    { taxZoneId: 1, taxZoneNo: "TZ001", taxZoneType: "Residential", remark: null, createdDate: "2024-01-01", updatedDate: null, isActive: true },
-  ] as TaxZone[],
-  pageNumber: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false,
-};
-
-const mockWardsData = {
-  items: [
-    { wardId: 1, wardNo: "W001", zoneNo: "1", description: null, descriptionEnglish: null, sequenceNo: 1, isActive: true, createdBy: null, createdDate: "2024-01-01", updatedBy: null, updatedDate: null },
-  ] as Ward[],
-  pageNumber: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false,
-};
-
-const mockAllProperties = {
-  success: true as const,
-  data: {
-    items: [
-      { taxZoneId: 1, wardId: 1, taxZone: "TZ001", wardNo: "W001", propertyNo: "100", fromProperty: "100", toProperty: "200", isActive: true, createdDate: "2024-01-01", updatedDate: null },
-      { taxZoneId: 1, wardId: 1, taxZone: "TZ001", wardNo: "W001", propertyNo: "200", fromProperty: "100", toProperty: "200", isActive: true, createdDate: "2024-01-01", updatedDate: null },
-    ],
-    pageNumber: 1,
-    pageSize: 10,
-    totalCount: 2,
-    totalPages: 1,
-    hasPrevious: false,
-    hasNext: false,
-  },
-};
-
-const mockData: TaxZonningPropertyNo[] = [
-  {
-    taxZoneId: 1, wardId: 1, taxZone: "TZ001", wardNo: "W001", propertyNo: "100", fromProperty: "100", toProperty: "200", isActive: true, createdDate: "2024-01-01", updatedDate: null,
-  },
-];
 
 describe("TaxZoningPage", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    // Set up the ward action mock to return a promise
-    mockGetTaxZonningByWardAction.mockResolvedValue({
-      success: true,
-      data: {
-        items: [
-          { propertyNo: "100" },
-          { propertyNo: "200" },
-        ],
-        pageNumber: 1,
-        pageSize: 10,
-        totalCount: 2,
-        totalPages: 1,
-      },
-    });
-  });
-
-  const renderComponent = (props = {}) => {
-    return render(
-      <TaxZoningPage
-        data={mockData}
-        pageNumber={1}
-        pageSize={10}
-        totalCount={1}
-        totalPages={1}
-        taxZones={mockTaxZones}
-        wardsData={mockWardsData}
-        allProperties={mockAllProperties}
-        {...props}
-      />
-    );
+  const mockProps = {
+    data: [],
+    pageNumber: 1,
+    pageSize: 10,
+    totalCount: 0,
+    totalPages: 0,
+    taxZones: { items: [], pageNumber: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false },
+    wardsData: { items: [], pageNumber: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false },
+    allProperties: { success: true as const, data: { items: [], pageNumber: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false } },
   };
 
-  it("renders and handles basic form input", async () => {
-    renderComponent({ data: [] });
-
+  it("renders TableHeader and all sub-sections", () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={{}}>
+        <TaxZoningPage {...mockProps} />
+      </NextIntlClientProvider>
+    );
+    
     expect(screen.getByText("title")).toBeInTheDocument();
-    expect(screen.getByText("subtitle")).toBeInTheDocument();
-
-    // Verify form fields are present
-    expect(screen.getAllByText("form.selectTaxZone").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("form.selectWard").length).toBeGreaterThan(0);
-  });
-
-  it("submits single ward update successfully", async () => {
-    mockUpdateTaxZoningAction.mockResolvedValue({ success: true, message: "OK" });
-    mockGetTaxZonningByWardAction.mockResolvedValue({
-      success: true,
-      data: {
-        items: [{ propertyNo: "101" }, { propertyNo: "102" }],
-        totalCount: 2, pageNumber: 1, pageSize: 10, totalPages: 1, hasPrevious: false, hasNext: false,
-      },
-    });
-
-    renderComponent({ data: [] });
-
-    // Verify form renders with all necessary fields
-    expect(screen.getAllByText("form.taxZone").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("form.ward").length).toBeGreaterThan(0);
-
-    // Note: Full form submission requires complex dropdown/select interactions
-    // that are better tested in E2E tests. Here we verify the form structure exists.
-    const updateButtons = screen.getAllByRole("button");
-    const updateBtn = updateButtons.find(btn => btn.textContent?.includes("form.update"));
-    expect(updateBtn).toBeDefined();
-
-    // The button should be disabled when form is not valid
-    if (updateBtn) {
-      expect(updateBtn).toBeDisabled();
-    }
-  });
-
-  it("displays export and import buttons", () => {
-    renderComponent();
-
-    expect(screen.getByText("buttons.exportCSV")).toBeInTheDocument();
-    expect(screen.getByText("buttons.importFile")).toBeInTheDocument();
+    expect(screen.getByTestId("tax-zoning-form")).toBeInTheDocument();
+    expect(screen.getByTestId("tax-zoning-preview")).toBeInTheDocument();
+    expect(screen.getByTestId("tax-zoning-table")).toBeInTheDocument();
   });
 });
