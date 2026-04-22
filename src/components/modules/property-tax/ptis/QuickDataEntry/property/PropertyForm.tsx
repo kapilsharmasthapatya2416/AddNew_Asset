@@ -131,8 +131,6 @@ const PropertyFormView = ({
         const formData = new FormData(e.currentTarget);
         const pId = propertyData.propertyId;
 
-        // const selectedWingIdValue = String(formData.get("wingId") ?? "").trim();
-        // const selectedWingId = selectedWingIdValue ? Number(selectedWingIdValue) : null;
         const selectedWingId = parseId(wingId);
         const selectedWing = wingList.find((wing) => wing.id === selectedWingId);
 
@@ -154,8 +152,6 @@ const PropertyFormView = ({
             surveyNo: String(formData.get("surveyNo") ?? "").trim() || null,
             upicId: String(formData.get("upicId") ?? "").trim() || null,
             subZoneNo: String(formData.get("subZoneNo") ?? "").trim() || null,
-
-            // wingNo: String(formData.get("wingName") ?? "").trim() || null,
 
             noOfResidentialToilets: parseOptionalNumber(formData.get("noOfResidentialToilets")),
             noOfCommercialToilets: parseOptionalNumber(formData.get("noOfCommercialToilets")),

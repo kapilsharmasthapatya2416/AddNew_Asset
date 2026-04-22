@@ -3,7 +3,7 @@ import { AddButton, Input, Tabs } from "@/components/common"
 import { Label } from "@/components/common/label"
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import {    
+import {
     SocietyFormProps,
     UpdatePropertySocietyDetailsDto
 } from "@/types/property-society-details.types";
@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { useConfirm } from "@/components/common/ConfirmProvider";
 
 import { societyValidations, validateForm, hasErrors } from "@/lib/utils/validation";
-import { useEffect, useRef, useCallback ,useState} from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 
 const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps) => {
 
@@ -307,6 +307,7 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
                                             <Input
                                                 key={i}
                                                 id={i === 0 ? 'manager-mobile-0' : undefined}
+                                                aria-label={`Manager mobile number digit ${i + 1} of 10`}
                                                 type="text"
                                                 maxLength={1}
                                                 inputMode="numeric"
@@ -385,14 +386,15 @@ const SocietyForm = ({ societyData, propertyIdSearch, locale }: SocietyFormProps
                                         {Array.from({ length: 10 }).map((_, i) => (
                                             <Input
                                                 key={i}
-                                                id={i === 0 ? "secretary-mobile-0" : undefined}
+                                                id={`secretary-mobile-${i}`}
+                                                aria-label={`Secretary mobile digit ${i + 1} of 10`}
                                                 type="text"
                                                 maxLength={1}
                                                 inputMode="numeric"
                                                 pattern="[0-9]"
                                                 value={secretaryMobileDigits[i]}
                                                 onChange={(e) => {
-                                                      const val = e.target.value.replace(/\D/g, "").slice(0, 1);
+                                                    const val = e.target.value.replace(/\D/g, "").slice(0, 1);
                                                     setSecretaryMobileDigits(prev => {
                                                         const next = [...prev];
                                                         next[i] = val;

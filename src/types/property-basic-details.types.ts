@@ -46,7 +46,7 @@ export interface PropertyTypeApiResponse {
     hasNext: boolean;
 }
 
-// Represents an owner type item from OwnerType API. Endpoint: GET /api/OwnerType
+// Represents a property category item from PropertyCategory API. Endpoint: GET /api/PropertyCategory
 export interface PropertyCategoryApiItem {
     id: number;
     propertyCategoryName: string;

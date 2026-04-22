@@ -11,6 +11,11 @@ const TABS: Tab[] = [
     { label: 'Society', href: 'Society', icon: Building2 },
 ];
 
+const TAB_GRADIENT_CLASSES: Record<string, string> = {
+    Property: 'from-blue-500 to-blue-600 border-blue-700',
+    Society: 'from-purple-500 to-purple-600 border-purple-700',
+};
+
 export function TabNavigation() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -46,32 +51,8 @@ export function TabNavigation() {
                     const isActive = activeSegment === tab.href || pathname === tabPath;
                     const Icon = tab.icon;
 
-                    let gradientClass = '';
-                    switch (tab.href) {
-                        case 'Property':
-                            gradientClass = 'from-blue-500 to-blue-600 border-blue-700';
-                            break;
-                        case 'Kyc':
-                            gradientClass = 'from-green-500 to-green-600 border-green-700';
-                            break;
-                        case 'Society':
-                            gradientClass = 'from-purple-500 to-purple-600 border-purple-700';
-                            break;
-                        case 'Building':
-                            gradientClass = 'from-orange-500 to-orange-600 border-orange-700';
-                            break;
-                        case 'FloorSubmission':
-                            gradientClass = 'from-indigo-500 to-indigo-600 border-indigo-700';
-                            break;
-                        case 'Discount':
-                            gradientClass = 'from-cyan-500 to-cyan-600 border-cyan-700';
-                            break;
-                        case 'OldDetails':
-                            gradientClass = 'from-slate-500 to-slate-600 border-slate-700';
-                            break;
-                        default:
-                            gradientClass = 'from-gray-500 to-gray-600 border-gray-700';
-                    }
+                    const gradientClass =
+                        TAB_GRADIENT_CLASSES[tab.href] ?? 'from-gray-500 to-gray-600 border-gray-700';
 
                     return (
                         <Link

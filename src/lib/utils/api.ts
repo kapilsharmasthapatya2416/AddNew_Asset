@@ -24,7 +24,7 @@ export class ApiError extends Error {
  * Validates API response and throws ApiError if unsuccessful
  */
 export function handleApiResponse<T>(response: ApiResponse<T>, message: string): T {
-  if (!response.success || !response.data) {
+  if (!response.success || response.data === undefined || response.data === null) {
     throw new ApiError(
       response.status || 500,
       response.error || "Unknown error",
