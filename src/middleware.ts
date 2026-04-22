@@ -38,18 +38,39 @@ export default function middleware(request: NextRequest) {
   const isLoginRoute =
     pathWithoutLocale === '/login' || pathWithoutLocale.startsWith('/login/');
 
+  // Create modified request with pathname header for server components
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', pathname);
+
   if (isLoginRoute) {
     if (hasFullSession(request)) {
       return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
     }
-    return intlMiddleware(request);
   }
 
-  if (!hasFullSession(request)) {
+  if (!isLoginRoute && !hasFullSession(request)) {
     return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
 
-  return intlMiddleware(request);
+  // Use intl middleware for locale handling
+  const intlResponse = intlMiddleware(request);
+  
+  // Create a new response that passes our custom header to the request
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
+  // Copy headers and cookies from intl middleware response
+  intlResponse.headers.forEach((value, key) => {
+    response.headers.set(key, value);
+  });
+  intlResponse.cookies.getAll().forEach((cookie) => {
+    response.cookies.set(cookie.name, cookie.value);
+  });
+
+  return response;
 }
 
 export const config = {

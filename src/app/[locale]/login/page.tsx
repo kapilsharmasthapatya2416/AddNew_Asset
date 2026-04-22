@@ -60,7 +60,7 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-cyan-50/80 to-blue-100 px-4 py-10">
+    <div className="fixed inset-0 z-50 flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-cyan-100 to-blue-100 px-4 py-10">
       <LoginForm
         key={`${locale}-${username}`}
         username={username}
