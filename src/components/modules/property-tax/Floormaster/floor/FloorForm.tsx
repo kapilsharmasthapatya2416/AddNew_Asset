@@ -9,7 +9,6 @@ import { Drawer } from '@/components/common/Drawer';
 import {
   CancelButton,
   SaveButton,
-  MandatoryFieldsNotice,
 } from '@/components/common';
 
 import {
@@ -20,8 +19,9 @@ import {
 import { FloorFormModel, Floor } from '@/types/floor.types';
 import { FloorFormFields } from './FloorFormFields';
 import type React from 'react';
-import { getApiErrorMessage } from '@/lib/utils/form-errors';
+import { getApiErrorMessage } from '../form-errors';
 import { StatusToggleField } from '../StatusToggleField';
+import { MandatoryFieldsNotice } from '../MandatoryFieldsNotice';
 import {
   validateFloorForm,
   sanitizeFloorCode,

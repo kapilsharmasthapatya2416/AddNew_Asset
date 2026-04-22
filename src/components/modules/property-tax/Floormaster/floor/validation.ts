@@ -16,7 +16,8 @@ export const FLOOR_CODE_MAX = 7;
 export const DESCRIPTION_MAX = 100;
 
 /* ================= TYPES ================= */
-type TranslateFunction = (key: string, params?: Record<string, unknown>) => string;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TranslateFunction = (key: string, params?: Record<string, any>) => string;
 
 /* ================= VALIDATION ================= */
 export function validateFloorForm(

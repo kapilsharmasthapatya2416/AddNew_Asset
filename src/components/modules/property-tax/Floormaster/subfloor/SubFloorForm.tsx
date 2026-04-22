@@ -7,7 +7,7 @@ import { Layers } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Drawer } from '@/components/common/Drawer';
-import { CancelButton, SaveButton, MandatoryFieldsNotice } from '@/components/common';
+import { CancelButton, SaveButton } from '@/components/common';
 
 import {
   createSubFloorAction,
@@ -17,9 +17,10 @@ import {
 import { SubFloorFormModel, SubFloor } from '@/types/floor.types';
 import { SubFloorFormFields } from './SubFloorFormFields';
 import { StatusToggleField } from '../StatusToggleField';
+import { MandatoryFieldsNotice } from '../MandatoryFieldsNotice';
 
 import type React from 'react';
-import { getApiErrorMessage } from '@/lib/utils/form-errors';
+import { getApiErrorMessage } from '../form-errors';
 import {
   validateSubFloorForm,
   sanitizeSubFloorCode,
