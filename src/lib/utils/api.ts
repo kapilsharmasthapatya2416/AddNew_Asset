@@ -19,7 +19,6 @@ export class ApiError extends Error {
     }
   }
 }
-
 /**
  * Validates API response and throws ApiError if unsuccessful
  */

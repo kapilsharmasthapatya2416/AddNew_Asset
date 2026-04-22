@@ -30,7 +30,7 @@ export default getRequestConfig(async ({ locale }) => {
       common: commonMessages,
       dashboard: dashboardMessages,
       modules: modulesMessages,
-      quickDataEntry: quickDataEntryMessages,
+      quickDataEntry: quickDataEntryMessages,      
     },
   };
 });
