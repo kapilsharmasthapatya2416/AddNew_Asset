@@ -17,7 +17,7 @@ export default getRequestConfig(async ({ locale }) => {
   const validatedLocale = validateLocale(locale);
 
   // Load all translation files
-  const [commonMessages, dashboardMessages, constructionMessages,quickDataEntryMessages, modulesMessages] = await Promise.all([
+  const [commonMessages, dashboardMessages, constructionMessages, modulesMessages,quickDataEntryMessages] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/construction.json`).then((m) => m.default),
