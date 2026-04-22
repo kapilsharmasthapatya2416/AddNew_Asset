@@ -304,13 +304,13 @@ describe('floor.services — getSubFloorPaged', () => {
     await expect(getSubFloorPaged(1, 10)).rejects.toThrow();
   });
 
-  it('throws when item has invalid subFloorId', async () => {
+  it('throws when item has invalid id', async () => {
     mockGet.mockResolvedValue({
       success: true,
-      data: makePagedRaw([{ ...makeSubFloorItem(), subFloorId: 0 }]),
+      data: makePagedRaw([{ ...makeSubFloorItem(), id: 0 }]),
     });
 
-    await expect(getSubFloorPaged(1, 10)).rejects.toThrow('Invalid subFloorId');
+    await expect(getSubFloorPaged(1, 10)).rejects.toThrow('Invalid id');
   });
 
   it('throws when item has missing subFloorCode', async () => {
@@ -331,7 +331,7 @@ describe('floor.services — getSubFloorById', () => {
 
     const result = await getSubFloorById(1);
 
-    expect(result.subFloorId).toBe(1);
+    expect(result.id).toBe(1);
     expect(result.subFloorCode).toBe('B1');
   });
 

@@ -76,7 +76,7 @@ const messages = {
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 const existingFloor: Floor = {
-  floorId: 10,
+  id: 10,
   floorCode: 'GF',
   description: 'Ground Floor',
   sequenceNo: 1,
@@ -88,7 +88,7 @@ const existingFloor: Floor = {
 function renderAdd() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <FloorForm floorId={null} />
+      <FloorForm id={null} />
     </NextIntlClientProvider>
   );
 }
@@ -96,7 +96,7 @@ function renderAdd() {
 function renderEdit(floor: Floor = existingFloor) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <FloorForm floorId={floor.floorId} initialData={floor} />
+      <FloorForm id={floor.id} initialData={floor} />
     </NextIntlClientProvider>
   );
 }
@@ -218,7 +218,7 @@ describe('FloorForm — Edit Mode', () => {
 
     await waitFor(() => {
       expect(updateFloorAction).toHaveBeenCalledWith(
-        expect.objectContaining({ floorId: 10, floorCode: 'GF' })
+        expect.objectContaining({ id: 10, floorCode: 'GF' })
       );
     });
   });

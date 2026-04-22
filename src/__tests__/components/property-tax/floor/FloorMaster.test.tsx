@@ -71,7 +71,7 @@ const messages = {
 const makePagedResponse = (overrides?: Partial<FloorPagedResponse>): FloorPagedResponse => ({
   items: [
     {
-      floorId: 1,
+      id: 1,
       floorCode: 'GF',
       description: 'Ground Floor',
       sequenceNo: 1,
@@ -80,7 +80,7 @@ const makePagedResponse = (overrides?: Partial<FloorPagedResponse>): FloorPagedR
       updatedDate: null,
     },
     {
-      floorId: 2,
+      id: 2,
       floorCode: 'FF',
       description: 'First Floor',
       sequenceNo: 2,
@@ -165,7 +165,7 @@ describe('FloorMaster', () => {
     setup({
       items: [
         {
-          floorId: 1,
+          id: 1,
           floorCode: 'GF',
           description: 'Ground Floor',
           sequenceNo: 1,
