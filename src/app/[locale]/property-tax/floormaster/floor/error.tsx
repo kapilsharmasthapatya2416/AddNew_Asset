@@ -12,7 +12,7 @@ export default function FloorError({ error, reset }: ErrorProps) {
     <ErrorPage
       error={error}
       reset={reset}
-      translationNamespace="floor.error"
+      translationNamespace="floor.floor.error"
     />
   );
 }

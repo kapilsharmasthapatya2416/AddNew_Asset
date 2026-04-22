@@ -12,7 +12,7 @@ export default function AddSubFloorError({ error, reset }: ErrorProps) {
     <ErrorPage
       error={error}
       reset={reset}
-      translationNamespace="subfloor.error"
+      translationNamespace="floor.subfloor.error"
     />
   );
 }
