@@ -3,7 +3,7 @@ import { LoadingPage } from '@/components/common';
 export default function AddFloorLoading() {
   return (
     <LoadingPage
-      translationNamespace="floor.loading"
+      translationNamespace="common.loading"
     />
   );
 }

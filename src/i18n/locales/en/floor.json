@@ -1,5 +1,16 @@
 {
   "floor": {
+    "loading": {
+      "message": "Loading floor data...",
+      "description": "Please wait while we load the floor information"
+    },
+    "error": {
+      "title": "Failed to load floor data",
+      "description": "We encountered an error while loading floor information. Please try again.",
+      "errorId": "Error ID: {id}",
+      "goHome": "Go Home",
+      "tryAgain": "Try Again"
+    },
     "floor": "Floor",
     "title": "Floor Master Management",
     "delete": {
@@ -111,6 +122,17 @@
     }
   },
   "subfloor": {
+    "loading": {
+      "message": "Loading sub-floor data...",
+      "description": "Please wait while we load the sub-floor information"
+    },
+    "error": {
+      "title": "Failed to load sub-floor data",
+      "description": "We encountered an error while loading sub-floor information. Please try again.",
+      "errorId": "Error ID: {id}",
+      "goHome": "Go Home",
+      "tryAgain": "Try Again"
+    },
     "delete": {
       "confirmTitle": "Delete Sub-Floor",
       "confirmDescription": "Are you sure you want to delete this sub-floor? This action cannot be undone."
