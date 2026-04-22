@@ -76,9 +76,9 @@ export interface AuthLoginApiBody {
   refreshToken?: string;
   userId?: number;
   username?: string;
-  name?: string | null;
-  userRoleId?: number;
-  userRole?: string | null;
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
   message?: string;
   expiresAt?: string;
   requiresPasswordChange?: boolean;

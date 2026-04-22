@@ -38,6 +38,14 @@ function isRedirectError(e: unknown): boolean {
   );
 }
 
+function userDisplayNameFromAuth(auth: AuthLoginApiBody, formUsername: string): string {
+  const parts = [auth.firstName, auth.middleName, auth.lastName]
+    .map((p) => (typeof p === 'string' ? p.trim() : ''))
+    .filter(Boolean);
+  if (parts.length > 0) return parts.join(' ');
+  return (auth.username ?? '').trim() || formUsername.trim();
+}
+
 function mapUlbConfigApiToMaster(raw: UlbConfigApiBody): UlbMaster {
   return {
     id: raw.ulbId,
@@ -85,8 +93,7 @@ async function completeLoginSession(
   cookieStore.set('session_id', sessionId, COOKIE_OPTIONS);
   cookieStore.set('is_logged_in', 'true', { ...COOKIE_OPTIONS, httpOnly: false });
 
-  const displayName =
-    (auth.name ?? '').trim() || (auth.username ?? '').trim() || formUsername.trim();
+  const displayName = userDisplayNameFromAuth(auth, formUsername);
   cookieStore.set('user_name', displayName, { ...COOKIE_OPTIONS, httpOnly: false });
 
   const uid = auth.userId;
@@ -227,7 +234,6 @@ export async function fetchLoginBrandingAction(): Promise<{ ulbData: UlbMaster |
     return { ulbData: undefined };
   }
 }
-
 export type LoginCredentialsFormState = { message: string; resetKey: string } | null;
 
 export async function loginCredentialsFormAction(
@@ -245,3 +251,4 @@ export async function loginCredentialsFormAction(
   }
   return { message: 'LOGIN_FAILED', resetKey: crypto.randomUUID() };
 }
+
