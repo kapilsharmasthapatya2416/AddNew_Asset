@@ -11,8 +11,8 @@ vi.mock('@/services/api.service', () => ({
 }));
 
 import { apiClient } from '@/services/api.service';
+import { ApiError } from '@/lib/utils/api';
 import {
-  ApiError,
   getFloorPaged,
   getFloorById,
   createFloor,

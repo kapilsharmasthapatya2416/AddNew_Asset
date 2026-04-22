@@ -47,7 +47,7 @@ function isPrimitive(val: unknown): val is string | number | boolean | null | un
 export interface Column<T extends Record<string, unknown> = Record<string, unknown>> {
   key: keyof T;
 
-  label: string;
+  label: string | React.ReactNode;
 
   width?: string;
 
@@ -299,9 +299,9 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
     xxl: 'max-h-[800px]',
   };
 
-  const bodyHeightClass = height 
-    ? HEIGHT_CLASSES[height] 
-    : (maxBodyHeightClassName || 'max-h-[calc(100vh-260px)]');
+  const bodyHeightClass = height
+    ? HEIGHT_CLASSES[height]
+    : maxBodyHeightClassName || 'max-h-[calc(100vh-260px)]';
 
   // Determine effective pagination settings
 
