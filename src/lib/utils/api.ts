@@ -1,5 +1,3 @@
-import { ApiResponse } from "@/types/common.types";
-
 /**
  * Custom error class for API errors with structured information
  */
@@ -18,29 +16,4 @@ export class ApiError extends Error {
       Error.captureStackTrace(this, ApiError);
     }
   }
-}
-
-/**
- * Validates API response and throws ApiError if unsuccessful
- */
-export function handleApiResponse<T>(response: ApiResponse<T>, message: string): T {
-  if (!response.success || response.data === undefined || response.data === null) {
-    throw new ApiError(
-      response.status || 500,
-      response.error || "Unknown error",
-      message
-    );
-  }
-
-  // Check for inner API success flag if present (as seen in some endpoints)
-  const data = response.data as Record<string, unknown>;
-  if (data && typeof data === 'object' && 'success' in data && data['success'] === false) {
-    throw new ApiError(
-      response.status || 500,
-      String(data['message'] || data['error'] || "API execution failed"),
-      message
-    );
-  }
-
-  return response.data;
 }
