@@ -38,10 +38,6 @@ export default function middleware(request: NextRequest) {
   const isLoginRoute =
     pathWithoutLocale === '/login' || pathWithoutLocale.startsWith('/login/');
 
-  // Create modified request with pathname header for server components
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-pathname', pathname);
-
   if (isLoginRoute) {
     if (hasFullSession(request)) {
       return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
@@ -59,15 +55,10 @@ export default function middleware(request: NextRequest) {
   const intlDidRedirectOrRewrite =
     intlResponse.headers.has('location') || intlResponse.headers.has('x-middleware-rewrite');
   if (intlDidRedirectOrRewrite) {
-    intlResponse.headers.set('x-pathname', pathname);
     return intlResponse;
   }
 
-  const response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  const response = NextResponse.next();
 
   intlResponse.headers.forEach((value, key) => {
     response.headers.set(key, value);
