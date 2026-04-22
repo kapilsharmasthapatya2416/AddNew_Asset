@@ -110,6 +110,14 @@
       "show": "Show",
       "entries": "entries",
       "recordCount": "record(s)"
+    },
+    "loading": {
+      "message": "Loading Tax Zoning...",
+      "description": "Please wait while we fetch the zoning configurations and property data."
+    },
+    "error": {
+      "title": "Tax Zoning Error",
+      "description": "We encountered an error while loading the tax zoning page. Please try refreshing or contact support if the issue persists."
     }
   }
 }
