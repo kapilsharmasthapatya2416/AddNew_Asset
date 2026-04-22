@@ -254,11 +254,8 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   renderActions,
 
   getRowKey,
-
   maxBodyHeightClassName,
-
   height,
-
   emptyText,
 
   loadingText,
@@ -295,21 +292,16 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
 
   const HEIGHT_CLASSES = {
     xs: 'max-h-[300px]',
-
     sm: 'max-h-[400px]',
-
     md: 'max-h-[500px]',
-
     lg: 'max-h-[600px]',
-
     xl: 'max-h-[700px]',
-
     xxl: 'max-h-[800px]',
   };
 
-  const bodyHeightClass = height
-    ? HEIGHT_CLASSES[height]
-    : maxBodyHeightClassName || 'max-h-[calc(100vh-260px)]';
+  const bodyHeightClass = height 
+    ? HEIGHT_CLASSES[height] 
+    : (maxBodyHeightClassName || 'max-h-[calc(100vh-260px)]');
 
   // Determine effective pagination settings
 
@@ -493,7 +485,6 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                 {headerSubtitle && <p className="text-sm text-[#6B7280] mt-1">{headerSubtitle}</p>}
               </div>
             )}
-
             {headerExtra && <div className="flex items-center gap-2 w-full">{headerExtra}</div>}
           </div>
         )}
