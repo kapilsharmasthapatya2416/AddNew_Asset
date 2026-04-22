@@ -5,8 +5,9 @@ import { cookies } from 'next/headers';
 
 import { authService } from '@/lib/api/auth.service';
 import { locales, defaultLocale } from '@/i18n/config';
-import type { AuthLoginApiBody, UlbConfigApiBody } from '@/types/login.types';
+import type { AuthLoginApiBody } from '@/types/login.types';
 import type { UlbMaster } from '@/types/master.types';
+import { getUlbConfigForLogin } from '@/lib/api/ulb-config.service';
 
 // Import centralized constants and validation utilities
 import {
@@ -56,27 +57,6 @@ function isRedirectError(e: unknown): boolean {
     typeof (e as { digest?: unknown }).digest === 'string' &&
     String((e as { digest: string }).digest).startsWith('NEXT_REDIRECT')
   );
-}
-
-/**
- * Maps ULB config API response to master data type.
- * @param raw - Raw ULB config from API
- * @returns Normalized UlbMaster object
- */
-function mapUlbConfigApiToMaster(raw: UlbConfigApiBody): UlbMaster {
-  return {
-    id: raw.ulbId,
-    ulbCode: raw.ulbCode,
-    ulbName: raw.ulbName,
-    ulbNameLocal: raw.ulbNameLocal ?? undefined,
-    ulbTypeId: 1,
-    isActive: true,
-    ulbLogo: raw.ulbLogo ?? undefined,
-    email: raw.emailId ?? undefined,
-    phoneNo: raw.mobileNo ?? undefined,
-    websiteUrl: raw.websiteUrl ?? undefined,
-    ulbAddress: raw.ulbAddress ?? undefined,
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -318,27 +298,14 @@ export async function logoutAction(locale: string = 'en') {
   redirect(`/${safeLocale}/login`);
 }
 
-/** SSR: council branding for the login page — call from the login Server Component only. */
+/**
+ * SSR: council branding for the login page — delegates to
+ * `getUlbConfigForLogin` in `@/lib/api/ulb-config.service` (same layering as
+ * construction type: page → action → `lib/api` service).
+ */
 export async function fetchLoginBrandingAction(): Promise<{ ulbData: UlbMaster | undefined }> {
-  try {
-    const res = await authService.getUlbConfig();
-    if (!res.success || !res.data) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn(
-          '[fetchLoginBrandingAction] ULB config unavailable:',
-          res.error || 'no data',
-          '(dev: self-signed https is allowed for 127.0.0.1/localhost unless NTIS_STRICT_LOCAL_TLS=1; try SERVER_API_BASE_URL=http://…; verify GET …/UlbConfig)'
-        );
-      }
-      return { ulbData: undefined };
-    }
-    return { ulbData: mapUlbConfigApiToMaster(res.data) };
-  } catch (e) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[fetchLoginBrandingAction] ULB config threw:', e);
-    }
-    return { ulbData: undefined };
-  }
+  const ulbData = await getUlbConfigForLogin();
+  return { ulbData };
 }
 export type LoginCredentialsFormState = { message: string; resetKey: string } | null;
 
