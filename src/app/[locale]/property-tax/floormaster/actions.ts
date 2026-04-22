@@ -105,6 +105,16 @@ export async function createFloorAction(
 
     return { success: true };
   } catch (error: unknown) {
+    // Handle 409 Conflict (duplicate record)
+    if (error instanceof ApiError && error.statusCode === 409) {
+      return {
+        success: false,
+        messageKey: "messages.duplicateRecord",
+        statusCode: 409,
+      };
+    }
+
+    // Handle other API errors
     if (error instanceof ApiError) {
       return {
         success: false,
@@ -112,10 +122,12 @@ export async function createFloorAction(
         statusCode: error.statusCode,
       };
     }
+
+    // Handle generic errors
     if (error instanceof Error) {
       return { success: false, message: error.message };
     }
-    return { success: false, message: "Failed to create floor" };
+    return { success: false, messageKey: "messages.createFailed" };
   }
 }
 
@@ -134,6 +146,16 @@ export async function updateFloorAction(
 
     return { success: true };
   } catch (error: unknown) {
+    // Handle 409 Conflict (duplicate record)
+    if (error instanceof ApiError && error.statusCode === 409) {
+      return {
+        success: false,
+        messageKey: "messages.duplicateRecord",
+        statusCode: 409,
+      };
+    }
+
+    // Handle other API errors
     if (error instanceof ApiError) {
       return {
         success: false,
@@ -141,10 +163,12 @@ export async function updateFloorAction(
         statusCode: error.statusCode,
       };
     }
+
+    // Handle generic errors
     if (error instanceof Error) {
       return { success: false, message: error.message };
     }
-    return { success: false, message: "Failed to update floor" };
+    return { success: false, messageKey: "messages.updateFailed" };
   }
 }
 
@@ -268,6 +292,16 @@ export async function createSubFloorAction(
 
     return { success: true };
   } catch (error: unknown) {
+    // Handle 409 Conflict (duplicate record)
+    if (error instanceof ApiError && error.statusCode === 409) {
+      return {
+        success: false,
+        messageKey: "messages.duplicateRecord",
+        statusCode: 409,
+      };
+    }
+
+    // Handle other API errors
     if (error instanceof ApiError) {
       return {
         success: false,
@@ -275,10 +309,12 @@ export async function createSubFloorAction(
         statusCode: error.statusCode,
       };
     }
+
+    // Handle generic errors
     if (error instanceof Error) {
       return { success: false, message: error.message };
     }
-    return { success: false, message: "Failed to create subfloor" };
+    return { success: false, messageKey: "messages.createFailed" };
   }
 }
 
@@ -297,6 +333,16 @@ export async function updateSubFloorAction(
 
     return { success: true };
   } catch (error: unknown) {
+    // Handle 409 Conflict (duplicate record)
+    if (error instanceof ApiError && error.statusCode === 409) {
+      return {
+        success: false,
+        messageKey: "messages.duplicateRecord",
+        statusCode: 409,
+      };
+    }
+
+    // Handle other API errors
     if (error instanceof ApiError) {
       return {
         success: false,
@@ -304,10 +350,12 @@ export async function updateSubFloorAction(
         statusCode: error.statusCode,
       };
     }
+
+    // Handle generic errors
     if (error instanceof Error) {
       return { success: false, message: error.message };
     }
-    return { success: false, message: "Failed to update subfloor" };
+    return { success: false, messageKey: "messages.updateFailed" };
   }
 }
 

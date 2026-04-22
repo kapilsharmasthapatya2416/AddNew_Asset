@@ -24,6 +24,7 @@ import {
   CODE_SANITIZE,
   DESCRIPTION_REGEX,
   DESCRIPTION_SANITIZE,
+  commonValidations,
 } from '@/lib/utils/validation';
 import { StatusToggleField } from '../StatusToggleField';
 
@@ -93,8 +94,10 @@ export default function FloorForm({ id, initialData }: Readonly<FloorFormProps>)
         e.sequenceNo = t('validation.mustBeNumber');
       }
 
-      if (!data.isActive && !isEdit) {
-        e.isActive = t('form.validation.mustBeActive');
+      // Use commonValidations.masterActiveStatus for isActive validation
+      const isActiveError = commonValidations.masterActiveStatus(t, isEdit)(data.isActive);
+      if (isActiveError) {
+        e.isActive = isActiveError;
       }
 
       return e;
