@@ -6,12 +6,8 @@ import type { AssessmentYearRange } from "@/types/assessment-year-range.types";
  * Generic function that works for both RV and CV.
  */
 export function getAssessmentYearRangeColumns<T extends AssessmentYearRange>(
-  t: (key: string) => string,
-  tCommon: (key: string) => string
+  t: (key: string) => string
 ): Column<T>[] {
-  // Suppress unused variable warning
-  void tCommon;
-
   return [
     {
       key: "fromYear",

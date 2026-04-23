@@ -49,7 +49,7 @@ export function AssessmentYearRangeMaster<T extends AssessmentYearRange>({
     startTransition,
   });
 
-  const columns = getAssessmentYearRangeColumns<T>(t, tCommon);
+  const columns = getAssessmentYearRangeColumns<T>(t);
 
   const handleEdit = useCallback(
     (row: T) => {
