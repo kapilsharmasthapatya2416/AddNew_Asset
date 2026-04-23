@@ -2,12 +2,12 @@
 
 import { apiClient } from "@/services/api.service";
 import { handleApiResponse } from "@/lib/utils/api";
-import { ActionResult } from "@/types/property-basic-details.types";
 import {
     PropertySocietyDetailsApiItem,
     PropertySocietyDetailsResponse,
     UpdatePropertySocietyDetailsDto
 } from "@/types/property-society-details.types";
+import { ActionResult } from "@/types/common.types";
 
 //  get Property Society details
 export async function getPropertySocietyDetails(propertyId: number): Promise<PropertySocietyDetailsApiItem | null> {

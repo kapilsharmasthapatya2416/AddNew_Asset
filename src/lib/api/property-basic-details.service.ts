@@ -2,7 +2,6 @@ import { apiClient } from "@/services/api.service";
 import { handleApiResponse } from "@/lib/utils/api";
 
 import {
-  ActionResult,
   PropertyBasicDetailsApiItem,
   PropertyBasicDetailsResponse,
   PropertyCategoryApiItem,
@@ -14,6 +13,7 @@ import {
   WingItem,
   WingResponse
 } from "@/types/property-basic-details.types";
+import { ActionResult } from "@/types/common.types";
 
 /* ---------------- PROPERTY TYPE ---------------- */
 export async function getPropertyTypes(pageSize: number = 200, searchTerm?: string): Promise<PropertyTypeApiItem[]> {
