@@ -151,11 +151,11 @@ describe("Assessment Year Range Service", () => {
 
     it("throws error for invalid year range", async () => {
       await expect(
-        createAssessmentYearRange(mockConfig, { ...mockFormData, fromYear: 1800 })
+        createAssessmentYearRange(mockConfig, { ...mockFormData, fromYear: 1699 })
       ).rejects.toThrow();
 
       await expect(
-        createAssessmentYearRange(mockConfig, { ...mockFormData, toYear: 2200 })
+        createAssessmentYearRange(mockConfig, { ...mockFormData, toYear: 2101 })
       ).rejects.toThrow();
     });
 
