@@ -461,6 +461,6 @@ describe('ApiError', () => {
     expect(err.name).toBe('ApiError');
     expect(err.statusCode).toBe(404);
     expect(err.responseText).toBe('not found text');
-    expect(err.message).toBe('Not Found');
+    expect(err.message).toBe('Not Found: not found text (404)');
   });
 });
