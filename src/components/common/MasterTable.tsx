@@ -58,6 +58,7 @@ export interface Column<T extends Record<string, unknown> = Record<string, unkno
   headerClassName?: string;
 
   cellClassName?: string;
+
   align?: 'left' | 'center' | 'right';
 }
 
@@ -145,12 +146,6 @@ export interface MasterTableProps<T extends Record<string, unknown> = Record<str
   footerRightContent?: React.ReactNode;
 
   pageSizeOptions?: number[];
-  /** Custom className for the footer container */
-  footerClassName?: string;
-  /** Custom className for the footer left section */
-  footerLeftClassName?: string;
-  /** Custom className for the footer right section */
-  footerRightClassName?: string;
 
   /** Custom className for the footer container */
 
@@ -284,9 +279,13 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
   footerRightContent,
 
   pageSizeOptions = [5, 10, 20, 50],
+
   footerClassName,
+
   footerLeftClassName,
+
   footerRightClassName,
+
   paginationConfig,
 }: MasterTableProps<T>): React.ReactElement {
   const t = useTranslations('common');
@@ -361,7 +360,13 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                 style={{ width: col.width }}
                 className={cn(
                   'px-2 py-3 text-sm font-semibold text-[#1E3A8A]',
-                  col.align === 'left' ? 'text-left' : col.align === 'right' ? 'text-right' : 'text-center',
+
+                  col.align === 'center'
+                    ? 'text-center'
+                    : col.align === 'right'
+                      ? 'text-right'
+                      : 'text-left',
+
                   index === 0 && 'rounded-tl-lg',
 
                   !hasActions && index === columns.length - 1 && 'rounded-tr-lg',
@@ -418,7 +423,13 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
                       key={String(col.key)}
                       className={cn(
                         'px-2 py-2 text-gray-700',
-                        col.align === 'left' ? 'text-left' : col.align === 'right' ? 'text-right' : 'text-center',
+
+                        col.align === 'center'
+                          ? 'text-center'
+                          : col.align === 'right'
+                            ? 'text-right'
+                            : 'text-left',
+
                         col.cellClassName
                       )}
                     >
@@ -485,9 +496,16 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
         {/* ================= FOOTER / PAGINATION ================= */}
 
         {(hasFooter || isPaginationEnabled || isPageSizeEnabled) && (
-          <div className={cn("bg-[#F8FAFF] border-t border-[#DCEAFF] rounded-b-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm", footerClassName)}>
+          <div
+            className={cn(
+              'bg-[#F8FAFF] border-t border-[#DCEAFF] rounded-b-xl px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-sm',
+              footerClassName
+            )}
+          >
             {/* LEFT SIDE: Custom Content OR Info Text + PageSize */}
-            <div className={cn("flex items-center gap-4 text-sm text-[#6B7280]", footerLeftClassName)}>
+            <div
+              className={cn('flex items-center gap-4 text-sm text-[#6B7280]', footerLeftClassName)}
+            >
               {footerLeftContent
                 ? footerLeftContent
                 : (isPaginationEnabled || isPageSizeEnabled) && (
@@ -524,7 +542,12 @@ export function MasterTable<T extends Record<string, unknown> = Record<string, u
             </div>
 
             {/* RIGHT SIDE: Custom Content + Pagination Controls */}
-            <div className={cn("flex items-center justify-between md:justify-end gap-2 w-full md:w-auto", footerRightClassName)}>
+            <div
+              className={cn(
+                'flex items-center justify-between md:justify-end gap-2 w-full md:w-auto',
+                footerRightClassName
+              )}
+            >
               {footerRightContent}
 
               {/* RIGHT SIDE: Pagination Controls */}
