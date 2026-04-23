@@ -4,6 +4,14 @@ import { TaxZoningPreview } from "@/components/modules/property-tax/taxzoningmas
 import { NextIntlClientProvider } from "next-intl";
 import { TaxZone, Ward } from "@/types/taxzoning.types";
 
+import commonMessages from "@/i18n/locales/en/common.json";
+import taxzoningMessages from "@/i18n/locales/en/taxzoning.json";
+
+const messages = {
+  common: commonMessages,
+  taxzoning: taxzoningMessages,
+};
+
 describe("TaxZoningPreview", () => {
   const mockProps = {
     t: (key: string) => key,
@@ -23,7 +31,7 @@ describe("TaxZoningPreview", () => {
 
   const renderWithIntl = (component: React.ReactNode) => {
     return render(
-      <NextIntlClientProvider locale="en" messages={{}}>
+      <NextIntlClientProvider locale="en" messages={messages}>
         {component}
       </NextIntlClientProvider>
     );

@@ -3,6 +3,14 @@ import { describe, it, expect, vi } from "vitest";
 import TaxZoningPage from "@/components/modules/property-tax/taxzoningmaster/TaxZoningPage";
 import { NextIntlClientProvider } from "next-intl";
 
+import commonMessages from "@/i18n/locales/en/common.json";
+import taxzoningMessages from "@/i18n/locales/en/taxzoning.json";
+
+const messages = {
+  common: commonMessages,
+  taxzoning: taxzoningMessages,
+};
+
 // Mock the hook
 vi.mock("@/hooks/useTaxZoning", () => ({
   useTaxZoning: vi.fn(() => ({
@@ -74,7 +82,7 @@ describe("TaxZoningPage", () => {
 
   it("renders TableHeader and all sub-sections", () => {
     render(
-      <NextIntlClientProvider locale="en" messages={{}}>
+      <NextIntlClientProvider locale="en" messages={messages}>
         <TaxZoningPage {...mockProps} />
       </NextIntlClientProvider>
     );
