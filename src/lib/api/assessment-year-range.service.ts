@@ -36,7 +36,33 @@ function validateId(id: number): boolean {
 }
 
 /**
+ * Parses a boolean value from various types (boolean, number, string)
+ * Handles API responses that may return 0/1, "true"/"false", etc.
+ */
+function parseBoolean(value: unknown): boolean {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value !== 0;
+  if (typeof value === "string") {
+    const lower = value.toLowerCase();
+    return lower === "true" || lower === "1";
+  }
+  return Boolean(value);
+}
+
+/**
+ * Checks if a value can be interpreted as a boolean
+ */
+function isBooleanLike(value: unknown): boolean {
+  return (
+    typeof value === "boolean" ||
+    typeof value === "number" ||
+    typeof value === "string"
+  );
+}
+
+/**
  * Type guard to validate Assessment Year Range shape
+ * Accepts boolean/number/string for isActive to handle various API response formats
  */
 function isValidAssessmentYearRangeShape(item: unknown, idField: string): boolean {
   if (typeof item !== "object" || item === null) return false;
@@ -45,7 +71,7 @@ function isValidAssessmentYearRangeShape(item: unknown, idField: string): boolea
     typeof record[idField] === "number" &&
     typeof record.fromYear === "number" &&
     typeof record.toYear === "number" &&
-    typeof record.isActive === "boolean"
+    isBooleanLike(record.isActive)
   );
 }
 
@@ -60,7 +86,7 @@ function normalizeAssessmentYearRange<T extends AssessmentYearRange>(
     [idField]: Number(item[idField]),
     fromYear: Number(item.fromYear),
     toYear: Number(item.toYear),
-    isActive: Boolean(item.isActive),
+    isActive: parseBoolean(item.isActive),
     createdDate: String(item.createdDate ?? ""),
     updatedDate: item.updatedDate ? String(item.updatedDate) : null,
   };
