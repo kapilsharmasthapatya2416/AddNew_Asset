@@ -190,11 +190,11 @@ export async function createAssessmentYearRange(
     const fromYear = Number(data.fromYear);
     const toYear = Number(data.toYear);
 
-    if (!Number.isFinite(fromYear) || fromYear < 1900 || fromYear > 2100) {
-      throw new ApiError(400, "From Year must be a valid year between 1900 and 2100", "Validation failed");
+    if (!Number.isFinite(fromYear) || fromYear < 1700 || fromYear > 2100) {
+      throw new ApiError(400, "From Year must be a valid year between 1700 and 2100", "Validation failed");
     }
-    if (!Number.isFinite(toYear) || toYear < 1900 || toYear > 2100) {
-      throw new ApiError(400, "To Year must be a valid year between 1900 and 2100", "Validation failed");
+    if (!Number.isFinite(toYear) || toYear < 1700 || toYear > 2100) {
+      throw new ApiError(400, "To Year must be a valid year between 1700 and 2100", "Validation failed");
     }
     if (fromYear > toYear) {
       throw new ApiError(400, "From Year cannot be greater than To Year", "Validation failed");
@@ -232,6 +232,16 @@ export async function updateAssessmentYearRange(
 
     const fromYear = Number(data.fromYear);
     const toYear = Number(data.toYear);
+
+    if (!Number.isFinite(fromYear) || fromYear < 1700 || fromYear > 2100) {
+      throw new ApiError(400, "From Year must be a valid year between 1700 and 2100", "Validation failed");
+    }
+    if (!Number.isFinite(toYear) || toYear < 1700 || toYear > 2100) {
+      throw new ApiError(400, "To Year must be a valid year between 1700 and 2100", "Validation failed");
+    }
+    if (fromYear > toYear) {
+      throw new ApiError(400, "From Year cannot be greater than To Year", "Validation failed");
+    }
 
     const payload: AssessmentYearRangeUpdatePayload & { [key: string]: unknown } = {
       [config.idField]: data.id,

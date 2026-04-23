@@ -58,23 +58,26 @@ export function AssessmentYearRangeMaster<T extends AssessmentYearRange>({
         router.push(`/${locale}${config.routePath}/edit/${id}`);
       });
     },
-    [router, locale, config.routePath]
+    [router, locale, config.routePath, startTransition]
   );
 
   const handleDelete = useCallback(
     (row: T) => {
       const id = getAssessmentYearRangeId(row);
+      const fromYear = row.fromYear;
+      const toYear = row.toYear;
+      
       confirm({
         variant: "delete",
-        title: `${t("list.table.fromYear")}: ${row.fromYear} - ${t("list.table.toYear")}: ${row.toYear}`,
+        title: `${t("list.table.fromYear")}: ${fromYear} - ${t("list.table.toYear")}: ${toYear}`,
         description: t("delete.confirmDescription"),
-        meta: { name: `${row.fromYear} - ${row.toYear}` },
+        meta: { name: `${fromYear} - ${toYear}` },
         onConfirm: async () => {
           const fd = new FormData();
           fd.append("id", String(id));
           const result = await deleteAction(fd);
           if (result.success) {
-            toast.success(t("success.deleted", { fromYear: row.fromYear, toYear: row.toYear }));
+            toast.success(t("success.deleted", { fromYear, toYear }));
             startTransition(() => router.refresh());
           } else {
             const errorMessage =
@@ -86,7 +89,7 @@ export function AssessmentYearRangeMaster<T extends AssessmentYearRange>({
         },
       });
     },
-    [confirm, router, t, tCommon, deleteAction]
+    [confirm, router, t, tCommon, deleteAction, startTransition]
   );
 
   const { start, end, total } = paginationInfo;

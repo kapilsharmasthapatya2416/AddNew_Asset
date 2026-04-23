@@ -19,7 +19,7 @@ interface UseAssessmentYearRangeFormProps {
   updateAction: (data: AssessmentYearRangeFormModel) => Promise<{ success: boolean; message?: string; statusCode?: number }>;
 }
 
-const MIN_YEAR = 1900;
+const MIN_YEAR = 1700;
 const MAX_YEAR = 2100;
 
 export function useAssessmentYearRangeForm({
@@ -131,24 +131,29 @@ export function useAssessmentYearRangeForm({
     (field: "fromYear" | "toYear"): void => {
       setTouched((p) => ({ ...p, [field]: true }));
 
-      const updatedFormData = { ...formData };
-      const fieldErrors = validate(updatedFormData);
-      
-      setErrors((p) => {
-        const newErrors = { ...p };
-        if (fieldErrors[field]) {
-          newErrors[field] = fieldErrors[field];
-        } else {
-          delete newErrors[field];
-        }
-        // Also update cross-field errors
-        if (field === "toYear" && fieldErrors.fromYear) {
-          newErrors.fromYear = fieldErrors.fromYear;
-        }
-        return newErrors;
+      // Use functional state update to get the latest formData
+      setFormData((currentFormData) => {
+        const fieldErrors = validate(currentFormData);
+        
+        setErrors((p) => {
+          const newErrors = { ...p };
+          if (fieldErrors[field]) {
+            newErrors[field] = fieldErrors[field];
+          } else {
+            delete newErrors[field];
+          }
+          // Also update cross-field errors
+          if (field === "toYear" && fieldErrors.fromYear) {
+            newErrors.fromYear = fieldErrors.fromYear;
+          }
+          return newErrors;
+        });
+        
+        // Return current data unchanged
+        return currentFormData;
       });
     },
-    [formData, validate]
+    [validate]
   );
 
   const mapApiError = useCallback(
