@@ -1,14 +1,16 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { updatePropertySocietyDetailsAction } from "@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action";
 import { societyValidations, validateForm, hasErrors } from "@/lib/utils/validation";
 import { SocietyFormProps, UpdatePropertySocietyDetailsDto } from "@/types/property-society-details.types";
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { ConfirmContextType } from '@/components/common/ConfirmProvider';
+import { useLoading } from '@/hooks/useLoading';
+import { useState } from 'react';
 
 export const useSocietyForm = (props: SocietyFormProps, t: (key: string) => string, confirm: ConfirmContextType['confirm'], router: AppRouterInstance) => {
     const { societyData, propertyIdSearch, locale } = props;
-    const [isUpdating, setIsUpdating] = useState(false);
+    const { isLoading: isUpdating, startLoading, stopLoading } = useLoading(false);
 
     const initialManagerMobile = (societyData?.managerMobileNo ?? "").replace(/\D/g, "").split("").slice(0, 10);
     const [managerMobileDigits, setManagerMobileDigits] = useState<string[]>(
@@ -91,7 +93,7 @@ export const useSocietyForm = (props: SocietyFormProps, t: (key: string) => stri
             wingId: societyData?.wingId ?? null,
             wingNo: societyData?.wingNo ?? null,
             wingName: societyData?.wingName ?? null,
-            societyName: data.societyEmailId || null, // Wait, logic in original file was societyName: societyName || null
+            societyName: String(formData.get("societyName") ?? "").trim() || null,
             societyAddress: String(formData.get("societyAddress") ?? "").trim() || null,
             societyEmailId: data.societyEmailId || null,
             managerName: data.managerName || null,
@@ -109,8 +111,6 @@ export const useSocietyForm = (props: SocietyFormProps, t: (key: string) => stri
             landOwnerNameEnglish: data.landOwnerName || null,
             builderNameEnglish: data.builderName || null,
         };
-        // Fix societyName in payload
-        payload.societyName = String(formData.get("societyName") ?? "").trim() || null;
 
         confirm({
             variant: "update",
@@ -118,7 +118,7 @@ export const useSocietyForm = (props: SocietyFormProps, t: (key: string) => stri
             description: t("society.updateConfirmText"),
             confirmText: t("society.updateConfirmButton"),
             onConfirm: async () => {
-                setIsUpdating(true);
+                startLoading();
                 try {
                     const result = await updatePropertySocietyDetailsAction(locale, pid, payload);
                     if (!result?.success) {
@@ -130,7 +130,7 @@ export const useSocietyForm = (props: SocietyFormProps, t: (key: string) => stri
                 } catch (_err) {
                     toast.error(t("society.updateError"));
                 } finally {
-                    setIsUpdating(false);
+                    stopLoading();
                 }
             },
         });

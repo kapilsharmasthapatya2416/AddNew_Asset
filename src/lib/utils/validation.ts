@@ -59,4 +59,5 @@ export {
   createMasterValidationSchema,
   constructionValidators,
   societyValidations,
+  propertyValidations,
 } from './validation-schemas';

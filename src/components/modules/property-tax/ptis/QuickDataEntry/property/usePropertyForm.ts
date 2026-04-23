@@ -1,8 +1,11 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { ConfirmContextType } from '@/components/common/ConfirmProvider';
+import { useLoading } from '@/hooks/useLoading';
+import { validateForm, hasErrors, propertyValidations } from '@/lib/utils/validation';
+import { useState } from 'react';
 import {
     UpdatePropertyBasicDetailsDto,
     PropertyFormViewProps,
@@ -31,7 +34,7 @@ export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) =
 
     const [wingId, setWingId] = useState(initialWingId);
     const [wingName, setWingName] = useState(initialWingName);
-    const [isUpdating, setIsUpdating] = useState(false);
+    const { isLoading: isUpdating, startLoading, stopLoading } = useLoading(false);
     const [hasChanges, setHasChanges] = useState(false);
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -89,6 +92,27 @@ export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) =
         }
 
         const formData = new FormData(e.currentTarget);
+        
+        // Form Validation
+        const validationData = {
+            categoryId,
+            plotArea: formData.get("plotArea"),
+            noOfResidentialToilets: formData.get("noOfResidentialToilets"),
+            noOfCommercialToilets: formData.get("noOfCommercialToilets"),
+        };
+
+        const errors = validateForm(validationData, {
+            categoryId: propertyValidations.required("category", t),
+            plotArea: propertyValidations.number("plotArea", t),
+            noOfResidentialToilets: propertyValidations.number("residentialToilets", t),
+            noOfCommercialToilets: propertyValidations.number("commercialToilets", t),
+        });
+
+        if (hasErrors(errors)) {
+            toast.error(Object.values(errors)[0]);
+            return;
+        }
+
         const pId = propertyData.propertyId;
         const selectedWingId = parseId(wingId);
         const selectedWing = wingList.find((wing) => wing.id === selectedWingId);
@@ -128,7 +152,7 @@ export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) =
             description: t('property.updateConfirmText'),
             confirmText: t('property.updateConfirmButton'),
             onConfirm: async () => {
-                setIsUpdating(true);
+                startLoading();
                 try {
                     const result = await updatePropertyBasicDetailsAction(locale, pId, payload);
                     if (!result?.success) {
@@ -140,11 +164,23 @@ export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) =
                 } catch (_err) {
                     toast.error(t('property.updateError'));
                 } finally {
-                    setIsUpdating(false);
+                    stopLoading();
                 }
             }
         });
     };
+
+    const categoryOptions = useMemo(() => 
+        propertyCategoryList.map((item) => ({ label: item.propertyCategoryName, value: String(item.id) })),
+    [propertyCategoryList]);
+
+    const wingOptions = useMemo(() => 
+        wingList.map((item) => ({ label: item.wingNo, value: String(item.id) })),
+    [wingList]);
+
+    const propertyDescriptionOptions = useMemo(() => 
+        propertyDescriptionList.map((item) => ({ label: item.propertyDescription, value: String(item.id) })),
+    [propertyDescriptionList]);
 
     return {
         formRef,
@@ -158,8 +194,8 @@ export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) =
         handlePropertyDescriptionChange,
         handleCategoryChange,
         handleWingChange,
-        categoryOptions: propertyCategoryList.map((item) => ({ label: item.propertyCategoryName, value: String(item.id) })),
-        wingOptions: wingList.map((item) => ({ label: item.wingNo, value: String(item.id) })),
-        propertyDescriptionOptions: propertyDescriptionList.map((item) => ({ label: item.propertyDescription, value: String(item.id) })),
+        categoryOptions,
+        wingOptions,
+        propertyDescriptionOptions,
     };
 };

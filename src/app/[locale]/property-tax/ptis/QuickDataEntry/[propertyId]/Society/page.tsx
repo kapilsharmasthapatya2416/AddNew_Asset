@@ -16,7 +16,12 @@ export default async function SocietyFormPage({ params }: PageProps) {
     setRequestLocale(locale);
 
     const result = await getPropertySocietyDetailsAction(Number(propertyId));
-    const propertySocietyDetails = result.success ? result.data : null;
+    
+    if (!result.success) {
+        throw new Error(result.error || 'Failed to load society details');
+    }
+
+    const propertySocietyDetails = result.data;
 
     return (
         <SocietyForm

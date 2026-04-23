@@ -202,9 +202,7 @@ export interface DrawerShellProps {
     children: ReactNode;
     locale: string;
 }
-export type ActionResult<T = unknown> =
-    | { success: true; data?: T }
-    | { success: false; error: string };
+
 
 //  Represents a collection of tax amounts by tax name.
 export type TaxAmounts = Record<string, number | undefined>;

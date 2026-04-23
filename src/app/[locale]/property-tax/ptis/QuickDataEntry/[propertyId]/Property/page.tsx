@@ -37,12 +37,18 @@ export default async function PropertyFormPage({ params }: PageProps): Promise<R
         getPropertySocietyDetailsAction(Number(propertyId)),
     ]);
 
+    // ✅ Error handling for critical data
+    if (!propertyBasicDetailsResponse.success) {
+        throw new Error(propertyBasicDetailsResponse.error || 'Failed to load property details');
+    }
+
     // ✅ Clean extracted data
     const propertyDescriptionList = propertyDescriptionResponse.success ? propertyDescriptionResponse.data : [];
     const propertyCategoryList = propertyCategoryResponse.success ? propertyCategoryResponse.data : [];
-    const propertyBasicDetails = propertyBasicDetailsResponse.success ? propertyBasicDetailsResponse.data : null;
+    const propertyBasicDetails = propertyBasicDetailsResponse.data;
     const propertySocietyDetails = propertySociety.success ? propertySociety.data : null;
     const WingMasterList = WingMaster.success ? WingMaster.data : [];
+
 
 
     return (

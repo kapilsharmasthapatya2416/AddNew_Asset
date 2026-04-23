@@ -272,6 +272,12 @@
         "loading": {
             "message": "Loading property...",
             "description": "Please wait while we fetch the tax property data"
+        },
+        "validation": {
+            "categoryRequired": "Please select a category",
+            "plotAreaInvalid": "Plot Area must be a positive number",
+            "residentialToiletsInvalid": "Residential Toilet count must be a positive number",
+            "commercialToiletsInvalid": "Commercial Toilet count must be a positive number"
         }
     },
     "kyc": {

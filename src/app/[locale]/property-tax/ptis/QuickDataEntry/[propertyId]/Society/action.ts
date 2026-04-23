@@ -2,11 +2,9 @@
 
 import { getPropertySocietyDetails, updatePropertySocietyDetails } from '@/lib/api/property-society.service';
 import { UpdatePropertySocietyDetailsDto } from '@/types/property-society-details.types';
+import { ActionResult } from '@/types/common.types';
 import { revalidatePath } from 'next/cache';
 
-type ActionResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
 
 function getActionErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message) {

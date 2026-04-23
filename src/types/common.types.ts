@@ -7,6 +7,14 @@ export interface ApiResponse<T = unknown> {
   statusCode?: number;
 }
 
+/**
+ * Standard action result type for server actions and service methods.
+ */
+export type ActionResult<T = void> =
+  | { success: true; data: T }
+  | { success: false; error: string };
+
+
 
 export interface User {
   id: string;

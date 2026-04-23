@@ -9,7 +9,6 @@ import {
 } from "@/lib/api/property-basic-details.service";
 
 import {
-    ActionResult,
     PropertyBasicDetailsApiItem,
     PropertyCategoryApiItem,
     PropertyTypeApiItem,
@@ -17,49 +16,52 @@ import {
     WingItem
 } from "@/types/property-basic-details.types";
 
+import { ActionResult } from "@/types/common.types";
+
+
 import { revalidatePath } from "next/cache";
 
 // Property Basic Details
-export async function getPropertyBasicDetailsAction(propertyId: number): Promise<{ success: boolean; data: PropertyBasicDetailsApiItem | null; error?: string }> {
+export async function getPropertyBasicDetailsAction(propertyId: number): Promise<ActionResult<PropertyBasicDetailsApiItem | null>> {
     try {
         const data = await getPropertyBasicDetails(propertyId);       
         return { success: true, data };
     } catch (error) {
         console.error("Get property basic details error:", error);
-        return { success: false, data: null, error: error instanceof Error ? error.message : "Failed to fetch property details" };
+        return { success: false, error: error instanceof Error ? error.message : "Failed to fetch property details" };
     }
 }
 
 // Property Categories
-export async function getPropertyCategoriesAction(): Promise<{ success: boolean; data: PropertyCategoryApiItem[] }> {
+export async function getPropertyCategoriesAction(): Promise<ActionResult<PropertyCategoryApiItem[]>> {
     try {
         const data = await getPropertyCategories(50);
         return { success: true, data: data ?? [] };
     } catch (error) {
         console.error("Get property categories error:", error);
-        return { success: false, data: [] };
+        return { success: false, error: "Failed to fetch property categories" };
     }
 }
 
 // Property Types
-export async function getPropertyTypesAction(search?: string): Promise<{ success: boolean; data: PropertyTypeApiItem[] }> {
+export async function getPropertyTypesAction(search?: string): Promise<ActionResult<PropertyTypeApiItem[]>> {
     try {
         const data = await getPropertyTypes(200, search);            
         return { success: true, data: data ?? [] };
     } catch (error) {
         console.error("Get property types error:", error);
-        return { success: false, data: [] };
+        return { success: false, error: "Failed to fetch property types" };
     }
 }
 
 // wing master
-export async function getWingMasterAction(): Promise<{ success: boolean; data: WingItem[]; }> {
+export async function getWingMasterAction(): Promise<ActionResult<WingItem[]>> {
     try {
         const data = await getWingMaster();
         return { success: true, data };
     } catch (error) {
         console.error("Get wing master error:", error);
-        return { success: false, data: [] };
+        return { success: false, error: "Failed to fetch wing master" };
     }
 }
 

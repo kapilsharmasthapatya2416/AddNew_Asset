@@ -296,3 +296,51 @@ export const societyValidations = {
       return undefined;
     },
 };
+
+/**
+ * Property form validations
+ */
+export const propertyValidations = {
+  required:
+    (
+      label: string,
+      t: (key: string, values?: Record<string, string | number | Date>) => string
+    ): Validator =>
+    (value: unknown) => {
+      const strVal = String(value ?? "").trim();
+      if (!strVal) {
+        return t(`property.validation.${label}Required`);
+      }
+      return undefined;
+    },
+
+  number:
+    (
+      label: string,
+      t: (key: string, values?: Record<string, string | number | Date>) => string,
+      min: number = 0
+    ): Validator =>
+    (value: unknown) => {
+      const numVal = Number(value);
+      if (value === null || value === undefined || value === "") return undefined; // optional
+      if (!Number.isFinite(numVal) || numVal < min) {
+        return t(`property.validation.${label}Invalid`, { min });
+      }
+      return undefined;
+    },
+
+  pattern:
+    (
+      label: string,
+      pattern: RegExp,
+      t: (key: string, values?: Record<string, string | number | Date>) => string
+    ): Validator =>
+    (value: unknown) => {
+      const strVal = String(value ?? "").trim();
+      if (!strVal) return undefined; // optional
+      if (!pattern.test(strVal)) {
+        return t(`property.validation.${label}Format`);
+      }
+      return undefined;
+    },
+};
