@@ -80,8 +80,8 @@ function QuickDataEntryContent({
 
 export function QuickDataEntryClientWrapper({ children }: { children: ReactNode }) {
     return (
-            <QuickDataEntryContent>
-                {children}
-            </QuickDataEntryContent>
+        <QuickDataEntryContent>
+            {children}
+        </QuickDataEntryContent>
     );
 }

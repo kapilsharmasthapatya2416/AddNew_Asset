@@ -1,18 +1,12 @@
 "use client"
 import { Tabs } from "@/components/common"
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { SocietyFormProps } from "@/types/property-society-details.types";
-import { useConfirm } from "@/components/common/ConfirmProvider";
 import { SocietyFormFields } from "./SocietyFormFields";
 import { SocietyFormActions } from "./SocietyFormActions";
 import { useSocietyForm } from "./useSocietyForm";
 
 const SocietyForm = (props: SocietyFormProps) => {
-    const t = useTranslations("quickDataEntry");
-    const router = useRouter();
-    const { confirm } = useConfirm();
-
     const {
         formRef,
         hasChanges,
@@ -23,7 +17,10 @@ const SocietyForm = (props: SocietyFormProps) => {
         setSecretaryMobileDigits,
         handleSubmit,
         checkFormChanges,
-    } = useSocietyForm(props, t, confirm, router);
+    } = useSocietyForm(props);
+
+    const t = useTranslations("quickDataEntry");
+
 
     return (
         <form ref={formRef} onSubmit={handleSubmit} onChange={checkFormChanges} noValidate>

@@ -7,7 +7,7 @@ interface ErrorProps {
   reset: () => void;
 }
 
-export default function QuickDataEntryError({ error, reset }: ErrorProps) {
+export default function SocietyError({ error, reset }: ErrorProps) {
   return (
     <ErrorPage
       error={error}
@@ -16,4 +16,5 @@ export default function QuickDataEntryError({ error, reset }: ErrorProps) {
     />
   );
 }
+
 

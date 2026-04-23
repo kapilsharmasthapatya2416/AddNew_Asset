@@ -2,18 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 import { Tabs } from '@/components/common';
-import { useConfirm } from '@/components/common/ConfirmProvider';
-import { useRouter } from "next/navigation";
 import { PropertyFormViewProps } from '@/types/property-basic-details.types';
 import { PropertyFormFields } from './PropertyFormFields';
 import { PropertyFormActions } from './PropertyFormActions';
 import { usePropertyForm } from './usePropertyForm';
 
 const PropertyFormView = (props: PropertyFormViewProps) => {
-    const t = useTranslations('quickDataEntry');
-    const { confirm } = useConfirm();
-    const router = useRouter();
-    
     const {
         formRef,
         hasChanges,
@@ -29,7 +23,9 @@ const PropertyFormView = (props: PropertyFormViewProps) => {
         categoryOptions,
         wingOptions,
         propertyDescriptionOptions,
-    } = usePropertyForm(props, t, confirm, router);
+    } = usePropertyForm(props);
+
+    const t = useTranslations('quickDataEntry');
 
     return (
         <form ref={formRef} onSubmit={handleSubmit} onChange={checkFormChanges}>

@@ -1,43 +1,59 @@
-import { useRef, useEffect, useCallback, useMemo } from 'react';
+import { useRef } from 'react';
 import { toast } from 'sonner';
-import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import { ConfirmContextType } from '@/components/common/ConfirmProvider';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useConfirm } from '@/components/common/ConfirmProvider';
 import { useLoading } from '@/hooks/useLoading';
 import { validateForm, hasErrors, propertyValidations } from '@/lib/utils/validation';
-import { useState } from 'react';
+import { updatePropertyBasicDetailsAction } from '@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Property/action';
 import {
     UpdatePropertyBasicDetailsDto,
     PropertyFormViewProps,
 } from '@/types/property-basic-details.types';
 
-export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) => string, confirm: ConfirmContextType['confirm'], router: AppRouterInstance) => {
+import { usePropertyOptions } from '@/hooks/usePropertyOptions';
+import { usePropertyFormState } from '@/hooks/usePropertyFormState';
+import { usePropertyChanges } from '@/hooks/usePropertyChanges';
+
+export const usePropertyForm = (props: PropertyFormViewProps) => {
     const {
         WingMaster: wingList,
-        propertyCategories: propertyCategoryList,
-        propertyDescriptions: propertyDescriptionList,
         propertyData,
         propertySocietyDetails,
         locale
     } = props;
 
-    const [propertyTypeId, setPropertyTypeId] = useState(propertyData?.propertyTypeId?.toString() ?? '');
-    const [categoryId, setCategoryId] = useState(propertyData?.categoryId?.toString() ?? '');
-
-    const initialWingId = (propertyData?.wingId && propertyData.wingId !== 0)
-        ? propertyData.wingId.toString()
-        : (propertySocietyDetails?.wingId?.toString() ?? '');
-
-    const initialWingName = (propertyData?.wingName && propertyData.wingName.trim() !== "")
-        ? propertyData.wingName
-        : (propertySocietyDetails?.wingName ?? '');
-
-    const [wingId, setWingId] = useState(initialWingId);
-    const [wingName, setWingName] = useState(initialWingName);
-    const { isLoading: isUpdating, startLoading, stopLoading } = useLoading(false);
-    const [hasChanges, setHasChanges] = useState(false);
+    const t = useTranslations('quickDataEntry');
+    const { confirm } = useConfirm();
+    const router = useRouter();
     const formRef = useRef<HTMLFormElement>(null);
+    const { isLoading: isUpdating, startLoading, stopLoading } = useLoading(false);
 
+    // 1. Options Hook
+    const { categoryOptions, wingOptions, propertyDescriptionOptions } = usePropertyOptions(props);
+
+    // 2. State Hook
+    const {
+        propertyTypeId, setPropertyTypeId,
+        categoryId, setCategoryId,
+        wingId, setWingId,
+        wingName, setWingName,
+        hasChanges, setHasChanges,
+        initialWingId
+    } = usePropertyFormState(propertyData, propertySocietyDetails);
+
+    // 3. Changes Hook
+    const { checkFormChanges } = usePropertyChanges({
+        formRef,
+        categoryId,
+        propertyTypeId,
+        wingId,
+        initialWingId,
+        propertyData,
+        setHasChanges
+    });
+
+    // Helper functions
     const parseOptionalNumber = (value: FormDataEntryValue | null): number | null => {
         const normalized = typeof value === "string" ? value.trim() : value;
         if (normalized === null || normalized === "") return null;
@@ -50,32 +66,7 @@ export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) =
         return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
     };
 
-    const checkFormChanges = useCallback(() => {
-        if (!formRef.current) return;
-        const formData = new FormData(formRef.current);
-        const residentialToilets = parseOptionalNumber(formData.get("noOfResidentialToilets"));
-        const commercialToilets = parseOptionalNumber(formData.get("noOfCommercialToilets"));
-        const plotArea = parseOptionalNumber(formData.get("plotArea"));
-
-        const isChanged =
-            String(formData.get("plotNo") ?? "").trim() !== (propertyData?.plotNo ?? "") ||
-            String(formData.get("flatOrShopNo") ?? "").trim() !== (propertyData?.flatOrShopNo ?? "") ||
-            String(formData.get("surveyNo") ?? "").trim() !== (propertyData?.surveyNo ?? "") ||
-            String(formData.get("subZoneNo") ?? "").trim() !== (propertyData?.subZoneNo ?? "") ||
-            residentialToilets !== (propertyData?.noOfResidentialToilets ?? null) ||
-            commercialToilets !== (propertyData?.noOfCommercialToilets ?? null) ||
-            plotArea !== (propertyData?.plotArea ?? null) ||
-            categoryId !== (propertyData?.categoryId?.toString() ?? '') ||
-            propertyTypeId !== (propertyData?.propertyTypeId?.toString() ?? '') ||
-            wingId !== initialWingId;
-
-        setHasChanges(isChanged);
-    }, [categoryId, propertyTypeId, wingId, initialWingId, propertyData]);
-
-    useEffect(() => {
-        checkFormChanges();
-    }, [checkFormChanges]);
-
+    // Handlers
     const handlePropertyDescriptionChange = (_name: string, value: string) => setPropertyTypeId(value);
     const handleCategoryChange = (_name: string, value: string) => setCategoryId(value);
     const handleWingChange = (_name: string, value: string) => {
@@ -93,7 +84,6 @@ export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) =
 
         const formData = new FormData(e.currentTarget);
         
-        // Form Validation
         const validationData = {
             categoryId,
             plotArea: formData.get("plotArea"),
@@ -169,18 +159,6 @@ export const usePropertyForm = (props: PropertyFormViewProps, t: (key: string) =
             }
         });
     };
-
-    const categoryOptions = useMemo(() => 
-        propertyCategoryList.map((item) => ({ label: item.propertyCategoryName, value: String(item.id) })),
-    [propertyCategoryList]);
-
-    const wingOptions = useMemo(() => 
-        wingList.map((item) => ({ label: item.wingNo, value: String(item.id) })),
-    [wingList]);
-
-    const propertyDescriptionOptions = useMemo(() => 
-        propertyDescriptionList.map((item) => ({ label: item.propertyDescription, value: String(item.id) })),
-    [propertyDescriptionList]);
 
     return {
         formRef,

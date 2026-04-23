@@ -5,15 +5,12 @@ interface Props {
     params: Promise<{ locale: string; propertyId: string }>;
 }
 
-export default async function Layout({ children, params }: Props) {
+export default async function Layout({ children }: Props) {
 
-    const { locale, propertyId } = await params;
+    // const { locale, propertyId } = await params;
 
     return (
-        <QuickDataEntryServerLayout
-            locale={locale}
-            propertyId={propertyId}
-        >
+        <QuickDataEntryServerLayout>
             {children}
         </QuickDataEntryServerLayout>
     );

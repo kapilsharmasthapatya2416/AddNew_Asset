@@ -1,55 +1,43 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef } from 'react';
 import { toast } from 'sonner';
-import { updatePropertySocietyDetailsAction } from "@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action";
-import { societyValidations, validateForm, hasErrors } from "@/lib/utils/validation";
-import { SocietyFormProps, UpdatePropertySocietyDetailsDto } from "@/types/property-society-details.types";
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import { ConfirmContextType } from '@/components/common/ConfirmProvider';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useConfirm } from '@/components/common/ConfirmProvider';
 import { useLoading } from '@/hooks/useLoading';
-import { useState } from 'react';
+import { societyValidations, validateForm, hasErrors } from "@/lib/utils/validation";
+import { updatePropertySocietyDetailsAction } from "@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/Society/action";
+import { SocietyFormProps, UpdatePropertySocietyDetailsDto } from "@/types/property-society-details.types";
 
-export const useSocietyForm = (props: SocietyFormProps, t: (key: string) => string, confirm: ConfirmContextType['confirm'], router: AppRouterInstance) => {
+import { useSocietyChanges } from '@/hooks/useSocietyChanges';
+import { useSocietyFormState } from '@/hooks/useSocietyFormState'; 
+
+export const useSocietyForm = (props: SocietyFormProps) => {
     const { societyData, propertyIdSearch, locale } = props;
+    
+    const t = useTranslations('quickDataEntry');
+    const { confirm } = useConfirm();
+    const router = useRouter();
+    const formRef = useRef<HTMLFormElement>(null);
     const { isLoading: isUpdating, startLoading, stopLoading } = useLoading(false);
 
-    const initialManagerMobile = (societyData?.managerMobileNo ?? "").replace(/\D/g, "").split("").slice(0, 10);
-    const [managerMobileDigits, setManagerMobileDigits] = useState<string[]>(
-        Array.from({ length: 10 }, (_, i) => initialManagerMobile[i] ?? "")
-    );
+    // 1. State Hook
+    const {
+        managerMobileDigits,
+        setManagerMobileDigits,
+        secretaryMobileDigits,
+        setSecretaryMobileDigits,
+        hasChanges,
+        setHasChanges,
+    } = useSocietyFormState(societyData);
 
-    const initialSecretaryMobile = (societyData?.secretaryMobileNo ?? "").replace(/\D/g, "").split("").slice(0, 10);
-    const [secretaryMobileDigits, setSecretaryMobileDigits] = useState<string[]>(
-        Array.from({ length: 10 }, (_, i) => initialSecretaryMobile[i] ?? "")
-    );
-
-    const formRef = useRef<HTMLFormElement>(null);
-    const [hasChanges, setHasChanges] = useState(false);
-
-    const checkFormChanges = useCallback(() => {
-        if (!formRef.current) return;
-        const formData = new FormData(formRef.current);
-        const managerMobileStr = managerMobileDigits.join("");
-        const secretaryMobileStr = secretaryMobileDigits.join("");
-
-        const isChanged =
-            String(formData.get("landOwnerName") ?? "").trim() !== (societyData?.landOwnerName ?? "") ||
-            String(formData.get("builderName") ?? "").trim() !== (societyData?.builderName ?? "") ||
-            String(formData.get("societyName") ?? "").trim() !== (societyData?.societyName ?? "") ||
-            String(formData.get("societyAddress") ?? "").trim() !== (societyData?.societyAddress ?? "") ||
-            String(formData.get("societyEmailId") ?? "").trim() !== (societyData?.societyEmailId ?? "") ||
-            String(formData.get("managerName") ?? "").trim() !== (societyData?.managerName ?? "") ||
-            String(formData.get("managerEmailId") ?? "").trim() !== (societyData?.managerEmailId ?? "") ||
-            managerMobileStr !== (societyData?.managerMobileNo ?? "") ||
-            String(formData.get("secretaryName") ?? "").trim() !== (societyData?.secretaryName ?? "") ||
-            String(formData.get("secretaryEmailId") ?? "").trim() !== (societyData?.secretaryEmailId ?? "") ||
-            secretaryMobileStr !== (societyData?.secretaryMobileNo ?? "");
-
-        setHasChanges(isChanged);
-    }, [managerMobileDigits, secretaryMobileDigits, societyData]);
-
-    useEffect(() => {
-        checkFormChanges();
-    }, [checkFormChanges]);
+    // 2. Changes Hook
+    const { checkFormChanges } = useSocietyChanges({
+        formRef,
+        managerMobileDigits,
+        secretaryMobileDigits,
+        societyData,
+        setHasChanges
+    });
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
