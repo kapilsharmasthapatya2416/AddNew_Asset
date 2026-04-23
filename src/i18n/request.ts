@@ -8,6 +8,7 @@ import { defaultLocale, locales, Locale } from './config';
 
 // Validate locale and fallback to default if invalid
 const validateLocale = (locale: string | undefined): Locale => {
+  return locale && locales.includes(locale as Locale) ? (locale as Locale) : defaultLocale;
   return locale && locales.includes(locale as Locale)
     ? (locale as Locale)
     : defaultLocale;
@@ -17,12 +18,14 @@ export default getRequestConfig(async ({ locale }) => {
   const validatedLocale = validateLocale(locale);
 
   // Load all translation files
-  const [commonMessages, dashboardMessages, constructionMessages, modulesMessages,taxzoneMessages] = await Promise.all([
+  const [commonMessages, dashboardMessages,constructionMessages, floorMessages, taxzoneMessages, modulesMessages] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/construction.json`).then((m) => m.default),
-    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/floor.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/taxzone.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
+    
   ]);
 
   return {
@@ -31,8 +34,9 @@ export default getRequestConfig(async ({ locale }) => {
       common: commonMessages,
       dashboard: dashboardMessages,
       construction: constructionMessages,
-      modules: modulesMessages,
+      floor: floorMessages,
       taxZone: taxzoneMessages.taxZone,
+      modules: modulesMessages,
     },
   };
 });
