@@ -184,10 +184,16 @@ export function useAssessmentYearRangeForm({
 
   const [open, setOpen] = useState(true);
   const [, startTransition] = React.useTransition();
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const closeAndRoute = useCallback(() => {
     setOpen(false);
-    setTimeout(() => {
+    // Clear any existing timeout to prevent multiple navigations
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = null;
       startTransition(() => {
         router.push(`/${locale}${config.routePath}`);
       });
