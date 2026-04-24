@@ -1,4 +1,4 @@
-import { QuickDataEntryServerLayout } from "@/components/modules/property-tax/ptis/QuickDataEntry/QuickDataEntryServerLayout";
+import { QuickDataEntryClientWrapper } from "@/components/modules/property-tax/ptis/QuickDataEntry/QuickDataEntryClientWrapper";
 
 interface Props {
     children: React.ReactNode;
@@ -10,8 +10,8 @@ export default async function Layout({ children }: Props) {
     // const { locale, propertyId } = await params;
 
     return (
-        <QuickDataEntryServerLayout>
+        <QuickDataEntryClientWrapper>
             {children}
-        </QuickDataEntryServerLayout>
+        </QuickDataEntryClientWrapper>
     );
 }
