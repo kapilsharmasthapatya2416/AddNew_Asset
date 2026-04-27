@@ -5,7 +5,6 @@ import { UpdatePropertySocietyDetailsDto } from '@/types/property-society-detail
 import { ActionResult } from '@/types/common.types';
 import { revalidatePath } from 'next/cache';
 
-
 function getActionErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message) {
     return error.message;

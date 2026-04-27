@@ -18,7 +18,6 @@ import {
 
 import { ActionResult } from "@/types/common.types";
 
-
 import { revalidatePath } from "next/cache";
 
 // Property Basic Details
@@ -74,4 +73,4 @@ export const updatePropertyBasicDetailsAction = async (locale: string, propertyI
     } catch (error) {       
         return { success: false, error: error instanceof Error ? error.message : "Failed to update data" };
     }
-};
+}; 
