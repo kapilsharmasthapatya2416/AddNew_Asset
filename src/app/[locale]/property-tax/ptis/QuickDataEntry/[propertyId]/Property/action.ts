@@ -26,8 +26,7 @@ export async function getPropertyBasicDetailsAction(propertyId: number): Promise
     try {
         const data = await getPropertyBasicDetails(propertyId);       
         return { success: true, data };
-    } catch (error) {
-        console.error("Get property basic details error:", error);
+    } catch (error) {    
         return { success: false, error: error instanceof Error ? error.message : "Failed to fetch property details" };
     }
 }
@@ -37,8 +36,7 @@ export async function getPropertyCategoriesAction(): Promise<ActionResult<Proper
     try {
         const data = await getPropertyCategories(50);
         return { success: true, data: data ?? [] };
-    } catch (error) {
-        console.error("Get property categories error:", error);
+    } catch (error) {       
         return { success: false, error: "Failed to fetch property categories" };
     }
 }
@@ -49,7 +47,6 @@ export async function getPropertyTypesAction(search?: string): Promise<ActionRes
         const data = await getPropertyTypes(200, search);            
         return { success: true, data: data ?? [] };
     } catch (error) {
-        console.error("Get property types error:", error);
         return { success: false, error: "Failed to fetch property types" };
     }
 }
@@ -60,7 +57,6 @@ export async function getWingMasterAction(): Promise<ActionResult<WingItem[]>> {
         const data = await getWingMaster();
         return { success: true, data };
     } catch (error) {
-        console.error("Get wing master error:", error);
         return { success: false, error: "Failed to fetch wing master" };
     }
 }
@@ -75,8 +71,7 @@ export const updatePropertyBasicDetailsAction = async (locale: string, propertyI
 
         revalidatePath(`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/Property`, "page");
         return result;
-    } catch (error) {
-        console.error("Update property basic details error:", error);
+    } catch (error) {       
         return { success: false, error: error instanceof Error ? error.message : "Failed to update data" };
     }
 };

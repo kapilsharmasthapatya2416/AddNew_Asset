@@ -23,8 +23,7 @@ export async function updatePropertySocietyDetailsAction(
     const response = await updatePropertySocietyDetails(propertyId, payload);
     revalidatePath(`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/Society`, "page");
     return { success: true, data: response };
-  } catch (error) {
-    console.error('Action error updating society details:', error);
+  } catch (error) {    
     return { success: false, error: getActionErrorMessage(error) };
   }
 }
@@ -36,8 +35,7 @@ export async function getPropertySocietyDetailsAction(
   try {
     const response = await getPropertySocietyDetails(propertyId);
     return { success: true, data: response };
-  } catch (error) {
-    console.error('Action error fetching society details:', error);
+  } catch (error) {   
     return { success: false, error: getActionErrorMessage(error) };
   }
 }
