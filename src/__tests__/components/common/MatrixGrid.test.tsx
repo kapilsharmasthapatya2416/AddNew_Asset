@@ -46,8 +46,11 @@ describe('MatrixGrid', () => {
     expect(screen.getByText('(kg)')).toBeInTheDocument();
     expect(screen.getByText('Column 2')).toBeInTheDocument();
     
-    expect(screen.getByText('₹10.00')).toBeInTheDocument();
-    expect(screen.getByText('₹20.00')).toBeInTheDocument();
+    // All cells are now MatrixCellInput (inputs), so check values via inputs
+    const inputs = screen.getAllByRole('spinbutton');
+    expect(inputs).toHaveLength(4); // 2 rows × 2 columns
+    expect(inputs[0]).toHaveValue(10);
+    expect(inputs[1]).toHaveValue(20);
   });
 
   it('renders meta columns correctly', () => {
@@ -90,12 +93,17 @@ describe('MatrixGrid', () => {
       />
     );
     
-    // col1 should be inputs, col2 should be text
-    const inputs = screen.getAllByRole('spinbutton'); // input type="number"
-    expect(inputs).toHaveLength(2); // 2 rows, col1 is editable
-    expect(inputs[0]).toHaveValue(10);
+    // All cells are MatrixCellInput now, but only col1 is editable (not readonly)
+    const inputs = screen.getAllByRole('spinbutton');
+    expect(inputs).toHaveLength(4); // 2 rows × 2 columns
     
-    expect(screen.getByText('₹20.00')).toBeInTheDocument();
+    // col1 inputs (editable) - indices 0, 2
+    expect(inputs[0]).toHaveValue(10);
+    expect(inputs[0]).not.toHaveAttribute('readonly');
+    
+    // col2 inputs (readonly) - indices 1, 3
+    expect(inputs[1]).toHaveValue(20);
+    expect(inputs[1]).toHaveAttribute('readonly');
   });
 
   it('calls onCellChange when input value changes', () => {

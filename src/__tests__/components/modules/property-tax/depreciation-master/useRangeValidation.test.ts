@@ -9,6 +9,8 @@ const mockT = vi.fn((key: string) => {
     "errors.mustBeNumber": "Must be a valid number",
     "errors.invalidRange": "Min must be less than max",
     "errors.overlap": "Range overlaps with existing range",
+    "errors.cannotBeNegative": "Cannot be negative",
+    "errors.mustBe9999OrLess": "Must be 9999 or less",
   };
   return translations[key] || key;
 });

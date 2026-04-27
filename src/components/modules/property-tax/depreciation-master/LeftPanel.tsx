@@ -62,9 +62,12 @@ export function LeftPanel({
           />
         </div>
 
-        <AddButton onClick={onAddRange} disabled={saving} className="w-full text-xs py-1.5">
-          {t("addRange")}
-        </AddButton>
+        <AddButton 
+          onClick={onAddRange} 
+          disabled={saving} 
+          className="w-full text-xs py-1.5"
+          label={t("addRange")}
+        />
 
         <div className="flex-1 overflow-y-auto space-y-1.5 border-t pt-3">
           {ranges.length === 0 ? (
@@ -92,9 +95,8 @@ export function LeftPanel({
           onClick={onDeleteRange}
           disabled={saving || !selectedRangeId}
           className="w-full text-xs py-1.5"
-        >
-          {t("deleteRange")}
-        </DeleteButton>
+          aria-label={t("deleteRange")}
+        />
       </div>
     </div>
   );

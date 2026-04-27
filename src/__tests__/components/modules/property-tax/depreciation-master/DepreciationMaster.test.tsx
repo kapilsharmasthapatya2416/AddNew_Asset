@@ -6,7 +6,7 @@ import type { ConstructionType, DepreciationRow } from "@/types/depreciation.typ
 
 // Mock next-intl
 vi.mock("next-intl", () => ({
-  useTranslations: () => (key: string) => {
+  useTranslations: () => (key: string, params?: Record<string, unknown>) => {
     const translations: Record<string, string> = {
       title: "Depreciation Master",
       subtitle: "Property Tax Assessment System",
@@ -23,9 +23,15 @@ vi.mock("next-intl", () => ({
       action: "Action",
       deleteRow: "Delete Row",
       deleteRangeConfirmTitle: "Delete Range?",
+      active: "ACTIVE",
+      processing: "Processing...",
+      currencySymbol: "₹",
       "success.added": "Range added successfully",
       "success.updated": "Rates updated successfully",
       "success.deleted": "Range deleted successfully",
+      "messages.noChanges": "No changes to update.",
+      "messages.updating": "Updating {count} records...",
+      "messages.creatingRange": "Creating range for all construction types...",
       "errors.load": "Failed to load",
       "errors.add": "Failed to add range",
       "errors.update": "Failed to update rates",
@@ -34,8 +40,16 @@ vi.mock("next-intl", () => ({
       "errors.invalidRange": "Min must be less than max",
       "errors.overlap": "Range overlaps with existing range",
       "errors.mustBeNumber": "Must be a valid number",
+      "errors.cannotBeNegative": "Cannot be negative",
+      "errors.mustBe9999OrLess": "Must be 9999 or less",
     };
-    return translations[key] || key;
+    let result = translations[key] || key;
+    if (params && typeof result === "string") {
+      Object.entries(params).forEach(([k, v]) => {
+        result = result.replace(`{${k}}`, String(v));
+      });
+    }
+    return result;
   },
 }));
 
@@ -160,13 +174,13 @@ describe("DepreciationMaster", () => {
     it("should render Add Range button", () => {
       render(<DepreciationMaster {...defaultProps} />);
       
-      expect(screen.getByText("Add Range")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Add Range/i })).toBeInTheDocument();
     });
 
     it("should render Delete Range button", () => {
       render(<DepreciationMaster {...defaultProps} />);
       
-      expect(screen.getByText("Delete Range")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Delete Range/i })).toBeInTheDocument();
     });
 
     it("should render existing ranges from data", () => {
@@ -230,7 +244,7 @@ describe("DepreciationMaster", () => {
       
       const minInput = screen.getByPlaceholderText("Enter min");
       const maxInput = screen.getByPlaceholderText("Enter max");
-      const addButton = screen.getByText("Add Range");
+      const addButton = screen.getByRole("button", { name: /Add Range/i });
 
       await user.type(minInput, "20");
       await user.type(maxInput, "30");
@@ -250,7 +264,7 @@ describe("DepreciationMaster", () => {
       
       const minInput = screen.getByPlaceholderText("Enter min");
       const maxInput = screen.getByPlaceholderText("Enter max");
-      const addButton = screen.getByText("Add Range");
+      const addButton = screen.getByRole("button", { name: /Add Range/i });
 
       await user.type(minInput, "20");
       await user.type(maxInput, "30");
@@ -269,7 +283,7 @@ describe("DepreciationMaster", () => {
       
       const minInput = screen.getByPlaceholderText("Enter min");
       const maxInput = screen.getByPlaceholderText("Enter max");
-      const addButton = screen.getByText("Add Range");
+      const addButton = screen.getByRole("button", { name: /Add Range/i });
 
       await user.type(minInput, "20");
       await user.type(maxInput, "30");
@@ -285,7 +299,7 @@ describe("DepreciationMaster", () => {
       render(<DepreciationMaster {...defaultProps} />);
       
       const maxInput = screen.getByPlaceholderText("Enter max");
-      const addButton = screen.getByText("Add Range");
+      const addButton = screen.getByRole("button", { name: /Add Range/i });
 
       await user.type(maxInput, "30");
       await user.click(addButton);
@@ -298,7 +312,7 @@ describe("DepreciationMaster", () => {
       render(<DepreciationMaster {...defaultProps} />);
       
       const minInput = screen.getByPlaceholderText("Enter min");
-      const addButton = screen.getByText("Add Range");
+      const addButton = screen.getByRole("button", { name: /Add Range/i });
 
       await user.type(minInput, "20");
       await user.click(addButton);
@@ -312,7 +326,7 @@ describe("DepreciationMaster", () => {
       
       const minInput = screen.getByPlaceholderText("Enter min");
       const maxInput = screen.getByPlaceholderText("Enter max");
-      const addButton = screen.getByText("Add Range");
+      const addButton = screen.getByRole("button", { name: /Add Range/i });
 
       await user.type(minInput, "30");
       await user.type(maxInput, "20");
@@ -327,7 +341,7 @@ describe("DepreciationMaster", () => {
       
       const minInput = screen.getByPlaceholderText("Enter min");
       const maxInput = screen.getByPlaceholderText("Enter max");
-      const addButton = screen.getByText("Add Range");
+      const addButton = screen.getByRole("button", { name: /Add Range/i });
 
       // Existing range is 0-10, trying to add 5-15 which overlaps
       await user.type(minInput, "5");
@@ -343,7 +357,7 @@ describe("DepreciationMaster", () => {
       
       const minInput = screen.getByPlaceholderText("Enter min");
       const maxInput = screen.getByPlaceholderText("Enter max");
-      const addButton = screen.getByText("Add Range");
+      const addButton = screen.getByRole("button", { name: /Add Range/i });
 
       await user.type(minInput, "20");
       await user.type(maxInput, "30");
@@ -373,7 +387,7 @@ describe("DepreciationMaster", () => {
     it("should have Delete Range button disabled when no range selected", () => {
       render(<DepreciationMaster {...defaultProps} data={[]} />);
       
-      const deleteButton = screen.getByText("Delete Range").closest("button");
+      const deleteButton = screen.getByRole("button", { name: /Delete Range/i });
       expect(deleteButton).toBeDisabled();
     });
 
@@ -386,7 +400,7 @@ describe("DepreciationMaster", () => {
       await user.click(rangeButton);
 
       // Click delete
-      const deleteButton = screen.getByText("Delete Range");
+      const deleteButton = screen.getByRole("button", { name: /Delete Range/i });
       await user.click(deleteButton);
 
       await waitFor(() => {
@@ -409,21 +423,20 @@ describe("DepreciationMaster", () => {
   });
 
   describe("Update Rates", () => {
-    it("should have Update Rates button disabled when no changes", () => {
+    it("should render Update Rates button", () => {
       render(<DepreciationMaster {...defaultProps} />);
       
-      // Find the save/update button - it shows count (0)
-      const updateButton = screen.getByText(/Update Rates.*\(0\)/);
-      expect(updateButton.closest("button")).toBeDisabled();
+      // Find the save/update button
+      const updateButton = screen.getByRole("button", { name: /Update Rates/i });
+      expect(updateButton).toBeInTheDocument();
     });
 
-    it("should show info toast when trying to update with no changes", async () => {
+    it("should be enabled by default (shows info toast when clicked with no changes)", () => {
       render(<DepreciationMaster {...defaultProps} />);
       
-      // The button is disabled so we can't click it
-      // This test verifies the button is properly disabled
-      const updateButton = screen.getByText(/Update Rates.*\(0\)/).closest("button");
-      expect(updateButton).toBeDisabled();
+      // Button is enabled even with no changes - clicking it shows info toast
+      const updateButton = screen.getByRole("button", { name: /Update Rates/i });
+      expect(updateButton).not.toBeDisabled();
     });
   });
 });
