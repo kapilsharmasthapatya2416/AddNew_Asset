@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useRangeValidation } from "@/components/modules/property-tax/depreciation-master/useRangeValidation";
+import { useRangeValidation } from "@/hooks/useRangeValidation";
 
 // Mock translation function
 const mockT = vi.fn((key: string) => {

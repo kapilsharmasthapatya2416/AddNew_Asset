@@ -21,7 +21,7 @@ import {
 import type { ConstructionType, DepreciationRow } from "@/types/depreciation.types";
 import { LeftPanel } from "./LeftPanel";
 import { RightPanel } from "./RightPanel";
-import { useRangeValidation } from "./useRangeValidation";
+import { useRangeValidation } from "@/hooks/useRangeValidation";
 
 type RangeRow = {
   id: string;
