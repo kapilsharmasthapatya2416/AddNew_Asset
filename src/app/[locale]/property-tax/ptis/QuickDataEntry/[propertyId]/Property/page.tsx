@@ -22,6 +22,12 @@ export default async function PropertyFormPage({ params }: PageProps): Promise<R
     const { locale, propertyId } = await params;
     setRequestLocale(locale);
 
+    const pid = Number(propertyId);
+
+    if (isNaN(pid)) {
+        throw new Error("Invalid Property Id");
+    }
+
     // ✅ Parallel API calls with clear naming
     const [
         WingMaster,

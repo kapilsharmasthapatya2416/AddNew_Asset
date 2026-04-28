@@ -15,8 +15,14 @@ export default async function SocietyFormPage({ params }: PageProps) {
     const { locale, propertyId } = await params;
     setRequestLocale(locale);
 
+    const pid = Number(propertyId);
+
+    if (isNaN(pid)) {
+        throw new Error("Invalid Property Id");
+    }
+
     const result = await getPropertySocietyDetailsAction(Number(propertyId));
-    
+
     if (!result.success) {
         throw new Error(result.error || 'Failed to load society details');
     }

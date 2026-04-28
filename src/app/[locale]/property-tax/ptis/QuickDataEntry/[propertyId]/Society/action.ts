@@ -20,9 +20,12 @@ export async function updatePropertySocietyDetailsAction(
 ): Promise<ActionResult<Awaited<ReturnType<typeof updatePropertySocietyDetails>>>> {
   try {
     const response = await updatePropertySocietyDetails(propertyId, payload);
+    if (!response.success) {
+      return response;
+    }
     revalidatePath(`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/Society`, "page");
     return { success: true, data: response };
-  } catch (error) {    
+  } catch (error) {
     return { success: false, error: getActionErrorMessage(error) };
   }
 }
