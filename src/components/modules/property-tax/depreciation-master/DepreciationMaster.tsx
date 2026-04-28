@@ -21,7 +21,7 @@ import {
 import type { DepreciationConstructionType, DepreciationRow, RangeRow, DepreciationMasterProps } from "@/types/depreciation.types";
 import { LeftPanel } from "./LeftPanel";
 import { RightPanel } from "./RightPanel";
-import { useRangeValidation } from "@/hooks/useRangeValidation";
+import { useDepreciationValidation } from "@/hooks/useDepreciationValidation";
 
 function makeRangeId(min: number, max: number): string {
   return `${min}-${max}`;
@@ -56,7 +56,7 @@ export default function DepreciationMaster({
   const [ratesByRange, setRatesByRange] = useState<Record<string, Record<number, number>>>({});
 
   /* ================= VALIDATION HOOK ================= */
-  const { validateMinMax, sanitizeInput } = useRangeValidation(t, ranges);
+  const { validateMinMax, sanitizeInput } = useDepreciationValidation(t, ranges);
 
   /* ================= URL NAVIGATION ================= */
   const buildUrl = useCallback(

@@ -1,4 +1,5 @@
 import { apiClient } from '@/services/api.service';
+import { getAppConfig } from '@/config/app.config';
 import {
   Floor,
   FloorFormModel,
@@ -200,12 +201,20 @@ export async function deleteFloor(id: number): Promise<void> {
   try {
     if (id <= 0) throw new Error('Valid Floor ID required');
 
-    const response = await apiClient.delete(`/Floor/${id}/purge`);
+    // Use fetch directly for /purge endpoint as it returns 204/empty body
+    // which apiClient.delete() cannot handle (JSON parse error on empty response)
+    const config = getAppConfig();
+    const response = await fetch(`${config.api.baseUrl}/Floor/${id}/purge`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    if (!response.success) {
+    if (!response.ok) {
       throw new ApiError(
-        response.statusCode || 500,
-        response.error || '',
+        response.status,
+        response.statusText || 'Delete failed',
         'Delete floor failed'
       );
     }

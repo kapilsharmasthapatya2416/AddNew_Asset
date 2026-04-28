@@ -1,4 +1,5 @@
 import { apiClient } from '@/services/api.service';
+import { getAppConfig } from '@/config/app.config';
 import {
   SubFloor,
   SubFloorFormModel,
@@ -200,12 +201,20 @@ export async function deleteSubFloor(id: number): Promise<void> {
       throw new Error('Valid SubFloor ID required');
     }
 
-    const response = await apiClient.delete(`/SubFloor/${id}/purge`);
+    // Use fetch directly for /purge endpoint as it returns 204/empty body
+    // which apiClient.delete() cannot handle (JSON parse error on empty response)
+    const config = getAppConfig();
+    const response = await fetch(`${config.api.baseUrl}/SubFloor/${id}/purge`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    if (!response.success) {
+    if (!response.ok) {
       throw new ApiError(
-        response.statusCode || 500,
-        response.error || '',
+        response.status,
+        response.statusText || 'Delete failed',
         'Delete subfloor failed'
       );
     }

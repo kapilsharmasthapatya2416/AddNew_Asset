@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useRangeValidation } from "@/hooks/useRangeValidation";
+import { useDepreciationValidation } from "@/hooks/useDepreciationValidation";
 
 // Mock translation function
 const mockT = vi.fn((key: string) => {
@@ -15,7 +15,7 @@ const mockT = vi.fn((key: string) => {
   return translations[key] || key;
 });
 
-describe("useRangeValidation", () => {
+describe("useDepreciationValidation", () => {
   const existingRanges = [
     { id: "5-10", min: 5, max: 10, label: "5-10" },
     { id: "20-30", min: 20, max: 30, label: "20-30" },
@@ -28,7 +28,7 @@ describe("useRangeValidation", () => {
 
   describe("validateMinMax", () => {
     it("should return valid for a correct non-overlapping range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("11", "19");
 
       expect(validation.valid).toBe(true);
@@ -37,7 +37,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when min is empty", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("", "10");
 
       expect(validation.valid).toBe(false);
@@ -45,7 +45,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when max is empty", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("5", "");
 
       expect(validation.valid).toBe(false);
@@ -53,7 +53,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when both min and max are empty", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("", "");
 
       expect(validation.valid).toBe(false);
@@ -62,7 +62,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when min is not a number", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("abc", "10");
 
       expect(validation.valid).toBe(false);
@@ -70,7 +70,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when max is not a number", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("5", "xyz");
 
       expect(validation.valid).toBe(false);
@@ -78,7 +78,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when min is greater than max", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("20", "10");
 
       expect(validation.valid).toBe(false);
@@ -86,7 +86,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when min equals max", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("10", "10");
 
       expect(validation.valid).toBe(false);
@@ -94,7 +94,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when min exceeds 9999", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("10000", "20000");
 
       expect(validation.valid).toBe(false);
@@ -102,7 +102,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should return error when max exceeds 9999", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("100", "10000");
 
       expect(validation.valid).toBe(false);
@@ -112,7 +112,7 @@ describe("useRangeValidation", () => {
 
   describe("checkOverlap", () => {
     it("should detect overlap when new range is completely inside existing range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("6", "9");
 
       expect(validation.valid).toBe(false);
@@ -120,7 +120,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should detect overlap when new range starts inside existing range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("8", "15");
 
       expect(validation.valid).toBe(false);
@@ -128,7 +128,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should detect overlap when new range ends inside existing range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("1", "7");
 
       expect(validation.valid).toBe(false);
@@ -136,7 +136,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should detect overlap when new range completely contains existing range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("1", "15");
 
       expect(validation.valid).toBe(false);
@@ -144,7 +144,7 @@ describe("useRangeValidation", () => {
     });
 
     it("should detect overlap when new range exactly matches existing range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("5", "10");
 
       expect(validation.valid).toBe(false);
@@ -152,28 +152,28 @@ describe("useRangeValidation", () => {
     });
 
     it("should NOT detect overlap when new range is completely before existing range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("1", "4");
 
       expect(validation.valid).toBe(true);
     });
 
     it("should NOT detect overlap when new range is completely after existing range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("61", "70");
 
       expect(validation.valid).toBe(true);
     });
 
     it("should NOT detect overlap when new range is between existing ranges", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       const validation = result.current.validateMinMax("11", "19");
 
       expect(validation.valid).toBe(true);
     });
 
     it("should detect overlap when new range touches boundary of existing range", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, existingRanges));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, existingRanges));
       // Range 5-10 exists, testing 10-15 which touches at 10
       const validation = result.current.validateMinMax("10", "15");
 
@@ -184,7 +184,7 @@ describe("useRangeValidation", () => {
 
   describe("sanitizeInput", () => {
     it("should remove non-digit characters", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, []));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, []));
       
       expect(result.current.sanitizeInput("abc123")).toBe("123");
       expect(result.current.sanitizeInput("12.34")).toBe("1234");
@@ -193,27 +193,27 @@ describe("useRangeValidation", () => {
     });
 
     it("should limit input to 4 characters", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, []));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, []));
       
       expect(result.current.sanitizeInput("12345")).toBe("1234");
       expect(result.current.sanitizeInput("123456789")).toBe("1234");
     });
 
     it("should return empty string for non-numeric input", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, []));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, []));
       
       expect(result.current.sanitizeInput("abc")).toBe("");
       expect(result.current.sanitizeInput("!@#$")).toBe("");
     });
 
     it("should handle empty input", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, []));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, []));
       
       expect(result.current.sanitizeInput("")).toBe("");
     });
 
     it("should preserve valid numeric input", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, []));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, []));
       
       expect(result.current.sanitizeInput("1234")).toBe("1234");
       expect(result.current.sanitizeInput("0")).toBe("0");
@@ -223,7 +223,7 @@ describe("useRangeValidation", () => {
 
   describe("with empty existing ranges", () => {
     it("should allow any valid range when no existing ranges", () => {
-      const { result } = renderHook(() => useRangeValidation(mockT, []));
+      const { result } = renderHook(() => useDepreciationValidation(mockT, []));
       
       const validation1 = result.current.validateMinMax("0", "100");
       expect(validation1.valid).toBe(true);

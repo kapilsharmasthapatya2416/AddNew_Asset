@@ -37,12 +37,14 @@ class ApiClient {
       if (!response.ok) {
         return {
           success: false,
+          statusCode: response.status,
           error: data.message || 'An error occurred',
         };
       }
 
       return {
         success: true,
+        statusCode: response.status,
         data,
       };
     } catch (error) {
