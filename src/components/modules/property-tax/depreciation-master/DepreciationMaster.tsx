@@ -123,7 +123,9 @@ export default function DepreciationMaster({
   );
 
   useEffect(() => {
-    setConstructionTypes(initialConstructionTypes);
+    setConstructionTypes(prev => 
+      prev !== initialConstructionTypes ? initialConstructionTypes : prev
+    );
     buildUiFromDb(initialConstructionTypes, data);
     setPendingChanges({});
   }, [initialConstructionTypes, data, buildUiFromDb]);
