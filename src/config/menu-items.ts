@@ -93,13 +93,24 @@ export const getIconNameForScreen = (screenName: string, moduleName: string): st
 };
 
 export const transformScreensToMenuItems = (screens: UserScreenAccess[]): MenuItem[] => {
-  const menuScreens = screens.filter((s) => s.isMenu);
+  if (process.env.NODE_ENV === 'development' && screens.length > 0) {
+    console.log('[transformScreensToMenuItems] Sample screen:', JSON.stringify(screens[0]));
+  }
+
+  // Handle both boolean and numeric isMenu flag
+  const menuScreens = screens.filter((s) => {
+    const isMenu = typeof s.isMenu === 'boolean' ? s.isMenu : Number(s.isMenu) === 1;
+    return isMenu && s.routePath && s.routePath !== '#';
+  });
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[transformScreensToMenuItems] Filtered ${screens.length} down to ${menuScreens.length} items`);
+  }
 
   return menuScreens.map((screen) => {
     let href = screen.routePath;
-    // Only allow internal links (must start with /)
     if (!href || !href.startsWith('/')) {
-      href = '/';
+      href = href ? `/${href}` : '/';
     }
 
     if (screen.screenName.toUpperCase() === 'PTIS') {

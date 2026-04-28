@@ -6,7 +6,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { Sidebar } from './Sidebar';
 import { transformScreensToMenuItems, type MenuItem } from '@/config/menu-items';
-import { userScreenAccessService } from '@/lib/api/user-screen-access.service';
+import { sidebarNavigationService } from '@/lib/api/sidebar-navigation.service';
 import { getUserIdFromCookies } from '@/lib/utils/auth-session';
 
 export interface MainLayoutProps {
@@ -31,13 +31,42 @@ function clientIpFromHeaders(h: Headers): string | undefined {
  */
 const fetchUserMenuItems = cache(async (userId: number, authToken: string) => {
   try {
-    const response = await userScreenAccessService.getScreensForUser(userId, authToken);
-    if (response.success && Array.isArray(response.data) && response.data.length > 0) {
-      return transformScreensToMenuItems(response.data);
+    // Fetch groups and screens in parallel
+    const [groupsRes, screensRes] = await Promise.all([
+      sidebarNavigationService.getScreenGroups(),
+      sidebarNavigationService.getScreens(),
+    ]);
+
+    if (groupsRes.success && screensRes.success) {
+      const groups = groupsRes.data?.items || [];
+      const screens = screensRes.data?.items || [];
+      
+      // Build hierarchical menu structure
+      const menuItems: MenuItem[] = groups.map(group => {
+        // Include screens that are active and have a valid route
+        const groupScreens = screens
+          .filter(s => s.screenGroupId === group.id && s.isActive && (s.isMenu || (s.routePath && s.routePath !== '#')))
+          .sort((a, b) => a.displayOrder - b.displayOrder);
+
+        return {
+          name: group.screenGroupName,
+          nameHi: group.screenGroupLocalName || group.screenGroupName,
+          iconName: group.screenGroupIcon || 'LayoutGrid',
+          href: '#', 
+          subItems: groupScreens.map(s => ({
+            name: s.screenName,
+            href: s.routePath.startsWith('/') ? s.routePath : `/${s.routePath}`
+          }))
+        };
+      });
+
+      // Only show groups that have at least one valid screen
+      return menuItems.filter(m => m.subItems && m.subItems.length > 0);
     }
-  } catch {
-    /* Fallback to empty menu */
+  } catch (error) {
+    console.error('Failed to fetch dynamic sidebar menu:', error);
   }
+  
   return [];
 });
 

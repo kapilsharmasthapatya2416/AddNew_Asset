@@ -286,12 +286,34 @@ class ApiClient {
         cleanHeaders[key] = String(value).replace(/[^\x00-\x7F]/g, '');
       });
 
-      const response = await serverFetch(url, {
-        ...options,
-        signal: controller.signal,
-        headers: cleanHeaders,
-        cache: 'no-store', // SSR should not cache authenticated responses
-      });
+      const LOCAL_HTTPS_RE = /^https:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//;
+      const useRelaxedTls = 
+        typeof window === 'undefined' && 
+        process.env.NODE_ENV === 'development' && 
+        LOCAL_HTTPS_RE.test(url);
+
+      let response: Response;
+      if (useRelaxedTls) {
+        const undici = await import('undici');
+        if (!(this as any)._relaxedAgent) {
+          (this as any)._relaxedAgent = new undici.Agent({ connect: { rejectUnauthorized: false } });
+        }
+        
+        const undiciRes = await undici.fetch(url, {
+          ...options,
+          headers: cleanHeaders,
+          dispatcher: (this as any)._relaxedAgent,
+          signal: controller.signal,
+        } as any);
+        response = undiciRes as unknown as Response;
+      } else {
+        response = await serverFetch(url, {
+          ...options,
+          signal: controller.signal,
+          headers: cleanHeaders,
+          cache: 'no-store',
+        });
+      }
 
       clearTimeout(timeoutId);
 

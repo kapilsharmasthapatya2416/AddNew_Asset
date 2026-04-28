@@ -16,9 +16,33 @@ class UserScreenAccessService {
    * GET /api/UserScreenAccess/user/{userId}
    */
   async getScreensForUser(userId: number, token?: string): Promise<ApiResponse<UserScreenAccess[]>> {
-    return apiClient.get<UserScreenAccess[]>(`/UserScreenAccess/user/${userId}`, {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[UserScreenAccessService] Fetching screens for userId: ${userId}`);
+    }
+
+    const response = await apiClient.get<any>(`/UserScreenAccess/user/${userId}`, {
       headers: authHeaders(token),
     });
+
+    if (response.success && response.data) {
+      const data = response.data;
+      const screens = Array.isArray(data) ? data : (data.items || data.data || data.result || []);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[UserScreenAccessService] Found ${screens.length} screens for userId: ${userId}`);
+      }
+
+      return {
+        ...response,
+        data: screens as UserScreenAccess[]
+      };
+    }
+
+    if (process.env.NODE_ENV === 'development' && !response.success) {
+      console.error(`[UserScreenAccessService] Failed to fetch screens: ${response.error} (Status: ${response.statusCode})`);
+    }
+
+    return response;
   }
 
   /** Legacy: screens by role id */
