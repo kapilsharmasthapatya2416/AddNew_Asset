@@ -44,7 +44,7 @@
         "noRecordsToUpdate": "अद्यतनित करण्यासाठी कोणत्याही नोंदी नाहीत",
         "bulkOperationSuccess": "यशस्वीरित्या {message}",
         "bulkOperationPartialSuccess": "{message}",
-        "bulkOperationFailed": "नोंदी प्रक्रिया करण्यात अयशस्वी. लॉग तपासा.",
+        "bulkOperationFailed": "नोंदी प्रक्रिया करण्यात अयशस्वी. तपासा.",
         "noChangesDetectedBulk": "कोणतेही बदल आढळले नाहीत",
         "bulkActionFailed": "मोठ्या प्रमाणात कृती अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
         "recordsGeneratedSuccess": "यशस्वीरित्या {count} नोंदी तयार केल्या",
@@ -55,6 +55,17 @@
         "updated": "अद्यतनित केले",
         "failed": "अयशस्वी"
       }
+    },
+    "error": {
+      "title": "काहीतरी चुकले आहे",
+      "description": "भारांकन मास्टर पेज लोड करताना आम्हाला त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
+      "tryAgain": "पुन्हा प्रयत्न करा",
+      "goHome": "होमवर जा",
+      "errorId": "त्रुटी आयडी: {id}"
+    },
+    "loading": {
+      "message": "भारांकन मास्टर लोड होत आहे...",
+      "description": "आम्ही भारांकन घटक डेटा मिळवत असताना कृपया प्रतीक्षा करा"
     }
   }
 }

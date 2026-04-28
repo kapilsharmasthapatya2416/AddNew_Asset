@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { FloorFactorCVMaster } from "@/types/weightageMaster.types";
+import { FloorFactorCVMaster } from "@/types/floor-cv-weightageMaster.types";
 import { useFloorCvRowOps } from "./useFloorCvRowOps";
 import { useFloorCvBulkOps } from "./useFloorCvBulkOps";
 
@@ -45,7 +45,7 @@ export function useFloorCvWeightage({
     const [isBulkUpdating, setIsBulkUpdating] = useState(false);
     const [isGeneratingAll, setIsGeneratingAll] = useState(false);
 
-    const newRecordsCount = data.filter((row) => row.floorFactorId === 0).length;
+    const newRecordsCount = data.filter((row) => row.id === 0).length;
     const hasNewRecords = newRecordsCount > 0;
 
     const currentSearchTerm = searchParams.get("q") || "";
@@ -76,10 +76,10 @@ export function useFloorCvWeightage({
     }, [hasNewRecords, tW, addToast]);
 
     // Helper function to generate unique row identifier
-    // Uses floorFactorId-floorId-yearRangeCVID-fromYear-toYear combination to ensure uniqueness
-    // This is critical for rows with floorFactorId === 0 (new records) and handles undefined yearRangeCVID
+    // Uses id-floorId-yearRangeCVID-fromYear-toYear combination to ensure uniqueness
+    // This is critical for rows with id === 0 (new records) and handles undefined yearRangeCVID
     const getRowUid = (row: FloorFactorCVMaster): string => {
-        return `${row.floorFactorId}-${row.floorId}-${row.yearRangeCVID || "noYear"}-${row.fromYear}-${row.toYear}`;
+        return `${row.id}-${row.floorId}-${row.yearRangeCVID || "noYear"}-${row.fromYear}-${row.toYear}`;
     };
 
     // Helper function to find row by UID

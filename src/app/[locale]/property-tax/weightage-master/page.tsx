@@ -1,7 +1,7 @@
 import React from "react";
 import FloorCvWeightageMaster from "@/components/modules/property-tax/weightage-mastercv/FloorCvWeightageMaster";
 import { fetchFloorFactorCVMasterPagedServerAction } from "./action";
-import { getAssessmentYearsPagedServerCV, getFloorPaged } from "@/lib/api/weightageMaster.service";
+import { getAssessmentYearsPagedServerCV, getFloorPaged } from "@/lib/api/floor-cv-weightageMaster.service";
 
 
 interface PageProps {
@@ -30,7 +30,7 @@ export default async function Page({ searchParams }: PageProps): Promise<React.R
   const assessmentYearData = await getAssessmentYearsPagedServerCV(1, -1);
   const assessmentYearOptions = assessmentYearData.items.map((year) => ({
     label: `${year.fromYear}-${year.toYear}`,
-    value: year.yearRangeCVId.toString(),
+    value: year.id.toString(),
   }));
 
   const result = await fetchFloorFactorCVMasterPagedServerAction(pageNumber, pageSize, searchTerm, selectedYearRange);
@@ -39,7 +39,7 @@ export default async function Page({ searchParams }: PageProps): Promise<React.R
   const floorData = await getFloorPaged(1, -1); // Fetch all floors
   const floorOptions = floorData.items.map((floor) => ({
     label: `${floor.floorCode} - ${floor.description}`,
-    value: floor.floorId.toString(),
+    value: floor.id.toString(),
   }));
 
   return (

@@ -3,7 +3,7 @@
 import React from "react";
 import { Option, Select } from "@/components/common/select";
 import { MasterTable, Column } from "@/components/common/MasterTable";
-import { FloorFactorCVMaster } from "@/types/weightageMaster.types";
+import { FloorFactorCVMaster } from "@/types/floor-cv-weightageMaster.types";
 import { UpdateButton, ClearButton, SaveButton } from "@/components/common/ActionButtons";
 import { ToastContainer } from "@/components/common/Toast";
 import { getFloorCvWeightageMasterColumns } from "./floorCvWeightageMasterColumns";
@@ -86,7 +86,7 @@ const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
 
         return (
             <div className="flex gap-2">
-                {row.floorFactorId === 0 ? (
+                {row.id === 0 ? (
                     <SaveButton
                         label={tW("common.buttons.create")}
                         size="sm"

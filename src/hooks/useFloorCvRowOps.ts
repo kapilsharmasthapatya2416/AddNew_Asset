@@ -2,7 +2,7 @@
 
 import { Dispatch, SetStateAction } from "react";
 import { useTranslations } from "next-intl";
-import { FloorFactorCVMaster } from "@/types/weightageMaster.types";
+import { FloorFactorCVMaster } from "@/types/floor-cv-weightageMaster.types";
 import {
     updateFloorFactorCVMasterAction,
     createFloorFactorCVMasterAction,
@@ -86,8 +86,8 @@ export function useFloorCvRowOps({
         setIsUpdating(true);
         try {
             let result;
-            // Check if floorFactorId is 0 - call create, otherwise call update
-            if (row.floorFactorId === 0) {
+            // Check if id is 0 - call create, otherwise call update
+            if (row.id === 0) {
                 // Prepare CREATE payload
                 const createPayload = {
                     isActive: row.isActive,
@@ -108,11 +108,11 @@ export function useFloorCvRowOps({
                     factorWithoutLift: updatedData.factorWithoutLift ?? row.factorWithoutLift,
                     yearRangeCVId: row.yearRangeCVID ?? row.yearRangeCVId ?? 0,
                 };
-                result = await updateFloorFactorCVMasterAction(row.floorFactorId, updatePayload);
+                result = await updateFloorFactorCVMasterAction(row.id, updatePayload);
             }
 
             if (result.success) {
-                if (row.floorFactorId === 0) {
+                if (row.id === 0) {
                     addToast("success", tW("common.messages.recordCreatedSuccess"));
                 } else {
                     addToast("success", tW("common.messages.recordUpdatedSuccess"));
@@ -128,7 +128,7 @@ export function useFloorCvRowOps({
                     refreshPage();
                 }, 1000);
             } else {
-                addToast("error", result.message || (row.floorFactorId === 0 ? tW("common.messages.createFailed") : tW("common.messages.updateFailed")));
+                addToast("error", result.message || (row.id === 0 ? tW("common.messages.createFailed") : tW("common.messages.updateFailed")));
             }
         } catch (error) {
             console.error("Single row update failed:", error);

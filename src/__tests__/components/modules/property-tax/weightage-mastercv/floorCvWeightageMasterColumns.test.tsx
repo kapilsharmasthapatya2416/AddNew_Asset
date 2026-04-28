@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { getFloorCvWeightageMasterColumns } from '@/components/modules/property-tax/weightage-mastercv/floorCvWeightageMasterColumns';
-import { FloorFactorCVMaster } from '@/types/weightageMaster.types';
+import { FloorFactorCVMaster } from '@/types/floor-cv-weightageMaster.types';
 
 // Extend FloorFactorCVMaster to add index signature
 type FloorFactorCVMasterWithIndex = FloorFactorCVMaster & Record<string, unknown>;
@@ -28,12 +28,12 @@ describe('getFloorCvWeightageMasterColumns', () => {
   });
 
   const mockHandleCellChange = vi.fn();
-  const mockGetRowUid = vi.fn((row: FloorFactorCVMaster) => `${row.floorFactorId}-${row.floorId}`);
+  const mockGetRowUid = vi.fn((row: FloorFactorCVMaster) => `${row.id}-${row.floorId}`);
 
   const mockEditableRows: Record<string, FloorFactorCVMaster> = {};
 
   const mockRow: FloorFactorCVMasterWithIndex = {
-    floorFactorId: 1,
+    id: 1,
     floorId: 101,
     floorCode: 'F1',
     floorDescription: 'First Floor',
@@ -186,7 +186,7 @@ describe('getFloorCvWeightageMasterColumns', () => {
   });
 
   it('isActive column renders pending badge for new records', () => {
-    const newRow: FloorFactorCVMasterWithIndex = { ...mockRow, floorFactorId: 0 };
+    const newRow: FloorFactorCVMasterWithIndex = { ...mockRow, id: 0 };
     
     const columns = getFloorCvWeightageMasterColumns({
       t: mockT,

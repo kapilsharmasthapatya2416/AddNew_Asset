@@ -8,7 +8,7 @@ import {
   updateFloorFactorCVMaster,
   bulkCreateFloorWeightageCv,
   bulkUpdateFloorFactorCVMaster,
-} from "@/lib/api/weightageMaster.service";
+} from "@/lib/api/floor-cv-weightageMaster.service";
 import { ApiError } from "@/lib/utils/api";
 import {
   FloorFactorCVMaster,
@@ -17,8 +17,8 @@ import {
   BulkFloorFactorCVMasterCreate,
   BulkFloorFactorCVMasterUpdate,
   PagedResponse,
-} from "@/types/weightageMaster.types";
-import { createFloorWeightageCv } from '@/lib/api/weightageMaster.service';
+} from "@/types/floor-cv-weightageMaster.types";
+import { createFloorWeightageCv } from '@/lib/api/floor-cv-weightageMaster.service';
 
 /**
  * Fetch paginated FloorFactorCVMaster records with filtering and sorting
@@ -80,8 +80,7 @@ export async function updateFloorFactorCVMasterAction(
   payload: FloorFactorCVMasterUpdate
 ): Promise<{ success: boolean; message?: string; statusCode?: number }> {
   try {
-    console.log('[updateFloorFactorCVMasterAction] Starting update for ID:', id);
-    console.log('[updateFloorFactorCVMasterAction] Payload:', payload);
+ 
     
     // Validate inputs before calling service
     if (!id || id <= 0) {
@@ -94,18 +93,15 @@ export async function updateFloorFactorCVMasterAction(
     }
 
     await updateFloorFactorCVMaster(id, payload);
-
-    console.log('[updateFloorFactorCVMasterAction] Update successful, revalidating paths');
-    
     // Revalidate all locale variants of the weightage master page
     for (const locale of locales) {
       revalidatePath(`/${locale}/property-tax/weightage-master`, "page");
     }
     
-    console.log('[updateFloorFactorCVMasterAction] Completed successfully');
+   
     return { success: true };
   } catch (error: unknown) {
-    console.error('[updateFloorFactorCVMasterAction] Error occurred:', error);
+   
     
     if (error instanceof ApiError) {
       console.error(
@@ -146,7 +142,6 @@ export async function createFloorFactorCVMasterAction(
   payload: FloorFactorCVMasterCreate
 ): Promise<{ success: boolean; message?: string; statusCode?: number; data?: unknown }> {
   try {
-    console.log('[createFloorFactorCVMasterAction] Payload:', payload);
     const response = await createFloorWeightageCv(payload);
     if (response.success) {
       // Optionally revalidate paths if needed
@@ -188,8 +183,7 @@ export async function bulkCreateFloorFactorCVMasterAction(
   payload: BulkFloorFactorCVMasterCreate
 ): Promise<{ success: boolean; message?: string; statusCode?: number; data?: unknown }> {
   try {
-    console.log('[bulkCreateFloorFactorCVMasterAction] Payload:', payload);
-    const response = await bulkCreateFloorWeightageCv(payload);
+      const response = await bulkCreateFloorWeightageCv(payload);
     if (response && response.success) {
       for (const locale of locales) {
         revalidatePath(`/${locale}/property-tax/weightage-master`, "page");
@@ -229,18 +223,12 @@ export async function bulkUpdateFloorFactorCVMasterAction(
   payload: BulkFloorFactorCVMasterUpdate
 ): Promise<{ success: boolean; message?: string; statusCode?: number }> {
   try {
-    console.log('[bulkUpdateFloorFactorCVMasterAction] Starting bulk update');
-    console.log('[bulkUpdateFloorFactorCVMasterAction] Payload:', payload);
-    
     await bulkUpdateFloorFactorCVMaster(payload);
 
-    console.log('[bulkUpdateFloorFactorCVMasterAction] Bulk update successful, revalidating paths');
-    
     for (const locale of locales) {
       revalidatePath(`/${locale}/property-tax/weightage-master`, "page");
     }
     
-    console.log('[bulkUpdateFloorFactorCVMasterAction] Completed successfully');
     return { success: true };
   } catch (error: unknown) {
     console.error('[bulkUpdateFloorFactorCVMasterAction] Error occurred:', error);

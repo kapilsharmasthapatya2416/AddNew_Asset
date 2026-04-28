@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle } from "lucide-react";
  
 /* =======================
    TYPES
+======================= */
  
 interface CommonStatusBadgeProps {
   className?: string;
@@ -114,8 +115,12 @@ export function StatusBadge(props: StatusBadgeProps) {
         className
       )}
     >
-      <Icon className="w-3 h-3" />
-      {displayLabel}
+      {isActive ? (
+        <CheckCircle className="w-3 h-3" />
+      ) : (
+        <AlertCircle className="w-3 h-3" />
+      )}
+      {isActive ? activeLabel : inactiveLabel}
     </span>
   );
 }

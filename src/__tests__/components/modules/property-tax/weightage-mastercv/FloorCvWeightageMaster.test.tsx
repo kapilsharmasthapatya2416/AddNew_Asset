@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor, within } from "@testing-library/rea
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import FloorCvWeightageMaster from "@/components/modules/property-tax/weightage-mastercv/FloorCvWeightageMaster";
 import { Option } from "@/components/common/select";
-import { FloorFactorCVMaster } from "@/types/weightageMaster.types";
+import { FloorFactorCVMaster } from "@/types/floor-cv-weightageMaster.types";
 import {
     updateFloorFactorCVMasterAction,
     bulkUpdateFloorFactorCVMasterAction,
@@ -87,12 +87,12 @@ vi.mock("next-intl", () => ({
 
 const mockData: FloorFactorCVMaster[] = [
     {
-        floorFactorId: 1, floorId: 101, floorCode: "F1", floorDescription: "First Floor",
+        id: 1, floorId: 101, floorCode: "F1", floorDescription: "First Floor",
         factorWithLift: 1.2, factorWithoutLift: 1.0, yearRangeCVId: 2024, yearRangeCVID: 2024,
         fromYear: 2024, toYear: 2025, isActive: true,
     },
     {
-        floorFactorId: 0, floorId: 102, floorCode: "F2", floorDescription: "Second Floor",
+        id: 0, floorId: 102, floorCode: "F2", floorDescription: "Second Floor",
         factorWithLift: 0.0, factorWithoutLift: 0.0, yearRangeCVId: 2024, yearRangeCVID: 2024,
         fromYear: 2024, toYear: 2025, isActive: true,
     },

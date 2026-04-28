@@ -1,13 +1,13 @@
 "use client";
-
+ 
 import { Dispatch, SetStateAction } from "react";
 import { useTranslations } from "next-intl";
-import { FloorFactorCVMaster } from "@/types/weightageMaster.types";
+import { FloorFactorCVMaster, FloorFactorCVBulkCreateItem, FloorFactorCVBulkUpdateItem } from "@/types/floor-cv-weightageMaster.types";
 import {
     bulkCreateFloorFactorCVMasterAction,
     bulkUpdateFloorFactorCVMasterAction,
 } from "@/app/[locale]/property-tax/weightage-master/action";
-
+ 
 export interface UseFloorCvBulkOpsParams {
     data: FloorFactorCVMaster[];
     editableRows: Record<string, FloorFactorCVMaster>;
@@ -23,7 +23,7 @@ export interface UseFloorCvBulkOpsParams {
     addToast: (type: "success" | "error" | "info" | "warning", message: string) => void;
     refreshPage: () => void;
 }
-
+ 
 export function useFloorCvBulkOps({
     data,
     editableRows,
@@ -41,7 +41,7 @@ export function useFloorCvBulkOps({
 }: UseFloorCvBulkOpsParams) {
     const t = useTranslations("floorFactorMaster");
     const tW = useTranslations("weightageMaster");
-
+ 
     // Handle filter apply with bulk factor update
     const handleApplyFilter = () => {
         // Apply bulk factor changes to filtered records
@@ -104,40 +104,38 @@ export function useFloorCvBulkOps({
             addToast("warning", tW("common.messages.noRecordsMatch"));
         }
     };
-
+ 
     // Handle bulk update from header
     const handleBulkUpdate = async () => {
         const updatedRecords = Object.entries(editableRows);
-
+ 
         if (updatedRecords.length === 0) {
             addToast("warning", tW("common.messages.noRecordsToUpdate"));
             return;
         }
-
+ 
         setIsBulkUpdating(true);
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const createPayloadVars: any[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const updatePayloadVars: any[] = [];
+ 
+        const createPayloadVars: FloorFactorCVBulkCreateItem[] = [];
+        const updatePayloadVars: FloorFactorCVBulkUpdateItem[] = [];
         let errorCount = 0;
-
+ 
         for (const [rowUid, updatedData] of updatedRecords) {
             const originalRow = findRowByUid(rowUid);
             if (!originalRow) {
                 errorCount++;
                 continue;
             }
-
+ 
             const newFactorWithLift = updatedData.factorWithLift ?? originalRow.factorWithLift;
             const newFactorWithoutLift = updatedData.factorWithoutLift ?? originalRow.factorWithoutLift;
-
+ 
             const hasChanges =
                 originalRow.factorWithLift !== newFactorWithLift ||
                 originalRow.factorWithoutLift !== newFactorWithoutLift;
-
+ 
             if (hasChanges) {
-                if (originalRow.floorFactorId === 0) {
+                if (originalRow.id === 0) {
                     createPayloadVars.push({
                         isActive: originalRow.isActive,
                         createdBy: 1, // TODO: Get from auth context
@@ -148,22 +146,26 @@ export function useFloorCvBulkOps({
                     });
                 } else {
                     updatePayloadVars.push({
-                        floorFactorId: originalRow.floorFactorId,
-                        floorId: originalRow.floorId,
-                        factorWithLift: newFactorWithLift,
-                        factorWithoutLift: newFactorWithoutLift,
-                        yearRangeCVId: originalRow.yearRangeCVID ?? originalRow.yearRangeCVId ?? 0,
+                        id: originalRow.id,
+                        data: {
+                            isActive: originalRow.isActive,
+                            updatedBy: 1, // TODO: Get from auth context
+                            floorId: originalRow.floorId,
+                            factorWithLift: newFactorWithLift,
+                            factorWithoutLift: newFactorWithoutLift,
+                            yearRangeCVId: originalRow.yearRangeCVID ?? originalRow.yearRangeCVId ?? 0,
+                        }
                     });
                 }
             }
         }
-
+ 
         try {
             let createdCount = 0;
             let updatedCount = 0;
-
+ 
             if (createPayloadVars.length > 0) {
-                const result = await bulkCreateFloorFactorCVMasterAction({ floorFactors: createPayloadVars });
+                const result = await bulkCreateFloorFactorCVMasterAction(createPayloadVars);
                 if (result && result.success) {
                     createdCount = createPayloadVars.length;
                 } else {
@@ -171,9 +173,9 @@ export function useFloorCvBulkOps({
                     console.error("Bulk create failed:", result?.message);
                 }
             }
-
+ 
             if (updatePayloadVars.length > 0) {
-                const result = await bulkUpdateFloorFactorCVMasterAction({ floorFactors: updatePayloadVars });
+                const result = await bulkUpdateFloorFactorCVMasterAction(updatePayloadVars);
                 if (result && result.success) {
                     updatedCount = updatePayloadVars.length;
                 } else {
@@ -181,9 +183,9 @@ export function useFloorCvBulkOps({
                     console.error("Bulk update failed:", result?.message);
                 }
             }
-
+ 
             const totalSuccess = createdCount + updatedCount;
-
+ 
             if (totalSuccess > 0 && errorCount === 0) {
                 const successMsg = [];
                 if (createdCount > 0) successMsg.push(`${createdCount} ${tW("common.messages.created")}`);
@@ -211,27 +213,25 @@ export function useFloorCvBulkOps({
             setIsBulkUpdating(false);
         }
     };
-
+ 
     // Handle Generate All uncreated records
     const handleGenerateAll = async () => {
-        const newRecords = data.filter((row) => row.floorFactorId === 0);
+        const newRecords = data.filter((row) => row.id === 0);
         if (newRecords.length === 0) return;
-
+ 
         setIsGeneratingAll(true);
         try {
-            const payload = {
-                floorFactors: newRecords.map((row) => ({
-                    isActive: row.isActive,
-                    createdBy: 1, // TODO: Get from auth context
-                    floorId: row.floorId,
-                    factorWithLift: row.factorWithLift,
-                    factorWithoutLift: row.factorWithoutLift,
-                    yearRangeCVId: row.yearRangeCVID ?? row.yearRangeCVId ?? 0,
-                })),
-            };
-
+            const payload: FloorFactorCVBulkCreateItem[] = newRecords.map((row) => ({
+                isActive: row.isActive,
+                createdBy: 1, // TODO: Get from auth context
+                floorId: row.floorId,
+                factorWithLift: row.factorWithLift,
+                factorWithoutLift: row.factorWithoutLift,
+                yearRangeCVId: row.yearRangeCVID ?? row.yearRangeCVId ?? 0,
+            }));
+ 
             const result = await bulkCreateFloorFactorCVMasterAction(payload);
-
+ 
             if (result && result.success) {
                 addToast("success", tW("common.messages.recordsGeneratedSuccess", { count: newRecords.length }));
                 setTimeout(() => { refreshPage(); }, 1500);
@@ -245,7 +245,7 @@ export function useFloorCvBulkOps({
             setIsGeneratingAll(false);
         }
     };
-
+ 
     return {
         handleApplyFilter,
         handleBulkUpdate,

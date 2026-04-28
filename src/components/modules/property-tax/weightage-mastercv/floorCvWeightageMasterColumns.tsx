@@ -1,6 +1,6 @@
 import { Column } from '@/components/common/MasterTable';
 import { MatrixCellInput, StatusBadge } from '@/components/common';
-import { FloorFactorCVMaster } from '@/types/weightageMaster.types';
+import { FloorFactorCVMaster } from '@/types/floor-cv-weightageMaster.types';
 
 // Extend FloorFactorCVMaster to add index signature
 type FloorFactorCVMasterWithIndex = FloorFactorCVMaster & Record<string, unknown>;
@@ -82,7 +82,7 @@ export const getFloorCvWeightageMasterColumns = ({
       width: "14%",
       isStatus: true,
       render: (value: unknown, row: FloorFactorCVMaster) => {
-        if (row.floorFactorId === 0) {
+        if (row.id === 0) {
           return <StatusBadge variant="pending" />;
         }
         return (
