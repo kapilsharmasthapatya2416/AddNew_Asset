@@ -1,5 +1,13 @@
 import { ApiResponse } from "@/types/common.types";
 
+/**
+ * API Utilities
+ * Common utilities for API error handling
+ */
+
+/**
+ * Custom error class for API errors with structured information
+ */
 export class ApiError extends Error {
   public responseText: string;
 
@@ -58,4 +66,15 @@ export function handleApiResponse<T>(response: ApiResponse<T>, message: string):
   }
 
   return response.data;
+ * Validates API response and throws ApiError if not ok
+ */
+export async function validateResponse(response: Response, context: string): Promise<void> {
+  if (!response.ok) {
+    const responseText = await response.text();
+    throw new ApiError(
+      response.status,
+      responseText,
+      `${context}: ${response.status} ${response.statusText}`
+    );
+  }
 }

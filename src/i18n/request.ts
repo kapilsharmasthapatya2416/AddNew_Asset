@@ -19,6 +19,16 @@ export default getRequestConfig(async ({ locale }) => {
 
   // Load all translation files
   const [commonMessages, dashboardMessages, constructionMessages, modulesMessages, taxzoneMessages, quickDataEntryMessages, floorMessages] = await Promise.all([
+  const [
+    commonMessages,
+    dashboardMessages,
+    constructionMessages,
+    floorMessages,
+    taxzoneMessages,
+    rateSectionMasterMessages,
+    assessmentYearRangeMessages,
+    modulesMessages
+  ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/construction.json`).then((m) => m.default),
@@ -27,6 +37,9 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/quickDataEntry.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
 
+    import(`./locales/${validatedLocale}/rateSectionMaster.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/assessmentYearRange.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default)  
   ]);
 
   return {
@@ -39,6 +52,11 @@ export default getRequestConfig(async ({ locale }) => {
       quickDataEntry: quickDataEntryMessages,
       floor: floorMessages,
       taxZone: taxzoneMessages.taxZone,
+      floor: floorMessages,      
+      taxZone: taxzoneMessages.taxZone,
+      rateSectionMaster: rateSectionMasterMessages,
+      assessmentYearRange: assessmentYearRangeMessages,
+      modules: modulesMessages     
     },
   };
 });
