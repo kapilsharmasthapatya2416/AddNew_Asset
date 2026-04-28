@@ -36,6 +36,7 @@ export function SidebarFrame({ closeMenuLabel, openMenuLabel = 'Open menu', chil
       setCollapsed(false);
     } else {
       setOpen(false);
+      setCollapsed(true);
     }
   };
 
@@ -60,7 +61,10 @@ export function SidebarFrame({ closeMenuLabel, openMenuLabel = 'Open menu', chil
           variant="ghost"
           aria-label={closeMenuLabel}
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden border-0 p-0 cursor-pointer rounded-none h-full w-full"
-          onClick={() => setOpen(false)}
+          onClick={() => {
+            setOpen(false);
+            setCollapsed(true);
+          }}
         />
       )}
 

@@ -43,7 +43,34 @@
       },
       "type": {
         "label": "Type",
-        "placeholder": "e.g. Headquarters"
+        "placeholder": "Select Type",
+        "options": {
+          "mainOffice": "Main Office",
+          "zonalOffice": "Zonal Office",
+          "departmentOffice": "Department Office",
+          "wardOffice": "Ward Office",
+          "subOffice": "Sub Office",
+          "headOffice": "Head Office"
+        }
+      },
+      "emailId": {
+        "label": "Email ID",
+        "placeholder": "test@example.com"
+      },
+      "phone": {
+        "label": "Phone",
+        "placeholder": "Phone number"
+      },
+      "city": {
+        "label": "City",
+        "placeholder": "Enter city"
+      },
+      "pincode": {
+        "label": "Pincode",
+        "placeholder": "6-digit pincode"
+      },
+      "establishedDate": {
+        "label": "Established Date"
       },
       "officeIncharge": {
         "label": "Office Incharge",
@@ -52,6 +79,10 @@
       "designationMasterId": {
         "label": "Designation",
         "placeholder": "Enter Designation ID"
+      },
+      "address": {
+        "label": "Address",
+        "placeholder": "Full office address..."
       }
     },
     "validation": {

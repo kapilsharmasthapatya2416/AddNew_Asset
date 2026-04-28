@@ -214,15 +214,15 @@ export function OfficeMaster({
               value={selectedType}
               onChange={handleTypeChange}
               options={[
-                { label: "All Types", value: "" },
-                { label: "Main Office", value: "Main Office" },
-                { label: "Zonal Office", value: "Zonal Office" },
-                { label: "Department Office", value: "Department Office" },
-                { label: "Ward Office", value: "Ward Office" },
-                { label: "Sub Office", value: "Sub Office" },
-                { label: "Head Office", value: "Head Office" },
+                { label: t("form.fields.type.placeholder") || "All Types", value: "" },
+                { label: t("form.fields.type.options.mainOffice") || "Main Office", value: "Main Office" },
+                { label: t("form.fields.type.options.zonalOffice") || "Zonal Office", value: "Zonal Office" },
+                { label: t("form.fields.type.options.departmentOffice") || "Department Office", value: "Department Office" },
+                { label: t("form.fields.type.options.wardOffice") || "Ward Office", value: "Ward Office" },
+                { label: t("form.fields.type.options.subOffice") || "Sub Office", value: "Sub Office" },
+                { label: t("form.fields.type.options.headOffice") || "Head Office", value: "Head Office" },
               ]}
-              placeholder="Filter by Type"
+              placeholder={t("form.fields.type.placeholder") || "Filter by Type"}
               className="w-48"
               selectSize="sm"
             />
@@ -230,11 +230,11 @@ export function OfficeMaster({
               value={selectedStatus}
               onChange={handleStatusChange}
               options={[
-                { label: "All Status", value: "" },
+                { label: tCommon("status.all") || "All Status", value: "" },
                 { label: tCommon("status.active"), value: "true" },
                 { label: tCommon("status.inactive"), value: "false" },
               ]}
-              placeholder="Status"
+              placeholder={tCommon("status.label") || "Status"}
               className="w-36"
               selectSize="sm"
             />

@@ -42,10 +42,50 @@
         "placeholder": "e.g. Main Branch"
       },
       "type": {
-        "label": "Type",
-        "placeholder": "e.g. Headquarters"
+        "label": "प्रकार",
+        "placeholder": "प्रकार चुनें",
+        "options": {
+          "mainOffice": "मुख्य कार्यालय",
+          "zonalOffice": "क्षेत्रीय कार्यालय",
+          "departmentOffice": "विभाग कार्यालय",
+          "wardOffice": "वार्ड कार्यालय",
+          "subOffice": "उप कार्यालय",
+          "headOffice": "प्रधान कार्यालय"
+        }
+      },
+      "emailId": {
+        "label": "ईमेल आईडी",
+        "placeholder": "test@example.com"
+      },
+      "phone": {
+        "label": "फोन",
+        "placeholder": "फोन नंबर"
+      },
+      "city": {
+        "label": "शहर",
+        "placeholder": "शहर दर्ज करें"
+      },
+      "pincode": {
+        "label": "पिनकोड",
+        "placeholder": "6-अंकीय पिनकोड"
+      },
+      "establishedDate": {
+        "label": "स्थापना तिथि"
+      },
+      "officeIncharge": {
+        "label": "कार्यालय प्रभारी",
+        "placeholder": "प्रभारी आईडी दर्ज करें"
+      },
+      "designationMasterId": {
+        "label": "पद",
+        "placeholder": "पद आईडी दर्ज करें"
+      },
+      "address": {
+        "label": "पता",
+        "placeholder": "कार्यालय का पूरा पता..."
       }
     },
+    "detailsSection": "कार्यालय विवरण",
     "validation": {
       "officeCodeRequired": "Office code is required",
       "officeNameRequired": "Office name is required"
@@ -71,6 +111,12 @@
     "validationError": "Invalid data provided.",
     "notFound": "Office not found.",
     "inUse": "Cannot delete this record as it is in use."
+  },
+  "stats": {
+    "total": "कुल कार्यालय",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "records": "कुल रिकॉर्ड"
   },
   "success": {
     "created": "New office created successfully.",

@@ -270,7 +270,7 @@ class ApiClient {
         const csrfToken = await this.getCsrfToken();
         const cookieString = await this.getCookieString();
         
-        if (token) {
+        if (token && !headers['Authorization']) {
           headers['Authorization'] = `Bearer ${token}`;
         }
 

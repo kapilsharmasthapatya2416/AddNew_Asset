@@ -76,6 +76,8 @@
     "description": "Please wait while we load the data"
   },
   "status": {
+    "all": "All Status",
+    "label": "Status",
     "active": "Active",
     "inactive": "Inactive",
     "pending": "Pending",
@@ -236,6 +238,7 @@
     "to": "to",
     "of": "of",
     "entries": "entries",
+    "onThisPage": "on this page",
     "showingEntries": "Showing {start} to {end} of {total} entries",
     "showingPage": "Page",
     "ofPages": "of {total}",
