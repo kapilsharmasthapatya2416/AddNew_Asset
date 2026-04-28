@@ -25,7 +25,8 @@ class UserScreenAccessService {
     });
 
     if (response.success && response.data) {
-      const data = response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = response.data as any;
       const screens = Array.isArray(data) ? data : (data.items || data.data || data.result || []);
       
       if (process.env.NODE_ENV === 'development') {
@@ -42,7 +43,7 @@ class UserScreenAccessService {
       console.error(`[UserScreenAccessService] Failed to fetch screens: ${response.error} (Status: ${response.statusCode})`);
     }
 
-    return response;
+    return response as ApiResponse<UserScreenAccess[]>;
   }
 
   /** Legacy: screens by role id */
