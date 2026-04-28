@@ -64,7 +64,7 @@ export function useOfficeForm({
       }
       return fieldErrors;
     },
-    []
+    [t]
   );
 
   const showError = useCallback((field: keyof OfficeFormModel): boolean =>
