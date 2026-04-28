@@ -23,12 +23,13 @@ export function SidebarFrame({ closeMenuLabel, openMenuLabel = 'Open menu', chil
 // based on the 'sidebar-expanded' class on the body.
 
   const pathname = usePathname();
+  const [lastPathname, setLastPathname] = useState(pathname);
 
-  useEffect(() => {
-    // Close mobile menu on navigation
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setOpen(false);
     setCollapsed(true);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     if (!collapsed) {
