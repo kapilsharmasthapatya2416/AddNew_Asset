@@ -66,9 +66,14 @@ export function useSearchNavigation({
         });
       }
       
-      startTransition(() => {
-        router.push(`/${locale}${basePath}?${params.toString()}`);
-      });
+      const newUrl = `/${locale}${basePath}?${params.toString()}`;
+      const currentUrl = `${window.location.pathname}${window.location.search}`;
+
+      if (newUrl !== currentUrl) {
+        startTransition(() => {
+          router.push(newUrl);
+        });
+      }
     }, debounceMs);
 
     return () => clearTimeout(timer);

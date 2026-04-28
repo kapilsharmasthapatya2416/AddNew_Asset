@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSearchNavigation } from "@/hooks/useSearchNavigation";
 import { TEXT_SANITIZE } from "@/lib/utils/validation";
@@ -43,6 +43,11 @@ export function useOfficeSearch({
     setSelectedStatus(status || "");
   }, [status]);
 
+  const extraParams = useMemo(() => ({
+    type: selectedType,
+    status: selectedStatus,
+  }), [selectedType, selectedStatus]);
+
   // Debounced search navigation
   useSearchNavigation({
     search,
@@ -53,10 +58,7 @@ export function useOfficeSearch({
     sortOrder,
     basePath: "/configuration-settings/office-master",
     startTransition,
-    extraParams: {
-      type: selectedType,
-      status: selectedStatus,
-    },
+    extraParams,
   });
 
   const handleSearchChange = (value: string) => {
