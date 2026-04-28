@@ -1,0 +1,94 @@
+{
+  "list": {
+    "title": "Office Master",
+    "subtitle": "Manage office list and details",
+    "buttons": {
+      "add": "Add Office",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "filters": {
+      "show": "दाखवा",
+      "search": "कार्यालय कोड किंवा नावाद्वारे शोधा..."
+    },
+    "table": {
+      "officeCode": "Office Code",
+      "officeName": "Office Name",
+      "type": "Type",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "pagination": {
+      "showing": "दाखवत आहे",
+      "entries": "नोंदी"
+    }
+  },
+  "form": {
+    "addTitle": "Add Office",
+    "editTitle": "Edit Office",
+    "subtitle": "Create new office",
+    "editSubtitle": "Update office details",
+    "fields": {
+      "officeCode": {
+        "label": "Office Code",
+        "placeholder": "e.g. O1"
+      },
+      "officeName": {
+        "label": "Office Name",
+        "placeholder": "e.g. Main Branch"
+      },
+      "type": {
+        "label": "Type",
+        "placeholder": "e.g. Headquarters"
+      },
+      "officeIncharge": {
+        "label": "कार्यालय प्रभारी",
+        "placeholder": "प्रभारी आयडी प्रविष्ट करा"
+      },
+      "designationMasterId": {
+        "label": "पदनाम",
+        "placeholder": "पदनाम आयडी प्रविष्ट करा"
+      }
+    },
+    "validation": {
+      "officeCodeRequired": "Office code is required",
+      "officeNameRequired": "Office name is required"
+    },
+    "status": {
+      "label": "Active Status",
+      "description": "Office is currently"
+    },
+    "actions": {
+      "cancel": "रद्द करा",
+      "save": "जतन करा",
+      "update": "अपडेट करा"
+    }
+  },
+  "delete": {
+    "confirmTitle": "Delete Office ({id})?",
+    "confirmDescription": "Are you sure you want to delete this office record?",
+    "successMessage": "Office deleted successfully",
+    "errorMessage": "Cannot delete Office."
+  },
+  "apiErrors": {
+    "duplicateCode": "Office code already exists.",
+    "validationError": "Invalid data provided.",
+    "notFound": "Office not found.",
+    "inUse": "हा रेकॉर्ड वापरात असल्याने तो काढता येणार नाही."
+  },
+  "stats": {
+    "total": "एकूण कार्यालये",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "records": "एकूण रेकॉर्ड"
+  },
+  "success": {
+    "created": "नवीन कार्यालय यशस्वीपणे तयार केले.",
+    "updated": "कार्यालय यशस्वीपणे अपडेट केले.",
+    "deleted": "कार्यालय यशस्वीपणे हटवले."
+  }
+}

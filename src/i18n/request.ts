@@ -9,9 +9,6 @@ import { defaultLocale, locales, Locale } from './config';
 // Validate locale and fallback to default if invalid
 const validateLocale = (locale: string | undefined): Locale => {
   return locale && locales.includes(locale as Locale) ? (locale as Locale) : defaultLocale;
-  return locale && locales.includes(locale as Locale)
-    ? (locale as Locale)
-    : defaultLocale;
 };
 
 export default getRequestConfig(async ({ locale }) => {
@@ -26,7 +23,8 @@ export default getRequestConfig(async ({ locale }) => {
     taxzoneMessages,
     rateSectionMasterMessages,
     assessmentYearRangeMessages,
-    modulesMessages
+    modulesMessages,
+    officeMessages
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
@@ -35,7 +33,8 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/taxzone.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/rateSectionMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/assessmentYearRange.json`).then((m) => m.default),
-    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default)  
+    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/office.json`).catch(() => ({})).then((m) => m.default || m),
   ]);
 
   return {
@@ -48,7 +47,8 @@ export default getRequestConfig(async ({ locale }) => {
       taxZone: taxzoneMessages.taxZone,
       rateSectionMaster: rateSectionMasterMessages,
       assessmentYearRange: assessmentYearRangeMessages,
-      modules: modulesMessages     
+      modules: modulesMessages,
+      office: officeMessages,
     },
   };
 });

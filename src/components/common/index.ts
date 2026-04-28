@@ -24,6 +24,9 @@ export {
   PrevPageButton,
   NextPageButton,
   LastPageButton,
+  SortAscButton,
+  SortDescButton,
+  SortDefaultButton,
 } from './ActionButtons';
 export { IconButton } from './ActionButtons';
 export { Card, CardHeader, CardTitle, CardContent } from './Card';
@@ -31,6 +34,12 @@ export type { CardProps } from './Card';
 
 export { Input } from './Input';
 export type { InputProps } from './Input';
+
+export { TextArea } from './Textarea';
+export type { TextAreaProps } from './Textarea';
+
+export { Label } from './label';
+export type { LabelProps } from './label';
 
 export { Table } from './Table';
 export type { TableProps } from './Table';
@@ -107,4 +116,3 @@ export type { CheckboxProps } from '@/types/common.types';
 
 export {RadioGroup, RadioGroupItem} from './radio-group';
 export type { RadioGroupProps, RadioGroupItemProps } from '@/types/common.types';
-
