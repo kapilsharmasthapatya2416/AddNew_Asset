@@ -40,9 +40,7 @@ export function buildSidebarTree(
     // Let's include it, it will just have an empty dropdown.
     const subItems: SubMenuItem[] = groupScreens.map((screen) => ({
       name: screen.screenName,
-      nameHi: screen.screenNameLocal || screen.screenName,
       href: screen.routePath || '#',
-      iconName: screen.screenIcon,
     }));
 
     mixedItems.push({
