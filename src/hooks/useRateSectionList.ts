@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 interface UseRateSectionListParams {
@@ -18,22 +18,16 @@ export function useRateSectionList({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [wardCounts, setWardCounts] = useState<Record<string, number>>(initialWardCounts);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Initialize state once - parent can use key prop to reset if needed
   const [searchValue, setSearchValue] = useState(initialSearch);
+  
+  // Use memoized wardCounts that updates when initialWardCounts changes
+  const wardCounts = useMemo(() => initialWardCounts, [initialWardCounts]);
+  
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const effectivePageSize = pageSize || 10;
   const totalPages = Math.ceil(totalCount / effectivePageSize);
-
-  useEffect(() => {
-    if (initialWardCounts && Object.keys(initialWardCounts).length > 0) {
-      setWardCounts(prev => ({ ...prev, ...initialWardCounts }));
-    }
-  }, [initialWardCounts]);
-
-  useEffect(() => {
-    setSearchValue(initialSearch);
-  }, [initialSearch]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
