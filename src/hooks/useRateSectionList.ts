@@ -18,16 +18,38 @@ export function useRateSectionList({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Initialize state once - parent can use key prop to reset if needed
-  const [searchValue, setSearchValue] = useState(initialSearch);
+  // Track ward counts with accumulation/merging behavior
+  // This ensures counts persist even when a rate section isn't currently selected
+  const [wardCounts, setWardCounts] = useState<Record<string, number>>(initialWardCounts);
   
-  // Use memoized wardCounts that updates when initialWardCounts changes
-  const wardCounts = useMemo(() => initialWardCounts, [initialWardCounts]);
+  // Track search value - needs to sync with URL for back/forward navigation
+  const [searchValue, setSearchValue] = useState(initialSearch);
   
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const effectivePageSize = pageSize || 10;
   const totalPages = Math.ceil(totalCount / effectivePageSize);
+
+  // Merge new ward counts into existing state (accumulate over time)
+  // Uses useMemo to avoid creating new objects on every render
+  const shouldUpdateWardCounts = useMemo(() => {
+    if (!initialWardCounts || Object.keys(initialWardCounts).length === 0) return false;
+    // Check if any new counts differ from current state
+    return Object.keys(initialWardCounts).some(
+      key => wardCounts[key] !== initialWardCounts[key]
+    );
+  }, [initialWardCounts, wardCounts]);
+
+  // Update ward counts when new data arrives
+  if (shouldUpdateWardCounts) {
+    setWardCounts(prev => ({ ...prev, ...initialWardCounts }));
+  }
+
+  // Sync searchValue with URL changes (back/forward navigation)
+  // Only update if initialSearch differs from current searchValue
+  if (initialSearch !== searchValue && searchParams.get("q") === initialSearch) {
+    setSearchValue(initialSearch);
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
