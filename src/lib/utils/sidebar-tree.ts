@@ -36,21 +36,22 @@ export function buildSidebarTree(
       .filter((s) => s.screenGroupId === group.id)
       .sort((a, b) => a.displayOrder - b.displayOrder);
 
-    // If a group has no active screens, we still might want to show it, or maybe not.
-    // Let's include it, it will just have an empty dropdown.
-    const subItems: SubMenuItem[] = groupScreens.map((screen) => ({
-      name: screen.screenName,
-      href: screen.routePath || '#',
-    }));
+    // Only include groups that have at least one active sub-screen
+    if (groupScreens.length > 0) {
+      const subItems: SubMenuItem[] = groupScreens.map((screen) => ({
+        name: screen.screenName,
+        href: screen.routePath || '#',
+      }));
 
-    mixedItems.push({
-      name: group.screenGroupName,
-      nameHi: group.screenGroupLocalName || group.screenGroupName,
-      iconName: group.screenGroupIcon,
-      href: '#', // Groups act as headers/accordions
-      subItems: subItems,
-      _order: group.displayOrder,
-    });
+      mixedItems.push({
+        name: group.screenGroupName,
+        nameHi: group.screenGroupLocalName || group.screenGroupName,
+        iconName: group.screenGroupIcon,
+        href: '#', // Groups act as headers/accordions
+        subItems: subItems,
+        _order: group.displayOrder,
+      });
+    }
   }
 
   // 4. Sort the top-level items by displayOrder

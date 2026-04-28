@@ -7,6 +7,8 @@ import { createOffice, deleteOffice, getOfficesPaged, getOfficeById, updateOffic
 import { ApiError } from "@/lib/utils/api";
 import { Office, OfficeFormModel } from "@/types/office.types";
 import { PagedResponse } from "@/types/common.types";
+import { cookies } from "next/headers";
+import { getUserIdFromCookies } from "@/lib/utils/auth-session";
 
 export async function fetchOfficePagedServerAction(
   pageNumber: number,
@@ -56,7 +58,9 @@ export async function createOfficeAction(
   data: OfficeFormModel
 ): Promise<{ success: boolean; message?: string; statusCode?: number }> {
   try {
-    await createOffice(data);
+    const cookieStore = await cookies();
+    const userId = getUserIdFromCookies(cookieStore) ?? 0;
+    await createOffice(data, userId);
     for (const locale of locales) {
       revalidatePath(`/${locale}/configuration-settings/office-master`, "page");
     }
@@ -76,7 +80,9 @@ export async function updateOfficeAction(
   data: OfficeFormModel
 ): Promise<{ success: boolean; message?: string; statusCode?: number }> {
   try {
-    await updateOffice(data);
+    const cookieStore = await cookies();
+    const userId = getUserIdFromCookies(cookieStore) ?? 0;
+    await updateOffice(data, userId);
     for (const locale of locales) {
       revalidatePath(`/${locale}/configuration-settings/office-master`, "page");
     }

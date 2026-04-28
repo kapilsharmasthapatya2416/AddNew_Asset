@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, type ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/common';
 
@@ -20,6 +21,14 @@ export function SidebarFrame({ closeMenuLabel, openMenuLabel = 'Open menu', chil
 
 // Sidebar width is now handled globally via CSS variables in globals.css
 // based on the 'sidebar-expanded' class on the body.
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Close mobile menu on navigation
+    setOpen(false);
+    setCollapsed(true);
+  }, [pathname]);
 
   useEffect(() => {
     if (!collapsed) {

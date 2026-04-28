@@ -270,16 +270,22 @@ class ApiClient {
         const csrfToken = await this.getCsrfToken();
         const cookieString = await this.getCookieString();
         
-        if (token && !headers['Authorization']) {
+        // Case-insensitive check for existing headers
+        const headerKeys = Object.keys(headers);
+        const hasAuth = headerKeys.some(k => k.toLowerCase() === 'authorization');
+        const hasCookie = headerKeys.some(k => k.toLowerCase() === 'cookie');
+        const hasCsrf = headerKeys.some(k => k.toLowerCase() === 'x-csrf-token');
+
+        if (token && !hasAuth) {
           headers['Authorization'] = `Bearer ${token}`;
         }
 
-        if (cookieString) {
+        if (cookieString && !hasCookie) {
           headers['Cookie'] = cookieString;
         }
 
         // Add CSRF token for state-changing requests
-        if (csrfToken && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method || 'GET')) {
+        if (csrfToken && !hasCsrf && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method || 'GET')) {
           headers['X-CSRF-Token'] = csrfToken;
         }
       }

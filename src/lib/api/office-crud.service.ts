@@ -82,7 +82,7 @@ export async function getOfficeById(officeId: number): Promise<Office | null> {
   }
 }
 
-export async function createOffice(data: OfficeFormModel): Promise<Office> {
+export async function createOffice(data: OfficeFormModel, userId: number): Promise<Office> {
   try {
     validateCreateFormData(data);
     const payload = {
@@ -98,7 +98,7 @@ export async function createOffice(data: OfficeFormModel): Promise<Office> {
       designationMasterId: data.designationMasterId ? Number(data.designationMasterId) : null,
       establishedDate: data.establishedDate || null,
       isActive: data.isActive,
-      createdBy: 1, 
+      createdBy: userId, 
     };
 
     const response = await apiClient.post<{ items: Office; success: boolean; message: string }>("/Office", payload);
@@ -115,7 +115,7 @@ export async function createOffice(data: OfficeFormModel): Promise<Office> {
   }
 }
 
-export async function updateOffice(data: OfficeFormModel): Promise<Office> {
+export async function updateOffice(data: OfficeFormModel, userId: number): Promise<Office> {
   try {
     validateUpdateFormData(data);
     const payload = {
@@ -132,7 +132,7 @@ export async function updateOffice(data: OfficeFormModel): Promise<Office> {
       designationMasterId: data.designationMasterId ? Number(data.designationMasterId) : null,
       establishedDate: data.establishedDate || null,
       isActive: data.isActive,
-      updatedBy: 1,
+      updatedBy: userId,
     };
 
     // Typically PUT /Office or PUT /Office/{id}. Assuming PUT /Office based on common patterns here.

@@ -28,11 +28,12 @@ function clientIpFromHeaders(h: Headers): string | undefined {
 }
 
 /**
- * Fetches menu entries for the logged-in user (deduped per request).
+ * Fetches menu entries for a specific user (deduped per request).
+ * Currently retrieves global items as the backend handles user-scoping via the session.
  */
-const fetchUserMenuItems = cache(async () => {
+const fetchUserMenuItems = cache(async (userId: number) => {
   try {
-    // Fetch groups and screens in parallel
+    // Fetch groups and screens in parallel (userId is passed for future-proofing or logging)
     const [groupsRes, screensRes] = await Promise.all([
       sidebarNavigationService.getScreenGroups(),
       sidebarNavigationService.getScreens(),
@@ -45,7 +46,7 @@ const fetchUserMenuItems = cache(async () => {
       return buildSidebarTree(groups, screens);
     }
   } catch (error) {
-    console.error('Failed to fetch dynamic sidebar menu:', error);
+    console.error(`Failed to fetch dynamic sidebar menu for user ${userId}:`, error);
   }
   
   return [];
@@ -60,7 +61,7 @@ const getLayoutChromeData = cache(async () => {
   
   let menuItems: MenuItem[] = [];
   if (authToken && userId != null) {
-    menuItems = await fetchUserMenuItems();
+    menuItems = await fetchUserMenuItems(userId);
   }
 
   return {
