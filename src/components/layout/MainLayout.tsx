@@ -29,7 +29,7 @@ function clientIpFromHeaders(h: Headers): string | undefined {
 /**
  * Fetches menu entries for the logged-in user (deduped per request).
  */
-const fetchUserMenuItems = cache(async (userId: number, authToken: string) => {
+const fetchUserMenuItems = cache(async () => {
   try {
     // Fetch groups and screens in parallel
     const [groupsRes, screensRes] = await Promise.all([
@@ -79,7 +79,7 @@ const getLayoutChromeData = cache(async () => {
   
   let menuItems: MenuItem[] = [];
   if (authToken && userId != null) {
-    menuItems = await fetchUserMenuItems(userId, authToken);
+    menuItems = await fetchUserMenuItems();
   }
 
   return {
