@@ -31,7 +31,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { locales } from '@/i18n/config';
-import type { MenuItem } from '@/config/menu-items';
+import type { MenuItem } from '@/types/menu.types';
 import { SidebarFrame } from './SidebarFrame';
 
 export interface SidebarProps {

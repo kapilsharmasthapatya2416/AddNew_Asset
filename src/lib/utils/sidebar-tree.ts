@@ -1,5 +1,5 @@
 import { ScreenGroupMaster, ScreenMaster } from '@/types/sidebar-navigation.types';
-import { MenuItem, SubMenuItem, getIconNameForScreen } from '@/config/menu-items';
+import { MenuItem, SubMenuItem } from '@/types/menu.types';
 
 export function buildSidebarTree(
   groups: ScreenGroupMaster[],
@@ -23,7 +23,7 @@ export function buildSidebarTree(
     mixedItems.push({
       name: screen.screenName,
       nameHi: screen.screenNameLocal || screen.screenName,
-      iconName: screen.screenIcon || getIconNameForScreen(screen.screenName, ''),
+      iconName: screen.screenIcon || 'LayoutGrid',
       href: screen.routePath || '#',
       subItems: [],
       _order: screen.displayOrder,
@@ -46,7 +46,7 @@ export function buildSidebarTree(
       mixedItems.push({
         name: group.screenGroupName,
         nameHi: group.screenGroupLocalName || group.screenGroupName,
-        iconName: group.screenGroupIcon || getIconNameForScreen(group.screenGroupName, ''),
+        iconName: group.screenGroupIcon || 'LayoutGrid',
         href: '#', // Groups act as headers/accordions
         subItems: subItems,
         _order: group.displayOrder,

@@ -5,7 +5,7 @@ import { getLayoutShellContextFromCookies } from '@/lib/utils/cookie';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Sidebar } from './Sidebar';
-import { type MenuItem } from '@/config/menu-items';
+import { type MenuItem } from '@/types/menu.types';
 import { sidebarNavigationService } from '@/lib/api/sidebar-navigation.service';
 import { getUserIdFromCookies } from '@/lib/utils/auth-session';
 import { buildSidebarTree } from '@/lib/utils/sidebar-tree';
