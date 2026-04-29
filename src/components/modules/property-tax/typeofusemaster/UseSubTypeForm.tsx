@@ -21,6 +21,9 @@ import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { toast } from "sonner";
 import { Drawer } from "@/components/common/Drawer";
 import { CancelButton, SaveButton, ValidationMessage } from "@/components/common";
+import { validateForm } from '@/lib/utils/validation-helpers';
+import { DESCRIPTION_REGEX, DESCRIPTION_SANITIZE } from '@/lib/utils/validation-rules';
+import type { Validator } from '@/lib/utils/validation-helpers';
 
 interface Props {
   id: string | null;
@@ -49,7 +52,7 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
   const [formData, setFormData] = useState<UseSubType>(
     initialData || {
       subTypeOfUseId: 0,
-      typeOfUseId: initialData?.typeOfUseId || queryTypeId,
+      typeOfUseId: queryTypeId,
       description: "",
       searchSequence: 0,
       isActive: true,
@@ -71,60 +74,49 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [submittedOnce, setSubmittedOnce] = useState(false);
 
-  /* ================= RULES ================= */
-  const MAX_NAME_LEN = 100;
+  // Sanitization helper using common validation patterns
+  const sanitizeDescription = (value: string, maxLength: number = 100): string => {
+    return value.replace(DESCRIPTION_SANITIZE, '').slice(0, maxLength);
+  };
 
-  const REG_NAME_REGEX = /^[\p{L}\p{M}\p{N} .,-]+$/u;
-
-  const sanitizeRegionalName = (v: string) =>
-    v.replace(/[^\p{L}\p{M}\p{N} .,-]/gu, "").slice(0, MAX_NAME_LEN);
-
-  /* ================= DUPLICATE CHECK ================= */
+  // Duplicate check helper
   const normalize = (v: string) => v.trim().toLowerCase();
 
-  const isDuplicateDescription = (description: string) => {
-    const n = normalize(description);
-    if (!n) return false;
-
-    return (allSubTypes ?? []).some((s) => {
-      const sameRecord =
-        isEdit &&
-        (s.subTypeOfUseId === formData.subTypeOfUseId ||
-          normalize(s.description ?? "") === normalize(formData.description ?? ""));
-
-      if (sameRecord) return false;
-
-      return normalize(s.description ?? "") === n;
+  const isDuplicateDescription = (desc: string): boolean => {
+    const d = normalize(desc);
+    if (!d) return false;
+    return allSubTypes.some((s) => {
+      if (isEdit && (s.subTypeOfUseId === formData.subTypeOfUseId || normalize(s.description ?? '') === normalize(formData.description ?? ''))) return false;
+      return normalize(s.description ?? '') === d;
     });
   };
 
-  /* ================= VALIDATE ================= */
-  const validate = (data: UseSubType): FieldErrors => {
-    const next: FieldErrors = {};
-
-    if (!data.typeOfUseId) next.typeId = t("messages.typeMissing");
-
-    const reg = (data.description ?? "").trim();
-    if (!reg) next.description = t("messages.subTypeNameRequired");
-    else if (reg.length > MAX_NAME_LEN)
-      next.description =
-        t("messages.subTypeNameLabel") +
-        " " +
-        t("messages.maxLength", { count: MAX_NAME_LEN });
-    else if (!REG_NAME_REGEX.test(reg))
-      next.description =
-        t("messages.subTypeNameLabel") + " " + t("messages.allowedChars");
-    else if (isDuplicateDescription(reg))
-      next.description = t("messages.duplicateSubTypeName");
-
-    const n = Number(data.searchSequence);
-    if (!Number.isFinite(n) || n < 0)
-      next.searchSequence =
-        t("messages.searchSequenceLabel") +
-        " " +
-        t("messages.sequenceNonNegative");
-
-    return next;
+  // Validation schema using common validation patterns
+  const validationSchema: Record<string, Validator> = {
+    typeOfUseId: (value: unknown) => {
+      const typeId = Number(value);
+      if (!typeId) return t('messages.typeMissing');
+      return undefined;
+    },
+    
+    description: (value: unknown) => {
+      const desc = String(value ?? '').trim();
+      
+      if (!desc) return t('messages.subTypeNameRequired');
+      if (desc.length > 100) return t('messages.subTypeNameLabel') + ' ' + t('messages.maxLength', { count: 100 });
+      if (!DESCRIPTION_REGEX.test(desc)) return t('messages.subTypeNameLabel') + ' ' + t('messages.allowedChars');
+      if (isDuplicateDescription(desc)) return t('messages.duplicateSubTypeName');
+      
+      return undefined;
+    },
+    
+    searchSequence: (value: unknown) => {
+      const seq = Number(value);
+      if (!Number.isFinite(seq) || seq < 0) {
+        return t('messages.searchSequenceLabel') + ' ' + t('messages.sequenceNonNegative');
+      }
+      return undefined;
+    }
   };
 
   const showError = (field: keyof FieldErrors) =>
@@ -138,15 +130,16 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
       let nextValue: any = value;
 
       if (key === "description" && typeof value === "string")
-        nextValue = sanitizeRegionalName(value);
-
-      if (key === "searchKey" && typeof value === "string")
-        nextValue = sanitizeShortcut(value);
+        nextValue = sanitizeDescription(value, 100);
 
       const next = { ...p, [key]: nextValue };
 
-      const v = validate(next);
-      setErrors((prev) => ({ ...prev, ...v }));
+      const validationErrors = validateForm(next, validationSchema);
+      setErrors({
+        typeId: validationErrors.typeOfUseId,
+        description: validationErrors.description,
+        searchSequence: validationErrors.searchSequence
+      });
 
       return next;
     });
@@ -165,9 +158,14 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
       searchSequence: true,
     });
 
-    const v = validate(formData);
-    setErrors(v);
-    if (Object.keys(v).length > 0) return;
+    const validationErrors = validateForm(formData, validationSchema);
+    setErrors({
+      typeId: validationErrors.typeOfUseId,
+      description: validationErrors.description,
+      searchSequence: validationErrors.searchSequence
+    });
+
+    if (Object.keys(validationErrors).length > 0) return;
 
     try {
       if (isEdit) {

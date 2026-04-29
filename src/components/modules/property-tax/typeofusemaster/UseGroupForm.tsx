@@ -37,6 +37,9 @@ import { CheckCircle2 } from "lucide-react";
 import { Drawer } from '@/components/common/Drawer';
 
 import { CancelButton, SaveButton, ValidationMessage } from '@/components/common';
+import { validateForm } from '@/lib/utils/validation-helpers';
+import { CODE_REGEX, CODE_SANITIZE, TEXT_ALLOWED, TEXT_SANITIZE } from '@/lib/utils/validation-rules';
+import type { Validator } from '@/lib/utils/validation-helpers';
 
 
 interface Props {
@@ -86,21 +89,17 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
   const [iconOpen, setIconOpen] = useState(false);
   const iconWrapRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ rules
-  const MAX_GROUP_ID_LEN = 10;
-  const GROUP_ID_REGEX = /^[A-Za-z0-9]+$/;
+  // Sanitization helpers using common validation patterns
+  const sanitizeCode = (value: string, maxLength: number = 10): string => {
+    return value.replace(CODE_SANITIZE, '').slice(0, maxLength);
+  };
 
-  const MAX_NAME_LEN = 100;
-  // ✅ Group Name: allow Unicode letters (any language) + numbers + spaces + . - ,
-  const NAME_ALL_LANG_REGEX = /^[\p{L}\p{M}\s\/,.\-]+$/u;
+  const sanitizeText = (value: string, maxLength: number = 100): string => {
+    return value.replace(TEXT_SANITIZE, '').slice(0, maxLength);
+  };
 
-  const sanitizeNameAllLang = (v: string) =>
-    v.replace(/[^\p{L}\p{M}\p{N} .,-]/gu, "").slice(0, MAX_NAME_LEN);
-
+  // Duplicate check helpers
   const normalize = (v: string) => v.trim().toLowerCase();
-
-  const sanitizeCode = (v: string) =>
-    v.replace(/[^A-Za-z0-9]/g, "").slice(0, MAX_GROUP_ID_LEN);
 
   // Helper to convert groupIcon string to UseGroupIconKey for display
   const getIconKey = (iconStr: string): UseGroupIconKey => {
@@ -136,52 +135,47 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
     return () => document.removeEventListener("mousedown", onDown);
   }, []);
 
-  const isDuplicateCode = (code: string) => {
+  const isDuplicateCode = (code: string): boolean => {
     const c = normalize(code);
     if (!c) return false;
-
-    return (allGroups ?? []).some((g) => {
+    return allGroups.some((g) => {
       if (isEdit && g.typeOfUseGroupId === formData.typeOfUseGroupId) return false;
-      return normalize(g.typeOfUseGroupCode || "") === c;
+      return normalize(g.typeOfUseGroupCode || '') === c;
     });
   };
 
-
-  const isDuplicateGroupName = (name: string) => {
+  const isDuplicateGroupName = (name: string): boolean => {
     const nm = normalize(name);
     if (!nm) return false;
-
-    return (allGroups ?? []).some((g) => {
+    return allGroups.some((g) => {
       if (isEdit && g.typeOfUseGroupId === formData.typeOfUseGroupId) return false;
-      return normalize(g.groupName || "") === nm;
+      return normalize(g.groupName || '') === nm;
     });
   };
 
-
-  const validate = (data: UseGroup): FieldErrors => {
-    const next: FieldErrors = {};
-
-    const code = (data.typeOfUseGroupCode ?? "").trim();
-
-    if (!code) next.code = t('group.fields.groupId') + ' ' + t('messages.createError', { defaultValue: 'is required.' });
-    else if (code.length > MAX_GROUP_ID_LEN)
-      next.code = t('group.fields.groupId') + ' ' + t('messages.maxLength', { count: MAX_GROUP_ID_LEN, defaultValue: 'must be maximum {count} characters.' });
-    else if (!GROUP_ID_REGEX.test(code))
-      next.code = t('group.fields.groupId') + ' ' + t('messages.onlyAlphanumeric', { defaultValue: 'must contain only letters and numbers (no special characters).' });
-    else if (isDuplicateCode(code))
-      next.code = t('messages.duplicateGroupId', { defaultValue: 'Duplicate group code is not allowed.' });
-
-    // ✅ Group Name (ALL languages)
-    const nm = (data.groupName ?? "").trim();
-    if (!nm) next.name = t('group.fields.groupName') + ' ' + t('messages.createError', { defaultValue: 'is required.' });
-    else if (nm.length > MAX_NAME_LEN)
-      next.name = t('group.fields.groupName') + ' ' + t('messages.maxLength', { count: MAX_NAME_LEN, defaultValue: 'must be maximum {count} characters.' });
-    else if (!NAME_ALL_LANG_REGEX.test(nm))
-      next.name = t('group.fields.groupName') + ' ' + t('messages.allowedChars', { defaultValue: 'can contain letters (any language), numbers, spaces and (. - ,).' });
-    else if (isDuplicateGroupName(nm))
-      next.name = t('messages.duplicateGroupName');
-
-    return next;
+  // Validation schema using common validation patterns
+  const validationSchema: Record<string, Validator> = {
+    typeOfUseGroupCode: (value: unknown) => {
+      const code = String(value ?? '').trim();
+      
+      if (!code) return t('group.fields.groupId') + ' ' + t('messages.createError');
+      if (code.length > 10) return t('group.fields.groupId') + ' ' + t('messages.maxLength', { count: 10 });
+      if (!CODE_REGEX.test(code)) return t('group.fields.groupId') + ' ' + t('messages.onlyAlphanumeric');
+      if (isDuplicateCode(code)) return t('messages.duplicateGroupId');
+      
+      return undefined;
+    },
+    
+    groupName: (value: unknown) => {
+      const name = String(value ?? '').trim();
+      
+      if (!name) return t('group.fields.groupName') + ' ' + t('messages.createError');
+      if (name.length > 100) return t('group.fields.groupName') + ' ' + t('messages.maxLength', { count: 100 });
+      if (!TEXT_ALLOWED.test(name)) return t('group.fields.groupName') + ' ' + t('messages.allowedChars');
+      if (isDuplicateGroupName(name)) return t('messages.duplicateGroupName');
+      
+      return undefined;
+    }
   };
 
   const showError = (field: keyof FieldErrors) =>
@@ -190,18 +184,24 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
   const handleBlur = (name: keyof UseGroup | "code") => {
     setTouched((p) => ({ ...p, [name as string]: true }));
 
-    const v = validate(formData);
-    setErrors((p) => ({ ...p, ...v }));
+    const validationErrors = validateForm(formData, validationSchema);
+    setErrors({
+      code: validationErrors.typeOfUseGroupCode,
+      name: validationErrors.groupName
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmittedOnce(true);
 
-    const v = validate(formData);
-    setErrors(v);
+    const validationErrors = validateForm(formData, validationSchema);
+    setErrors({
+      code: validationErrors.typeOfUseGroupCode,
+      name: validationErrors.groupName
+    });
 
-    if (Object.keys(v).length > 0) return;
+    if (Object.keys(validationErrors).length > 0) return;
 
     try {
       if (isEdit) {
@@ -330,11 +330,15 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
                 name="typeOfUseGroupCode"
                 value={formData.typeOfUseGroupCode}
                 onChange={(e) => {
-                  const cleaned = sanitizeCode(e.target.value);
+                  const cleaned = sanitizeCode(e.target.value, 10);
                   const next = { ...formData, typeOfUseGroupCode: cleaned };
                   setFormData(next);
                   if (submittedOnce || touched.code) {
-                    setErrors(validate(next));
+                    const validationErrors = validateForm(next, validationSchema);
+                    setErrors({
+                      code: validationErrors.typeOfUseGroupCode,
+                      name: validationErrors.groupName
+                    });
                   }
                 }}
                 onBlur={() => handleBlur("typeOfUseGroupCode")}
@@ -356,12 +360,16 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
                 name="groupName"
                 value={formData.groupName}
                 onChange={(e) => {
-                  const cleaned = sanitizeNameAllLang(e.target.value); // ✅ changed
+                  const cleaned = sanitizeText(e.target.value, 100);
                   const next = { ...formData, groupName: cleaned };
                   setFormData(next);
 
                   if (submittedOnce || touched.name) {
-                    setErrors(validate(next));
+                    const validationErrors = validateForm(next, validationSchema);
+                    setErrors({
+                      code: validationErrors.typeOfUseGroupCode,
+                      name: validationErrors.groupName
+                    });
                   }
                 }}
                 onBlur={() => handleBlur("groupName")}

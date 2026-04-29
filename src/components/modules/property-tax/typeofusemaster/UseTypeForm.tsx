@@ -8,10 +8,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Tag, AlertCircle } from "lucide-react";
 
 import type { UseGroup, UseType } from "@/types/typeOfUse.types";
-// import Drawer from "@/components/common/Drawer";
 
 import { Input } from "@/components/common/Input";
-// import { ValidationMessage } from "@/components/common/ValidationMessage";
 
 import {
   createUseType,
@@ -24,6 +22,9 @@ import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { toast } from "sonner";
 import { Drawer } from "@/components/common/Drawer";
 import { CancelButton, SaveButton, ValidationMessage } from "@/components/common";
+import { validateForm } from '@/lib/utils/validation-helpers';
+import { CODE_REGEX, CODE_SANITIZE, DESCRIPTION_REGEX, DESCRIPTION_SANITIZE } from '@/lib/utils/validation-rules';
+import type { Validator } from '@/lib/utils/validation-helpers';
 
 interface Props {
   id: string | null; // null = add
@@ -68,15 +69,17 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submittedOnce, setSubmittedOnce] = useState(false);
 
-  const MAX_NAME_LEN = 100;
+  // Sanitization helpers using common validation patterns
+  const sanitizeCode = (value: string, maxLength: number = 10): string => {
+    return value.replace(CODE_SANITIZE, '').slice(0, maxLength);
+  };
 
-  // ✅ Regional name: allow Unicode letters + numbers + space + . - ,
-  const REGIONAL_NAME_REGEX = /^[\p{L}\p{M}\p{N} .,-]+$/u;
+  const sanitizeDescription = (value: string, maxLength: number = 100): string => {
+    return value.replace(DESCRIPTION_SANITIZE, '').slice(0, maxLength);
+  };
 
-  // sanitize: remove disallowed chars, keep Unicode
-  const sanitizeRegionalName = (v: string) =>
-    v.replace(/[^\p{L}\p{M}\p{N} .,-]/gu, "").slice(0, MAX_NAME_LEN);
-
+  // Duplicate check helpers
+  const normalize = (v: string) => v.trim().toLowerCase();
 
   const isActive = formData.isActive ?? true;
 
@@ -96,6 +99,69 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
     [allGroups, formData.typeOfUseGroupId]
   );
 
+  const isDuplicateCode = (code: string): boolean => {
+    const c = normalize(code);
+    if (!c) return false;
+    return allTypes.some((t) => {
+      if (isEdit && (t.typeOfUseId === formData.typeOfUseId || normalize(t.typeOfUseCode) === normalize(formData.typeOfUseCode))) return false;
+      return normalize(t.typeOfUseCode) === c;
+    });
+  };
+
+  const isDuplicateDescription = (desc: string): boolean => {
+    const d = normalize(desc);
+    if (!d) return false;
+    return allTypes.some((t) => {
+      if (isEdit && (t.typeOfUseId === formData.typeOfUseId || normalize(t.description ?? '') === normalize(formData.description ?? ''))) return false;
+      return normalize(t.description ?? '') === d;
+    });
+  };
+
+  // Validation schema using common validation patterns
+  const validationSchema: Record<string, Validator> = {
+    typeOfUseCode: (value: unknown) => {
+      const code = String(value ?? '').trim();
+      
+      if (!code) return t('type.fields.typeId') + ' ' + t('messages.createError');
+      if (code.length > 10) return t('type.fields.typeId') + ' ' + t('messages.maxLength', { count: 10 });
+      if (!CODE_REGEX.test(code)) return t('type.fields.typeId') + ' ' + t('messages.onlyAlphanumeric');
+      if (isDuplicateCode(code)) return t('messages.duplicateTypeId');
+      
+      return undefined;
+    },
+    
+    type: (value: unknown) => {
+      const type = String(value ?? '').trim();
+      if (!type) return t('messages.typeRequired');
+      return undefined;
+    },
+    
+    typeOfUseGroupId: (value: unknown) => {
+      const groupId = Number(value);
+      if (!groupId) return t('messages.groupRequired');
+      return undefined;
+    },
+    
+    description: (value: unknown) => {
+      const desc = String(value ?? '').trim();
+      
+      if (!desc) return t('messages.descriptionRequired');
+      if (desc.length > 100) return t('type.fields.description') + ' ' + t('messages.maxLength', { count: 100 });
+      if (!DESCRIPTION_REGEX.test(desc)) return t('type.fields.description') + ' ' + t('messages.allowedChars');
+      if (isDuplicateDescription(desc)) return t('messages.duplicateDescription');
+      
+      return undefined;
+    },
+    
+    searchSequence: (value: unknown) => {
+      const seq = Number(value);
+      if (!Number.isFinite(seq) || seq < 0) {
+        return t('type.fields.sequence') + ' ' + t('messages.sequenceNonNegative');
+      }
+      return undefined;
+    }
+  };
+
   const clearFieldError = (field: keyof FieldErrors) => {
     setErrors((p) => {
       if (!p[field]) return p;
@@ -105,96 +171,20 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
     });
   };
 
-  const normalize = (v: string) => v.trim().toLowerCase();
-
-  const MAX_CODE_LEN = 10;
-
-  const sanitizeCode = (v: string) =>
-    v.replace(/[^A-Za-z0-9]/g, "").slice(0, MAX_CODE_LEN);
-
-  const isDuplicateCode = (code: string) => {
-    const c = normalize(code);
-    if (!c) return false;
-
-    return (allTypes ?? []).some((t) => {
-      // exclude same record during edit
-      const sameRecord =
-        isEdit &&
-        (t.typeOfUseId === formData.typeOfUseId || normalize(t.typeOfUseCode) === normalize(formData.typeOfUseCode));
-      if (sameRecord) return false;
-
-      return normalize(t.typeOfUseCode) === c || normalize(String(t.typeOfUseId)) === c;
-    });
-  };
-
-
-  const isDuplicateDescription = (name: string) => {
-    const n = normalize(name);
-    if (!n) return false;
-
-    return (allTypes ?? []).some((t) => {
-      const sameRecord =
-        isEdit &&
-        (t.typeOfUseId === formData.typeOfUseId ||
-          normalize(t.description ?? "") === normalize(formData.description ?? ""));
-
-      if (sameRecord) return false;
-
-      return normalize(t.description ?? "") === n;
-    });
-  };
-
-
-
-
-  const validate = (): FieldErrors => {
-    const nextErrors: FieldErrors = {};
-
-    const seq = Number(formData.searchSequence ?? 0);
-    if (!Number.isFinite(seq) || seq < 0) {
-      nextErrors.searchSequence = t('type.fields.sequence') + ' ' + t('messages.sequenceNonNegative');
-    }
-
-    // ✅ required
-    if (!formData.typeOfUseCode?.trim()) {
-      nextErrors.code = t('type.fields.typeId') + ' ' + t('messages.createError');
-    } else if (isDuplicateCode(formData.typeOfUseCode)) {
-      nextErrors.code = t('messages.duplicateTypeId');
-    }
-    if (!typeValue?.trim()) nextErrors.typeValue = t('messages.typeRequired');
-    if (!formData.typeOfUseGroupId) nextErrors.groupId = t('messages.groupRequired');
-
-
-    // ✅ Regional required + validation
-    if (!formData.description?.trim()) {
-      nextErrors.description = t('messages.descriptionRequired');
-    } else if (formData.description.trim().length > MAX_NAME_LEN) {
-      nextErrors.description = t('type.fields.description') + ' ' + t('messages.maxLength', { count: MAX_NAME_LEN });
-    } else if (!REGIONAL_NAME_REGEX.test(formData.description.trim())) {
-      nextErrors.description =
-        t('type.fields.description') + ' ' + t('messages.allowedChars');
-    } else if (isDuplicateDescription(formData.description)) {
-      nextErrors.description = t('messages.duplicateDescription');
-    }
-
-
-    return nextErrors;
-  };
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
 
     if (name === "typeOfUseCode") {
-      const cleaned = sanitizeCode(value);
+      const cleaned = sanitizeCode(value, 10);
       setFormData((p) => ({ ...p, typeOfUseCode: cleaned }));
       if (submittedOnce) clearFieldError("code");
       return;
     }
 
     if (name === "description") {
-      const cleaned = sanitizeRegionalName(value);
+      const cleaned = sanitizeDescription(value, 100);
       setFormData((p) => ({ ...p, description: cleaned }));
       if (submittedOnce) clearFieldError("description");
       return;
@@ -218,9 +208,19 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
     e.preventDefault();
     setSubmittedOnce(true);
 
-    const v = validate();
-    setErrors(v);
-    if (Object.keys(v).length > 0) return;
+    // Create form data with typeValue for validation
+    const dataToValidate = { ...formData, type: typeValue };
+    const validationErrors = validateForm(dataToValidate, validationSchema);
+    
+    setErrors({
+      code: validationErrors.typeOfUseCode,
+      typeValue: validationErrors.type,
+      groupId: validationErrors.typeOfUseGroupId,
+      description: validationErrors.description,
+      searchSequence: validationErrors.searchSequence
+    });
+
+    if (Object.keys(validationErrors).length > 0) return;
 
     try {
       if (isEdit) {
