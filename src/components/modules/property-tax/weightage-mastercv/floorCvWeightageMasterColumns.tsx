@@ -1,17 +1,9 @@
 import { Column } from '@/components/common/MasterTable';
 import { MatrixCellInput, StatusBadge } from '@/components/common';
-import { FloorFactorCVMaster } from '@/types/floor-cv-weightageMaster.types';
+import { ColumnConfig, FloorFactorCVMaster } from '@/types/floor-cv-weightageMaster.types';
 
 // Extend FloorFactorCVMaster to add index signature
 type FloorFactorCVMasterWithIndex = FloorFactorCVMaster & Record<string, unknown>;
-
-interface ColumnConfig {
-  t: (key: string) => string;
-  tW: (key: string) => string;
-  editableRows: Record<string, FloorFactorCVMaster>;
-  handleCellChange: (rowId: string, columnId: string, value: string | number) => void;
-  getRowUid: (row: FloorFactorCVMaster) => string;
-}
 
 export const getFloorCvWeightageMasterColumns = ({
   t,

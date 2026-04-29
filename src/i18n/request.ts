@@ -28,7 +28,7 @@ export default getRequestConfig(async ({ locale }) => {
     assessmentYearRangeMessages,
     floorFactorMasterMessages,
     weightageMasterMessages,
-    modulesMessages
+    modulesMessages,
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
@@ -55,7 +55,7 @@ export default getRequestConfig(async ({ locale }) => {
       assessmentYearRange: assessmentYearRangeMessages,
       floorFactorMaster: floorFactorMasterMessages.floorFactorMaster,
       weightageMaster: weightageMasterMessages.weightageMaster,
-      modules: modulesMessages
+      modules: modulesMessages,
     },
   };
 });

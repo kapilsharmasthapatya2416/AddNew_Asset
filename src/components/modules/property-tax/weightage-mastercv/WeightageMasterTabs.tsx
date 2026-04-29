@@ -1,20 +1,9 @@
 'use client';
 
 import { Tabs, type TabItem, TableHeader } from '@/components/common';
+import { WeightageMasterHeaderProps } from '@/types/floor-cv-weightageMaster.types';
 import { Lock, Layers, Hammer, Users, Calendar } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-
-interface WeightageMasterHeaderProps {
-  locale: string;
-  title: string;
-  subtitle: string;
-  labels: {
-    floor: string;
-    nature: string;
-    subType: string;
-    age: string;
-  };
-}
 
 export function WeightageMasterHeader({ locale, title, subtitle, labels }: WeightageMasterHeaderProps) {
   const router = useRouter();

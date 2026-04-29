@@ -1,46 +1,12 @@
 "use client";
 
 import React from "react";
-import { Option, Select } from "@/components/common/select";
+import {Select } from "@/components/common/select";
 import { Input } from "@/components/common/Input";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { ApplyButton, ClearButton, UpdateButton, AddButton } from "@/components/common/ActionButtons";
 import { CancelButton } from "@/components/common";
-
-interface FloorCvHeaderExtraProps {
-    // Translations
-    t: ReturnType<typeof import("next-intl").useTranslations>;
-    tW: ReturnType<typeof import("next-intl").useTranslations>;
-    // Options
-    assessmentYearOptions: Option[];
-    floorOptions: Option[];
-    liftStatusOptions: Option[];
-    // Filter state
-    selectedYear: string;
-    fromFloor: string;
-    toFloor: string;
-    liftStatus: string;
-    factorValue: string;
-    // Derived flags
-    isApplyDisabled: boolean;
-    isBulkUpdateDisabled: boolean;
-    isGeneratingAll: boolean;
-    isBulkUpdating: boolean;
-    isUpdating: boolean;
-    hasNewRecords: boolean;
-    newRecordsCount: number;
-    // Handlers
-    handleAssessmentYearChange: (value: string) => void;
-    setFromFloor: (value: string) => void;
-    setToFloor: (value: string) => void;
-    setLiftStatus: (value: string) => void;
-    setFactorValue: (value: string) => void;
-    handleApplyFilter: () => void;
-    handleClearAll: () => void;
-    handleBulkUpdate: () => void;
-    handleGenerateAll: () => void;
-    addToast: (type: "success" | "error" | "info" | "warning", message: string) => void;
-}
+import { FloorCvHeaderExtraProps } from "@/types/floor-cv-weightageMaster.types";
 
 export const FloorCvHeaderExtra: React.FC<FloorCvHeaderExtraProps> = ({
     t,

@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Option, Select } from "@/components/common/select";
+import {Select } from "@/components/common/select";
 import { MasterTable, Column } from "@/components/common/MasterTable";
-import { FloorFactorCVMaster } from "@/types/floor-cv-weightageMaster.types";
+import { FloorCvWeightageMasterProps, FloorFactorCVMaster } from "@/types/floor-cv-weightageMaster.types";
 import { UpdateButton, ClearButton, SaveButton } from "@/components/common/ActionButtons";
 import { ToastContainer } from "@/components/common/Toast";
 import { getFloorCvWeightageMasterColumns } from "./floorCvWeightageMasterColumns";
@@ -12,16 +12,6 @@ import { useFloorCvWeightage } from "@/hooks/useFloorCvWeightage";
 
 // Extend FloorFactorCVMaster to add index signature
 type FloorFactorCVMasterWithIndex = FloorFactorCVMaster & Record<string, unknown>;
-
-interface FloorCvWeightageMasterProps {
-    data: FloorFactorCVMaster[];
-    pageNumber: number;
-    pageSize: number;
-    totalCount: number;
-    totalPages: number;
-    floorOptions: Option[]; // Already added floorOptions prop
-    assessmentYearOptions: Option[]; // Added assessmentYearOptions prop
-}
 
 const FloorCvWeightageMaster: React.FC<FloorCvWeightageMasterProps> = ({
     // NOTE: Do NOT use useEffect in server components. Default selection is handled in useState.
