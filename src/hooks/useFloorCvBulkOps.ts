@@ -14,6 +14,7 @@ export interface UseFloorCvBulkOpsParams {
     setEditableRows: Dispatch<SetStateAction<Record<string, FloorFactorCVMaster>>>;
     setIsBulkUpdating: Dispatch<SetStateAction<boolean>>;
     setIsGeneratingAll: Dispatch<SetStateAction<boolean>>;
+    selectedYear: string;
     fromFloor: string;
     toFloor: string;
     liftStatus: string;
@@ -30,6 +31,7 @@ export function useFloorCvBulkOps({
     setEditableRows,
     setIsBulkUpdating,
     setIsGeneratingAll,
+    selectedYear,
     fromFloor,
     toFloor,
     liftStatus,
@@ -45,16 +47,26 @@ export function useFloorCvBulkOps({
     // Handle filter apply with bulk factor update
     const handleApplyFilter = () => {
         // Apply bulk factor changes to filtered records
-        const factor = parseFloat(factorValue);
-        if (!factorValue || isNaN(factor) || factor <= 0) {
-            addToast("warning", tW("common.messages.validFactorRequired"));
+        
+        // Validate assessment year is selected first
+        if (!selectedYear) {
+            addToast("error", tW("common.messages.assessmentYearRequired"));
             return;
         }
+        
+        const factor = parseFloat(factorValue);
+        
         // Prevent negative factors
         if (factor < 0) {
             addToast("error", tW("common.messages.negativeFactorsNotAllowed"));
             return;
         }
+        
+        if (!factorValue || isNaN(factor) || factor === 0) {
+            addToast("warning", tW("common.messages.validFactorRequired"));
+            return;
+        }
+        
         // Validation for From/To floor selection
         if (fromFloor && toFloor && parseInt(fromFloor) > parseInt(toFloor)) {
             addToast("error", t("messages.fromFloorGreaterError"));

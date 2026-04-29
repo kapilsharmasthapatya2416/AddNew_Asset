@@ -68,6 +68,8 @@ export interface AssessmentYearCV {
   isActive: boolean;
   createdDate: string;
   updatedDate: string | null;
+  yearRangeCVId?: number;
+  yearId?: number;
   [key: string]: unknown;
 }
 

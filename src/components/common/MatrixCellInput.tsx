@@ -69,9 +69,24 @@ export const MatrixCellInput = ({
     setIsFocused(false);
     // Format to 2 decimal places on blur if it's a valid number
     const numValue = localValue === "" ? 0 : Number(localValue);
-    if (!isNaN(numValue) && numValue !== 0) {
+    if (isNaN(numValue)) {
+      // Reset invalid input to empty string
+      setLocalValue("");
+      onCellChange?.(rowId, columnId, 0);
+    } else if (numValue !== 0) {
       setLocalValue(numValue.toFixed(2));
+    } else {
+      setLocalValue("");
     }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Block characters that create invalid numeric states: -, e, E, +
+    if (["-", "e", "E", "+"].includes(e.key)) {
+      e.preventDefault();
+    }
+    // Call the parent's onKeyDown if provided
+    onKeyDown?.(e);
   };
  
   // Determine cell styling based on current input value
@@ -90,7 +105,7 @@ export const MatrixCellInput = ({
       value={localValue}
       aria-label={metaLabel}
       onChange={handleChange}
-      onKeyDown={onKeyDown}
+      onKeyDown={handleKeyDown}
       onFocus={handleFocus}
       onBlur={handleBlur}
       placeholder="0.00"

@@ -37,6 +37,7 @@
         "updateFailed": "अद्यतनित करणे अयशस्वी",
         "failedToSaveRow": "ओळ अद्यतनित करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
         "changesDiscarded": "या ओळीसाठी बदल रद्द केले",
+        "assessmentYearRequired": "मोठ्या प्रमाणात घटक लागू करण्यापूर्वी कृपया मूल्यांकन वर्ष निवडा",
         "validFactorRequired": "कृपया 0 पेक्षा जास्त वैध घटक मूल्य प्रविष्ट करा",
         "negativeFactorsNotAllowed": "ऋण घटकांना परवानगी नाही",
         "factorApplied": "{count} नोंदी(नोंदींना) घटक {factor} लागू केला",

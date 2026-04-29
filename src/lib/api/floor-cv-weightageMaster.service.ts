@@ -250,7 +250,7 @@ export async function getAssessmentYearsPagedServerCV(
   if (Array.isArray(data)) {
     const items = (data as AssessmentYearCV[]).map((item) => ({
       ...item,
-      yearId: item.yearRangeCVId || item.yearId,
+      yearId: item.id || item.yearId,
     }));
     const totalCount = data.length;
     const isFetchAllPageSize = pageSize <= 0;
@@ -274,7 +274,7 @@ export async function getAssessmentYearsPagedServerCV(
   ) {
     (data as AssessmentYearPagedResponseCV).items = ((data as AssessmentYearPagedResponseCV).items as AssessmentYearCV[]).map((item) => ({
       ...item,
-      yearId: item.yearRangeCVId || item.yearId,
+      yearId: item.id || item.yearId,
     }));
     return data as AssessmentYearPagedResponseCV;
   }

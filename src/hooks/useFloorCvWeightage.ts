@@ -115,6 +115,7 @@ export function useFloorCvWeightage({
         setEditableRows,
         setIsBulkUpdating,
         setIsGeneratingAll,
+        selectedYear,
         fromFloor,
         toFloor,
         liftStatus,
@@ -197,12 +198,14 @@ export function useFloorCvWeightage({
 
     // Derived states for button enable/disable logic
     // Apply button should be disabled unless all filter values are selected/valid
+    // Assessment year MUST be selected before bulk factor can be applied
     // It stays enabled for open-ended ranges and only rejects explicitly invalid bounded ranges
     const isRangeInvalid =
         !!fromFloor &&
         !!toFloor &&
         parseInt(fromFloor) > parseInt(toFloor);
     const isApplyDisabled =
+        !selectedYear ||
         !liftStatus ||
         parseFloat(factorValue) <= 0 ||
         isRangeInvalid;

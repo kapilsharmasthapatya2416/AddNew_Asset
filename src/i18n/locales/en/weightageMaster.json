@@ -37,6 +37,7 @@
         "updateFailed": "Update failed",
         "failedToSaveRow": "Failed to update row. Please try again.",
         "changesDiscarded": "Changes discarded for this row",
+        "assessmentYearRequired": "Please select an assessment year before applying bulk factor",
         "validFactorRequired": "Please enter a valid factor value greater than 0",
         "negativeFactorsNotAllowed": "Negative factors are not allowed",
         "factorApplied": "Applied factor {factor} to {count} record(s)",
