@@ -12,7 +12,7 @@ export default function TypeOfUseMasterError({ error, reset }: ErrorProps) {
     <ErrorPage
       error={error}
       reset={reset}
-      translationNamespace="typeOfUseMaster.error"
+      translationNamespace="typeofusemaster.error"
     />
   );
 }
