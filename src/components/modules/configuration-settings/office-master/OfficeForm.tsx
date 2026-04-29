@@ -1,13 +1,20 @@
 "use client";
 
-import { BuildingIcon } from "lucide-react";
-import { CancelButton, SaveButton, Input, Select, TextArea, Drawer } from "@/components/common";
-// We reuse the basic components from construction-type-master where appropriate, or we can inline standard sections since we're replicating.
-// Actually, let's just write them inline or reference simple custom components to keep it precise.
-import { StatusToggleSection } from "../../property-tax/construction-type-master/components/StatusToggleSection";
-import { ValidationSection } from "../../property-tax/construction-type-master/components/ValidationSection";
+import { 
+  CancelButton, 
+  SaveButton, 
+  Input, 
+  Select, 
+  TextArea, 
+  Drawer,
+  Label,
+  ToggleSwitch,
+  ValidationMessage
+} from "@/components/common";
+import { CheckCircle2, X, AlertCircle } from "lucide-react";
 import { Office } from "@/types/office.types";
 import { useOfficeForm } from "@/hooks/useOfficeForm";
+import { cn } from "@/lib/utils/cn";
 
 export interface OfficeFormProps {
   officeId: number | null;
@@ -77,14 +84,57 @@ export default function OfficeForm({
       }
     >
       <form id="form" onSubmit={handleSubmit} className="space-y-6 bg-[#F8FAFF] p-5">
-        <StatusToggleSection
-          isEdit={isEdit}
-          isActive={isActive}
-          handleToggleStatus={handleToggleStatus}
-          error={errors.isActive}
-          t={t as (key: string) => string}
-          tCommon={tCommon as (key: string) => string}
-        />
+        {isEdit && (
+          <div className="rounded-xl border border-blue-100 bg-slate-50 p-4 transition-all duration-300">
+            <div
+              className={cn(
+                "rounded-xl p-3 flex items-center justify-between transition-all duration-300",
+                isActive
+                  ? "border border-blue-200 bg-blue-50/50 shadow-sm"
+                  : "border border-gray-200 bg-gray-50 shadow-none"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    "h-10 w-10 flex items-center justify-center rounded-full transition-colors duration-300",
+                    isActive
+                      ? "bg-blue-100 text-blue-600 shadow-inner"
+                      : "bg-gray-200 text-gray-500"
+                  )}
+                >
+                  {isActive ? <CheckCircle2 size={20} /> : <X size={20} />}
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-800">{t("form.status.label") || "Status"}</div>
+                  <div className="text-sm text-gray-500">
+                    {t("form.status.description") || "Set the office as active or inactive."}
+                    <span className={cn(
+                      "ml-1 font-medium",
+                      isActive ? "text-blue-600" : "text-gray-600"
+                    )}>
+                      {isActive ? tCommon("status.active") : tCommon("status.inactive")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <ToggleSwitch
+                checked={isActive}
+                onChange={handleToggleStatus}
+                showPopup={false}
+              />
+            </div>
+
+            {errors.isActive && (
+              <ValidationMessage
+                message={errors.isActive}
+                visible={!!errors.isActive}
+                className="mt-3"
+              />
+            )}
+          </div>
+        )}
 
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 dark:bg-slate-800/10 dark:border-slate-800">
@@ -201,7 +251,10 @@ export default function OfficeForm({
           </div>
         </div>
 
-        <ValidationSection tCommon={tCommon as (key: string) => string} />
+        <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 shadow-xs">
+          <AlertCircle size={16} className="shrink-0" />
+          <span className="font-medium">{tCommon("note.mandatory") || "Fields marked with * are mandatory"}</span>
+        </div>
       </form>
     </Drawer>
   );
