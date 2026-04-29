@@ -27,158 +27,107 @@ export function OfficeMaster({
   data, pageNumber, pageSize, totalCount, totalPages, sortBy, sortOrder, type, status
 }: OfficeProps): React.ReactElement {
   const router = useRouter();
-  const t = useTranslations("office"); 
+  const t = useTranslations("office");
   const tCommon = useTranslations("common");
   const locale = useLocale();
-
   const { confirm } = useConfirm();
-  const [isPending, startTransition] = React.useTransition();
 
-  const { search, currentSearchTerm, handleSearchChange, selectedType,
-    handleTypeChange,
-    selectedStatus,
-    handleStatusChange,
-  } = useOfficeSearch({
-    pageSize,
-    locale,
-    sortBy,
-    sortOrder,
-    startTransition,
-    type,
-    status,
-  });
-  /* ================= PAGINATION ================= */
-  const { buildUrl, changePage, handlePageSizeChange, paginationInfo } = useOfficePagination({
+  const {
+    currentSearchTerm,
+    handleSearch
+  } = useOfficeSearch();
+
+  const {
+    changePage,
+    changePageSize,
+    start,
+    end
+  } = useOfficePagination({
+    totalCount,
     pageNumber,
     pageSize,
-    totalCount,
-    locale,
-    currentSearchTerm,
     sortBy,
     sortOrder,
-    startTransition,
-    type: selectedType,
-    status: selectedStatus,
+    currentSearchTerm,
+    type,
+    status
   });
 
-  const handleSort = useCallback(
-    (columnKey: string) => {
-      let newSortOrder = "asc";
-      if (sortBy === columnKey) {
-        newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-      }
-      startTransition(() => {
-        router.push(buildUrl(1, pageSize, currentSearchTerm, columnKey, newSortOrder));
-      });
-    },
-    [sortBy, sortOrder, router, buildUrl, pageSize, currentSearchTerm]
-  );
+  const handleEdit = useCallback((row: Office) => {
+    router.push(`/${locale}/configuration-settings/office-master/edit/${row.officeId}`);
+  }, [router, locale]);
 
-  const columns = getOfficeColumns(t, tCommon, sortBy, sortOrder, handleSort);
+  const handleDelete = useCallback((row: Office) => {
+    confirm({
+      variant: "delete",
+      title: `${t("table.columns.officeCode")}: ${row.officeCode}`,
+      description: t("delete.confirmDescription"),
+      meta: { name: row.officeName },
+      onConfirm: async () => {
+        const result = await deleteOfficeAction(row.officeId);
+        if (result.success) {
+          toast.success(t("success.deleted"));
+          router.refresh();
+        } else {
+          toast.error(result.message || tCommon("errors.deleteError"));
+        }
+      },
+    });
+  }, [confirm, router, t, tCommon]);
 
-  const handleEdit = useCallback(
-    (row: Office) => {
-      startTransition(() => {
-        router.push(`/${locale}/configuration-settings/office-master/edit/${row.officeId}`);
-      });
-    },
-    [router, locale]
-  );
-
-  const handleDelete = useCallback(
-    (row: Office) => {
-      confirm({
-        variant: "delete",
-        title: `${t("list.table.officeCode") || "Code"}: ${row.officeCode}`,
-        description: `${t("delete.confirmDescription") || "Are you sure you want to delete?"}`,
-        meta: { name: row.officeName },
-        onConfirm: async () => {
-          const fd = new FormData();
-          fd.append("officeId", String(row.officeId));
-          const result = await deleteOfficeAction(fd);
-          if (result.success) {
-            toast.success(t("success.deleted", { code: row.officeCode }) || "Deleted successfully");
-            startTransition(() => { router.refresh(); });
-          } else {
-            let errorMessage = tCommon("errors.deleteError");
-            if (result.statusCode === 409) errorMessage = t("apiErrors.inUse") || "Record in use";
-            else if (result.statusCode === 400) errorMessage = t("apiErrors.validationError") || "Validation error";
-            toast.error(errorMessage);
-          }
-        },
-      });
-    },
-    [confirm, router, t, tCommon]
-  );
-
-  const { start, end, total } = paginationInfo;
-  const activeCount = data.filter((o) => o.isActive).length;
-  const inactiveCount = data.filter((o) => !o.isActive).length;
+  const columns = getOfficeColumns(t, handleEdit, handleDelete);
 
   const stats = [
     {
-      label: t('stats.total') || 'Total',
+      label: t("stats.totalOffices"),
       value: totalCount,
-      icon: Building2,
-      bgColor: 'bg-blue-100',
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      accentColor: 'bg-blue-500',
-    },
-    {
-      label: `${t('stats.active') || 'Active'} (${tCommon('table.onThisPage') || 'on this page'})`,
-      value: activeCount,
-      icon: CheckCircle2,
-      bgColor: 'bg-emerald-100',
-      iconBg: 'bg-emerald-100',
-      iconColor: 'text-emerald-600',
-      accentColor: 'bg-emerald-500',
-    },
-    {
-      label: `${t('stats.inactive') || 'Inactive'} (${tCommon('table.onThisPage') || 'on this page'})`,
-      value: inactiveCount,
       icon: BuildingIcon,
-      bgColor: 'bg-violet-100',
-      iconBg: 'bg-violet-100',
-      iconColor: 'text-violet-600',
-      accentColor: 'bg-violet-500',
+      bgColor: "bg-blue-500",
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-600",
+      accentColor: "bg-blue-600"
     },
     {
-      label: t('stats.records') || 'Total Records',
-      value: totalCount,
-      icon: Globe2,
-      bgColor: 'bg-pink-100',
-      iconBg: 'bg-pink-100',
-      iconColor: 'text-pink-600',
-      accentColor: 'bg-pink-500',
+      label: t("stats.headOffices"),
+      value: data.filter(o => o.type === "Head Office").length,
+      icon: Building2,
+      bgColor: "bg-purple-500",
+      iconBg: "bg-purple-50",
+      iconColor: "text-purple-600",
+      accentColor: "bg-purple-600"
     },
+    {
+      label: t("stats.activeOffices"),
+      value: data.filter(o => o.isActive).length,
+      icon: CheckCircle2,
+      bgColor: "bg-green-500",
+      iconBg: "bg-green-50",
+      iconColor: "text-green-600",
+      accentColor: "bg-green-600"
+    },
+    {
+      label: t("stats.regionalOffices"),
+      value: data.filter(o => o.type === "Regional Office").length,
+      icon: Globe2,
+      bgColor: "bg-orange-500",
+      iconBg: "bg-orange-50",
+      iconColor: "text-orange-600",
+      accentColor: "bg-orange-600"
+    }
   ];
 
   return (
-    <PageContainer>
-      <div className="space-y-4">
-        <TableHeader
-          title={t("list.title") || "Office Master"}
-          subtitle={t("list.subtitle") || "Manage office branches"}
-          icon={BuildingIcon}
-          actionLabel={t("list.buttons.add") || "Add Office"}
-          onActionClick={() => {
-            startTransition(() => {
-              router.push(`/${locale}/configuration-settings/office-master/add`);
-            });
-          }}
-          rightContent={
-            <div className="flex w-full justify-end">
-              <SearchInput
-                value={search}
-                onChange={handleSearchChange}
-                placeholder={t("list.filters.search") || "Search Office..."}
-                className="mb-0 w-80 text-gray-900"
-              />
-            </div>
-          }
+    <PageContainer
+      title={t("title")}
+      subtitle={t("subtitle")}
+      actions={
+        <EditButton 
+          label={t("actions.addOffice")}
+          onClick={() => router.push(`/${locale}/configuration-settings/office-master/add`)} 
         />
-
+      }
+    >
+      <div className="space-y-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
@@ -207,68 +156,40 @@ export function OfficeMaster({
           })}
         </div>
 
-        {/* Table Filter Toolbar */}
-        <div className="flex items-center justify-between gap-3 rounded-t-xl border-x border-t border-blue-100 bg-white p-3 shadow-xs">
-          <div className="flex items-center gap-2">
-            <Select
-              value={selectedType}
-              onChange={handleTypeChange}
-              options={[
-                { label: t("form.fields.type.placeholder") || "All Types", value: "" },
-                { label: t("form.fields.type.options.mainOffice") || "Main Office", value: "Main Office" },
-                { label: t("form.fields.type.options.zonalOffice") || "Zonal Office", value: "Zonal Office" },
-                { label: t("form.fields.type.options.departmentOffice") || "Department Office", value: "Department Office" },
-                { label: t("form.fields.type.options.wardOffice") || "Ward Office", value: "Ward Office" },
-                { label: t("form.fields.type.options.subOffice") || "Sub Office", value: "Sub Office" },
-                { label: t("form.fields.type.options.headOffice") || "Head Office", value: "Head Office" },
-              ]}
-              placeholder={t("form.fields.type.placeholder") || "Filter by Type"}
-              className="w-48"
-              selectSize="sm"
-            />
-            <Select
-              value={selectedStatus}
-              onChange={handleStatusChange}
-              options={[
-                { label: tCommon("status.all") || "All Status", value: "" },
-                { label: tCommon("status.active"), value: "true" },
-                { label: tCommon("status.inactive"), value: "false" },
-              ]}
-              placeholder={tCommon("status.label") || "Status"}
-              className="w-36"
-              selectSize="sm"
-            />
-          </div>
-          <div className="text-sm font-medium text-blue-900/60">
-            {total} {tCommon("messages.recordsFound") || "Records Found"}
-          </div>
-        </div>
+        <TableHeader
+          onSearch={handleSearch}
+          searchValue={currentSearchTerm}
+          searchPlaceholder={t("table.searchPlaceholder")}
+          totalCount={totalCount}
+        />
 
         <MasterTable<Office>
-          columns={columns} data={data} loading={isPending} height="lg"
-          pageNumber={pageNumber} pageSize={pageSize} totalCount={totalCount} totalPages={totalPages}
+          columns={columns}
+          data={data}
+          loading={false}
+          height="lg"
+          pageNumber={pageNumber}
+          pageSize={pageSize}
+          totalCount={totalCount}
+          totalPages={totalPages}
           onPageChange={changePage}
-          renderActions={(row) => (
-            <>
-              <EditButton aria-label={tCommon("table.actions.edit")} onClick={() => handleEdit(row)} />
-              <DeleteButton aria-label={tCommon("table.actions.delete")} onClick={() => handleDelete(row)} />
-            </>
-          )}
           actionLabel={tCommon("table.columns.actions")}
           paginationConfig={{ enabled: true, showPageSizeSelector: false }}
           footerLeftContent={
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-700">
-                {tCommon("table.showing")} {start} {tCommon("table.to")} {end} {tCommon("table.of")} {total} {tCommon("table.entries")}
+                {tCommon("table.showing")} {start} {tCommon("table.to")} {end} {tCommon("table.of")} {totalCount}
               </span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{tCommon("table.rowsPerPage")}:</span>
-                <Select
-                  value={String(pageSize)} onChange={handlePageSizeChange}
-                  options={[10, 20, 30, 40, 50].map((s) => ({ label: String(s), value: String(s) }))}
-                  selectSize="sm" className="w-20" ariaLabel="Rows per page"
-                />
-              </div>
+              <Select
+                value={String(pageSize)}
+                onChange={changePageSize}
+                options={[10, 20, 30, 50].map((s) => ({
+                  label: String(s),
+                  value: String(s),
+                }))}
+                selectSize="sm"
+                className="w-20"
+              />
             </div>
           }
           getRowKey={(row) => String(row.officeId)}

@@ -19,16 +19,12 @@ export function SidebarFrame({ closeMenuLabel, openMenuLabel = 'Open menu', chil
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
 
-// Sidebar width is now handled globally via CSS variables in globals.css
-// based on the 'sidebar-expanded' class on the body.
-
   const pathname = usePathname();
   const [lastPathname, setLastPathname] = useState(pathname);
 
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setOpen(false);
-    setCollapsed(true);
   }
 
   useEffect(() => {
@@ -40,15 +36,14 @@ export function SidebarFrame({ closeMenuLabel, openMenuLabel = 'Open menu', chil
     return () => document.body.classList.remove('sidebar-expanded');
   }, [collapsed]);
 
-  const toggleMobileNav = () => {
-    if (!open) {
-      setOpen(true);
-      setCollapsed(false);
-    } else {
-      setOpen(false);
-      setCollapsed(true);
-    }
+  const toggleSidebar = () => {
+    setCollapsed(!collapsed);
   };
+
+  const toggleMobileNav = () => {
+    setOpen(!open);
+  };
+
 
   return (
     <>
@@ -100,3 +95,4 @@ export function SidebarFrame({ closeMenuLabel, openMenuLabel = 'Open menu', chil
     </>
   );
 }
+

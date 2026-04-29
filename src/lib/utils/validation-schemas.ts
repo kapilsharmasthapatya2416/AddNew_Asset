@@ -338,9 +338,63 @@ export const propertyValidations = {
     (value: unknown) => {
       const strVal = String(value ?? "").trim();
       if (!strVal) return undefined; // optional
-      if (!pattern.test(strVal)) {
-        return t(`property.validation.${label}Format`);
-      }
       return undefined;
     },
 };
+
+/**
+ * Office form validations
+ */
+export const officeValidations = {
+  validate: (
+    data: any,
+    t: (key: string, params?: Record<string, any>) => string,
+    isEdit: boolean
+  ) => {
+    const errors: Record<string, string> = {};
+    const officeCode = data.officeCode?.trim();
+    const officeName = data.officeName?.trim();
+
+    if (!officeCode) {
+      errors.officeCode = t('form.validation.officeCodeRequired');
+    } else if (officeCode.length > 20) {
+      errors.officeCode = t('form.validation.codeMaxLength', { count: 20 });
+    } else if (!CODE_REGEX.test(officeCode)) {
+      errors.officeCode = t('form.validation.codeFormat');
+    }
+
+    if (!officeName) {
+      errors.officeName = t('form.validation.officeNameRequired');
+    } else if (officeName.length > 200) {
+      errors.officeName = t('form.validation.nameMaxLength', { count: 200 });
+    }
+
+    if (!data.type) {
+      errors.type = t('form.validation.typeRequired');
+    }
+
+    if (data.emailId && !EMAIL_REGEX.test(data.emailId)) {
+      errors.emailId = t('form.validation.invalidEmail');
+    }
+
+    if (data.pincode && !/^\d{6}$/.test(data.pincode)) {
+      errors.pincode = t('form.validation.invalidPincode');
+    }
+
+    const isActiveError = commonValidations.masterActiveStatus(t, isEdit)(data.isActive);
+    if (isActiveError) {
+      errors.isActive = isActiveError;
+    }
+
+    return errors;
+  },
+
+  sanitizeCode: (value: string): string => {
+    let sanitized = value.replace(/[^a-zA-Z0-9_]/g, '');
+    if (sanitized.length > 20) {
+      sanitized = sanitized.substring(0, 20);
+    }
+    return sanitized;
+  }
+};
+

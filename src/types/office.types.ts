@@ -21,6 +21,7 @@ export interface OfficeFormModel {
   updatedBy?: number;
 }
 
+
 /**
  * Server response model for office data
  */

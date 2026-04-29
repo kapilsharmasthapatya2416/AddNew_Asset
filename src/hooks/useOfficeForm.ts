@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
@@ -8,7 +8,9 @@ import {
   createOfficeAction,
   updateOfficeAction,
 } from "@/app/[locale]/configuration-settings/office-master/action";
-import { OfficeFormModel, Office } from "@/types/office.types";
+import { Office, OfficeFormModel } from "@/types/office.types";
+import { officeValidations } from "@/lib/utils/validation";
+
 
 interface UseOfficeFormProps {
   officeId: number | null;
@@ -31,8 +33,6 @@ export function useOfficeForm({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedOnce, setSubmittedOnce] = useState(false);
-  const [isActive, setIsActive] = useState(initialData?.isActive ?? true);
-  
   const [formData, setFormData] = useState<OfficeFormModel>({
     officeId: officeId ?? initialData?.officeId,
     officeCode: initialData?.officeCode ?? "",
@@ -51,70 +51,40 @@ export function useOfficeForm({
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof OfficeFormModel, string>>>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof OfficeFormModel, boolean>>>({});
+  const [open, setOpen] = useState(true);
+  const [isPending, startTransition] = useTransition();
 
   const validate = useCallback(
-    (data: OfficeFormModel): Partial<Record<keyof OfficeFormModel, string>> => {
-      const fieldErrors: Partial<Record<keyof OfficeFormModel, string>> = {};
-      if (!data.officeCode || !data.officeCode.trim()) {
-        fieldErrors.officeCode = t("form.validation.officeCodeRequired");
-      }
-      if (!data.officeName || !data.officeName.trim()) {
-        fieldErrors.officeName = t("form.validation.officeNameRequired");
-      }
-      return fieldErrors;
+    (data: OfficeFormModel) => {
+      const v = officeValidations.validate(data, t, isEdit);
+      setErrors(v);
+      return v;
     },
-    [t]
+    [t, isEdit]
   );
 
-  const showError = useCallback((field: keyof OfficeFormModel): boolean =>
-    (submittedOnce || touched[field]) && !!errors[field],
-    [submittedOnce, touched, errors]
-  );
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
-    const { name, value } = e.target;
-    const type = 'type' in e.target ? (e.target as HTMLInputElement).type : undefined;
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    let processedValue: any = value;
     
-    const processedValue = (type === 'number' || ['officeIncharge', 'designationMasterId'].includes(name))
-      ? (value === '' ? null : Number(value))
-      : value;
-      
-    setFormData((p) => ({ ...p, [name]: processedValue }));
-  }, []);
+    if (type === 'number' || ['officeIncharge', 'designationMasterId'].includes(name)) {
+      processedValue = value === '' ? null : Number(value);
+    }
 
-  const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
-    const { name, value } = e.target;
-    const type = 'type' in e.target ? (e.target as HTMLInputElement).type : undefined;
-    
-    const processedValue = (type === 'number' || ['officeIncharge', 'designationMasterId'].includes(name))
-      ? (value === '' ? null : Number(value))
-      : value;
-
-    setTouched((p) => ({ ...p, [name]: true }));
-    
     setFormData((prev) => {
-        const updated = { ...prev, [name]: processedValue };
-        const ve = validate(updated);
-        setErrors((errs) => {
-           const newE = { ...errs };
-           const fieldName = name as keyof OfficeFormModel;
-           if(ve[fieldName]) newE[fieldName] = ve[fieldName];
-           else delete newE[fieldName];
-           return newE;
-        });
-        return updated;
+      const updated = { ...prev, [name]: processedValue };
+      if (submittedOnce) validate(updated);
+      return updated;
     });
-  }, [validate]);
+  }, [submittedOnce, validate]);
 
-  const mapApiError = useCallback((result: { statusCode?: number; message?: string }) => {
-    if (result.statusCode === 409) return t("apiErrors.duplicateCode") || "Duplicate Record";
-    if (result.statusCode === 404) return t("apiErrors.notFound") || "Not Found";
-    return result.message || "Operation failed";
-  }, [t]);
-
-  const [open, setOpen] = useState(true);
-  const [, startTransition] = React.useTransition();
+  const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    validate(formData);
+  }, [formData, validate]);
 
   const closeAndRoute = useCallback(() => {
     setOpen(false);
@@ -130,51 +100,48 @@ export function useOfficeForm({
     closeAndRoute();
   }, [onCancel, closeAndRoute]);
 
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmittedOnce(true);
 
     const v = validate(formData);
-    setErrors(v);
-
-    if (Object.keys(v).length) return;
+    if (Object.keys(v).length > 0) return;
 
     setIsSubmitting(true);
     try {
-      const result = isEdit
-        ? await updateOfficeAction(formData)
-        : await createOfficeAction(formData);
-
-      if (!result.success) {
-        toast.error(mapApiError(result));
-        return;
-      }
-
-      toast.success(isEdit ? t("success.updated") : t("success.created"));
-      
-      onSuccess();
-      startTransition(() => {
+      const result = isEdit ? await updateOfficeAction(formData) : await createOfficeAction(formData);
+      if (result.success) {
+        toast.success(isEdit ? t("success.updated") : t("success.created"));
+        onSuccess();
+        startTransition(() => {
           router.refresh();
           closeAndRoute();
-      });
+        });
+      } else {
+        toast.error(result.message || "Operation failed");
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleToggleStatus = useCallback((): void => {
-    setIsActive((prev) => {
-      const newValue = !prev;
-      setFormData((p) => ({ ...p, isActive: newValue }));
-      return newValue;
+    setFormData((prev) => {
+      const updated = { ...prev, isActive: !prev.isActive };
+      if (submittedOnce) validate(updated);
+      return updated;
     });
-  }, []);
+  }, [submittedOnce, validate]);
+
+  const showError = useCallback((field: keyof OfficeFormModel) => {
+    return (submittedOnce || touched[field]) && !!errors[field];
+  }, [submittedOnce, touched, errors]);
 
   return {
     formData,
     errors,
-    isSubmitting,
-    isActive,
+    isSubmitting: isSubmitting || isPending,
+    isActive: formData.isActive,
     open,
     setOpen,
     handleChange,
