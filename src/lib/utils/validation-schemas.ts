@@ -352,7 +352,7 @@ export const propertyValidations = {
 export const officeValidations = {
   validate: (
     data: Partial<OfficeFormModel>,
-    t: (key: string, params?: Record<string, string | number | boolean | Date>) => string,
+    t: (key: string, params?: Record<string, string | number | Date>) => string,
     isEdit: boolean
   ) => {
     const errors: Record<string, string> = {};
