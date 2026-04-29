@@ -7,11 +7,10 @@ import {
   Select, 
   TextArea, 
   Drawer,
-  Label,
   ToggleSwitch,
   ValidationMessage
 } from "@/components/common";
-import { CheckCircle2, X, AlertCircle } from "lucide-react";
+import { CheckCircle2, X, AlertCircle, Building2 } from "lucide-react";
 import { Office } from "@/types/office.types";
 import { useOfficeForm } from "@/hooks/useOfficeForm";
 import { cn } from "@/lib/utils/cn";
@@ -55,7 +54,7 @@ export default function OfficeForm({
       title={
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center bg-linear-to-br from-blue-500 to-blue-600 rounded-lg text-white">
-            <BuildingIcon size={20} />
+            <Building2 size={20} />
           </div>
           <div>
             <div className="text-lg font-bold text-blue-900">
