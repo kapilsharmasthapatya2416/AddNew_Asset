@@ -77,7 +77,6 @@ function mapApiTypeToUi(t: any): UseType {
     description: String(t.description ?? ""),
     type: String(t.type ?? ""),
     typeOfUseGroupId: Number(t.typeOfUseGroupId ?? t.typeOfUseGroupID ?? t.groupId ?? 0),
-    searchKey: String(t.searchKey ?? t.SearchKey ?? ""),
     searchSequence: Number(t.searchSequence ?? t.SearchSequence ?? 0),
     isActive: t.isActive ?? t.IsActive ?? true,
     createdDate: t.createdDate ?? t.CreatedDate ?? undefined,
@@ -283,7 +282,6 @@ export async function createUseTypeApi(input: {
   description: string;
   type: string;
   typeOfUseGroupId: number;
-  searchKey: string;
   searchSequence: number;
   isActive: boolean;
   createdBy?: string;
@@ -294,7 +292,6 @@ export async function createUseTypeApi(input: {
     description: input.description?.trim(),
     type: input.type,
     typeOfUsegroupId: input.typeOfUseGroupId,
-    searchKey: input.searchKey?.trim(),
     searchSequence: input.searchSequence,
     isActive: input.isActive,
     createdBy: Number(input.createdBy ?? "1"),
@@ -318,7 +315,6 @@ export async function updateUseTypeApi(input: {
   description: string;
   type: string;
   typeOfUseGroupId: number;
-  searchKey: string;
   searchSequence: number;
   isActive: boolean;
   updatedBy?: string;
@@ -330,7 +326,6 @@ export async function updateUseTypeApi(input: {
     description: input.description?.trim(),
     type: input.type,
     typeOfUsegroupId: input.typeOfUseGroupId,
-    searchKey: input.searchKey?.trim(),
     searchSequence: input.searchSequence,
     isActive: input.isActive,
     updatedBy: Number(input.updatedBy ?? "1"),
@@ -431,7 +426,6 @@ function mapApiSubTypeToUi(s: any): UseSubType {
     subTypeOfUseId: Number(s.id ?? s.subTypeOfUseId ?? s.subTypeOfUseID ?? 0),
     description: String(s.description ?? ""),
     typeOfUseId: Number(s.typeOfUseId ?? s.typeOfUseID ?? s.typeId ?? 0),
-    searchKey: String(s.searchKey ?? s.SearchKey ?? ""),
     searchSequence: Number(s.searchSequence ?? s.SearchSequence ?? 0),
     isActive: s.isActive ?? s.IsActive ?? true,
     createdDate: s.createdDate ?? s.CreatedDate ?? undefined,
@@ -531,7 +525,6 @@ export async function getSubTypeByIdApi(id: string | number): Promise<UseSubType
 export async function createSubTypeApi(input: {
   description: string;
   typeOfUseId: number;
-  searchKey: string;
   searchSequence: number;
   isActive: boolean;
   createdBy?: string;
@@ -540,7 +533,6 @@ export async function createSubTypeApi(input: {
   const payload = {
     description: input.description?.trim(),
     typeOfUseId: input.typeOfUseId,
-    searchKey: input.searchKey?.trim(),
     searchSequence: input.searchSequence,
     isActive: input.isActive,
     createdBy: Number(input.createdBy ?? "1"),
@@ -562,7 +554,6 @@ export async function updateSubTypeApi(input: {
   subTypeOfUseId: number;
   description: string;
   typeOfUseId: number;
-  searchKey: string;
   searchSequence: number;
   isActive: boolean;
   updatedBy?: string;
@@ -572,7 +563,6 @@ export async function updateSubTypeApi(input: {
     subTypeOfUseId: input.subTypeOfUseId,
     description: input.description?.trim(),
     typeOfUseId: input.typeOfUseId,
-    searchKey: input.searchKey?.trim(),
     searchSequence: input.searchSequence,
     isActive: input.isActive,
     updatedBy: Number(input.updatedBy ?? "1"),

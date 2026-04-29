@@ -36,8 +36,7 @@ type FieldErrors = {
   code?: string;
   typeValue?: string;
   groupId?: string;
-  description?: string; // ✅ required now
-  searchKey?: string; // ✅ required now
+  description?: string;
   searchSequence?: string;
 };
 
@@ -59,7 +58,6 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
       typeOfUseCode: "",
       description: "",
       type: "",
-      searchKey: "",
       searchSequence: 0,
       isActive: true,
       status: "Active",
@@ -71,12 +69,6 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
   const [submittedOnce, setSubmittedOnce] = useState(false);
 
   const MAX_NAME_LEN = 100;
-
-  // ✅ Shortcut key: allow only letters (+ optional separators like + and -)
-  const SHORTCUT_REGEX = /^[A-Za-z+\- ]+$/;
-
-  // sanitize shortcut: remove digits and invalid chars
-  const sanitizeShortcut = (v: string) => v.replace(/[^A-Za-z+\- ]/g, "");
 
   // ✅ Regional name: allow Unicode letters + numbers + space + . - ,
   const REGIONAL_NAME_REGEX = /^[\p{L}\p{M}\p{N} .,-]+$/u;
@@ -186,15 +178,6 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
     }
 
 
-
-
-    // ✅ Shortcut required + validation
-    if (!formData.searchKey?.trim()) {
-      nextErrors.searchKey = t('messages.searchKeyRequired');
-    } else if (!SHORTCUT_REGEX.test(formData.searchKey.trim())) {
-      nextErrors.searchKey = t('messages.searchKeyLabel') + ' ' + t('messages.allowedShortcutChars');
-    }
-
     return nextErrors;
   };
 
@@ -214,13 +197,6 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
       const cleaned = sanitizeRegionalName(value);
       setFormData((p) => ({ ...p, description: cleaned }));
       if (submittedOnce) clearFieldError("description");
-      return;
-    }
-
-    if (name === "searchKey") {
-      const cleaned = sanitizeShortcut(value);
-      setFormData((p) => ({ ...p, searchKey: cleaned }));
-      if (submittedOnce) clearFieldError("searchKey");
       return;
     }
 
@@ -254,7 +230,6 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
           code: formData.typeOfUseCode,
           description: formData.description,
           type: typeValue,
-          searchKey: formData.searchKey ?? "",
           searchSequence: Number(formData.searchSequence ?? 0),
           status: formData.isActive ? "Active" : "Inactive",
         });
@@ -265,7 +240,6 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
           code: formData.typeOfUseCode,
           description: formData.description,
           type: typeValue,
-          searchKey: formData.searchKey ?? "",
           searchSequence: Number(formData.searchSequence ?? 0),
           status: formData.isActive ? "Active" : "Inactive",
         });
@@ -441,23 +415,6 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
               <ValidationMessage
                 message={errors.description}
                 visible={submittedOnce && !!errors.description}
-              />
-            </div>
-
-            {/* ✅ Search Key (REQUIRED) */}
-            <div className="flex flex-col">
-              <Input
-                label={t('messages.searchKeyLabel')}
-                name="searchKey"
-                value={formData.searchKey || ""}
-                onChange={handleChange}
-                placeholder={t('messages.searchKeyLabel')}
-                fullWidth
-                className="rounded-xl px-4 py-2"
-              />
-              <ValidationMessage
-                message={errors.searchKey}
-                visible={submittedOnce && !!errors.searchKey}
               />
             </div>
 

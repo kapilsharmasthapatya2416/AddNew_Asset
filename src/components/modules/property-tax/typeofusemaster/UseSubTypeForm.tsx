@@ -430,7 +430,6 @@ interface Props {
 type FieldErrors = {
   typeId?: string;
   description?: string;
-  searchKey?: string;
   searchSequence?: string;
 };
 
@@ -450,7 +449,6 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
       subTypeOfUseId: 0,
       typeOfUseId: initialData?.typeOfUseId || queryTypeId,
       description: "",
-      searchKey: "",
       searchSequence: 0,
       isActive: true,
       status: "Active",
@@ -473,20 +471,11 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
 
   /* ================= RULES ================= */
   const MAX_NAME_LEN = 100;
-  const MAX_SHORTCUT_LEN = 20;
 
-  const EN_NAME_REGEX = /^[A-Za-z0-9 .,-]+$/;
   const REG_NAME_REGEX = /^[\p{L}\p{M}\p{N} .,-]+$/u;
-  const SHORTCUT_REGEX = /^[A-Za-z+\- ]+$/;
-
-  const sanitizeEnglishName = (v: string) =>
-    v.replace(/[^A-Za-z0-9 .,-]/g, "").slice(0, MAX_NAME_LEN);
 
   const sanitizeRegionalName = (v: string) =>
     v.replace(/[^\p{L}\p{M}\p{N} .,-]/gu, "").slice(0, MAX_NAME_LEN);
-
-  const sanitizeShortcut = (v: string) =>
-    v.replace(/[^A-Za-z+\- ]/g, "").slice(0, MAX_SHORTCUT_LEN);
 
   /* ================= DUPLICATE CHECK ================= */
   const normalize = (v: string) => v.trim().toLowerCase();
@@ -525,20 +514,6 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
         t("messages.subTypeNameLabel") + " " + t("messages.allowedChars");
     else if (isDuplicateDescription(reg))
       next.description = t("messages.duplicateSubTypeName");
-
-    const ks = (data.searchKey ?? "").trim();
-    if (!ks) next.searchKey = t("messages.searchKeyRequired");
-    else if (ks.length > MAX_SHORTCUT_LEN)
-      next.searchKey =
-        t("messages.searchKeyLabel") +
-        " " +
-        t("messages.maxLength", { count: MAX_SHORTCUT_LEN });
-    else if (!SHORTCUT_REGEX.test(ks))
-      next.searchKey =
-        t("messages.searchKeyLabel") + " " + t("messages.allowedShortcutChars");
-    else if (!/[A-Za-z]/.test(ks))
-      next.searchKey =
-        t("messages.searchKeyLabel") + " " + t("messages.atLeastOneLetter");
 
     const n = Number(data.searchSequence);
     if (!Number.isFinite(n) || n < 0)
@@ -585,7 +560,6 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
     setTouched({
       typeId: true,
       description: true,
-      searchKey: true,
       searchSequence: true,
     });
 
@@ -599,7 +573,6 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
           id: Number(formData.subTypeOfUseId),
           typeId: Number(formData.typeOfUseId),
           description: formData.description,
-          searchKey: formData.searchKey ?? "",
           searchSequence: Number(formData.searchSequence ?? 0),
           status: formData.isActive ? "Active" : "Inactive",
         });
@@ -608,7 +581,6 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
         await createSubType({
           typeId: Number(formData.typeOfUseId),
           description: formData.description,
-          searchKey: formData.searchKey ?? "",
           searchSequence: Number(formData.searchSequence ?? 0),
           status: formData.isActive ? "Active" : "Inactive",
         });
@@ -761,23 +733,6 @@ export default function UseSubTypeForm({ id, initialData, typeInfo: typeInfoProp
           {/* Search Key + Sequence in ONE ROW */}
           <div className="grid grid-cols-2 gap-4">
             {/* Search Key */}
-            <div className="flex flex-col">
-              <Input
-                label={t("messages.searchKeyLabel")}
-                required
-                name="searchKey"
-                value={formData.searchKey || ""}
-                onChange={(e) => setField("searchKey", e.target.value)}
-                onBlur={() => markTouched("searchKey")}
-                placeholder={t("subtype.placeholders.shortcutKey")}
-                fullWidth
-                maxLength={20}
-              />
-              <ValidationMessage
-                message={errors.searchKey}
-                visible={showError("searchKey")}
-              />
-            </div>
 
             {/* Sequence */}
             <div className="flex flex-col">

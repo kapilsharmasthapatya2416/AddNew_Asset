@@ -209,7 +209,6 @@ export async function createUseType(input: {
   code: string;
   description: string;
   type: string;
-  searchKey: string;
   searchSequence: number;
   status?: UseStatus;
 }) {
@@ -218,7 +217,6 @@ export async function createUseType(input: {
     typeOfUseCode: input.code,
     description: input.description,
     type: input.type,
-    searchKey: input.searchKey,
     searchSequence: input.searchSequence,
     isActive: (input.status ?? "Active") === "Active",
     createdBy: "1",
@@ -232,7 +230,6 @@ export async function updateUseType(input: {
   code: string;
   description: string;
   type: string;
-  searchKey: string;
   searchSequence: number;
   status: UseStatus;
 }) {
@@ -242,7 +239,6 @@ export async function updateUseType(input: {
     typeOfUseCode: input.code,
     description: input.description,
     type: input.type,
-    searchKey: input.searchKey,
     searchSequence: input.searchSequence,
     isActive: input.status === "Active",
     updatedBy: "1",
@@ -377,14 +373,12 @@ export async function getSubTypeById(id: string | number) {
 export async function createSubType(input: {
   typeId: number;
   description: string;
-  searchKey: string;
   searchSequence: number;
   status?: UseStatus;
 }) {
   await createSubTypeApi({
     typeOfUseId: input.typeId,
     description: input.description,
-    searchKey: input.searchKey,
     searchSequence: input.searchSequence,
     isActive: (input.status ?? "Active") === "Active",
     createdBy: "1",
@@ -397,7 +391,6 @@ export async function updateSubType(input: {
   id: number;
   typeId: number;
   description: string;
-  searchKey: string;
   searchSequence: number;
   status: UseStatus;
 }) {
@@ -405,7 +398,6 @@ export async function updateSubType(input: {
     subTypeOfUseId: input.id,
     typeOfUseId: input.typeId,
     description: input.description,
-    searchKey: input.searchKey,
     searchSequence: input.searchSequence,
     isActive: input.status === "Active",
     updatedBy: "1",

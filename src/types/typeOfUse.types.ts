@@ -28,7 +28,6 @@ export interface UseType {
   description: string;
   type: string;
   typeOfUseGroupId: number;
-  searchKey: string;
   searchSequence: number;
   isActive: boolean;
   createdDate?: string;
@@ -43,7 +42,6 @@ export interface UseSubType {
   subTypeOfUseId: number;
   description: string;
   typeOfUseId: number;
-  searchKey: string;
   searchSequence: number;
   isActive: boolean;
   createdDate?: string;

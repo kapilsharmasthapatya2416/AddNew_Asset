@@ -358,13 +358,12 @@ export default function TypeOfUseMaster({
   const subTypeColumns = useMemo<Column<SubTypeTableRow>[]>(
     () => [
       { key: "srNo" as const, label: t('table.columns.serial'), width: "60px" },
-      { key: "description" as const, label: t('table.columns.subTypeName'), render: (v) => (v as string) || "—" },
-      { key: "searchKey" as const, label: t('table.columns.searchKey'), render: (v) => (v as string) || "—" },
-      { key: "searchSequence" as const, label: t('table.columns.searchSequence'), width: "120px", render: (v) => String(v ?? "—") },
+      { key: "description" as const, label: t('table.columns.subTypeName'), width: "25%", render: (v) => (v as string) || "—" },
+      { key: "searchSequence" as const, label: t('table.columns.searchSequence'), width: "25%", render: (v) => String(v ?? "—") },
       {
         key: "status" as const,
         label: t('subtype.fields.status'),
-        width: "140px",
+        width: "25%",
         render: (v) => <StatusBadge value={(v as string) ?? "Active"} />,
       },
     ],
@@ -817,9 +816,6 @@ export default function TypeOfUseMaster({
                           {/* CENTER: Meta badges */}
                           {/* eslint-disable i18next/no-literal-string */}
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-purple-700 bg-purple-50 px-2 py-1 rounded-md border border-purple-300 text-xs whitespace-nowrap">
-                              Search Key: <b>{typeItem.searchKey || "—"}</b>
-                            </span>
                             <span className="text-purple-700 bg-purple-50 px-2 py-1 rounded-md border border-purple-300 text-xs whitespace-nowrap">
                               Seq: <b>{typeItem.searchSequence ?? "—"}</b>
                             </span>
