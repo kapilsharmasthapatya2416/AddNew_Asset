@@ -30,7 +30,6 @@ export default getRequestConfig(async ({ locale }) => {
     assessmentYearRangeMessages,
     floorFactorMasterMessages,
     weightageMasterMessages,
-    modulesMessages,
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
@@ -43,9 +42,6 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/assessmentYearRange.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/floorFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/weightageMaster.json`).then((m) => m.default),
-    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default)
-
-    import(`./locales/${validatedLocale}/assessmentYearRange.json`).then((m) => m.default)
   ]);
 
   return {
@@ -62,7 +58,6 @@ export default getRequestConfig(async ({ locale }) => {
       assessmentYearRange: assessmentYearRangeMessages,
       floorFactorMaster: floorFactorMasterMessages.floorFactorMaster,
       weightageMaster: weightageMasterMessages.weightageMaster,
-      modules: modulesMessages,
     },
   };
 });
