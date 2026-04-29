@@ -70,24 +70,32 @@ export const defaultMenuItems: MenuItem[] = [
 ];
 
 export const getIconNameForScreen = (screenName: string, moduleName: string): string => {
-  const sName = screenName.toLowerCase();
-  const mName = moduleName.toLowerCase();
+  const sName = (screenName || '').toLowerCase();
+  const mName = (moduleName || '').toLowerCase();
 
-  if (sName.includes('bank')) return 'Database';
-  if (sName.includes('financial') || sName.includes('year')) return 'BarChart3';
-  if (sName.includes('office')) return 'LayoutGrid';
-  if (sName.includes('payment')) return 'FileText';
-  if (sName.includes('screen')) return 'LayoutDashboard';
-  if (sName.includes('config') || sName.includes('setting')) return 'Wrench';
-  if (sName.includes('user') || sName.includes('management')) return 'Users';
-  if (sName.includes('search')) return 'Search';
-  if (sName.includes('report')) return 'FileText';
+  // Specific high-priority matches
+  if (sName.includes('dashboard')) return 'Home';
+  if (sName.includes('ptis')) return 'LayoutDashboard';
   if (sName.includes('gis')) return 'Map';
+  if (sName.includes('search')) return 'Search';
+  
+  // Group/Module matches
+  if (sName.includes('bank') || sName.includes('account')) return 'Database';
+  if (sName.includes('financial') || sName.includes('year') || sName.includes('budget')) return 'BarChart3';
+  if (sName.includes('office') || sName.includes('department')) return 'Briefcase';
+  if (sName.includes('payment') || sName.includes('collection') || sName.includes('billing')) return 'FileText';
+  if (sName.includes('screen') || sName.includes('menu')) return 'LayoutGrid';
+  if (sName.includes('config') || sName.includes('setting') || sName.includes('utility')) return 'Wrench';
+  if (sName.includes('user') || sName.includes('role') || sName.includes('permission') || sName.includes('management')) return 'Users';
+  if (sName.includes('report') || sName.includes('engine') || sName.includes('analytics')) return 'BarChart3';
   if (sName.includes('master') || mName.includes('master')) return 'Database';
+  
+  // Module-based fallbacks
   if (mName.includes('assessment')) return 'ClipboardCheck';
   if (mName.includes('analytics')) return 'BarChart3';
   if (mName.includes('dashboard')) return 'LayoutDashboard';
   if (mName.includes('utility')) return 'Wrench';
+  if (mName.includes('gis')) return 'Map';
 
   return 'LayoutGrid';
 };

@@ -15,6 +15,18 @@ import {
   Search,
   Users,
   Wrench,
+  Briefcase,
+  Settings,
+  Shield,
+  Layers,
+  User,
+  Activity,
+  Globe,
+  FileBarChart,
+  Folder,
+  HardDrive,
+  Box,
+  Boxes,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
@@ -46,7 +58,34 @@ const MENU_ICON_MAP: Record<string, LucideIcon> = {
   Map,
   Database,
   Users,
+  Briefcase,
+  Settings,
+  Shield,
+  Layers,
+  User,
+  Activity,
+  Globe,
+  FileBarChart,
+  Folder,
+  HardDrive,
+  Box,
+  Boxes,
 };
+
+/** Helper to resolve icon by name, supporting case-insensitivity */
+function resolveIcon(iconName?: string): LucideIcon {
+  if (!iconName) return LayoutGrid;
+  
+  // Direct match
+  if (MENU_ICON_MAP[iconName]) return MENU_ICON_MAP[iconName];
+  
+  // Case-insensitive match
+  const lowerName = iconName.toLowerCase();
+  const found = Object.keys(MENU_ICON_MAP).find(k => k.toLowerCase() === lowerName);
+  if (found) return MENU_ICON_MAP[found];
+  
+  return LayoutGrid;
+}
 
 /**
  * App sidebar: menu tree and copy are rendered on the server (SSR).
@@ -86,8 +125,7 @@ export async function Sidebar({ menuItems, locale }: SidebarProps) {
             const active = pathWithoutLocale === itemPath || pathWithoutLocale.startsWith(`${itemPath}/`);
             const hasSubItems = item.subItems && item.subItems.length > 0;
 
-            const IconComponent: LucideIcon =
-              item.iconName && MENU_ICON_MAP[item.iconName] ? MENU_ICON_MAP[item.iconName] : LayoutGrid;
+            const IconComponent = resolveIcon(item.iconName);
 
             const hasActiveChild =
               hasSubItems &&
