@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import UseSubTypeForm from "@/components/modules/property-tax/typeofusemaster/UseSubTypeForm";
 import { getTypeById, getAllSubTypes } from "../../actions";
 
@@ -24,12 +23,12 @@ export default async function AddSubTypePage({
   }
   
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <>
       <UseSubTypeForm 
         id={null}
         typeInfo={typeInfo}
         allSubTypes={allSubTypes}
       />
-    </Suspense>
+    </>
   );
 }

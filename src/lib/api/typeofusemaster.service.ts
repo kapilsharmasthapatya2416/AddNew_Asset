@@ -3,7 +3,6 @@ import type {
   TypeOfUseMasterData,
   UseGroup,
   UseGroupIconKey,
-  UseStatus,
   UseType,
   UseSubType,
 } from "@/types/typeOfUse.types";
@@ -20,19 +19,6 @@ export interface PagedResponse<T> {
 }
 
 /** -------------------- ICON MAPPING (GROUP) -------------------- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function apiIconToKey(icon: any): UseGroupIconKey {
-  const v = String(icon ?? "").toLowerCase();
-  if (v.includes("home")) return "home";
-  if (v.includes("briefcase")) return "building";
-  if (v.includes("building")) return "building";
-  if (v.includes("factory")) return "factory";
-  if (v.includes("school") || v.includes("graduation")) return "school";
-  if (v.includes("wheat") || v.includes("leaf")) return "leaf";
-  if (v.includes("map") || v.includes("pin")) return "map";
-  return "home";
-}
-
 function iconKeyToApi(iconKey: UseGroupIconKey): string {
   switch (iconKey) {
     case "home":

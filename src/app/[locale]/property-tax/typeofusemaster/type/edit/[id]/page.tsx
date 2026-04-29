@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import UseTypeForm from "@/components/modules/property-tax/typeofusemaster/UseTypeForm";
 import { getTypeById, getTypeOfUseMasterData } from "../../../actions";
 import { notFound } from "next/navigation";
@@ -17,14 +16,14 @@ export default async function EditTypePage({ params }: { params: Promise<{ id: s
   }
   
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <>
       <UseTypeForm 
         id={id}
         initialData={typeData}
         allGroups={masterData.groups || []}
         allTypes={masterData.types || []}
       />
-    </Suspense>
+    </>
   );
 }
 

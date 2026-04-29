@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import UseGroupForm from "@/components/modules/property-tax/typeofusemaster/UseGroupForm";
 import { getGroupById, getTypeOfUseMasterData } from "../../../actions";
 import { notFound } from "next/navigation";
@@ -21,12 +20,12 @@ export default async function EditUseGroupPage({
   }
   
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <>
       <UseGroupForm 
         id={id} 
         initialData={groupData}
         allGroups={masterData.groups || []}
       />
-    </Suspense>
+    </>
   );
 }
