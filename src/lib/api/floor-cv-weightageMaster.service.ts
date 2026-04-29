@@ -1,9 +1,8 @@
 import { apiClient } from '@/services/api.service';
-import type { ApiResponse } from '@/types/common.types';
+import type { ApiResponse, PagedResponse } from '@/types/common.types';
 import {
   FloorFactorCVMaster,
   FloorFactorCVMasterUpdate,
-  PagedResponse,
   FloorFactorCVMasterCreate,
   BulkFloorFactorCVMasterCreate,
   BulkFloorFactorCVMasterUpdate,
@@ -296,6 +295,8 @@ export async function getFloorPaged(
 ): Promise<FloorPagedResponse> {
   const params = new URLSearchParams();
 
+  // Only add pagination params if they are valid (positive)
+  // This avoids errors with APIs that don't support pagination or -1 values
   if (pageNumber > 0) params.append("PageNumber", pageNumber.toString());
   if (pageSize > 0) params.append("PageSize", pageSize.toString());
 
@@ -323,5 +324,23 @@ export async function getFloorPaged(
       "Fetch floors returned undefined data"
     );
   }
+
+  // If API returns an array (non-paged response), normalize to PagedResponse format
+  if (Array.isArray(data)) {
+    const totalCount = data.length;
+    const isFetchAllPageSize = pageSize <= 0;
+    const effectivePageSize = isFetchAllPageSize ? (totalCount > 0 ? totalCount : 1) : pageSize;
+    const totalPages = isFetchAllPageSize ? 1 : Math.ceil(totalCount / effectivePageSize);
+    return {
+      items: data,
+      totalCount,
+      pageNumber: pageNumber,
+      pageSize: effectivePageSize,
+      totalPages,
+      hasPrevious: pageNumber > 1,
+      hasNext: isFetchAllPageSize ? false : pageNumber < totalPages
+    };
+  }
+
   return data;
 }

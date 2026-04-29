@@ -96,6 +96,14 @@ export function useFloorCvWeightage({
         { label: t("liftStatusOptions.withoutLift"), value: "withoutLift" },
     ];
 
+    // Helper function to clear all filters
+    const clearFilters = () => {
+        setFromFloor("");
+        setToFloor("");
+        setLiftStatus("both");
+        setFactorValue("0.00");
+    };
+
     // Row-level CRUD operations
     const { handleCellChange, handleUpdate, handleCancel } = useFloorCvRowOps({
         data,
@@ -106,6 +114,7 @@ export function useFloorCvWeightage({
         findRowByUid,
         addToast,
         refreshPage,
+        clearFilters,
     });
 
     // Bulk operations
@@ -124,15 +133,13 @@ export function useFloorCvWeightage({
         findRowByUid,
         addToast,
         refreshPage,
+        clearFilters,
     });
 
     // Handle clear all changes and filters
     const handleClearAll = () => {
         setEditableRows({});
-        setFromFloor("");
-        setToFloor("");
-        setLiftStatus("both");
-        setFactorValue("0.00");
+        clearFilters();
         setSelectedYear("");
 
         // Navigate to reset server-side filters

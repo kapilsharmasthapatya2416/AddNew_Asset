@@ -16,9 +16,9 @@ import {
   FloorFactorCVMasterUpdate,
   BulkFloorFactorCVMasterCreate,
   BulkFloorFactorCVMasterUpdate,
-  PagedResponse,
 } from "@/types/floor-cv-weightageMaster.types";
 import { createFloorWeightageCv } from '@/lib/api/floor-cv-weightageMaster.service';
+import { PagedResponse } from "@/types/common.types";
 
 /**
  * Fetch paginated FloorFactorCVMaster records with filtering and sorting

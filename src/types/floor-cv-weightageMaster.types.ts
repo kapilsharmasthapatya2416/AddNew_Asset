@@ -1,4 +1,5 @@
-import { Option } from "@/components/common";
+import type { Option } from "@/components/common";
+import { PagedResponse } from "./common.types";
 
 export interface FloorFactorCVMaster {
   id: number;
@@ -51,16 +52,6 @@ export interface FloorFactorCVBulkUpdateItem {
 }
 
 export type BulkFloorFactorCVMasterUpdate = FloorFactorCVBulkUpdateItem[];
-
-export interface PagedResponse<T> {
-  items: T[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-  hasPrevious: boolean;
-  hasNext: boolean;
-}
 //dependency master service types
 export interface AssessmentYearCV {
   id: number;

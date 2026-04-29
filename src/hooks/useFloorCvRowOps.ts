@@ -17,6 +17,7 @@ export interface UseFloorCvRowOpsParams {
     findRowByUid: (uid: string) => FloorFactorCVMaster | undefined;
     addToast: (type: "success" | "error" | "info" | "warning", message: string) => void;
     refreshPage: () => void;
+    clearFilters: () => void;
 }
 
 export function useFloorCvRowOps({
@@ -27,6 +28,7 @@ export function useFloorCvRowOps({
     findRowByUid,
     addToast,
     refreshPage,
+    clearFilters,
 }: UseFloorCvRowOpsParams) {
     const tW = useTranslations("weightageMaster");
 
@@ -123,6 +125,8 @@ export function useFloorCvRowOps({
                     delete updated[rowUid];
                     return updated;
                 });
+                // Clear filters after successful update
+                clearFilters();
                 // Refresh route data after a short delay without forcing a full page reload
                 setTimeout(() => {
                     refreshPage();

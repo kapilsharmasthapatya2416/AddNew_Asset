@@ -90,11 +90,17 @@ export const FloorCvHeaderExtra: React.FC<FloorCvHeaderExtraProps> = ({
                         value={factorValue}
                         onChange={(e) => {
                             const value = e.target.value;
-                            // Prevent negative values and excessive values
-                            if ((parseFloat(value) >= 0 && parseFloat(value) <= 999999) || value === "") {
+                            if (value === "") {
                                 setFactorValue(value);
-                            } else {
+                                return;
+                            }
+                            const numValue = parseFloat(value);
+                            if (numValue < 0) {
+                                addToast("error", tW("common.messages.negativeValuesNotAllowed"));
+                            } else if (numValue > 999999) {
                                 addToast("error", tW("common.messages.valueExceedsMax"));
+                            } else {
+                                setFactorValue(value);
                             }
                         }}
                         onKeyDown={(e) => {

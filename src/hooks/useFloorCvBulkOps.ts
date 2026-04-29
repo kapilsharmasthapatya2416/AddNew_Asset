@@ -23,6 +23,7 @@ export interface UseFloorCvBulkOpsParams {
     findRowByUid: (uid: string) => FloorFactorCVMaster | undefined;
     addToast: (type: "success" | "error" | "info" | "warning", message: string) => void;
     refreshPage: () => void;
+    clearFilters: () => void;
 }
  
 export function useFloorCvBulkOps({
@@ -40,6 +41,7 @@ export function useFloorCvBulkOps({
     findRowByUid,
     addToast,
     refreshPage,
+    clearFilters,
 }: UseFloorCvBulkOpsParams) {
     const t = useTranslations("floorFactorMaster");
     const tW = useTranslations("weightageMaster");
@@ -204,6 +206,8 @@ export function useFloorCvBulkOps({
                 if (updatedCount > 0) successMsg.push(`${updatedCount} ${tW("common.messages.updated")}`);
                 addToast("success", tW("common.messages.bulkOperationSuccess", { message: successMsg.join(", ") }));
                 setEditableRows({});
+                // Clear filters after successful bulk update
+                clearFilters();
                 setTimeout(() => { refreshPage(); }, 1500);
             } else if (totalSuccess > 0 && errorCount > 0) {
                 const successMsg = [];
@@ -212,6 +216,8 @@ export function useFloorCvBulkOps({
                 successMsg.push(`${errorCount} ${tW("common.messages.failed")}`);
                 addToast("warning", tW("common.messages.bulkOperationPartialSuccess", { message: successMsg.join(", ") }));
                 setEditableRows({});
+                // Clear filters after partial success
+                clearFilters();
                 setTimeout(() => { refreshPage(); }, 1500);
             } else if (errorCount > 0) {
                 addToast("error", tW("common.messages.bulkOperationFailed"));
