@@ -78,6 +78,7 @@ const mockMessages = {
       onlyAlphanumeric: "must contain only letters and numbers (no special characters).",
       allowedChars: "can contain letters (any language), numbers, spaces and (. - ,).",
       sequenceNonNegative: "must be 0 or greater.",
+      searchSequenceLabel: "Key Wise Sequence",
     },
     status: {
       active: "Active",
@@ -241,7 +242,7 @@ describe("UseTypeForm", () => {
       fireEvent.blur(seqInput);
 
       await waitFor(() => {
-        expect(screen.getByText(/must be 0 or greater/i)).toBeInTheDocument();
+        expect(screen.getByText(/Key Wise Sequence must be 0 or greater/i)).toBeInTheDocument();
       });
     });
 

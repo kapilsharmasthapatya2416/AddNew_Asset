@@ -46,13 +46,12 @@ const mockMessages = {
       forType: "For Type: {type}",
       mandatoryNote: "Fields marked with * are mandatory",
       fields: {
-        subTypeEnglish: "Sub-Type (English)",
-        sequence: "Sequence",
+        subTypeNameLabel: "Sub-Type Name",
+        searchSequenceLabel: "Search Sequence",
         status: "Status",
       },
       placeholders: {
-        subTypeEnglish: "Enter sub-type name",
-        sequence: "0",
+        subTypeNameLabel: "Enter sub-type name",
       },
     },
     messages: {
@@ -60,11 +59,15 @@ const mockMessages = {
       subTypeUpdated: "Sub-Type Updated",
       duplicateSubTypeName: "Duplicate Sub-Type Name is not allowed.",
       descriptionRequired: "Description is required.",
+      subTypeNameRequired: "Sub-Type Name is required.",
       saveFailed: "Failed to save. Please try again.",
       allowedChars: "can contain letters (any language), numbers, spaces and (. - ,).",
       sequenceNonNegative: "must be 0 or greater.",
       maxLength: "must be maximum {count} characters.",
       typeNotFound: "Type not found",
+      subTypeNameLabel: "Sub-Type Name",
+      searchSequenceLabel: "Search Sequence",
+      typeMissing: "Type is missing.",
     },
     status: {
       active: "Active",
@@ -133,7 +136,7 @@ describe("UseSubTypeForm", () => {
       );
 
       expect(screen.getByText("Add Sub-Type of Use")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("Enter sub-type name")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Sub-Type Name")).toBeInTheDocument();
       expect(screen.getByText(/For Type:/)).toBeInTheDocument();
     });
 
@@ -142,7 +145,7 @@ describe("UseSubTypeForm", () => {
         <UseSubTypeForm id={null} typeInfo={null} allSubTypes={[]} />
       );
 
-      expect(screen.getByText(/Type not found/i)).toBeInTheDocument();
+      expect(screen.getByText(/Create a new Sub-Type/i)).toBeInTheDocument();
     });
 
     it("should validate required fields", async () => {
@@ -154,6 +157,7 @@ describe("UseSubTypeForm", () => {
       fireEvent.click(saveButton);
 
       await waitFor(() => {
+        expect(screen.getByText(/Sub-Type Name is required/i)).toBeInTheDocument();
         expect(mockCreateSubType).not.toHaveBeenCalled();
       });
     });
@@ -163,12 +167,12 @@ describe("UseSubTypeForm", () => {
         <UseSubTypeForm id={null} typeInfo={typeInfo} allSubTypes={allSubTypes} />
       );
 
-      const descInput = screen.getByPlaceholderText("Enter sub-type name");
+      const descInput = screen.getByPlaceholderText("Sub-Type Name");
       fireEvent.change(descInput, { target: { value: "Test@#$%^&" } });
       fireEvent.blur(descInput);
 
       await waitFor(() => {
-        expect(screen.getByText(/can contain letters/i)).toBeInTheDocument();
+        expect(screen.getByText(/Sub-Type Name can contain letters/i)).toBeInTheDocument();
       });
     });
 
@@ -177,7 +181,7 @@ describe("UseSubTypeForm", () => {
         <UseSubTypeForm id={null} typeInfo={typeInfo} allSubTypes={allSubTypes} />
       );
 
-      const descInput = screen.getByPlaceholderText("Enter sub-type name");
+      const descInput = screen.getByPlaceholderText("Sub-Type Name");
       fireEvent.change(descInput, { target: { value: "Ground Floor" } });
       fireEvent.blur(descInput);
 
@@ -196,7 +200,7 @@ describe("UseSubTypeForm", () => {
       fireEvent.blur(seqInput);
 
       await waitFor(() => {
-        expect(screen.getByText(/must be 0 or greater/i)).toBeInTheDocument();
+        expect(screen.getByText(/Search Sequence must be 0 or greater/i)).toBeInTheDocument();
       });
     });
 
@@ -207,7 +211,7 @@ describe("UseSubTypeForm", () => {
         <UseSubTypeForm id={null} typeInfo={typeInfo} allSubTypes={allSubTypes} />
       );
 
-      const descInput = screen.getByPlaceholderText("Enter sub-type name");
+      const descInput = screen.getByPlaceholderText("Sub-Type Name");
       fireEvent.change(descInput, { target: { value: "Second Floor" } });
 
       const seqInput = screen.getByPlaceholderText("0");
@@ -235,7 +239,7 @@ describe("UseSubTypeForm", () => {
         <UseSubTypeForm id={null} typeInfo={typeInfo} allSubTypes={allSubTypes} />
       );
 
-      const descInput = screen.getByPlaceholderText("Enter sub-type name");
+      const descInput = screen.getByPlaceholderText("Sub-Type Name");
       fireEvent.change(descInput, { target: { value: "Second Floor" } });
 
       const saveButton = screen.getByText("Save");
@@ -359,7 +363,7 @@ describe("UseSubTypeForm", () => {
         <UseSubTypeForm id={null} typeInfo={typeInfo} allSubTypes={allSubTypes} />
       );
 
-      const descInput = screen.getByPlaceholderText("Enter sub-type name");
+      const descInput = screen.getByPlaceholderText("Sub-Type Name");
       
       // Input with multiple spaces should be sanitized
       fireEvent.change(descInput, { target: { value: "Test    Multiple    Spaces" } });
@@ -375,7 +379,7 @@ describe("UseSubTypeForm", () => {
         <UseSubTypeForm id={null} typeInfo={typeInfo} allSubTypes={allSubTypes} />
       );
 
-      const descInput = screen.getByPlaceholderText("Enter sub-type name");
+      const descInput = screen.getByPlaceholderText("Sub-Type Name");
       const longText = "a".repeat(150); // Exceeds max length
       
       fireEvent.change(descInput, { target: { value: longText } });

@@ -8,13 +8,11 @@ import { toast } from "sonner";
 // Mock next/navigation
 const mockRouterPush = vi.fn();
 const mockRouterBack = vi.fn();
-const mockRouterRefresh = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: mockRouterPush,
     back: mockRouterBack,
-    refresh: mockRouterRefresh,
   }),
   usePathname: () => "/property-tax/typeofusemaster/group/add",
 }));
