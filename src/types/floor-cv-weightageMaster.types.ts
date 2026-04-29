@@ -59,7 +59,6 @@ export interface PagedResponse<T> {
   hasPrevious: boolean;
   hasNext: boolean;
 }
-
 //dependency master service types
 export interface AssessmentYearCV {
   id: number;
