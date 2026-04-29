@@ -86,12 +86,6 @@ function mapApiTypeToUi(t: any): UseType {
   };
 }
 
-
-
-
-
-
-
 /** -------------------- ✅ MASTER GET (Groups + Types) -------------------- */
 export async function getTypeOfUseMaster(): Promise<TypeOfUseMasterData> {
   const [groupsPaged, typesPaged] = await Promise.all([
@@ -224,11 +218,9 @@ export async function deleteUseGroupApi(id: string | number) {
   
   return true;
 }
-
 /* ====================================================================== */
 /* =============================== TYPE APIS ============================= */
 /* ====================================================================== */
-
 export async function getUseTypesPagedServer(params: {
   pageNumber: number;
   pageSize: number;
@@ -356,70 +348,6 @@ export async function deleteUseTypeApi(id: string) {
   return true;
 }
 
-/* ====================================================================== */
-/* ============================ ✅ SUBTYPE APIS ========================== */
-/* ====================================================================== */
-
-/**
- * Swagger fields (from your screenshot):
- * subTypeOfUseId, description, descriptionEnglish, typeOfUseID, createdBy, ...
- */
-// function mapApiSubTypeToUi(s: any): UseSubType {
-//   return {
-//     id: String(s.subTypeOfUseId ?? s.id ?? ""),
-//     typeId: String(s.typeOfUseID ?? s.typeOfUseId ?? ""),
-//     nameReg: String(s.description ?? ""),            // regional
-//     nameEn: String(s.descriptionEnglish ?? ""),      // english
-//     status: (s.status ?? "Active") as UseStatus,
-
-//      keyboardShortCutKey: String(s.keyboardShortCutKey ?? ""),
-//     keyWiseSequence:
-//       s.keyWiseSequence === null || s.keyWiseSequence === undefined
-//         ? 0
-//         : Number(s.keyWiseSequence),
-//   };
-// }
-// function mapApiSubTypeToUi(s: any): UseSubType {
-//   const reg = String(s.description ?? "");
-//   const en = String(s.descriptionEnglish ?? "");
-
-//   return {
-//     id: String(s.subTypeOfUseId ?? s.id ?? ""),
-//     typeId: String(s.typeOfUseID ?? ""),
-//     nameReg: reg,
-//     nameEn: en || reg, // ✅ fallback if english null
-//     status: (s.status ?? "Active") as UseStatus,
-//     keyboardShortCutKey: String(s.keyboardShortCutKey ?? ""),
-//     keyWiseSequence:
-//       s.keyWiseSequence === null || s.keyWiseSequence === undefined
-//         ? 0
-//         : Number(s.keyWiseSequence),
-//   };
-// }
-
-// function mapApiSubTypeToUi(s: any): UseSubType {
-//   const desc = s.description ?? "";
-//   const descEn = s.descriptionEnglish ?? "";
-
-//   return {
-//     id: String(s.subTypeOfUseId ?? s.subTypeOfUseID ?? s.id ?? ""),
-//     typeId: String(s.typeOfUseID ?? s.typeOfUseId ?? ""),
-
-//     // ✅ fallback so table never looks blank
-//     nameEn: String(descEn || desc || ""),
-//     nameReg: String(desc || descEn || ""),
-
-//     status: (s.status ?? "Active") as UseStatus,
-
-//     // ✅ API field is keyboardShortCutKey (your swagger shows it)
-//     keyboardShortCutKey: String(s.keyboardShortCutKey ?? ""),
-//     keyWiseSequence:
-//       s.keyWiseSequence === null || s.keyWiseSequence === undefined
-//         ? 0
-//         : Number(s.keyWiseSequence),
-//   };
-// }
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapApiSubTypeToUi(s: any): UseSubType {
   return {
@@ -435,49 +363,6 @@ function mapApiSubTypeToUi(s: any): UseSubType {
   };
 }
 
-
-/** GET SubTypes (paged) - /api/SubTypeOfUse */
-// export async function getSubTypesPagedServer(params: {
-//   pageNumber: number;
-//   pageSize: number;
-//   typeOfUseID?: string;
-//   description?: string;
-//   searchTerm?: string;
-//   sortBy?: string;
-//   sortOrder?: string;
-//   filterLogic?: number;
-// }): Promise<PagedResponse<UseSubType>> {
-//   let fetchOptions: RequestInit = {
-//     method: "GET",
-//     headers: { "Content-Type": "application/json", Accept: "application/json" },
-//     cache: "no-store",
-//   };
-//   fetchOptions = await withDevSsl(fetchOptions);
-
-//   const qs = new URLSearchParams();
-//   qs.set("PageNumber", String(params.pageNumber));
-//   qs.set("PageSize", String(params.pageSize));
-
-//   if (params.typeOfUseID) qs.set("TypeOfUseID", params.typeOfUseID);
-//   // if (params.typeOfUseID) qs.set("TypeOfUseID", params.typeOfUseID);
-
-
-//   if (params.description) qs.set("Description", params.description);
-
-//   if (params.searchTerm) qs.set("SearchTerm", params.searchTerm);
-//   if (params.sortBy) qs.set("SortBy", params.sortBy);
-//   if (params.sortOrder) qs.set("SortOrder", params.sortOrder);
-//   if (typeof params.filterLogic === "number") qs.set("FilterLogic", String(params.filterLogic));
-
-//   const res = await fetch(`${appConfig.api.baseUrl}SubTypeOfUse?${qs.toString()}`, fetchOptions);
-//   if (!res.ok) {
-//     const raw = await res.text().catch(() => "");
-//     throw new Error(`Failed to fetch sub-types: ${res.status} ${res.statusText} ${raw}`);
-//   }
-
-//   const data = (await res.json()) as PagedResponse<any>;
-//   return { ...data, items: (data.items ?? []).map(mapApiSubTypeToUi) };
-// }
 export async function getSubTypesPagedServer(params: {
   pageNumber: number;
   pageSize: number;
