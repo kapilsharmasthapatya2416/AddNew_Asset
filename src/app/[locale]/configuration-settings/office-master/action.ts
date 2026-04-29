@@ -45,10 +45,8 @@ export async function fetchOfficePagedServerAction(
         const currentLocale = await getLocale();
         redirect(`/${currentLocale}/login`);
       }
-      console.error(`[fetchOfficePagedServerAction] API Error ${error.statusCode}:`, error.responseText);
     } else if (error instanceof Error) {
       if (error.message === "NEXT_REDIRECT" || (error as { digest?: string }).digest?.includes("NEXT_REDIRECT")) throw error;
-      console.error("[fetchOfficePagedServerAction] Error:", error.message);
     }
     throw error;
   }
@@ -56,10 +54,15 @@ export async function fetchOfficePagedServerAction(
 
 export async function createOfficeAction(
   data: OfficeFormModel
-): Promise<{ success: boolean; message?: string; statusCode?: number }> {
+): Promise<{ success: boolean; message?: string; statusCode?: number; errors?: Record<string, string> }> {
   try {
     const cookieStore = await cookies();
-    const userId = getUserIdFromCookies(cookieStore) ?? 0;
+    const userId = getUserIdFromCookies(cookieStore);
+    
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized", "User session expired");
+    }
+
     await createOffice(data, userId);
     for (const locale of locales) {
       revalidatePath(`/${locale}/configuration-settings/office-master`, "page");
@@ -67,7 +70,12 @@ export async function createOfficeAction(
     return { success: true };
   } catch (error: unknown) {
     if (error instanceof ApiError) {
-      return { success: false, message: error.responseText, statusCode: error.statusCode };
+      const errors: Record<string, string> = {};
+      const lowerMsg = error.responseText.toLowerCase();
+      if (lowerMsg.includes("office code") || lowerMsg.includes("already exists")) {
+        errors.officeCode = error.responseText;
+      }
+      return { success: false, message: error.responseText, statusCode: error.statusCode, errors };
     }
     if (error instanceof Error) {
       return { success: false, message: error.message };
@@ -78,10 +86,15 @@ export async function createOfficeAction(
 
 export async function updateOfficeAction(
   data: OfficeFormModel
-): Promise<{ success: boolean; message?: string; statusCode?: number }> {
+): Promise<{ success: boolean; message?: string; statusCode?: number; errors?: Record<string, string> }> {
   try {
     const cookieStore = await cookies();
-    const userId = getUserIdFromCookies(cookieStore) ?? 0;
+    const userId = getUserIdFromCookies(cookieStore);
+
+    if (!userId) {
+      throw new ApiError(401, "Unauthorized", "User session expired");
+    }
+
     await updateOffice(data, userId);
     for (const locale of locales) {
       revalidatePath(`/${locale}/configuration-settings/office-master`, "page");
@@ -89,7 +102,12 @@ export async function updateOfficeAction(
     return { success: true };
   } catch (error: unknown) {
     if (error instanceof ApiError) {
-      return { success: false, message: error.responseText, statusCode: error.statusCode };
+      const errors: Record<string, string> = {};
+      const lowerMsg = error.responseText.toLowerCase();
+      if (lowerMsg.includes("office code") || lowerMsg.includes("already exists")) {
+        errors.officeCode = error.responseText;
+      }
+      return { success: false, message: error.responseText, statusCode: error.statusCode, errors };
     }
     if (error instanceof Error) {
       return { success: false, message: error.message };
@@ -135,11 +153,6 @@ export async function getOfficeByIdAction(
     }
     return result;
   } catch (error) {
-    if (error instanceof ApiError) {
-      console.error(`[getOfficeByIdAction] API Error ${error.statusCode}:`, error.responseText);
-    } else {
-      console.error("[getOfficeByIdAction] Error:", error);
-    }
     throw error;
   }
 }

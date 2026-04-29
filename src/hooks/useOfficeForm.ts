@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useTransition } from "react";
+import React, { useState, useCallback, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
@@ -54,6 +54,13 @@ export function useOfficeForm({
   const [touched, setTouched] = useState<Partial<Record<keyof OfficeFormModel, boolean>>>({});
   const [open, setOpen] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const validate = useCallback(
     (data: OfficeFormModel) => {
@@ -89,9 +96,11 @@ export function useOfficeForm({
   const closeAndRoute = useCallback(() => {
     setOpen(false);
     setTimeout(() => {
-      startTransition(() => {
-        router.push(`/${locale}/configuration-settings/office-master`);
-      });
+      if (isMounted.current) {
+        startTransition(() => {
+          router.push(`/${locale}/configuration-settings/office-master`);
+        });
+      }
     }, 400); 
   }, [router, locale]);
 
@@ -118,6 +127,9 @@ export function useOfficeForm({
           closeAndRoute();
         });
       } else {
+        if (result.errors) {
+          setErrors((prev) => ({ ...prev, ...result.errors }));
+        }
         toast.error(result.message || "Operation failed");
       }
     } finally {
