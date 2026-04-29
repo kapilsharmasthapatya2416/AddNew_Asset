@@ -34,6 +34,7 @@ export function OfficeMaster({
   const [isPending, startTransition] = useTransition();
 
   const {
+    search,
     currentSearchTerm,
     handleSearchChange,
     selectedType,
@@ -75,7 +76,7 @@ export function OfficeMaster({
   const handleDelete = useCallback((row: Office) => {
     confirm({
       variant: "delete",
-      title: `${t("table.columns.officeCode")}: ${row.officeCode}`,
+      title: `${t("list.table.officeCode")}: ${row.officeCode}`,
       description: t("delete.confirmDescription"),
       meta: { name: row.officeName },
       onConfirm: async () => {
@@ -112,7 +113,7 @@ export function OfficeMaster({
       accentColor: "bg-blue-600"
     },
     {
-      label: t("stats.headOffices"),
+      label: `${t("stats.headOffices")} (${tCommon("table.onThisPage")})`,
       value: data.filter(o => o.type === "Head Office").length,
       icon: Building2,
       bgColor: "bg-purple-500",
@@ -121,7 +122,7 @@ export function OfficeMaster({
       accentColor: "bg-purple-600"
     },
     {
-      label: t("stats.activeOffices"),
+      label: `${t("stats.activeOffices")} (${tCommon("table.onThisPage")})`,
       value: data.filter(o => o.isActive).length,
       icon: CheckCircle2,
       bgColor: "bg-green-500",
@@ -130,7 +131,7 @@ export function OfficeMaster({
       accentColor: "bg-green-600"
     },
     {
-      label: t("stats.regionalOffices"),
+      label: `${t("stats.regionalOffices")} (${tCommon("table.onThisPage")})`,
       value: data.filter(o => o.type === "Regional Office").length,
       icon: Globe2,
       bgColor: "bg-orange-500",
@@ -197,7 +198,7 @@ export function OfficeMaster({
             <div className="flex flex-col md:flex-row items-center gap-4 w-full">
               <SearchInput
                 onChange={handleSearchChange}
-                value={currentSearchTerm}
+                value={search}
                 placeholder={t("list.filters.search")}
                 className="md:w-72"
               />

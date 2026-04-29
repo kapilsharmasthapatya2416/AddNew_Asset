@@ -1,15 +1,10 @@
-/** Minimal cookie store shape from `next/headers` `cookies()` */
-type CookieStoreLike = {
-  get(name: string): { value: string } | undefined;
-};
-
-/**
- * Reads authenticated user id from httpOnly `user_id` cookie set at login.
+/** 
+ * Session utilities
+ * 
+ * Re-exports shared cookie utilities to avoid logic duplication 
+ * as suggested by Copilot.
  */
-export function getUserIdFromCookies(cookieStore: CookieStoreLike): number | null {
-  const raw = cookieStore.get('user_id')?.value;
-  if (!raw) return null;
-  const id = parseInt(raw, 10);
-  if (!Number.isFinite(id) || id <= 0) return null;
-  return id;
-}
+import { getUserIdFromCookies, type CookieStoreLike } from './cookie';
+
+export { getUserIdFromCookies };
+export type { CookieStoreLike };

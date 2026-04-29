@@ -47,7 +47,7 @@ export function useOfficeForm({
     designationMasterId: initialData?.designationMasterId ?? null,
     establishedDate: initialData?.establishedDate ?? "",
     isActive: initialData?.isActive ?? true,
-    updatedBy: 1,
+    updatedBy: undefined,
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof OfficeFormModel, string>>>({});
@@ -57,11 +57,11 @@ export function useOfficeForm({
 
   const validate = useCallback(
     (data: OfficeFormModel) => {
-      const v = officeValidations.validate(data, t, isEdit);
+      const v = officeValidations.validate(data, t, isEdit, tCommon);
       setErrors(v);
       return v;
     },
-    [t, isEdit]
+    [t, isEdit, tCommon]
   );
 
 
