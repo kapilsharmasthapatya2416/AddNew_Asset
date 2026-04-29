@@ -225,27 +225,7 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
 
       router.back();
     }
-    // catch (err: any) {
-    //   const msg = String(err?.message ?? "").toLowerCase();
-
-    //   const isDup =
-    //     msg.includes("duplicate") ||
-    //     msg.includes("already exists") ||
-    //     msg.includes("unique") ||
-    //     String(err?.message ?? "") === "DUPLICATE_GROUP_ID";
-
-    //   if (isDup) {
-    //     setErrors((p) => ({
-    //       ...p,
-    //       typeOfUseGroupID: "Duplicate group id is not allowed.",
-    //     }));
-    //     setTouched((p) => ({ ...p, typeOfUseGroupID: true }));
-    //     return;
-    //   }
-
-    //   toast.error("Create group failed. Please try again.");
-    // }
-
+   
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     catch (err: any) {
       const msg = String(err?.message ?? "").toLowerCase();
@@ -370,25 +350,7 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
 
             {/* Group Name */}
             <div className="flex flex-col">
-              {/* <Input
-                label="Group Name"
-                name="name"
-                value={formData.name}
-                onChange={(e) => {
-                  const cleaned = sanitizeName(e.target.value);
-                  const next = { ...formData, name: cleaned };
-                  setFormData(next);
-
-                  if (submittedOnce || touched.name) {
-                    setErrors(validate(next));
-                  }
-                }}
-                onBlur={() => handleBlur("name")}
-                placeholder="e.g., Residential, Local"
-                required
-                fullWidth
-                inputProps={{ maxLength: 100 }}
-              /> */}
+             
               <Input
                 label={t('group.fields.groupName')}
                 name="groupName"

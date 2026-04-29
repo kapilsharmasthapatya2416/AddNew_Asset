@@ -29,11 +29,6 @@ import {
 } from "@/lib/api/typeofusemaster.service";
 
 
-/** ✅ page.tsx uses this (UPDATED: SSR loads only groups+types) */
-// export async function getTypeOfUseMasterData(): Promise<TypeOfUseMasterData> {
-//   return await getTypeOfUseMaster();
-// }
-
 export async function getTypeOfUseMasterData(): Promise<TypeOfUseMasterData> {
   const [groupsResp, typesResp] = await Promise.all([
     getAllUseGroups(),

@@ -74,28 +74,6 @@ export default async function Page({
     subTypes: [],
   };
 
-  /* ---------------------------------------------------
-   * 5️⃣ Resolve selectedTypeId safely
-   * --------------------------------------------------- */
-  // const selectedTypeId = (() => {
-  //   const typeParam = params.typeId;
-
-  //   if (!typeParam) {
-  //     return masterData.types?.[0]?.id ?? "";
-  //   }
-
-  //   const directMatch = masterData.types.find(
-  //     (t) => t.id === typeParam
-  //   );
-  //   if (directMatch) return directMatch.id;
-
-  //   const codeMatch = masterData.types.find(
-  //     (t) => t.code === typeParam
-  //   );
-  //   if (codeMatch) return codeMatch.id;
-
-  //   return masterData.types?.[0]?.id ?? "";
-  // })();
 
   const selectedTypeId = (() => {
     const typeParam = params.typeId;
