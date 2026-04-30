@@ -501,6 +501,22 @@
     },
     "oldDetails": {
         "title": "Old Taxation & Historical Data",
+        "loading": {
+            "message": "Loading Old Details...",
+            "description": "Please wait while we fetch the historical information"
+        },
+        "oldTaxation": {
+            "loading": {
+                "message": "Loading Old Taxation...",
+                "description": "Fetching historical tax data"
+            }
+        },
+        "floorInformation": {
+            "loading": {
+                "message": "Loading Floor Info...",
+                "description": "Fetching historical floor records"
+            }
+        },
         "zoneName": "Zone Name",
         "wardNo": "Ward No",
         "showFloorDetails": "Show Floor Details",
@@ -565,9 +581,17 @@
             "yearPlaceholder": "YYYY",
             "carpetAreaPlaceholder": "Sqft / SqM",
             "autoCalculate": "Auto Calculate",
-             "use": "Type Of Use"
+            "use": "Type Of Use"
         },
         "taxationBreakdown": {
+            "error": {
+                "title": "Taxation Breakdown Error",
+                "description": "There was a problem loading the taxation breakdown."
+            },
+            "loading": {
+                "message": "Loading Breakdown...",
+                "description": "Calculating historical taxation breakdown"
+            },
             "title": "Old Taxation Breakdown",
             "assessmentYear": "Assessment Year",
             "aggregateTaxSum": "Aggregate Tax Sum",

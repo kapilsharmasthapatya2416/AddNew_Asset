@@ -15,7 +15,6 @@ export default async function TaxationBreakdownPage({ params }: PageProps) {
 
     const result = await getOldTaxesDetailsAction(Number(propertyId));
     const taxationData = result.success ? result.data : null;
-    console.log("resss", taxationData);
     
     return (
         <TaxationBreakdownForm initialData={taxationData} />

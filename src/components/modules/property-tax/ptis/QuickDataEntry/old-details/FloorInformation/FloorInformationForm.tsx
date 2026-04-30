@@ -177,7 +177,7 @@ export default function FloorInformationForm({
 
   return (
     <div className="space-y-4">
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-blue-50">
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-blue-50 mb-10">
         <h3 className="text-base font-bold text-blue-800 mb-6 flex items-center gap-2 pb-3 border-b border-blue-100">
           <Layers className="w-5 h-5" />
           {formData.id ? "Update Floor Information" : t("oldDetails.floorDetailsTitle")}
@@ -292,13 +292,13 @@ export default function FloorInformationForm({
           </div>
 
           {/* Buttons Group */}
-          <div className="lg:col-span-2 flex items-end gap-3 mt-7">
+          <div className="lg:col-span-2 flex items-end gap-4 mt-7">
             {!formData.id ? (
               <Button
                 onClick={handleSave}
                 disabled={isSubmitting}
                 icon={Plus}
-                className="h-11 w-48 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 flex flex-row items-center justify-center gap-2 active:scale-[0.98]"
+                className="h-11 w-40 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 flex flex-row items-center justify-center gap-2 active:scale-[0.98]"
               >
                 {t('oldDetails.button.add')}
               </Button>
@@ -307,7 +307,7 @@ export default function FloorInformationForm({
                 onClick={handleSave}
                 disabled={isSubmitting}
                 icon={Save}
-                className="h-11 w-48 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 flex flex-row items-center justify-center gap-2 active:scale-[0.98]"
+                className="h-11 w-40 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 flex flex-row items-center justify-center gap-2 active:scale-[0.98]"
               >
                 {t('property.updateButton')}
               </Button>

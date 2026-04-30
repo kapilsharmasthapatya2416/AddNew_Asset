@@ -122,7 +122,7 @@ export default function TaxationBreakdownForm({
           } else {
             toast.error(result.error || t("saveError"));
           }
-        } catch (error) {
+        } catch (_error) {
           toast.error(t("unexpectedError"));
         } finally {
           setIsSubmitting(false);

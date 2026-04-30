@@ -1,9 +1,9 @@
 import { LoadingPage } from '@/components/common';
 
-export default function TaxationBreakdownLoading() {
+export default function FloorInformationLoading() {
   return (
     <LoadingPage
-      translationNamespace="quickDataEntry.taxationBreakdown.loading"
+      translationNamespace="quickDataEntry.oldDetails.floorInformation.loading"
     />
   );
 }

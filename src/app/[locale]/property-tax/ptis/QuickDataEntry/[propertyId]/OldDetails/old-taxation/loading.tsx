@@ -3,7 +3,7 @@ import { LoadingPage } from "@/components/common";
 export default function OldTaxationLoading() {
   return (
     <LoadingPage
-      translationNamespace="quickDataEntry.oldTaxation.loading"
+      translationNamespace="quickDataEntry.oldDetails.oldTaxation.loading"
     />
   );
 }

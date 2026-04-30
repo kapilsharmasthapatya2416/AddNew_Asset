@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { PropertyOldDetailsApiItem } from "@/types/property-old-details.types";
 import { updatePropertyOldDetailsAction } from "@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/OldDetails/old-taxation/action";
 import { useTranslations } from "next-intl";
+import { Save } from "lucide-react";
 
 interface OldTaxationFormProps {
   propertyOldDetails?: PropertyOldDetailsApiItem | null;
@@ -235,9 +236,12 @@ export default function OldTaxationForm({
           <Button
             onClick={handleUpdate}
             disabled={isSubmitting}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-xl shadow-lg hover:shadow-blue-200/50 transition-all font-bold text-base h-auto disabled:opacity-50"
+            className="w-[17.5%] bg-[#2563eb] hover:bg-blue-700 text-white h-[46px] rounded-xl shadow-lg shadow-blue-900/10 font-bold text-sm flex items-center justify-center gap-2.5 transition-all active:scale-95"
           >
-            {t("property.updateButton")}
+            <div className="flex gap-2 text-2">
+              <Save className="w-4 h-4" />
+              {isSubmitting ? t("saving") : t("property.updateButton")}
+            </div>
           </Button>
         </div>
       </div>
