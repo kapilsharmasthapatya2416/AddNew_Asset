@@ -26,7 +26,8 @@ export default getRequestConfig(async ({ locale }) => {
     taxzoneMessages,
     rateSectionMasterMessages,
     assessmentYearRangeMessages,
-    modulesMessages
+    modulesMessages,
+    propertyTypeMessages
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
@@ -35,7 +36,8 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/taxzone.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/rateSectionMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/assessmentYearRange.json`).then((m) => m.default),
-    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default)  
+    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/propertyType.json`).then((m) => m.default)
   ]);
 
   return {
@@ -48,7 +50,8 @@ export default getRequestConfig(async ({ locale }) => {
       taxZone: taxzoneMessages.taxZone,
       rateSectionMaster: rateSectionMasterMessages,
       assessmentYearRange: assessmentYearRangeMessages,
-      modules: modulesMessages     
+      modules: modulesMessages,
+      propertyType: propertyTypeMessages
     },
   };
 });
