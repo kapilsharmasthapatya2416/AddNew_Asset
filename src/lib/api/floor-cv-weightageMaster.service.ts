@@ -218,10 +218,11 @@ export async function getAssessmentYearsPagedServerCV(
 ): Promise<AssessmentYearPagedResponseCV> {
   const params = new URLSearchParams();
   
-  // Only add pagination params if they are valid (positive)
-  // This avoids errors with APIs that don't support pagination or -1 values
+  // Add pagination params - use -1 to fetch all records, reject values < -1
   if (pageNumber > 0) params.append("PageNumber", pageNumber.toString());
-  if (pageSize > 0) params.append("PageSize", pageSize.toString());
+  if (pageSize >= 1 || pageSize === -1) {
+    params.append("PageSize", pageSize.toString());
+  }
 
   if (searchTerm?.trim()) params.append("SearchTerm", searchTerm.trim());
 
@@ -295,10 +296,11 @@ export async function getFloorPaged(
 ): Promise<FloorPagedResponse> {
   const params = new URLSearchParams();
 
-  // Only add pagination params if they are valid (positive)
-  // This avoids errors with APIs that don't support pagination or -1 values
+  // Add pagination params - use -1 to fetch all records, reject values < -1
   if (pageNumber > 0) params.append("PageNumber", pageNumber.toString());
-  if (pageSize > 0) params.append("PageSize", pageSize.toString());
+  if (pageSize >= 1 || pageSize === -1) {
+    params.append("PageSize", pageSize.toString());
+  }
 
   if (searchTerm?.trim()) {
     params.append("SearchTerm", searchTerm.trim());

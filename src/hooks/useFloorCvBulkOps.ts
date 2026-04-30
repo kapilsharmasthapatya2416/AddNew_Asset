@@ -239,17 +239,22 @@ export function useFloorCvBulkOps({
  
         setIsGeneratingAll(true);
         try {
-            const payload: FloorFactorCVBulkCreateItem[] = newRecords.map((row) => ({
-                isActive: row.isActive,
-                createdBy: 1, // TODO: Get from auth context
-                floorId: row.floorId,
-                factorWithLift: row.factorWithLift,
-                factorWithoutLift: row.factorWithoutLift,
-                yearRangeCVId: row.yearRangeCVID ?? row.yearRangeCVId ?? 0,
-            }));
- 
+            const payload: FloorFactorCVBulkCreateItem[] = newRecords.map((row) => {
+                const rowUid = getRowUid(row);
+                const editedRow = editableRows[rowUid];
+                
+                return {
+                    isActive: row.isActive,
+                    createdBy: 1, // TODO: Get from auth context
+                    floorId: row.floorId,
+                    factorWithLift: editedRow?.factorWithLift ?? row.factorWithLift,
+                    factorWithoutLift: editedRow?.factorWithoutLift ?? row.factorWithoutLift,
+                    yearRangeCVId: row.yearRangeCVID ?? row.yearRangeCVId ?? 0,
+                };
+            });
+
             const result = await bulkCreateFloorFactorCVMasterAction(payload);
- 
+
             if (result && result.success) {
                 addToast("success", tW("common.messages.recordsGeneratedSuccess", { count: newRecords.length }));
                 setTimeout(() => { refreshPage(); }, 1500);
