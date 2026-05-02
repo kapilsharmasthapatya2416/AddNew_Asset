@@ -177,17 +177,23 @@ export async function Sidebar({ menuItems, locale }: SidebarProps) {
                     </div>
                   </summary>
                   <div className="ml-5 border-l-2 border-gray-200 pl-2 space-y-1 my-1 max-h-60 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
-                    {item.subItems!.map((sub) => (
-                      <Link
-                        key={sub.name}
-                        href={withLocale(locale, sub.href)}
-                        className={`block px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors duration-200 hover:bg-gray-50 ${
-                          sub.className || 'text-gray-600'
-                        }`}
-                      >
-                        {sub.name}
-                      </Link>
-                    ))}
+                    {item.subItems!.map((sub) => {
+                      const subPath = sub.href.startsWith('/') ? sub.href : `/${sub.href}`;
+                      const subActive = pathWithoutLocale === subPath || pathWithoutLocale.startsWith(`${subPath}/`);
+                      return (
+                        <Link
+                          key={sub.name}
+                          href={withLocale(locale, sub.href)}
+                          className={`block px-3 py-1.5 rounded-lg text-[14px] font-medium transition-colors duration-200 ${
+                            subActive
+                              ? 'bg-[#4b70a6]/10 text-[#4b70a6] font-semibold'
+                              : `hover:bg-gray-50 ${sub.className || 'text-gray-600'}`
+                          }`}
+                        >
+                          {sub.name}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </details>
               );

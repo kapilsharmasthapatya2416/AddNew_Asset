@@ -20,12 +20,10 @@ export function SidebarFrame({ closeMenuLabel, openMenuLabel = 'Open menu', chil
   const [collapsed, setCollapsed] = useState(true);
 
   const pathname = usePathname();
-  const [prevPathname, setPrevPathname] = useState(pathname);
- 
-  if (pathname !== prevPathname) {
-    setPrevPathname(pathname);
+
+  useEffect(() => {
     setOpen(false);
-  }
+  }, [pathname]);
 
   useEffect(() => {
     if (!collapsed) {
