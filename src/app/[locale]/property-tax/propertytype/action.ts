@@ -10,13 +10,13 @@ export async function getTypeOfUseListAction(): Promise<UseType[]> {
     return result.items;
   } catch (error) {
     console.error("[getTypeOfUseListAction] Error:", error);
-    return [];
+    throw error; // Rethrow so UI can distinguish between 'no data' and 'failed to load'
   }
 }
 import { revalidatePath } from "next/cache";
 import { locales } from "@/i18n/config";
 import { createPropertyType, deletePropertyType, getPropertyTypesPaged, getPropertyTypeById, updatePropertyType } from "@/lib/api/property-type-crud.service";
-import { getPropertyTypeAndTypeOfUseValidation, updatePropertyTypeValidations } from "@/lib/api/property-type-validation-mapping.service";
+import { getPropertyTypeAndTypeOfUseValidation, getValidationByPropertyTypeId, updatePropertyTypeValidations } from "@/lib/api/property-type-validation-mapping.service";
 import { getPropertyTypeCategories } from "@/lib/api/property-type-category.service";
 import { ApiError } from "@/lib/utils/api";
 import { PropertyType, PropertyTypeFormModel, PropertyTypeAndTypeOfUseValidation } from "@/types/property-type.types";
@@ -233,8 +233,7 @@ export async function getPropertyTypeCategoriesAction(): Promise<PropertyTypeCat
     return result;
   } catch (error) {
     console.error("[getPropertyTypeCategoriesAction] Error:", error);
-    // Return empty array on error so form can still render
-    return [];
+    throw error; // rethrow so UI does not treat a load failure as "no categories"
   }
 }
 
@@ -257,10 +256,17 @@ export async function getValidationsByPropertyTypeIdsAction(
     if (!propertyTypeIds || propertyTypeIds.length === 0) {
       return [];
     }
-    // Fetch all validations (cached at service layer)
-    const allValidations = await getPropertyTypeAndTypeOfUseValidation();
-    // Filter to only include validations for the requested property type IDs
-    return allValidations.filter((v) => propertyTypeIds.includes(v.propertyTypeId));
+    
+    // Fetch validations for each property type in parallel using server-side filtering
+    // This avoids downloading the entire validation table
+    const validationPromises = propertyTypeIds.map((id) => 
+      getValidationByPropertyTypeId(id)
+    );
+    
+    const validationArrays = await Promise.all(validationPromises);
+    
+    // Flatten the array of arrays into a single array
+    return validationArrays.flat();
   } catch (error) {
     console.error("[getValidationsByPropertyTypeIdsAction] Error:", error);
     throw error; // rethrow so the UI does not treat load failure as "no mappings"

@@ -9,8 +9,12 @@ import { ApiError } from "@/lib/utils/api";
  */
 export async function getPropertyTypeCategories(): Promise<PropertyTypeCategory[]> {
   try {
-    const response = await apiClient.get<PagedResponse<PropertyTypeCategory>>("/PropertyTypeCategory");
-    
+    // Always fetch all categories by requesting with pageSize -1
+    const qs = new URLSearchParams();
+    qs.set("PageNumber", "1");
+    qs.set("PageSize", "-1");
+    const response = await apiClient.get<PagedResponse<PropertyTypeCategory>>(`/PropertyTypeCategory?${qs.toString()}`);
+
     if (!response.success) {
       throw new ApiError(
         response.statusCode ?? 500,
@@ -18,13 +22,13 @@ export async function getPropertyTypeCategories(): Promise<PropertyTypeCategory[
         "Get property type categories failed"
       );
     }
-    
+
     if (!response.data) {
       throw new ApiError(500, "No data received from server", "Invalid response format");
     }
-    
+
     const items = response.data.items ?? [];
-    
+
     // Filter only active categories and validate structure (including date fields)
     return items.filter((item): item is PropertyTypeCategory => {
       return (

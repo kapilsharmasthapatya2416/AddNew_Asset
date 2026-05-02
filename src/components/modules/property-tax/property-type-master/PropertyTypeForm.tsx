@@ -104,28 +104,7 @@ export default function PropertyTypeForm({
     // For add mode: only call if there are selections AND we have the ID
     const hasSelectionsToSave = selectedTypeOfUseIds.size > 0;
     const shouldSaveValidations = propertyTypeId && (isEdit || hasSelectionsToSave);
-    
-    if (shouldSaveValidations) {
-      try {
-        const result = await updatePropertyTypeValidationsAction(
-          propertyTypeId,
-          Array.from(selectedTypeOfUseIds)
-        );
-        if (!result.success) {
-          toast.error(result.message || t("form.typeOfUseSection.saveFailed"));
-        }
-      } catch (error) {
-        console.error("Error saving type of use validations:", error);
-        toast.error(t("form.typeOfUseSection.saveFailed"));
-      }
-    } else if (!isEdit && hasSelectionsToSave && !propertyTypeId) {
-      // Add mode: property type created but couldn't get ID to save type of use
-      // This is a rare edge case - warn user but don't block
-      console.warn("Property type created but ID not available for type of use assignment");
-      toast.warning(t("form.typeOfUseSection.saveWarning"));
-    }
 
-    // 4. Navigate away only if everything is saved successfully
     let validationSaveFailed = false;
     if (shouldSaveValidations) {
       try {
@@ -149,8 +128,12 @@ export default function PropertyTypeForm({
       toast.warning(t("form.typeOfUseSection.saveWarning"));
     }
 
-    // Only close the form if validation mapping did not fail
+    // Only show success and close if everything is saved successfully
     if (!validationSaveFailed) {
+      toast.success(isEdit
+        ? t("success.updated", { description: formData.propertyDescription })
+        : t("success.created", { description: formData.propertyDescription })
+      );
       refreshAndClose();
     }
   };

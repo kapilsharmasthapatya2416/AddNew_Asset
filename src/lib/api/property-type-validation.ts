@@ -34,6 +34,13 @@ export function validateCreateFormData(data: PropertyTypeFormModel): void {
   if (!data.propertyTypeGroup?.trim()) {
     throw new ApiError(400, "Property type group is required", "Validation failed");
   }
+  if (
+    data.propertyTypeCategoryId === undefined ||
+    data.propertyTypeCategoryId === null ||
+    data.propertyTypeCategoryId === 0
+  ) {
+    throw new ApiError(400, "Property type category is required", "Validation failed");
+  }
 }
 
 /**
@@ -51,6 +58,9 @@ export function validateUpdateFormData(data: PropertyTypeFormModel): void {
   }
   if (!data.propertyTypeGroup?.trim()) {
     throw new ApiError(400, "Property type group is required", "Validation failed");
+  }
+  if (!data.propertyTypeCategoryId || data.propertyTypeCategoryId === 0) {
+    throw new ApiError(400, "Property type category is required", "Validation failed");
   }
 }
 

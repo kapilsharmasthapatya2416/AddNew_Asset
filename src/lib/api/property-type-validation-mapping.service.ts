@@ -22,8 +22,25 @@ export async function getPropertyTypeAndTypeOfUseValidation(): Promise<PropertyT
 /** Fetches validation mappings for a specific property type */
 export async function getValidationByPropertyTypeId(propertyTypeId: number): Promise<PropertyTypeAndTypeOfUseValidation[]> {
   try {
-    const allValidations = await getPropertyTypeAndTypeOfUseValidation();
-    return allValidations.filter((v) => v.propertyTypeId === propertyTypeId);
+    // Fetch only validations for the specific property type by filtering on the server side
+    const qs = new URLSearchParams();
+    qs.set("page", "-1");
+    qs.set("pageSize", "-1");
+    qs.set("PropertyTypeId", String(propertyTypeId));
+    
+    const response = await apiClient.get<{ items: PropertyTypeAndTypeOfUseValidation[]; totalCount: number }>(
+      `/PropertyDescriptionAndTypeOfUseValidation?${qs.toString()}`
+    );
+    
+    if (!response.success) {
+      throw new ApiError(
+        response.statusCode ?? 500,
+        response.error || "Failed to fetch type of use validation",
+        "Get validation failed"
+      );
+    }
+    
+    return response.data?.items ?? [];
   } catch (error) {
     console.error(`Error fetching validation for property type ${propertyTypeId}:`, error);
     throw error;
@@ -140,15 +157,40 @@ export async function updatePropertyTypeValidations(
       throw addError;
     }
 
-    // 2. Delete removed mappings (atomic phase 2)
-    try {
-      await Promise.all(toRemove.map((v) => deletePropertyTypeValidation(v.id)));
-    } catch (deleteError) {
-      // If any delete fails, rollback adds (delete the ones we just added)
-      await Promise.all(
-        createdMappings.map((m) => deletePropertyTypeValidation(m.id))
+    // 2. Delete removed mappings one by one, tracking successes for rollback
+    const deletedMappings: PropertyTypeAndTypeOfUseValidation[] = [];
+    let deleteError: Error | null = null;
+    
+    for (const mapping of toRemove) {
+      try {
+        await deletePropertyTypeValidation(mapping.id);
+        deletedMappings.push(mapping);
+      } catch (error) {
+        deleteError = error as Error;
+        break; // Stop on first failure
+      }
+    }
+
+    // If any delete failed, rollback everything
+    if (deleteError) {
+      // Restore deleted mappings by recreating them
+      const restorePromises = deletedMappings.map((m) =>
+        createPropertyTypeValidation(propertyTypeId, m.typeOfUseId).catch((restoreError) => {
+          console.error(`Failed to restore mapping for typeOfUseId ${m.typeOfUseId}:`, restoreError);
+        })
       );
-      console.error(`Error deleting old validations for property type ${propertyTypeId}, rolled back adds:`, deleteError);
+
+      // Remove newly created mappings
+      const rollbackPromises = createdMappings.map((m) =>
+        deletePropertyTypeValidation(m.id).catch((rollbackError) => {
+          console.error(`Failed to rollback created mapping ${m.id}:`, rollbackError);
+        })
+      );
+
+      // Wait for all restore/rollback operations
+      await Promise.all([...restorePromises, ...rollbackPromises]);
+
+      console.error(`Error deleting old validations for property type ${propertyTypeId}, rolled back all changes:`, deleteError);
       throw deleteError;
     }
   } catch (error) {
