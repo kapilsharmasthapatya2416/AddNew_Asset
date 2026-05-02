@@ -14,7 +14,7 @@ const validateLocale = (locale: string | undefined): Locale => {
 export default getRequestConfig(async ({ locale }) => {
   const validatedLocale = validateLocale(locale);
 
-  // Load all translation files  
+  // Load all translation files
   const [
     commonMessages,
     dashboardMessages,
@@ -24,6 +24,9 @@ export default getRequestConfig(async ({ locale }) => {
     quickDataEntryMessages,
     rateSectionMasterMessages,
     assessmentYearRangeMessages,
+    ptisMessages,
+    floorFactorMasterMessages,
+    weightageMasterMessages,
     modulesMessages,
     officeMessages
   ] = await Promise.all([
@@ -35,6 +38,9 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/quickDataEntry.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/rateSectionMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/assessmentYearRange.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/ptis.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/floorFactorMaster.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/weightageMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/office.json`).catch(() => ({})).then((m) => m.default || m),
   ]);
@@ -50,6 +56,9 @@ export default getRequestConfig(async ({ locale }) => {
       quickDataEntry: quickDataEntryMessages,
       rateSectionMaster: rateSectionMasterMessages,
       assessmentYearRange: assessmentYearRangeMessages,
+      ptis: ptisMessages,
+      floorFactorMaster: floorFactorMasterMessages.floorFactorMaster,
+      weightageMaster: weightageMasterMessages.weightageMaster,
       modules: modulesMessages,
       office: officeMessages,
     },
