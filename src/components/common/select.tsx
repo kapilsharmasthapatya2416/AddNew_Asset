@@ -14,7 +14,6 @@ export interface SelectProps {
   options: Option[];
   value?: string;
   onChange?: (value: string) => void;
-  onBlur?: () => void;
   placeholder?: string;
   className?: string;
   selectSize?: 'sm' | 'md';
@@ -31,7 +30,6 @@ export function Select({
   options,
   value,
   onChange,
-  onBlur,
   placeholder = 'Select...',
   className = '',
   selectSize = 'md',
@@ -191,13 +189,11 @@ export function Select({
             // close the dropdown safely without calling contains(null).
             if (!nextTarget || !(nextTarget instanceof Node)) {
               setOpen(false);
-              onBlur?.();
               return;
             }
 
             if (!selectRef.current?.contains(nextTarget)) {
               setOpen(false);
-              onBlur?.();
             }
           }}
           disabled={disabled}
