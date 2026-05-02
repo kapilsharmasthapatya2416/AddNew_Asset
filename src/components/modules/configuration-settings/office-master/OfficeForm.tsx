@@ -166,8 +166,10 @@ export default function OfficeForm({
               <Select
                 label={t("form.fields.type.label") || "Type"}
                 value={formData.type || ""}
-                onChange={(value) => handleChange({ target: { name: "type", value } } as React.ChangeEvent<HTMLSelectElement>)}
-                onBlur={() => handleBlur({ target: { name: "type" } } as React.FocusEvent<HTMLSelectElement>)}
+                onChange={(value) => {
+                  handleChange({ target: { name: "type", value } } as React.ChangeEvent<HTMLSelectElement>);
+                  handleBlur({ target: { name: "type" } } as React.FocusEvent<HTMLSelectElement>);
+                }}
                 error={showError("type") ? errors.type : undefined}
                 options={[
                   { label: t("form.fields.type.options.mainOffice") || "Main Office", value: "Main Office" },
