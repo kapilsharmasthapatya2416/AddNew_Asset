@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+
 import type { PropertySearchParams } from '@/types/ptis.types';
 
 export interface PropertySearchState {
@@ -10,15 +11,13 @@ export interface PropertySearchState {
 }
 
 export function usePropertySearchState(urlState: PropertySearchState) {
-  const [draft, setDraft] = useState<PropertySearchState>(urlState);
-  const [prevUrlState, setPrevUrlState] = useState<PropertySearchState>(urlState);
+  const currentUrlKey = useMemo(() => JSON.stringify(urlState), [urlState]);
 
-  // React-recommended pattern for syncing state with props
-  // See: https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
-  const currentUrlKey = JSON.stringify(urlState);
-  const prevUrlKey = JSON.stringify(prevUrlState);
+  const [draft, setDraft] = useState<PropertySearchState>(urlState);
+  const [prevUrlKey, setPrevUrlKey] = useState(currentUrlKey);
+
   if (currentUrlKey !== prevUrlKey) {
-    setPrevUrlState(urlState);
+    setPrevUrlKey(currentUrlKey);
     setDraft(urlState);
   }
 
@@ -42,9 +41,6 @@ export function usePropertySearchState(urlState: PropertySearchState) {
     setDraft((prev) => ({ ...prev, propertyId: val }));
   }, []);
 
-  /**
-   * Resets property-level fields when ward changes.
-   */
   const handleWardSelection = useCallback((id: number | null, no: string) => {
     setDraft({
       wardId: id,
