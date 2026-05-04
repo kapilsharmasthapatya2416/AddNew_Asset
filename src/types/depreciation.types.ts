@@ -51,6 +51,7 @@ export type DepreciationMasterProps = {
   pageSize: number;
   totalCount: number;
   totalPages: number;
+  rangeCountInCurrentPage: number;
   locale?: string;
 };
 

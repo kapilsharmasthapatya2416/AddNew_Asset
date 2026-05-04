@@ -23,7 +23,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const pageNumber = Number.isInteger(parsedPageNumber) && parsedPageNumber > 0 ? parsedPageNumber : 1;
   const pageSize = Number.isInteger(parsedPageSize) && parsedPageSize > 0 ? parsedPageSize : 10;
 
-  // Fetch paginated ranges data (server-side pagination for unique ranges)
+  // Fetch paginated records data (server-side record-level pagination)
   const res = await fetchRangesPagedServerAction(pageNumber, pageSize);
   
   if (!res.success || !res.data) {
@@ -35,10 +35,11 @@ export default async function Page({ params, searchParams }: PageProps) {
     <DepreciationMaster
       data={res.data.rows}
       constructionTypes={res.data.constructionTypes}
-      pageNumber={res.data.rangePageNumber}
-      pageSize={res.data.rangePageSize}
-      totalCount={res.data.rangeTotalCount}
-      totalPages={res.data.rangeTotalPages}
+      pageNumber={res.data.pageNumber}
+      pageSize={res.data.pageSize}
+      totalCount={res.data.totalRecords}
+      totalPages={res.data.totalPages}
+      rangeCountInCurrentPage={res.data.rangeCountInCurrentPage}
       locale={locale}
     />
   );

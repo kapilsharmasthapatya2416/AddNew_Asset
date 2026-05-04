@@ -16,12 +16,9 @@ import type { ActionResult, DepreciationConstructionType, DepreciationRow } from
 const getPagePath = (locale: string) => `/${locale}/property-tax/depreciation-master`;
 
 /**
- * Fetches paginated depreciation records with proper range-level pagination.
- * Since backend doesn't support range pagination, we implement hybrid approach:
- * 1. Fetch more records to ensure enough unique ranges
- * 2. Group records by ranges in memory  
- * 3. Paginate ranges (not records)
- * 4. Return all records belonging to paginated ranges
+ * Fetches paginated depreciation records with proper server-side pagination.
+ * Uses backend's native record-level pagination (not range-level).
+ * UI should display record counts, not range counts, for accuracy.
  */
 export async function fetchRangesPagedServerAction(
   pageNumber: number,
@@ -31,11 +28,13 @@ export async function fetchRangesPagedServerAction(
   data?: {
     rows: DepreciationRow[];
     constructionTypes: DepreciationConstructionType[];
-    // Pagination info - range-level pagination
-    rangePageNumber: number;
-    rangePageSize: number;
-    rangeTotalCount: number;
-    rangeTotalPages: number;
+    // Pagination info - honest record-level pagination
+    pageNumber: number;
+    pageSize: number;
+    totalRecords: number;
+    totalPages: number;
+    // Additional info for UI
+    rangeCountInCurrentPage: number;
   };
   error?: string;
 }> {
@@ -45,85 +44,45 @@ export async function fetchRangesPagedServerAction(
       return { success: false, error: 'Invalid pagination parameters' };
     }
 
-    // Fetch enough records to get sufficient unique ranges
-    // Since each range typically has multiple construction types,
-    // we fetch more records than pageSize to ensure we get enough ranges
-    const fetchSize = Math.max(pageSize * 10, 100); // Fetch 10x more records or minimum 100
-    const maxPages = 10; // Safety limit
+    // Fetch records using backend's native pagination
+    const [paginatedResponse, constructionTypes] = await Promise.all([
+      getDepreciationPaged(pageNumber, pageSize),
+      getConstructionTypes(),
+    ]);
+
+    const { items: rows, totalCount, totalPages } = paginatedResponse;
+
+    // Clamp pageNumber to valid range (fix for delete-induced page overflow)
+    const clampedPageNumber = Math.min(pageNumber, totalPages || 1);
     
-    const constructionTypes = await getConstructionTypes();
-    const allRecordsForRanges: DepreciationRow[] = [];
-    let currentPage = 1;
+    // If we clamped the page number, refetch with correct page
+    let finalRows = rows;
+    let finalTotalPages = totalPages;
+    let finalTotalCount = totalCount;
     
-    // Fetch records until we have enough unique ranges or hit limits
-    const uniqueRangesFound = new Set<string>();
-    const targetRangeCount = pageNumber * pageSize; // Total ranges needed up to current page
-    
-    while (currentPage <= maxPages && uniqueRangesFound.size < targetRangeCount + pageSize) {
-      const response = await getDepreciationPaged(currentPage, fetchSize);
-      
-      if (!response.items || response.items.length === 0) {
-        break; // No more records
-      }
-      
-      allRecordsForRanges.push(...response.items);
-      
-      // Track unique ranges found
-      response.items.forEach(row => {
-        uniqueRangesFound.add(`${row.minYear}-${row.maxYear}`);
-      });
-      
-      // If we have enough ranges or no more pages, stop
-      if (uniqueRangesFound.size >= targetRangeCount + pageSize || !response.hasNext) {
-        break;
-      }
-      
-      currentPage++;
+    if (clampedPageNumber !== pageNumber && clampedPageNumber > 0) {
+      const clampedResponse = await getDepreciationPaged(clampedPageNumber, pageSize);
+      finalRows = clampedResponse.items;
+      finalTotalPages = clampedResponse.totalPages;
+      finalTotalCount = clampedResponse.totalCount;
     }
 
-    // Group records by ranges
-    const rangeMap = new Map<string, { minYear: number; maxYear: number; records: DepreciationRow[] }>();
-    
-    allRecordsForRanges.forEach((row) => {
-      const key = `${row.minYear}-${row.maxYear}`;
-      if (!rangeMap.has(key)) {
-        rangeMap.set(key, {
-          minYear: row.minYear,
-          maxYear: row.maxYear,
-          records: []
-        });
-      }
-      rangeMap.get(key)!.records.push(row);
-    });
-
-    // Sort ranges by minYear and apply range-level pagination
-    const allRanges = Array.from(rangeMap.values()).sort((a, b) => a.minYear - b.minYear);
-    const rangeTotalCount = allRanges.length;
-    const rangeTotalPages = Math.ceil(rangeTotalCount / pageSize) || 1;
-
-    // Clamp pageNumber to valid range
-    const clampedPageNumber = Math.min(pageNumber, rangeTotalPages);
-
-    // Apply pagination to ranges (not records)
-    const startIndex = (clampedPageNumber - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedRanges = allRanges.slice(startIndex, endIndex);
-
-    // Collect all records from paginated ranges
-    const finalRows: DepreciationRow[] = [];
-    paginatedRanges.forEach(range => {
-      finalRows.push(...range.records);
+    // Count unique ranges in current page for display purposes
+    const uniqueRanges = new Set<string>();
+    (finalRows || []).forEach(row => {
+      uniqueRanges.add(`${row.minYear}-${row.maxYear}`);
     });
 
     return {
       success: true,
       data: {
-        rows: finalRows,
+        rows: finalRows || [],
         constructionTypes,
-        rangePageNumber: clampedPageNumber,
-        rangePageSize: pageSize,
-        rangeTotalCount,
-        rangeTotalPages,
+        pageNumber: clampedPageNumber,
+        pageSize: pageSize,
+        totalRecords: finalTotalCount || 0,
+        totalPages: finalTotalPages || 1,
+        rangeCountInCurrentPage: uniqueRanges.size,
       },
     };
   } catch (error: unknown) {
