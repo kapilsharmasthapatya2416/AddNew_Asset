@@ -146,7 +146,7 @@ describe("DepreciationMaster", () => {
     pageSize: 10,
     totalCount: 1,
     totalPages: 1,
-    rangeCountInCurrentPage: 1,
+    rangeCountInCurrentPage: mockData.length,
     locale: "en",
   };
 

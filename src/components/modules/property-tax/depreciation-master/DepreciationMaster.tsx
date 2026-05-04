@@ -74,13 +74,10 @@ export default function DepreciationMaster({
       rateMap[id][row.constructionTypeId] = row.rate ?? 0;
     });
 
-    rangeMap.forEach((r) => {
-      if (!rateMap[r.id]) rateMap[r.id] = {};
-      initialConstructionTypes.forEach((c) => {
-        rateMap[r.id][c.constructionId] ??= 0;
-      });
-    });
-
+    // FIXED: Only show construction types that have actual records in current page
+    // Don't create phantom cells with 0 values for missing construction types
+    // This prevents editable cells that have no backing data and would cause update failures
+    
     const sortedRanges = Array.from(rangeMap.values()).sort((a, b) => a.min - b.min);
 
     return {
@@ -295,19 +292,30 @@ export default function DepreciationMaster({
     [ranges, ratesByRange]
   );
 
-  const matrixColumns: MatrixColumn[] = useMemo(
-    () =>
-      initialConstructionTypes.map((c) => ({
+  const matrixColumns: MatrixColumn[] = useMemo(() => {
+    // Only show construction types that have actual data in current page
+    const constructionTypesWithData = new Set<number>();
+    
+    // Collect all construction type IDs that have data in current page
+    Object.values(ratesByRange).forEach(rangeRates => {
+      Object.keys(rangeRates).forEach(constructionIdStr => {
+        constructionTypesWithData.add(Number(constructionIdStr));
+      });
+    });
+    
+    // Filter to only include construction types with actual data
+    return initialConstructionTypes
+      .filter(c => constructionTypesWithData.has(c.constructionId))
+      .map((c) => ({
         id: String(c.constructionId),
         label: c.constructionCode,
         headerClassName: "bg-blue-50 text-blue-900 font-semibold",
-      })),
-    [initialConstructionTypes]
-  );
+      }));
+  }, [initialConstructionTypes, ratesByRange]);
 
   const editableColumnIds = useMemo(
-    () => initialConstructionTypes.map((c) => String(c.constructionId)),
-    [initialConstructionTypes]
+    () => matrixColumns.map((c) => c.id),
+    [matrixColumns]
   );
 
   return (
@@ -326,6 +334,24 @@ export default function DepreciationMaster({
             </span>
           </div>
         </div>
+
+        {/* Construction Type Visibility Info */}
+        {matrixColumns.length < initialConstructionTypes.length && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
+            <div className="flex items-center gap-2">
+              <span className="font-medium">📋 Construction Types:</span>
+              <span>
+                Showing {matrixColumns.length} of {initialConstructionTypes.length} types on this page:
+                <strong className="ml-1">
+                  Construction types available on this page: {matrixColumns.length}
+                </strong>
+              </span>
+            </div>
+            <div className="mt-1 text-xs">
+              Some construction types may be on other pages. Navigate to see all data.
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-12 gap-4">
           <LeftPanel
