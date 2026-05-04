@@ -403,9 +403,10 @@ describe('Checkbox', () => {
   // 16. Built-in Label Prop
   // ─────────────────────────────────────────────────────────────
 
-  it('renders with a built-in label', () => {
+  it('renders with a built-in label as its accessible name', () => {
     render(<Checkbox label="Subscribe" />);
-    expect(screen.getByText('Subscribe')).toBeInTheDocument();
+    // Verify the label text exists AND is the accessible name for the checkbox
+    expect(screen.getByRole('checkbox', { name: 'Subscribe' })).toBeInTheDocument();
   });
 
   it('toggles when clicking the built-in label', async () => {
@@ -417,16 +418,30 @@ describe('Checkbox', () => {
     await user.click(label);
     
     expect(handleCheckedChange).toHaveBeenCalledWith(true);
-    expect(screen.getByRole('checkbox')).toHaveAttribute('aria-checked', 'true');
+    // Verify by accessible name here too
+    expect(screen.getByRole('checkbox', { name: 'Subscribe' })).toHaveAttribute('aria-checked', 'true');
   });
 
-  it('generates a unique id for label linkage when none is provided', () => {
-    render(<Checkbox label="Auto ID" />);
-    const checkbox = screen.getByRole('checkbox');
-    const label = screen.getByText('Auto ID');
+  it('generates unique IDs for label linkage when none is provided', () => {
+    render(
+      <>
+        <Checkbox label="First" />
+        <Checkbox label="Second" />
+      </>
+    );
     
-    expect(checkbox).toHaveAttribute('id');
-    expect(label).toHaveAttribute('for', checkbox.getAttribute('id') || '');
+    const label1 = screen.getByText('First');
+    const label2 = screen.getByText('Second');
+    const id1 = label1.getAttribute('for');
+    const id2 = label2.getAttribute('for');
+
+    expect(id1).toBeTruthy();
+    expect(id2).toBeTruthy();
+    expect(id1).not.toBe(id2);
+
+    // verify linkage works by selecting by label text
+    expect(screen.getByLabelText('First')).toBeInTheDocument();
+    expect(screen.getByLabelText('Second')).toBeInTheDocument();
   });
 
   it('uses provided id for label linkage', () => {

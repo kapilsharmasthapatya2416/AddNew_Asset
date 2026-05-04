@@ -109,7 +109,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
 
         if (label) {
             return (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2">
                     {checkboxContent}
                     <label
                         htmlFor={id}
