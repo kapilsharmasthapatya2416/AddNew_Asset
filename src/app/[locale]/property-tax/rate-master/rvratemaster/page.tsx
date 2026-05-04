@@ -1,0 +1,92 @@
+import RateMasterView from "@/components/modules/property-tax/RVRateMaster/RateMasterView";
+import {
+  getRateMasterData,
+  getZoneDescriptionsPaged
+} from "@/app/[locale]/property-tax/rate-master/rvratemaster/action";
+import { getRateMasterPaged } from "@/lib/api/RVRateMaster.services";
+
+// Force dynamic rendering to ensure fresh data on each navigation
+export const dynamic = 'force-dynamic';
+
+type PageProps = {
+  searchParams: Promise<{
+    page?: string;
+    pageSize?: string;
+    zone?: string;
+    useGroup?: string;
+    year?: string;
+  }>;
+};
+
+const RateMasterPageServer = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+  
+  // For zone pagination: pageSize refers to number of ZONES, not records
+  const zonePage = Number(params?.page) || 1;
+  const zonePageSize = Number(params?.pageSize) || 10;
+
+  // Fetch all master data in one call
+  const {
+    constructionTypes,
+    rateSections: zones,
+    useGroups,
+    assessmentYears,
+    zoneDescriptions
+  } = await getRateMasterData();
+
+  // Determine initial/selected values
+  const selectedZone = params?.zone || (zones.length > 0 ? zones[0].value : "ALL");
+  // Get the first valid use group (not "ALL")
+  const firstValidUseGroup = useGroups.find((u) => u.value && u.value !== 'ALL');
+  const selectedUseGroup = params?.useGroup || (firstValidUseGroup?.value ?? '');
+  const selectedYear = params?.year || (assessmentYears.length > 0 ? assessmentYears[0].value : "ALL");
+
+  // STEP 1: Get paginated zones from server 
+  const paginatedZonesResult = await getZoneDescriptionsPaged(zonePage, zonePageSize);
+  const paginatedZones = paginatedZonesResult.items;
+  const totalZonePages = paginatedZonesResult.totalPages;
+  const totalZonesCount = paginatedZonesResult.totalCount;
+
+  // STEP 2: Fetch ALL rates for selected filters (large page size to get all data)
+  const largePageSize = -1; // Fetch all matching rates
+  const allRatesResult = await getRateMasterPaged(
+    1, 
+    largePageSize, 
+    constructionTypes, 
+    zoneDescriptions, 
+    selectedZone, 
+    selectedUseGroup, 
+    selectedYear
+  );
+
+  // STEP 3: Filter rates to only include the paginated zones
+  const paginatedZoneNumbers = new Set(paginatedZones.map(z => z.zoneNo));
+  const filteredRates = allRatesResult.items.filter(rate => 
+    paginatedZoneNumbers.has(rate.zoneNo ?? rate.zoneSection)
+  );
+
+  return (
+    <RateMasterView
+      rateMasterData={filteredRates}
+      pageNumber={zonePage}
+      pageSize={zonePageSize}
+      totalPages={totalZonePages}
+      totalCount={totalZonesCount}
+      zones={zones ?? []}
+      useGroups={useGroups ?? []}
+      assessmentYears={assessmentYears ?? []}
+      rateCategories={constructionTypes.map((ct: { constructionId: string; constructionCode?: string; description?: string }) => ({ 
+        constructionId: ct.constructionId, 
+        constructionCode: ct.constructionCode || ct.constructionId,
+        description: ct.description 
+      }))}
+      zoneDescriptions={zoneDescriptions ?? []}
+      initialZone={selectedZone}
+      initialUseGroup={selectedUseGroup}
+      initialYear={selectedYear}
+    />
+  );
+};
+
+export default RateMasterPageServer;
+

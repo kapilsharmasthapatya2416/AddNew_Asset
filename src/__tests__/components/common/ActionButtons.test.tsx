@@ -5,10 +5,13 @@ import {
   SaveButton,
   CancelButton,
   UploadButton,
+  DownloadButton,
   ExportButton,
   ImportButton,
   EditButton,
+  EditLabelButton,
   DeleteButton,
+  DeleteLabelButton,
   FirstPageButton,
   PrevPageButton,
   NextPageButton,
@@ -652,6 +655,132 @@ describe("ActionButtons", () => {
       const button = screen.getByRole("button");
       expect(button).toBeInTheDocument();
       expect(button.textContent).toBe("");
+    });
+  });
+
+  describe("New Action Buttons", () => {
+    describe("DownloadButton", () => {
+      it("renders with default label", () => {
+        render(<DownloadButton />);
+        expect(screen.getByText("Download")).toBeInTheDocument();
+      });
+
+      it("renders with custom label", () => {
+        render(<DownloadButton label="Download Template" />);
+        expect(screen.getByText("Download Template")).toBeInTheDocument();
+      });
+
+      it("calls onClick handler when clicked", () => {
+        const handleClick = vi.fn();
+        render(<DownloadButton onClick={handleClick} />);
+        fireEvent.click(screen.getByText("Download"));
+        expect(handleClick).toHaveBeenCalledTimes(1);
+      });
+
+      it("is disabled when disabled prop is true", () => {
+        render(<DownloadButton disabled />);
+        const button = screen.getByText("Download").closest("button");
+        expect(button).toBeDisabled();
+      });
+
+      it("accepts additional className", () => {
+        render(<DownloadButton className="custom-download-class" />);
+        const button = screen.getByText("Download").closest("button");
+        expect(button).toHaveClass("custom-download-class");
+      });
+    });
+
+    describe("UploadButton", () => {
+      it("renders with default label", () => {
+        render(<UploadButton />);
+        expect(screen.getByText("Upload")).toBeInTheDocument();
+      });
+
+      it("renders with custom label", () => {
+        render(<UploadButton label="Upload File" />);
+        expect(screen.getByText("Upload File")).toBeInTheDocument();
+      });
+
+      it("calls onClick handler when clicked", () => {
+        const handleClick = vi.fn();
+        render(<UploadButton onClick={handleClick} />);
+        fireEvent.click(screen.getByText("Upload"));
+        expect(handleClick).toHaveBeenCalledTimes(1);
+      });
+
+      it("is disabled when disabled prop is true", () => {
+        render(<UploadButton disabled />);
+        const button = screen.getByText("Upload").closest("button");
+        expect(button).toBeDisabled();
+      });
+
+      it("accepts additional className", () => {
+        render(<UploadButton className="custom-upload-class" />);
+        const button = screen.getByText("Upload").closest("button");
+        expect(button).toHaveClass("custom-upload-class");
+      });
+    });
+
+    describe("EditLabelButton", () => {
+      it("renders with default label", () => {
+        render(<EditLabelButton />);
+        expect(screen.getByText("Edit")).toBeInTheDocument();
+      });
+
+      it("renders with custom label", () => {
+        render(<EditLabelButton label="Edit Rates" />);
+        expect(screen.getByText("Edit Rates")).toBeInTheDocument();
+      });
+
+      it("calls onClick handler when clicked", () => {
+        const handleClick = vi.fn();
+        render(<EditLabelButton onClick={handleClick} />);
+        fireEvent.click(screen.getByText("Edit"));
+        expect(handleClick).toHaveBeenCalledTimes(1);
+      });
+
+      it("is disabled when disabled prop is true", () => {
+        render(<EditLabelButton disabled />);
+        const button = screen.getByText("Edit").closest("button");
+        expect(button).toBeDisabled();
+      });
+
+      it("accepts additional className", () => {
+        render(<EditLabelButton className="custom-edit-label-class" />);
+        const button = screen.getByText("Edit").closest("button");
+        expect(button).toHaveClass("custom-edit-label-class");
+      });
+    });
+
+    describe("DeleteLabelButton", () => {
+      it("renders with default label", () => {
+        render(<DeleteLabelButton />);
+        expect(screen.getByText("Delete")).toBeInTheDocument();
+      });
+
+      it("renders with custom label", () => {
+        render(<DeleteLabelButton label="Delete Rates" />);
+        expect(screen.getByText("Delete Rates")).toBeInTheDocument();
+      });
+
+      it("calls onClick handler when clicked", () => {
+        const handleClick = vi.fn();
+        render(<DeleteLabelButton onClick={handleClick} />);
+        fireEvent.click(screen.getByText("Delete"));
+        expect(handleClick).toHaveBeenCalledTimes(1);
+      });
+
+      it("is disabled when disabled prop is true", () => {
+        render(<DeleteLabelButton disabled />);
+        const button = screen.getByText("Delete").closest("button");
+        expect(button).toBeDisabled();
+      });
+
+      it("accepts additional className", () => {
+        render(<DeleteLabelButton className="custom-delete-label-class" />);
+        const button = screen.getByText("Delete").closest("button");
+        expect(button).toHaveClass("custom-delete-label-class");
+      });
     });
   });
 });

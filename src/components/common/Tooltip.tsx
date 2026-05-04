@@ -10,6 +10,7 @@ import React, {
   isValidElement,
   cloneElement,
 } from "react";
+import ReactDOM from "react-dom";
 import { cn } from "@/lib/utils/cn";
 
 /* ================= TYPES ================= */
@@ -31,10 +32,16 @@ export const Tooltip = ({
 }: TooltipProps): React.ReactElement => {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLElement | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const tooltipId = useId();
+
+  /* ---------------- Mount detection ---------------- */
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   /* ---------------- Show tooltip ---------------- */
   const show = (): void => {
@@ -47,7 +54,7 @@ export const Tooltip = ({
         NonNullable<TooltipProps["placement"]>,
         { top: number; left: number }
       > = {
-        top: { top: rect.top - 8, left: rect.left + rect.width / 2 },
+        top: { top: rect.top - 16, left: rect.left + rect.width / 2 },
         bottom: { top: rect.bottom + 8, left: rect.left + rect.width / 2 },
         left: { top: rect.top + rect.height / 2, left: rect.left - 8 },
         right: { top: rect.top + rect.height / 2, left: rect.right + 8 },
@@ -153,7 +160,7 @@ export const Tooltip = ({
       } as unknown as React.HTMLProps<HTMLElement>)}
 
       {/* ================= TOOLTIP ================= */}
-      {visible && (
+      {visible && mounted && ReactDOM.createPortal(
         <span
           id={tooltipId}
           role="tooltip"
@@ -170,7 +177,8 @@ export const Tooltip = ({
           }}
         >
           {content}
-        </span>
+        </span>,
+        document.body
       )}
     </>
   );

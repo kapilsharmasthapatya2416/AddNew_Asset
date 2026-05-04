@@ -149,6 +149,41 @@ export function ImportButton({
   );
 }
 
+export function DownloadButton({
+  label = "Download",
+  ...props
+}: LabeledActionButtonProps): React.ReactElement {
+  return (
+    <Button variant="secondary" icon={Download} {...props}>
+      {label}
+    </Button>
+  );
+}
+
+
+export function EditLabelButton({
+  label = "Edit",
+  size = "sm",
+  ...props
+}: LabeledActionButtonProps): React.ReactElement {
+  return (
+    <Button variant="edit" icon={Pencil} size={size} {...props}>
+      {label}
+    </Button>
+  );
+}
+
+export function DeleteLabelButton({
+  label = "Delete",
+  size = "sm",
+  ...props
+}: LabeledActionButtonProps): React.ReactElement {
+  return (
+    <Button variant="delete" icon={Trash2} size={size} {...props}>
+      {label}
+    </Button>
+  );
+}
 /* ----------------------------------------------------------
    ICON-ONLY CRUD BUTTONS
 ---------------------------------------------------------- */

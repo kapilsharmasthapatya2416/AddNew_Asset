@@ -1,0 +1,437 @@
+import { useCallback } from "react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { getRateMasterByFilters } from "@/app/[locale]/property-tax/rate-master/rvratemaster/action";
+import { bulkCreateRateMasterAction, bulkUpdateRateMasterAction, deleteRateMasterAction } from "@/app/[locale]/property-tax/rate-master/rvratemaster/action";
+import type { IBackendRateMaster, RatePayload, RateCategory } from "@/types/RVRateMaster";
+
+interface UseRateMasterOperationsProps {
+  mode: "add" | "edit" | "delete";
+  id?: string;
+  selectedZone: string;
+  selectedUseGroup: string;
+  assessmentYear: string;
+  rateFrequency: "Monthly" | "Yearly";
+  multipliers: Record<string, number>;
+  rateCategories: RateCategory[];
+  useGroupOptions: Array<{ label: string; value: string }>;
+}
+
+export function useRateMasterOperations({
+  mode,
+  id,
+  selectedZone,
+  selectedUseGroup,
+  assessmentYear,
+  rateFrequency,
+  multipliers,
+  rateCategories,
+  useGroupOptions,
+}: UseRateMasterOperationsProps) {
+  const t = useTranslations("ptis_RVRateMaster");
+
+  // Build payload from matrix data
+  const buildPayloadFromMatrix = useCallback((
+    matrixData: any[],
+    _currentMultiplier: number,
+    existingBackendRates: IBackendRateMaster[] = [],
+    targetUseGroup?: string // NEW: optional parameter for target use group (used for multipliers)
+  ): { updates: RatePayload[], inserts: RatePayload[] } => {
+    const updates: RatePayload[] = [];
+    const inserts: RatePayload[] = [];
+
+    // Use targetUseGroup if provided, otherwise fall back to selectedUseGroup
+    const useGroupForPayload = targetUseGroup || selectedUseGroup;
+
+    function findExistingRate(taxZoneId: number, constructionId: string) {
+      return existingBackendRates.find(r => {
+        const rTaxZoneId = r.TaxZoneId ?? r.taxZoneId;
+        const rConstructionTypeId = r.ConstructionTypeId ?? r.constructionTypeId;
+        const rTypeOfUseGroupId = r.TypeOfUseGroupId ?? r.typeOfUseGroupId;
+        const rYearRangeRVId = r.YearRangeRVId ?? r.yearRangeRVId ?? r.yearRangeId ?? r.YearRangeId;
+        const rRateSectionId = r.RateSectionId ?? r.rateSectionId;
+        
+        return (
+          Number(rTaxZoneId) === taxZoneId &&
+          Number(rConstructionTypeId) === Number(constructionId) &&
+          Number(rTypeOfUseGroupId) === Number(useGroupForPayload) && // Use the correct use group
+          Number(rYearRangeRVId) === Number(assessmentYear) &&
+          Number(rRateSectionId) === Number(selectedZone)
+        );
+      });
+    }
+
+    matrixData.forEach(row => {
+      rateCategories.forEach(cat => {
+        const constructionId = typeof cat === 'string' ? cat : cat.constructionId;
+        if (!constructionId) return;
+        
+        const rowKey = typeof cat === 'string' ? cat : (cat.constructionCode || cat.constructionId);
+        const val = row[rowKey];
+        
+        if (val === undefined || val === null || val === '' || isNaN(Number(val)) || Number(val) <= 0) return;
+        
+        const zoneNoVal = String(row.zoneNo ?? row.zone ?? '');
+        const taxZoneIdVal = row.taxZoneId || Number(zoneNoVal);
+        const existing = findExistingRate(taxZoneIdVal, constructionId);
+        
+        const payload: RatePayload = {
+          taxZoneId: row.taxZoneId || Number(zoneNoVal),
+          constructionTypeId: Number(constructionId),
+          typeOfUseGroupId: Number(useGroupForPayload), // Use the correct use group
+          YearRangeRVId: Number(assessmentYear),
+          rateSectionId: Number(selectedZone),
+          rateSquareMeter: Number(val),
+          rateSquareFeet: Number((Number(val) * 10.7639).toFixed(2)),
+          rateRemark: rateFrequency === "Yearly" ? "YearWise Rate" : "MonthWise Rate",
+          createdBy: 0,
+          floorId: Number(row.floorID ?? 67),
+          isActive: true,
+        };
+        
+        const rowRates = (row as any).rates;
+        const rateCellInRow = Array.isArray(rowRates) ? rowRates.find((r: any) => 
+          r.rateCategory === rowKey || Number(r.constructionTypeId) === Number(constructionId)
+        ) : undefined;
+        const rateIdInRow = rateCellInRow?.id || rateCellInRow?.Id;
+        const existingId = rateIdInRow || existing?.Id || existing?.id;
+        
+        if (existingId) {
+          payload.Id = Number(existingId);
+          updates.push(payload);
+        } else {
+          inserts.push(payload);
+        }
+      });
+    });
+
+    return { updates, inserts };
+  }, [rateCategories, selectedUseGroup, assessmentYear, selectedZone, rateFrequency]);
+
+  // Bulk create handler
+  const handleBulkCreate = useCallback(async (completeMatrixData: any[]) => {
+    if (!assessmentYear) {
+      toast.error(t('messages.validationSelectAssessmentYear'));
+      return { success: false };
+    }
+
+    const hasAtLeastOneRate = completeMatrixData.some(row => {
+      return rateCategories.some(cat => {
+        const key = cat.constructionCode || cat.constructionId;
+        const value = row[key];
+        const numValue = Number(value);
+        return numValue > 0;
+      });
+    });
+
+    if (!hasAtLeastOneRate) {
+      toast.error(t('messages.validationEnterRateValue'));
+      return { success: false };
+    }
+
+    // Check for existing rates
+    const isAddMode = mode === "add" && !id;
+    if (isAddMode) {
+      try {
+        const existingForSelection = await getRateMasterByFilters(
+          String(selectedZone),
+          String(selectedUseGroup),
+          String(assessmentYear)
+        );
+        if (existingForSelection && existingForSelection.length > 0) {
+          toast.error(t('messages.validationRatesAlreadyExist'));
+          return { success: false };
+        }
+      } catch (err) {
+        console.error('Failed to check existing rates before add:', err);
+      }
+    }
+
+    const currentMultiplier = multipliers[selectedUseGroup] || 1.0;
+    let finalMatrixData = completeMatrixData;
+    if (currentMultiplier > 0 && currentMultiplier !== 1.0) {
+      finalMatrixData = completeMatrixData.map(row => {
+        const multipliedRow = { ...row };
+        rateCategories.forEach(cat => {
+          const key = cat.constructionCode || cat.constructionId;
+          const originalValue = row[key] as number;
+          multipliedRow[key] = originalValue > 0 ? Number((originalValue * currentMultiplier).toFixed(2)) : 0;
+        });
+        return multipliedRow;
+      });
+    }
+
+    const activeMultipliers = Object.entries(multipliers).filter(
+      ([useGroup, value]) => value > 0 && value !== 1.0 && useGroup !== selectedUseGroup
+    );
+
+    const allRateSubmissions = [
+      { matrixData: finalMatrixData, useGroup: selectedUseGroup, multiplier: currentMultiplier, assessmentYear }
+    ];
+
+    activeMultipliers.forEach(([useGroup, multiplier]) => {
+      const multipliedMatrixData = completeMatrixData.map(row => {
+        const multipliedRow = { ...row };
+        rateCategories.forEach(cat => {
+          const key = cat.constructionCode || cat.constructionId;
+          const originalValue = row[key] as number;
+          multipliedRow[key] = originalValue > 0 ? Number((originalValue * multiplier).toFixed(2)) : 0;
+        });
+        return multipliedRow;
+      });
+
+      allRateSubmissions.push({ matrixData: multipliedMatrixData, useGroup, multiplier, assessmentYear });
+    });
+
+    let successCount = 0;
+    const errorMessages: string[] = [];
+
+    for (const submission of allRateSubmissions) {
+      let backendRates: IBackendRateMaster[] = [];
+      try {
+        backendRates = await getRateMasterByFilters(
+          String(selectedZone),
+          String(submission.useGroup),
+          String(assessmentYear)
+        );
+      } catch (_err) {
+        backendRates = [];
+      }
+
+      // Pass submission.useGroup to buildPayloadFromMatrix so it uses the correct use group
+      const { updates, inserts } = buildPayloadFromMatrix(
+        submission.matrixData, 
+        submission.multiplier, 
+        backendRates,
+        submission.useGroup // Pass the target use group
+      );
+
+      const createPayload = [...updates, ...inserts].map(rate => ({
+        Id: 0,
+        IsActive: rate.isActive,
+        CreatedBy: 0,
+        TaxZoneId: rate.taxZoneId,
+        FloorId: rate.floorId,
+        ConstructionTypeId: rate.constructionTypeId,
+        TypeOfUseGroupId: rate.typeOfUseGroupId,
+        YearRangeRVId: rate.YearRangeRVId,
+        RateSquareMeter: rate.rateSquareMeter,
+        RateSquareFeet: rate.rateSquareFeet,
+        RateSectionId: rate.rateSectionId,
+        RateRemark: rate.rateRemark,
+      }));
+
+      if (createPayload.length > 0) {
+        try {
+          const result = await bulkCreateRateMasterAction(createPayload as any);
+          if (result.success) {
+            successCount++;
+          } else {
+            errorMessages.push(result.message || 'Failed to create rates');
+          }
+        } catch (error) {
+          errorMessages.push(error instanceof Error ? error.message : 'Server action failed');
+        }
+      }
+    }
+
+    if (successCount === allRateSubmissions.length) {
+      const useGroupLabels = allRateSubmissions.map(s => 
+        useGroupOptions.find(u => u.value === s.useGroup)?.label || s.useGroup
+      ).join(', ');
+      toast.success(t('messages.ratesAddedSuccess', { groups: useGroupLabels }));
+      return { success: true };
+    } else if (successCount > 0) {
+      toast.warning(t('messages.ratesAddedPartial', { count: successCount, errors: errorMessages.join('; ') }));
+      return { success: true };
+    } else {
+      toast.error(t('messages.ratesAddedFailed', { errors: errorMessages.join('; ') }));
+      return { success: false };
+    }
+  }, [assessmentYear, selectedZone, selectedUseGroup, multipliers, rateCategories, mode, id, t, buildPayloadFromMatrix, useGroupOptions]);
+
+  // Bulk update handler
+  const handleBulkUpdate = useCallback(async (completeMatrixData: any[]) => {
+    if (!assessmentYear) {
+      toast.error(t('messages.validationSelectAssessmentYear'));
+      return { success: false };
+    }
+
+    const currentMultiplier = multipliers[selectedUseGroup] || 1.0;
+    let finalMatrixData = completeMatrixData.map(row => {
+      const parsedRow = { ...row };
+      rateCategories.forEach(cat => {
+        const key = String(typeof cat === 'string' ? cat : (cat.constructionCode || cat.constructionId)).trim();
+        const val = row[key];
+        parsedRow[key] = val === '' || val === null || val === undefined ? 0 : Number(val);
+      });
+      return parsedRow;
+    });
+
+    if (currentMultiplier > 0 && currentMultiplier !== 1.0) {
+      finalMatrixData = finalMatrixData.map(row => {
+        const multipliedRow = { ...row };
+        rateCategories.forEach(cat => {
+          const key = String(typeof cat === 'string' ? cat : (cat.constructionCode || cat.constructionId)).trim();
+          const originalValue = row[key] as number;
+          multipliedRow[key] = originalValue > 0 ? Number((originalValue * currentMultiplier).toFixed(2)) : 0;
+        });
+        return multipliedRow;
+      });
+    }
+
+    const activeMultipliers = Object.entries(multipliers).filter(
+      ([useGroup, value]) => value > 0 && value !== 1.0 && useGroup !== selectedUseGroup
+    );
+
+    let latestBackendRates: IBackendRateMaster[] = [];
+    try {
+      latestBackendRates = await getRateMasterByFilters(
+        String(selectedZone),
+        String(selectedUseGroup),
+        String(assessmentYear)
+      );
+    } catch (err) {
+      console.error('Failed to fetch backend rates for update:', err);
+      toast.error(t('messages.validationFetchUpdateFailed'));
+      return { success: false };
+    }
+
+    const allRateSubmissions = [
+      { matrixData: finalMatrixData, useGroup: selectedUseGroup, multiplier: currentMultiplier, backendRates: latestBackendRates }
+    ];
+
+    for (const [useGroup, multiplier] of activeMultipliers) {
+      const multipliedMatrixData = completeMatrixData.map(row => {
+        const multipliedRow = { ...row };
+        rateCategories.forEach(cat => {
+          const key = cat.constructionCode || cat.constructionId;
+          const originalValue = row[key] as number;
+          multipliedRow[key] = originalValue > 0 ? Number((originalValue * multiplier).toFixed(2)) : 0;
+        });
+        return multipliedRow;
+      });
+
+      let multipliedBackendRates: IBackendRateMaster[] = [];
+      try {
+        multipliedBackendRates = await getRateMasterByFilters(selectedZone, useGroup, assessmentYear);
+      } catch (err) {
+        console.error('Failed to fetch backend rates for multiplied use group:', useGroup, err);
+      }
+
+      allRateSubmissions.push({ matrixData: multipliedMatrixData, useGroup, multiplier, backendRates: multipliedBackendRates });
+    }
+
+    let successCount = 0;
+    const errorMessages: string[] = [];
+
+    for (const submission of allRateSubmissions) {
+      // Pass submission.useGroup to buildPayloadFromMatrix so it uses the correct use group
+      const { updates, inserts } = buildPayloadFromMatrix(
+        submission.matrixData, 
+        submission.multiplier, 
+        submission.backendRates,
+        submission.useGroup // Pass the target use group
+      );
+
+      let updateSucceeded = true;
+      if (updates.length > 0) {
+        const bulkUpdatePayload = updates.map(rate => ({
+          id: rate.Id!,
+          data: {
+            IsActive: rate.isActive,
+            UpdatedBy: 0,
+            TaxZoneId: rate.taxZoneId,
+            FloorId: rate.floorId,
+            ConstructionTypeId: rate.constructionTypeId,
+            TypeOfUseGroupId: rate.typeOfUseGroupId,
+            YearRangeRVId: rate.YearRangeRVId,
+            RateSquareMeter: rate.rateSquareMeter,
+            RateSquareFeet: rate.rateSquareFeet,
+            RateSectionId: rate.rateSectionId,
+            RateRemark: rate.rateRemark,
+          }
+        }));
+        const updateResult = await bulkUpdateRateMasterAction(bulkUpdatePayload as any);
+        if (!updateResult.success) {
+          updateSucceeded = false;
+          const useGroupLabel = useGroupOptions.find(u => u.value === submission.useGroup)?.label || submission.useGroup;
+          errorMessages.push(`${useGroupLabel} (Update): ${updateResult.message || 'Failed to update rates'}`);
+        }
+      }
+
+      let createSucceeded = true;
+      if (inserts.length > 0) {
+        const createPayload = inserts.map(rate => ({
+          Id: 0,
+          IsActive: rate.isActive,
+          CreatedBy: 0,
+          TaxZoneId: rate.taxZoneId,
+          FloorId: rate.floorId,
+          ConstructionTypeId: rate.constructionTypeId,
+          TypeOfUseGroupId: rate.typeOfUseGroupId,
+          YearRangeRVId: rate.YearRangeRVId,
+          RateSquareMeter: rate.rateSquareMeter,
+          RateSquareFeet: rate.rateSquareFeet,
+          RateSectionId: rate.rateSectionId,
+          RateRemark: rate.rateRemark,
+        }));
+        const createResult = await bulkCreateRateMasterAction(createPayload as any);
+        if (!createResult.success) {
+          createSucceeded = false;
+          const useGroupLabel = useGroupOptions.find(u => u.value === submission.useGroup)?.label || submission.useGroup;
+          errorMessages.push(`${useGroupLabel} (Create): ${createResult.message || 'Failed to create new rates'}`);
+        }
+      }
+
+      if ((updates.length > 0 || inserts.length > 0) && updateSucceeded && createSucceeded) {
+        successCount++;
+      }
+    }
+
+    if (successCount === allRateSubmissions.length) {
+      const useGroupLabels = allRateSubmissions.map(s => 
+        useGroupOptions.find(u => u.value === s.useGroup)?.label || s.useGroup
+      ).join(', ');
+      toast.success(t('messages.ratesUpdatedSuccess', { groups: useGroupLabels }));
+      return { success: true };
+    } else if (successCount > 0) {
+      toast.warning(t('messages.ratesUpdatedPartial', { count: successCount, errors: errorMessages.join('; ') }));
+      return { success: true };
+    } else {
+      toast.error(t('messages.ratesUpdatedFailed', { errors: errorMessages.join('; ') }));
+      return { success: false };
+    }
+  }, [assessmentYear, selectedZone, selectedUseGroup, multipliers, rateCategories, t, buildPayloadFromMatrix, useGroupOptions]);
+
+  // Delete handler
+  const handleDelete = useCallback(async (latestBackendRates: IBackendRateMaster[], matrixData: any[]) => {
+    if (!latestBackendRates || latestBackendRates.length === 0) {
+      toast.error(t('messages.noRatesToDelete'));
+      return { success: false };
+    }
+
+    const configuredRatesCount = matrixData.reduce((count, row) => {
+      return count + rateCategories.filter(cat => {
+        const key = cat.constructionCode || cat.constructionId;
+        return Number(row[key]) && Number(row[key]) > 0;
+      }).length;
+    }, 0);
+
+    const result = await deleteRateMasterAction(latestBackendRates);
+    if (result.success) {
+      const deletedCount = 'count' in result && typeof result.count === 'number' ? result.count : configuredRatesCount;
+      toast.success(t('messages.ratesDeletedSuccess', { count: deletedCount }));
+      return { success: true };
+    } else {
+      toast.error(result.message || t('messages.ratesDeleteFailed'));
+      return { success: false };
+    }
+  }, [t, rateCategories]);
+
+  return {
+    handleBulkCreate,
+    handleBulkUpdate,
+    handleDelete,
+  };
+}

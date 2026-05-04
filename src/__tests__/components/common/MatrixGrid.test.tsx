@@ -176,4 +176,20 @@ describe('MatrixGrid', () => {
     expect(screen.getByRole('tooltip')).toBeInTheDocument();
     expect(screen.getByText('Helpful info')).toBeInTheDocument();
   });
+
+  it('handles custom cell rendering with colorMap', () => {
+    const colorMap = { 'COL1': 'bg-blue-100 text-blue-900' };
+    render(
+      <MatrixGrid 
+        columns={columns} 
+        rows={rows} 
+        colorMap={colorMap} 
+        translations={mockTranslations} 
+      />
+    );
+    
+    const cell = screen.getByText('₹10.00');
+    expect(cell).toHaveClass('bg-blue-100');
+    expect(cell).toHaveClass('text-blue-900');
+  });
 });
