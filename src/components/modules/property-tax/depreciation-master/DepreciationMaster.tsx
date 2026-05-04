@@ -45,14 +45,19 @@ export default function DepreciationMaster({
   /* ----------------------------- State ----------------------------- */
   const [saving, setSaving] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<Record<number, number>>({});
-  const [dbRows, setDbRows] = useState<DepreciationRow[]>(data);
-  const [ranges, setRanges] = useState<RangeRow[]>([]);
-  const [selectedRangeId, setSelectedRangeId] = useState<string | null>(null);
   const [minValue, setMinValue] = useState("");
   const [maxValue, setMaxValue] = useState("");
   const [minError, setMinError] = useState<string | null>(null);
   const [maxError, setMaxError] = useState<string | null>(null);
-  const [ratesByRange, setRatesByRange] = useState<Record<string, Record<number, number>>>({});
+  const [uiState, setUiState] = useState({
+    dbRows: data,
+    ranges: [] as RangeRow[],
+    selectedRangeId: null as string | null,
+    ratesByRange: {} as Record<string, Record<number, number>>,
+  });
+
+  // Destructure for easier access
+  const { dbRows, ranges, selectedRangeId, ratesByRange } = uiState;
 
   /* ================= VALIDATION HOOK ================= */
   const { validateMinMax, sanitizeInput } = useDepreciationValidation(t, ranges);
@@ -127,12 +132,15 @@ export default function DepreciationMaster({
   // Build UI when construction types or data changes
   useEffect(() => {
     const { sortedRanges, rateMap, currentDbRows, initialSelectedRangeId } = buildUiFromDb(initialConstructionTypes, data);
-    setRanges(sortedRanges);
-    setRatesByRange(rateMap);
-    setDbRows(currentDbRows);
-    setSelectedRangeId((prev) =>
-      prev && sortedRanges.some((r) => r.id === prev) ? prev : initialSelectedRangeId
-    );
+    setUiState((prev) => ({
+      dbRows: currentDbRows,
+      ranges: sortedRanges,
+      ratesByRange: rateMap,
+      selectedRangeId:
+        prev.selectedRangeId && sortedRanges.some((r) => r.id === prev.selectedRangeId)
+          ? prev.selectedRangeId
+          : initialSelectedRangeId,
+    }));
     setPendingChanges({});
   }, [initialConstructionTypes, data, buildUiFromDb]);
 
@@ -153,9 +161,12 @@ export default function DepreciationMaster({
   const handleCellChange = (rowId: string, colId: string, value: string | number) => {
     const numValue = typeof value === "string" ? Number(value) : value;
 
-    setRatesByRange((prev) => ({
+    setUiState((prev) => ({
       ...prev,
-      [rowId]: { ...prev[rowId], [Number(colId)]: numValue },
+      ratesByRange: {
+        ...prev.ratesByRange,
+        [rowId]: { ...prev.ratesByRange[rowId], [Number(colId)]: numValue },
+      },
     }));
 
     const range = ranges.find((r) => r.id === rowId);
@@ -264,6 +275,10 @@ export default function DepreciationMaster({
     });
   };
 
+  const handleRangeSelection = (rangeId: string | null) => {
+    setUiState((prev) => ({ ...prev, selectedRangeId: rangeId }));
+  };
+
   /* ================= GRID MAPPING ================= */
   const matrixRows: MatrixRow[] = useMemo(
     () =>
@@ -307,7 +322,7 @@ export default function DepreciationMaster({
             onMinChange={handleMinChange}
             onMaxChange={handleMaxChange}
             onAddRange={handleAddRange}
-            onSelectRange={setSelectedRangeId}
+            onSelectRange={handleRangeSelection}
             onDeleteRange={handleDeleteRange}
             t={t}
           />
