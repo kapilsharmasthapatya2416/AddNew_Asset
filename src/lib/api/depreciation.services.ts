@@ -225,13 +225,25 @@ export async function deleteDepreciationRange(payload: {
 
   console.log('Bulk delete response:', response);
 
-  if (!response.success) {
-    throw new ApiError(
-      response.statusCode ?? 500,
-      response.error || 'Failed to bulk purge depreciation records',
-      `Bulk purge depreciation range ${payload.minYear}-${payload.maxYear} failed`
-    );
+  // Purge endpoints may return 204 No Content with an empty body.
+  // If the shared client marks that response as unsuccessful because it
+  // attempts JSON parsing first, still treat HTTP 204 or JSON parse errors as success.
+  if (response.success) {
+    console.log('Successfully bulk deleted depreciation range:', payload);
+    return;
   }
+
+  // Handle 204 No Content or JSON parsing error on empty response
+  if (response.statusCode === 204 || response.error?.includes('Unexpected end of JSON input')) {
+    console.log('Successfully bulk deleted depreciation range (empty response):', payload);
+    return;
+  }
+
+  throw new ApiError(
+    response.statusCode ?? 500,
+    response.error || 'Failed to bulk purge depreciation records',
+    `Bulk purge depreciation range ${payload.minYear}-${payload.maxYear} failed`
+  );
 }
 /**
  * Bulk update depreciation rates

@@ -49,6 +49,11 @@ export async function fetchRangesPagedServerAction(
       return { success: false, error: 'Invalid pagination parameters' };
     }
 
+    // TODO: PERFORMANCE - This loads entire depreciation table and paginates in memory.
+    // For large datasets, request backend team to implement:
+    // 1. GET /Depreciation/ranges?page=X&pageSize=Y - to get paginated unique ranges
+    // 2. GET /Depreciation/byRange?minYear=X&maxYear=Y - to get rows for specific range
+    // This will reduce server load and improve page latency as data grows.
     const [allRows, constructionTypes] = await Promise.all([
       getDepreciationsAll(),
       getConstructionTypes(),

@@ -203,18 +203,23 @@ export async function deleteFloor(id: number): Promise<void> {
     // Use shared apiClient for consistent timeout/abort handling
     const response = await apiClient.delete(`/Floor/${id}/purge`);
 
-    // Accept 204 No Content as success
-    if (response.statusCode === 204 || (response.success && !response.data)) {
+    // Purge endpoints may return 204 No Content with an empty body.
+    // If the shared client marks that response as unsuccessful because it
+    // attempts JSON parsing first, still treat HTTP 204 or JSON parse errors as success.
+    if (response.success) {
       return;
     }
 
-    if (!response.success) {
-      throw new ApiError(
-        response.statusCode || 500,
-        response.error || 'Delete failed',
-        'Delete floor failed'
-      );
+    // Handle 204 No Content or JSON parsing error on empty response
+    if (response.statusCode === 204 || response.error?.includes('Unexpected end of JSON input')) {
+      return;
     }
+
+    throw new ApiError(
+      response.statusCode || 500,
+      response.error || 'Delete failed',
+      'Delete floor failed'
+    );
   } catch (err) {
     console.error('Delete floor error:', err);
     throw err;
