@@ -331,8 +331,10 @@ export async function deleteUseGroupWithCascade(groupId: number) {
   // 3. Delete the Group itself
   await deleteUseGroupApi(groupId);
 
-  // 4. Revalidate
-  revalidatePath("/[locale]/property-tax/typeofusemaster", "page");
+  // 4. Revalidate locale-specific pages
+  for (const locale of locales) {
+    revalidatePath(`/${locale}/property-tax/typeofusemaster`, "page");
+  }
 }
 
 /** ===================== SUBTYPE ACTIONS ===================== */
@@ -394,7 +396,9 @@ export async function createSubType(input: {
     createdBy: "1",
   });
 
-  revalidatePath("/[locale]/property-tax/typeofusemaster", "page");
+  for (const locale of locales) {
+    revalidatePath(`/${locale}/property-tax/typeofusemaster`, "page");
+  }
 }
 
 export async function updateSubType(input: {
@@ -413,11 +417,15 @@ export async function updateSubType(input: {
     updatedBy: "1",
   });
 
-  revalidatePath("/[locale]/property-tax/typeofusemaster", "page");
+  for (const locale of locales) {
+    revalidatePath(`/${locale}/property-tax/typeofusemaster`, "page");
+  }
 }
 
 export async function deleteSubType(id: string | number) {
   await deleteSubTypeApi(String(id));
-  revalidatePath("/[locale]/property-tax/typeofusemaster", "page");
+  for (const locale of locales) {
+    revalidatePath(`/${locale}/property-tax/typeofusemaster`, "page");
+  }
 }
 

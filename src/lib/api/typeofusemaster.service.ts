@@ -332,9 +332,9 @@ function mapApiSubTypeToUi(s: any): UseSubType {
     description: String(s.description ?? ""),
     typeOfUseId: Number(s.typeOfUseId ?? s.typeOfUseID ?? s.typeId ?? 0),
     searchSequence: Number(s.searchSequence ?? s.SearchSequence ?? 0),
-    isActive: s.isActive ?? s.IsActive ?? true,
-    createdDate: s.createdDate ?? s.CreatedDate ?? undefined,
-    updatedDate: s.updatedDate ?? s.UpdatedDate ?? null,
+    isActive: typeof s.isActive === "boolean" ? s.isActive : (typeof s.IsActive === "boolean" ? s.IsActive : true),
+    createdDate: typeof s.createdDate === "string" ? s.createdDate : (typeof s.CreatedDate === "string" ? s.CreatedDate : undefined),
+    updatedDate: typeof s.updatedDate === "string" ? s.updatedDate : (typeof s.UpdatedDate === "string" ? s.UpdatedDate : null),
     // UI computed field
     status: (s.isActive === false || s.IsActive === false) ? "Inactive" : "Active",
   };
@@ -408,7 +408,7 @@ export async function createSubTypeApi(input: {
     throw new Error(response.error ?? "Create sub-type failed");
   }
   
-  return response.data as UseSubType;
+  return mapApiSubTypeToUi(response.data as Record<string, unknown>);
 }
 
 export async function updateSubTypeApi(input: {
@@ -437,7 +437,7 @@ export async function updateSubTypeApi(input: {
     throw new Error(response.error ?? "Update sub-type failed");
   }
   
-  return response.data as UseSubType;
+  return mapApiSubTypeToUi(response.data as Record<string, unknown>);
 }
 
 /** DELETE SubType - /api/SubTypeOfUse/{id} */

@@ -112,7 +112,7 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
     const d = normalize(desc);
     if (!d) return false;
     return allTypes.some((t) => {
-      if (isEdit && (t.typeOfUseId === formData.typeOfUseId || normalize(t.description ?? '') === normalize(formData.description ?? ''))) return false;
+      if (isEdit && t.typeOfUseId === formData.typeOfUseId) return false;
       return normalize(t.description ?? '') === d;
     });
   };

@@ -727,7 +727,7 @@ export default function TypeOfUseMaster({
                           {/* CENTER: Meta badges */}
                           <div className="flex items-center gap-2 shrink-0">
                             <span className="text-purple-700 bg-purple-50 px-2 py-1 rounded-md border border-purple-300 text-xs whitespace-nowrap">
-                              {t("seq")}: <b>{typeItem.searchSequence ?? t("fallback.notAvailable")}</b>
+                              {t("seq")}: <b>{typeItem.searchSequence ?? "—"}</b>
                             </span>
                             {/* <StatusBadge value={typeItem.status ?? "Active"} /> */}
                           </div>

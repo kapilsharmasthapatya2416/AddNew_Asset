@@ -25,7 +25,11 @@ vi.mock("next-intl", async () => {
   return { ...actual, useLocale: () => "en" };
 });
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
-vi.mock("@/components/common/ConfirmProvider", () => ({ useConfirm: () => vi.fn(() => Promise.resolve(true)) }));
+vi.mock("@/components/common/ConfirmProvider", () => ({
+  useConfirm: () => ({
+    confirm: vi.fn(() => Promise.resolve(true)),
+  }),
+}));
 vi.mock("@/app/[locale]/property-tax/typeofusemaster/actions", () => ({
   deleteUseGroup: vi.fn(),
   deleteUseTypeWithSubTypes: vi.fn(),
