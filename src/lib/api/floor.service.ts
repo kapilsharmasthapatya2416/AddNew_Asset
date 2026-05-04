@@ -201,20 +201,18 @@ export async function deleteFloor(id: number): Promise<void> {
   try {
     if (id <= 0) throw new Error('Valid Floor ID required');
 
-    // Use fetch directly for /purge endpoint as it returns 204/empty body
-    // which apiClient.delete() cannot handle (JSON parse error on empty response)
-    const config = getAppConfig();
-    const response = await fetch(`${config.api.baseUrl}/Floor/${id}/purge`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    // Use shared apiClient for consistent timeout/abort handling
+    const response = await apiClient.delete(`/Floor/${id}/purge`);
 
-    if (!response.ok) {
+    // Accept 204 No Content as success
+    if (response.statusCode === 204 || (response.success && !response.data)) {
+      return;
+    }
+
+    if (!response.success) {
       throw new ApiError(
-        response.status,
-        response.statusText || 'Delete failed',
+        response.statusCode || 500,
+        response.error || 'Delete failed',
         'Delete floor failed'
       );
     }

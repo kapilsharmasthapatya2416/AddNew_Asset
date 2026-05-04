@@ -68,8 +68,11 @@ export async function fetchRangesPagedServerAction(
     const rangeTotalCount = allRanges.length;
     const rangeTotalPages = Math.ceil(rangeTotalCount / pageSize) || 1;
 
-    // Apply pagination to ranges
-    const startIndex = (pageNumber - 1) * pageSize;
+    // Clamp pageNumber to valid range (fix for delete-induced page overflow)
+    const clampedPageNumber = Math.min(pageNumber, rangeTotalPages);
+
+    // Apply pagination to ranges using clamped page number
+    const startIndex = (clampedPageNumber - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedRanges = allRanges.slice(startIndex, endIndex);
 
@@ -84,7 +87,7 @@ export async function fetchRangesPagedServerAction(
       data: {
         rows: filteredRows,
         constructionTypes,
-        rangePageNumber: pageNumber,
+        rangePageNumber: clampedPageNumber,
         rangePageSize: pageSize,
         rangeTotalCount,
         rangeTotalPages,

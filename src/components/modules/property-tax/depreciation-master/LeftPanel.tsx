@@ -29,6 +29,12 @@ export function LeftPanel({
             placeholder={t("minPlaceholder")}
             value={minValue}
             onChange={(e) => onMinChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
             error={minError || undefined}
             inputMode="numeric"
             className="text-xs"
@@ -40,6 +46,12 @@ export function LeftPanel({
             placeholder={t("maxPlaceholder")}
             value={maxValue}
             onChange={(e) => onMaxChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
             error={maxError || undefined}
             inputMode="numeric"
             className="text-xs"
@@ -47,7 +59,11 @@ export function LeftPanel({
         </div>
 
         <AddButton 
-          onClick={onAddRange} 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onAddRange();
+          }}
           disabled={saving} 
           className="w-full text-xs py-1.5"
           label={t("addRange")}
@@ -62,7 +78,11 @@ export function LeftPanel({
             ranges.map((r) => (
               <button
                 key={r.id}
-                onClick={() => onSelectRange(r.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onSelectRange(r.id);
+                }}
                 className={`w-full p-2 text-center rounded-lg border transition-all text-xs ${
                   selectedRangeId === r.id
                     ? "bg-blue-600 text-white border-blue-600 shadow-md"
@@ -76,7 +96,11 @@ export function LeftPanel({
         </div>
 
         <DeleteButton
-          onClick={onDeleteRange}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDeleteRange();
+          }}
           disabled={saving || !selectedRangeId}
           className="w-full text-xs py-1.5"
           aria-label={t("deleteRange")}

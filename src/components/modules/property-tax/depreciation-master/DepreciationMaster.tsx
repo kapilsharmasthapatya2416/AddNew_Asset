@@ -45,7 +45,6 @@ export default function DepreciationMaster({
   /* ----------------------------- State ----------------------------- */
   const [saving, setSaving] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<Record<number, number>>({});
-  const [constructionTypes, setConstructionTypes] = useState<DepreciationConstructionType[]>(initialConstructionTypes);
   const [dbRows, setDbRows] = useState<DepreciationRow[]>(data);
   const [ranges, setRanges] = useState<RangeRow[]>([]);
   const [selectedRangeId, setSelectedRangeId] = useState<string | null>(null);
@@ -122,16 +121,11 @@ export default function DepreciationMaster({
     []
   );
 
-  // Sync constructionTypes state with initialConstructionTypes prop
-  useEffect(() => {
-    setConstructionTypes(initialConstructionTypes);
-  }, [initialConstructionTypes]);
-
   // Build UI when construction types or data changes
   useEffect(() => {
-    buildUiFromDb(constructionTypes, data);
+    buildUiFromDb(initialConstructionTypes, data);
     setPendingChanges({});
-  }, [constructionTypes, data, buildUiFromDb]);
+  }, [initialConstructionTypes, data, buildUiFromDb]);
 
   /* ================= DATA RELOAD ================= */
   const reloadData = useCallback(async () => {
@@ -274,17 +268,17 @@ export default function DepreciationMaster({
 
   const matrixColumns: MatrixColumn[] = useMemo(
     () =>
-      constructionTypes.map((c) => ({
+      initialConstructionTypes.map((c) => ({
         id: String(c.constructionId),
         label: c.constructionCode,
         headerClassName: "bg-blue-50 text-blue-900 font-semibold",
       })),
-    [constructionTypes]
+    [initialConstructionTypes]
   );
 
   const editableColumnIds = useMemo(
-    () => constructionTypes.map((c) => String(c.constructionId)),
-    [constructionTypes]
+    () => initialConstructionTypes.map((c) => String(c.constructionId)),
+    [initialConstructionTypes]
   );
 
   return (

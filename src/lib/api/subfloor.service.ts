@@ -201,20 +201,15 @@ export async function deleteSubFloor(id: number): Promise<void> {
       throw new Error('Valid SubFloor ID required');
     }
 
-    // Use fetch directly for /purge endpoint as it returns 204/empty body
-    // which apiClient.delete() cannot handle (JSON parse error on empty response)
-    const config = getAppConfig();
-    const response = await fetch(`${config.api.baseUrl}/SubFloor/${id}/purge`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    // Use shared apiClient for consistent timeout and error handling
+    const response = await apiClient.delete(`/SubFloor/${id}/purge`);
 
-    if (!response.ok) {
+    // Some endpoints (like purge) may return 204 No Content (empty body)
+    // Our apiClient returns { success: true, data: undefined } for 204
+    if (!response.success) {
       throw new ApiError(
-        response.status,
-        response.statusText || 'Delete failed',
+        response.statusCode || 500,
+        response.error || 'Delete failed',
         'Delete subfloor failed'
       );
     }

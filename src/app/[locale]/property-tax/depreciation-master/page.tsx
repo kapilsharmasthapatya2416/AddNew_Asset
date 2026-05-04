@@ -1,4 +1,3 @@
-
 import DepreciationMaster from "@/components/modules/property-tax/depreciation-master/DepreciationMaster";
 import { fetchRangesPagedServerAction } from "./actions";
 import { getTranslations } from 'next-intl/server';
@@ -19,8 +18,10 @@ export default async function Page({ params, searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
 
 
-  const pageNumber = Number(resolvedSearchParams?.page) || 1;
-  const pageSize = Number(resolvedSearchParams?.pageSize) || 10;
+  const parsedPageNumber = Number(resolvedSearchParams?.page);
+  const parsedPageSize = Number(resolvedSearchParams?.pageSize);
+  const pageNumber = Number.isInteger(parsedPageNumber) && parsedPageNumber > 0 ? parsedPageNumber : 1;
+  const pageSize = Number.isInteger(parsedPageSize) && parsedPageSize > 0 ? parsedPageSize : 10;
 
   // Fetch paginated ranges data (server-side pagination for unique ranges)
   const res = await fetchRangesPagedServerAction(pageNumber, pageSize);

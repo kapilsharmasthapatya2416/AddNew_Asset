@@ -47,7 +47,7 @@ export async function getDepreciationPaged(
 export async function getConstructionTypes(): Promise<DepreciationConstructionType[]> {
   const constructionTypes = await getConstruction();
   return constructionTypes.map((ct) => ({
-    constructionId: ct.id, 
+    constructionId: ct.id,
     constructionCode: ct.constructionCode,
   }));
 }
@@ -89,17 +89,14 @@ export async function getDepreciationsAll(): Promise<DepreciationRow[]> {
     const items = response.data.items || [];
     allItems.push(...items);
 
-    // Use totalPages from response to determine if we should continue
     const { totalPages, hasNext } = response.data;
-    
-    // Stop if we've reached the last page
+
     if (pageNumber >= totalPages || hasNext !== true || items.length === 0) {
       break;
     }
 
     pageNumber++;
 
-    // Safety limit to prevent infinite loops - throw error instead of silent truncation
     if (pageNumber > MAX_PAGES_SAFETY_LIMIT) {
       throw new ApiError(
         500,
@@ -202,23 +199,40 @@ export async function addDepreciationRangeBulk(payload: {
 }
 
 /**
- * Delete depreciation range - uses purge for hard delete
+ * Delete depreciation range - uses bulk purge for transactional hard delete
  */
 export async function deleteDepreciationRange(payload: {
   minYear: number;
   maxYear: number;
 }): Promise<void> {
   const allData = await getDepreciationsAll();
-  const targets = allData.filter(
-    (x) => x.minYear === payload.minYear && x.maxYear === payload.maxYear
-  );
 
-  // Use purge for hard delete - delete one by one
-  for (const target of targets) {
-    await purgeDepreciation(target.id);
+  const targetIds = allData
+    .filter((x) => x.minYear === payload.minYear && x.maxYear === payload.maxYear)
+    .map((x) => x.id);
+
+  if (targetIds.length === 0) {
+    console.log('No depreciation records found for range:', payload);
+    return;
+  }
+
+  console.log('Bulk deleting depreciation IDs:', targetIds);
+
+  // Use DELETE with body - pass body via options
+  const response = await apiClient.delete<void>('/Depreciation/Bulk/purge', {
+    body: JSON.stringify(targetIds),
+  });
+
+  console.log('Bulk delete response:', response);
+
+  if (!response.success) {
+    throw new ApiError(
+      response.statusCode ?? 500,
+      response.error || 'Failed to bulk purge depreciation records',
+      `Bulk purge depreciation range ${payload.minYear}-${payload.maxYear} failed`
+    );
   }
 }
-
 /**
  * Bulk update depreciation rates
  */
