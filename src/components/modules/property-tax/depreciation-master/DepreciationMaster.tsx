@@ -253,6 +253,12 @@ export default function DepreciationMaster({
     confirm({
       variant: "delete",
       title: t("deleteRangeConfirmTitle"),
+      description: t("deleteRangeConfirmDesc", {
+        min: range.min,
+        max: range.max,
+        age: `${range.min}-${range.max}`,
+      }),
+      meta: { range: `${range.min}-${range.max}` },
       onConfirm: async () => {
         setSaving(true);
         try {
