@@ -5,8 +5,8 @@ import {
   addDepreciationRangeBulk,
   deleteDepreciationRange,
   getConstructionTypes,
-  getDepreciationsAll,
-  syncDepreciationRates,
+  getDepreciationPaged,
+  syncDepreciationRatesFromPage,
 } from '@/lib/api/depreciation.services';
 import type { ActionResult, DepreciationConstructionType, DepreciationRow } from '@/types/depreciation.types';
 
@@ -16,16 +16,12 @@ import type { ActionResult, DepreciationConstructionType, DepreciationRow } from
 const getPagePath = (locale: string) => `/${locale}/property-tax/depreciation-master`;
 
 /**
- * Unique Range type for pagination
- */
-interface UniqueRange {
-  minYear: number;
-  maxYear: number;
-}
-
-/**
- * Fetches paginated unique ranges with their depreciation data.
- * Server-side pagination for ranges (not individual records).
+ * Fetches paginated depreciation records with proper range-level pagination.
+ * Since backend doesn't support range pagination, we implement hybrid approach:
+ * 1. Fetch more records to ensure enough unique ranges
+ * 2. Group records by ranges in memory  
+ * 3. Paginate ranges (not records)
+ * 4. Return all records belonging to paginated ranges
  */
 export async function fetchRangesPagedServerAction(
   pageNumber: number,
@@ -35,7 +31,7 @@ export async function fetchRangesPagedServerAction(
   data?: {
     rows: DepreciationRow[];
     constructionTypes: DepreciationConstructionType[];
-    // Pagination info for ranges
+    // Pagination info - range-level pagination
     rangePageNumber: number;
     rangePageSize: number;
     rangeTotalCount: number;
@@ -49,48 +45,80 @@ export async function fetchRangesPagedServerAction(
       return { success: false, error: 'Invalid pagination parameters' };
     }
 
-    // TODO: PERFORMANCE - This loads entire depreciation table and paginates in memory.
-    // For large datasets, request backend team to implement:
-    // 1. GET /Depreciation/ranges?page=X&pageSize=Y - to get paginated unique ranges
-    // 2. GET /Depreciation/byRange?minYear=X&maxYear=Y - to get rows for specific range
-    // This will reduce server load and improve page latency as data grows.
-    const [allRows, constructionTypes] = await Promise.all([
-      getDepreciationsAll(),
-      getConstructionTypes(),
-    ]);
+    // Fetch enough records to get sufficient unique ranges
+    // Since each range typically has multiple construction types,
+    // we fetch more records than pageSize to ensure we get enough ranges
+    const fetchSize = Math.max(pageSize * 10, 100); // Fetch 10x more records or minimum 100
+    const maxPages = 10; // Safety limit
+    
+    const constructionTypes = await getConstructionTypes();
+    const allRecordsForRanges: DepreciationRow[] = [];
+    let currentPage = 1;
+    
+    // Fetch records until we have enough unique ranges or hit limits
+    const uniqueRangesFound = new Set<string>();
+    const targetRangeCount = pageNumber * pageSize; // Total ranges needed up to current page
+    
+    while (currentPage <= maxPages && uniqueRangesFound.size < targetRangeCount + pageSize) {
+      const response = await getDepreciationPaged(currentPage, fetchSize);
+      
+      if (!response.items || response.items.length === 0) {
+        break; // No more records
+      }
+      
+      allRecordsForRanges.push(...response.items);
+      
+      // Track unique ranges found
+      response.items.forEach(row => {
+        uniqueRangesFound.add(`${row.minYear}-${row.maxYear}`);
+      });
+      
+      // If we have enough ranges or no more pages, stop
+      if (uniqueRangesFound.size >= targetRangeCount + pageSize || !response.hasNext) {
+        break;
+      }
+      
+      currentPage++;
+    }
 
-    // Extract unique ranges from all rows
-    const rangeMap = new Map<string, UniqueRange>();
-    allRows.forEach((row) => {
+    // Group records by ranges
+    const rangeMap = new Map<string, { minYear: number; maxYear: number; records: DepreciationRow[] }>();
+    
+    allRecordsForRanges.forEach((row) => {
       const key = `${row.minYear}-${row.maxYear}`;
       if (!rangeMap.has(key)) {
-        rangeMap.set(key, { minYear: row.minYear, maxYear: row.maxYear });
+        rangeMap.set(key, {
+          minYear: row.minYear,
+          maxYear: row.maxYear,
+          records: []
+        });
       }
+      rangeMap.get(key)!.records.push(row);
     });
 
-    // Sort ranges by minYear
+    // Sort ranges by minYear and apply range-level pagination
     const allRanges = Array.from(rangeMap.values()).sort((a, b) => a.minYear - b.minYear);
     const rangeTotalCount = allRanges.length;
     const rangeTotalPages = Math.ceil(rangeTotalCount / pageSize) || 1;
 
-    // Clamp pageNumber to valid range (fix for delete-induced page overflow)
+    // Clamp pageNumber to valid range
     const clampedPageNumber = Math.min(pageNumber, rangeTotalPages);
 
-    // Apply pagination to ranges using clamped page number
+    // Apply pagination to ranges (not records)
     const startIndex = (clampedPageNumber - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedRanges = allRanges.slice(startIndex, endIndex);
 
-    // Filter rows that belong to paginated ranges only
-    const paginatedRangeKeys = new Set(paginatedRanges.map((r) => `${r.minYear}-${r.maxYear}`));
-    const filteredRows = allRows.filter((row) =>
-      paginatedRangeKeys.has(`${row.minYear}-${row.maxYear}`)
-    );
+    // Collect all records from paginated ranges
+    const finalRows: DepreciationRow[] = [];
+    paginatedRanges.forEach(range => {
+      finalRows.push(...range.records);
+    });
 
     return {
       success: true,
       data: {
-        rows: filteredRows,
+        rows: finalRows,
         constructionTypes,
         rangePageNumber: clampedPageNumber,
         rangePageSize: pageSize,
@@ -108,8 +136,8 @@ export async function fetchRangesPagedServerAction(
 }
 
 /**
- * Fetches all necessary data for the Depreciation Screen.
- * Gets both columns (ConstructionTypes) and data (Rows).
+ * @deprecated Use fetchRangesPagedServerAction for better performance
+ * This function fetches all records which is inefficient for large datasets
  */
 export async function getDepreciationScreenAction(): Promise<
   ActionResult<{
@@ -117,16 +145,17 @@ export async function getDepreciationScreenAction(): Promise<
     rows: DepreciationRow[];
   }>
 > {
+  console.warn('getDepreciationScreenAction is deprecated - use fetchRangesPagedServerAction instead');
   try {
-    // Parallel fetch for better performance
-    const [constructionTypes, rows] = await Promise.all([
+    // This is inefficient - fetches all records
+    const [constructionTypes, allRowsResponse] = await Promise.all([
       getConstructionTypes(),
-      getDepreciationsAll(),
+      getDepreciationPaged(1, 1000), // Limit to first 1000 records as fallback
     ]);
 
     return {
       success: true,
-      data: { constructionTypes, rows },
+      data: { constructionTypes, rows: allRowsResponse.items || [] },
     };
   } catch (error: unknown) {
     console.error('[getDepreciationScreenAction] Error:', error);
@@ -138,19 +167,22 @@ export async function getDepreciationScreenAction(): Promise<
 }
 
 /**
- * NEW: Professional Global Sync Action
- * This handles the "Dirty Tracking" update. It only updates the records
- * that were actually changed in the UI grid.
+ * Efficient Global Sync Action - uses only current page records
+ * This handles the "Dirty Tracking" update with proper server-side pagination.
+ * Only updates the records that were changed in the UI grid from current page.
+ * @param locale - Current locale for revalidation 
+ * @param currentPageRecords - Records currently loaded in the UI (from current page)
  * @param changes - Object mapping id to new rate value
  */
 export async function syncDepreciationRatesAction(
   locale: string,
+  currentPageRecords: DepreciationRow[],
   changes: Record<number, number>
 ): Promise<ActionResult> {
   try {
     if (!changes || Object.keys(changes).length === 0) return { success: true };
 
-    await syncDepreciationRates(changes);
+    await syncDepreciationRatesFromPage(currentPageRecords, changes);
 
     revalidatePath(getPagePath(locale));
 

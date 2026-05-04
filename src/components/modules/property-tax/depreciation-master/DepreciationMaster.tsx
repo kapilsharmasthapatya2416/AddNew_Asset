@@ -194,7 +194,8 @@ export default function DepreciationMaster({
     setSaving(true);
     const tid = toast.loading(t("messages.updating", { count: changeCount }));
     try {
-      const res = await syncDepreciationRatesAction(locale, pendingChanges);
+      // Pass current page records for efficient server-side update
+      const res = await syncDepreciationRatesAction(locale, dbRows, pendingChanges);
       if (!res.success) throw new Error(res.error);
       toast.success(t("success.updated"), { id: tid });
       await reloadData();

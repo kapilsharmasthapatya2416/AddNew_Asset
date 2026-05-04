@@ -109,7 +109,53 @@ export async function getDepreciationsAll(): Promise<DepreciationRow[]> {
   return allItems;
 }
 
+/**
+ * Efficient sync depreciation rates using only current page records
+ * No longer fetches all records from database
+ */
+export async function syncDepreciationRatesFromPage(
+  currentPageRecords: DepreciationRow[],
+  updates: Record<number, number>
+): Promise<void> {
+  const depreciations = Object.entries(updates)
+    .map(([idStr, newRate]) => {
+      const id = Number(idStr);
+      const existing = currentPageRecords.find((d) => d.id === id);
+
+      if (!existing) {
+        // Record not found in current page, skip for now
+        // UI should prevent this scenario
+        console.warn(`Record ID ${id} not found in current page records for update`);
+        return null;
+      }
+
+      return {
+        id: existing.id,
+        minYear: existing.minYear,
+        maxYear: existing.maxYear,
+        constructionTypeId: existing.constructionTypeId,
+        rate: newRate,
+        yearRangeRVId: existing.yearRangeRVId,
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null);
+
+  if (depreciations.length === 0) {
+    return;
+  }
+
+  await bulkUpdateDepreciationRates({
+    depreciations,
+    updatedBy: 0,
+  });
+}
+
+/**
+ * @deprecated Use syncDepreciationRatesFromPage for better performance
+ * This function fetches all records which is inefficient for large datasets
+ */
 export async function syncDepreciationRates(updates: Record<number, number>): Promise<void> {
+  console.warn('syncDepreciationRates is deprecated - use syncDepreciationRatesFromPage instead');
   const allData = await getDepreciationsAll();
 
   const depreciations = Object.entries(updates)
