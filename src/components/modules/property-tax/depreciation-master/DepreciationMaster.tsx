@@ -111,7 +111,8 @@ export default function DepreciationMaster({
   }, [selectedRangeId, ranges, defaultSelectedRangeId]);
 
   /* ================= VALIDATION HOOK ================= */
-  const { validateMinMax, sanitizeInput } = useDepreciationValidation(t, ranges);
+  // Note: Overlap validation is now handled server-side only
+  const { validateMinMax, sanitizeInput } = useDepreciationValidation(t);
 
   /* ================= URL NAVIGATION ================= */
   const buildUrl = useCallback(
@@ -313,24 +314,31 @@ export default function DepreciationMaster({
       }));
   }, [initialConstructionTypes, ratesByRange]);
 
-  const editableColumnIds = useMemo(
-    () => matrixColumns.map((c) => c.id),
-    [matrixColumns]
-  );
+  const editableColumnIds = useMemo(() => {
+    // Row-specific editable columns based on selected range
+    if (!effectiveSelectedRangeId) return [];
+    const selectedRangeRates = ratesByRange[effectiveSelectedRangeId];
+    if (!selectedRangeRates) return [];
+    return Object.keys(selectedRangeRates);
+  }, [effectiveSelectedRangeId, ratesByRange]);
 
   return (
     <PageContainer>
       <div className="space-y-4">
         <TableHeader title={t("title")} subtitle={t("subtitle")} icon={FileText} />
         
-        {/* Pagination Info */}
+        {/* Range-based Pagination Info */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
           <div className="flex items-center justify-between">
             <span>
-              Showing {data.length} records ({rangeCountInCurrentPage} unique ranges) on page {pageNumber} of {totalPages}
+              {t("pagination.showing", { 
+                ranges: rangeCountInCurrentPage, 
+                page: pageNumber, 
+                totalPages 
+              })}
             </span>
             <span className="text-blue-600">
-              Total: {totalCount.toLocaleString()} records
+              {t("pagination.total", { count: totalCount })}
             </span>
           </div>
         </div>
@@ -339,16 +347,16 @@ export default function DepreciationMaster({
         {matrixColumns.length < initialConstructionTypes.length && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
             <div className="flex items-center gap-2">
-              <span className="font-medium">📋 Construction Types:</span>
+              <span className="font-medium">📋 {t("pagination.constructionTypes")}:</span>
               <span>
-                Showing {matrixColumns.length} of {initialConstructionTypes.length} types on this page:
-                <strong className="ml-1">
-                  Construction types available on this page: {matrixColumns.length}
-                </strong>
+                {t("pagination.showingTypes", { 
+                  shown: matrixColumns.length, 
+                  total: initialConstructionTypes.length 
+                })}
               </span>
             </div>
             <div className="mt-1 text-xs">
-              Some construction types may be on other pages. Navigate to see all data.
+              {t("pagination.typesMayBeOnOtherPages")}
             </div>
           </div>
         )}

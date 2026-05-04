@@ -16,58 +16,66 @@ import type { ActionResult, DepreciationConstructionType, DepreciationRow } from
 const getPagePath = (locale: string) => `/${locale}/property-tax/depreciation-master`;
 
 /**
- * Fetches paginated depreciation records with proper server-side pagination.
- * Uses backend's native record-level pagination (not range-level).
- * UI should display record counts, not range counts, for accuracy.
+ * Fetches paginated depreciation records with RANGE-BASED pagination.
+ * Converts user's desired range count to record count for backend API.
+ * pageSize parameter = number of RANGES to show (not records)
  */
 export async function fetchRangesPagedServerAction(
   pageNumber: number,
-  pageSize: number
+  rangePageSize: number // User wants this many RANGES per page
 ): Promise<{
   success: boolean;
   data?: {
     rows: DepreciationRow[];
     constructionTypes: DepreciationConstructionType[];
-    // Pagination info - honest record-level pagination
+    // Range-based pagination info
     pageNumber: number;
-    pageSize: number;
-    totalRecords: number;
+    pageSize: number; // Ranges per page (what user selected)
+    totalRanges: number;
     totalPages: number;
-    // Additional info for UI
     rangeCountInCurrentPage: number;
+    // For backwards compatibility
+    totalRecords: number;
   };
   error?: string;
 }> {
   try {
     // Validate pagination parameters
-    if (pageNumber <= 0 || pageSize <= 0) {
+    if (pageNumber <= 0 || rangePageSize <= 0) {
       return { success: false, error: 'Invalid pagination parameters' };
     }
 
-    // Fetch records using backend's native pagination
-    const [paginatedResponse, constructionTypes] = await Promise.all([
-      getDepreciationPaged(pageNumber, pageSize),
-      getConstructionTypes(),
-    ]);
+    // Get construction types first to calculate record multiplier
+    const constructionTypes = await getConstructionTypes();
+    const constructionTypeCount = constructionTypes.length || 10;
+    
+    // Convert range-based pagination to record-based for API
+    // Each range has N construction types, so multiply
+    const recordPageSize = rangePageSize * constructionTypeCount;
+    
+    // Fetch records using calculated record page size
+    const paginatedResponse = await getDepreciationPaged(pageNumber, recordPageSize);
 
-    const { items: rows, totalCount, totalPages } = paginatedResponse;
+    const { items: rows, totalCount } = paginatedResponse;
+
+    // Calculate total ranges (total records / construction types)
+    const totalRanges = Math.ceil(totalCount / constructionTypeCount);
+    const totalPages = Math.ceil(totalRanges / rangePageSize) || 1;
 
     // Clamp pageNumber to valid range (fix for delete-induced page overflow)
-    const clampedPageNumber = Math.min(pageNumber, totalPages || 1);
+    const clampedPageNumber = Math.min(pageNumber, totalPages);
     
     // If we clamped the page number, refetch with correct page
     let finalRows = rows;
-    let finalTotalPages = totalPages;
     let finalTotalCount = totalCount;
     
     if (clampedPageNumber !== pageNumber && clampedPageNumber > 0) {
-      const clampedResponse = await getDepreciationPaged(clampedPageNumber, pageSize);
+      const clampedResponse = await getDepreciationPaged(clampedPageNumber, recordPageSize);
       finalRows = clampedResponse.items;
-      finalTotalPages = clampedResponse.totalPages;
       finalTotalCount = clampedResponse.totalCount;
     }
 
-    // Count unique ranges in current page for display purposes
+    // Count unique ranges in current page
     const uniqueRanges = new Set<string>();
     (finalRows || []).forEach(row => {
       uniqueRanges.add(`${row.minYear}-${row.maxYear}`);
@@ -78,11 +86,12 @@ export async function fetchRangesPagedServerAction(
       data: {
         rows: finalRows || [],
         constructionTypes,
-        pageNumber: clampedPageNumber,
-        pageSize: pageSize,
-        totalRecords: finalTotalCount || 0,
-        totalPages: finalTotalPages || 1,
+        pageNumber: clampedPageNumber || 1,
+        pageSize: rangePageSize, // Return range page size (what user selected)
+        totalRanges,
+        totalPages,
         rangeCountInCurrentPage: uniqueRanges.size,
+        totalRecords: finalTotalCount || 0,
       },
     };
   } catch (error: unknown) {
@@ -155,6 +164,7 @@ export async function syncDepreciationRatesAction(
 /**
  * Action to add a new range across all construction types.
  * This creates a default row (rate 0) for every construction type in the new range.
+ * Server-side validation will reject overlapping ranges.
  */
 export async function addRangeAction(
   locale: string,
@@ -167,7 +177,21 @@ export async function addRangeAction(
 
     return { success: true };
   } catch (error: unknown) {
-    return { success: false, error: error instanceof Error ? error.message : 'Add range failed' };
+    console.error('[addRangeAction] Error:', error);
+    
+    // Extract meaningful error message for overlap or other validation errors
+    let errorMessage = 'Add range failed';
+    if (error instanceof Error) {
+      if (error.message.toLowerCase().includes('overlap') || 
+          error.message.toLowerCase().includes('duplicate') ||
+          error.message.toLowerCase().includes('conflict')) {
+        errorMessage = 'Range overlaps with existing range. Please choose different years.';
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
+    return { success: false, error: errorMessage };
   }
 }
 
