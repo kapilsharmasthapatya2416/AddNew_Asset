@@ -28,8 +28,8 @@ export default getRequestConfig(async ({ locale }) => {
     floorFactorMasterMessages,
     weightageMasterMessages,
     depreciationMessages,
-    ptisRVRateMasterMessages,
     natureFactorCVMasterMessages,
+    ptisRVRateMasterMessages,
     modulesMessages,
     officeMessages
   ] = await Promise.all([
@@ -45,8 +45,8 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/floorFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/weightageMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/depreciation.json`).then((m) => m.default),
-    import(`./locales/${validatedLocale}/ptis.RVRateMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/natureFactorCVMaster.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/ptis.RVRateMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/office.json`).catch(() => ({})).then((m) => m.default || m),
   ]);
@@ -66,8 +66,8 @@ export default getRequestConfig(async ({ locale }) => {
       floorFactorMaster: floorFactorMasterMessages.floorFactorMaster,
       weightageMaster: weightageMasterMessages.weightageMaster,
       depreciation: depreciationMessages,
-      ptis_RVRateMaster: ptisRVRateMasterMessages,
       natureFactorCVMaster: natureFactorCVMasterMessages.natureFactorCVMaster,
+      ptis_RVRateMaster: ptisRVRateMasterMessages,
       modules: modulesMessages,
       office: officeMessages,
     },

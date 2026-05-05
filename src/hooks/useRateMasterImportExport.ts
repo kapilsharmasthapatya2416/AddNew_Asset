@@ -203,12 +203,11 @@ export function useRateMasterImportExport({
         }
       });
       
-      // Update allZoneEdits for ALL zones
-      const newEdits: Record<string, Record<string, number>> = { ...allZoneEdits };
-      
+
+      // Build newEdits to exactly match the source data, clearing any missing zones/construction types
+      const newEdits: Record<string, Record<string, number>> = {};
       allZones.forEach((zone) => {
         const zoneNo = zone.zoneNo;
-        
         let zoneRates = null;
         for (const [taxZoneIdKey, constructionRates] of ratesByZone.entries()) {
           if (taxZoneIdKey === String(zone.taxZoneId)) {
@@ -216,9 +215,8 @@ export function useRateMasterImportExport({
             break;
           }
         }
-        
+        const zoneEdits: Record<string, number> = {};
         if (zoneRates) {
-          const zoneEdits: Record<string, number> = {};
           rateCategories.forEach((cat) => {
             const rateValue = zoneRates.get(cat.constructionId);
             if (rateValue !== undefined && rateValue > 0) {
@@ -226,10 +224,9 @@ export function useRateMasterImportExport({
               zoneEdits[key] = rateValue;
             }
           });
-          if (Object.keys(zoneEdits).length > 0) {
-            newEdits[zoneNo] = zoneEdits;
-          }
         }
+        // Always set the zone, even if empty, to clear out any previous edits
+        newEdits[zoneNo] = zoneEdits;
       });
       setAllZoneEdits(newEdits);
       
@@ -352,15 +349,13 @@ export function useRateMasterImportExport({
         }
       });
       
-      // Update allZoneEdits for persistent state
-      const newEdits: Record<string, Record<string, number>> = { ...allZoneEdits };
-      
+      // Build newEdits to exactly match the source data, clearing any missing zones/construction types
+      const newEdits: Record<string, Record<string, number>> = {};
       allZones.forEach((zone) => {
         const zoneIdKey = String(zone.taxZoneId);
         const zoneRates = ratesByZone.get(zoneIdKey);
-        
+        const zoneEdits: Record<string, number> = {};
         if (zoneRates) {
-          const zoneEdits: Record<string, number> = {};
           rateCategories.forEach((cat) => {
             const catId = String(cat.constructionId);
             const rateValue = zoneRates.get(catId);
@@ -369,12 +364,9 @@ export function useRateMasterImportExport({
               zoneEdits[key] = rateValue;
             }
           });
-          if (Object.keys(zoneEdits).length > 0) {
-            newEdits[zone.zoneNo] = zoneEdits;
-          }
         }
+        newEdits[zone.zoneNo] = zoneEdits;
       });
-      
       setAllZoneEdits(newEdits);
       
       // Update current page's matrixData

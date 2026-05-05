@@ -185,6 +185,7 @@ export function SearchSelect({
       // If user typed an exact match and blurred, commit it
       if (hasTyped) {
         onChange(fallbackName, matched.value);
+        setHasTyped(false);
       }
     } else {
       setSearch('');
@@ -288,7 +289,7 @@ export function SearchSelect({
         onFocus={(e) => {
           e.target.select();
           onInputFocus?.();
-          if (hasOptions) setIsOpen(true);
+          if (!disabled) setIsOpen(true);
         }}
         onClick={(e) => {
           if (!isOpen && !disabled) {

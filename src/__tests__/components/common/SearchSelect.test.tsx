@@ -1,3 +1,29 @@
+    it('opens dropdown on focus even if options are empty (async options)', async () => {
+      // Simulate async options: initially empty, then update
+      const { rerender } = render(
+        <SearchSelect id="test-select" name="test-select" options={[]} value="" onChange={() => {}} />
+      );
+      const input = screen.getByRole('combobox');
+      fireEvent.focus(input);
+      // Dropdown should open, but no options
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      // Now rerender with options (simulate async load)
+      rerender(
+        <SearchSelect id="test-select" name="test-select" options={options} value="" onChange={() => {}} />
+      );
+      // Dropdown should now show options
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+      expect(screen.getAllByRole('option')).toHaveLength(3);
+    });
+
+    it('does not open dropdown on focus if disabled', () => {
+      render(
+        <SearchSelect id="test-select" name="test-select" options={options} value="" onChange={() => {}} disabled />
+      );
+      const input = screen.getByRole('combobox');
+      fireEvent.focus(input);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
   it('commits selection on blur when exact match is typed', async () => {
     const options = [
       { label: 'Option 1', value: 'opt1' },
@@ -16,6 +42,14 @@
       expect(onChange).toHaveBeenCalledWith('test-select', 'banana');
     });
   });
+
+// Shared options for all tests
+const options = [
+  { label: 'Option 1', value: 'opt1' },
+  { label: 'Option 2', value: 'opt2' },
+  { label: 'Banana', value: 'banana' },
+];
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { SearchSelect } from '@/components/common/SearchSelect';

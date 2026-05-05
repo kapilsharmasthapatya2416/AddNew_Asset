@@ -67,10 +67,10 @@ export default async function AddRatePage({ searchParams }: PageProps) {
 
   const tableData = ratesResult.items;
 
-  // Set initial values to first available options
-  const initialZone = zones && zones.length > 0 ? zones[0].value : "ALL";
-  const initialUseGroup = useGroups && useGroups.length > 0 ? useGroups[0].value : "ALL";
-  const initialYear = assessmentYears && assessmentYears.length > 0 ? assessmentYears[0].value : "ALL";
+  // Set initial values from searchParams if present, else fallback to first available options
+  const initialZone = params?.zone || (zones && zones.length > 0 ? zones[0].value : "ALL");
+  const initialUseGroup = params?.useGroup || (useGroups && useGroups.length > 0 ? useGroups[0].value : "ALL");
+  const initialYear = params?.assessmentYear || (assessmentYears && assessmentYears.length > 0 ? assessmentYears[0].value : "ALL");
 
   // Check for existing rates if filters are provided (for add mode validation)
   let initialExistingRatesCheck = false;

@@ -329,30 +329,11 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
     }
 
     // Helper to safely get value for both camelCase and PascalCase keys
-    function getRateValue(rate: IBackendRateMaster, key: string): number | undefined {
-      // Try camelCase
-      if (Object.prototype.hasOwnProperty.call(rate, key)) {
-        return rate[key as keyof IBackendRateMaster] as number | undefined;
-      }
-      // Try PascalCase
-      const pascalKey = key.charAt(0).toUpperCase() + key.slice(1);
-      if (Object.prototype.hasOwnProperty.call(rate, pascalKey)) {
-        return rate[pascalKey as keyof IBackendRateMaster] as number | undefined;
-      }
-      return undefined;
-    }
 
     // Calculate configured (non-zero) rates count across all fetched backend rates
-    const configuredRatesCount = latestBackendRates.reduce((count, rate) => {
-      return (
-        count +
-        rateCategories.filter(cat => {
-          const key = cat.constructionCode || cat.constructionId;
-          const value = getRateValue(rate, key);
-          return Number(value) && Number(value) > 0;
-        }).length
-      );
-    }, 0);
+    const configuredRatesCount = latestBackendRates.filter(
+      rate => Number(rate.rateSquareMeter ?? rate.RateSquareMeter) > 0
+    ).length;
 
     // Find zone name
     let zoneName = selectedZone;
@@ -525,7 +506,7 @@ return (
             <input
               ref={fileInputRef}
               type="file"
-              accept=".csv,.xlsx,.xls"
+              accept=".csv"
               onChange={handleUploadExcel}
               className="hidden"
             />

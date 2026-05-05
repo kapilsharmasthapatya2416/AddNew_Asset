@@ -187,18 +187,13 @@ export async function getRateMasterPaged(
   }
 
   if (rateSectionStr && rateSectionStr !== "ALL" && rateSectionStr !== "undefined") {
-    // If rateSectionStr is numeric, compare as number; otherwise, compare as string
-    if (!isNaN(Number(rateSectionStr)) && rateSectionStr.trim() !== "") {
+    // If both are numeric, compare as numbers; otherwise, compare as strings
+    const firstSection = transformedData[0]?.rateSection;
+    if (!isNaN(Number(rateSectionStr)) && rateSectionStr.trim() !== "" && !isNaN(Number(firstSection))) {
       const selectedRateSectionId = Number(rateSectionStr);
-      transformedData = transformedData.filter(row => {
-        // row.rateSection can be string (A/B/C) or number
-        return Number(row.rateSection) === selectedRateSectionId;
-      });
+      transformedData = transformedData.filter(row => Number(row.rateSection) === selectedRateSectionId);
     } else {
-      transformedData = transformedData.filter(row => {
-        // Compare as string for human-readable rateSectionNo (A/B/C)
-        return String(row.rateSection) === rateSectionStr;
-      });
+      transformedData = transformedData.filter(row => String(row.rateSection) === String(rateSectionStr));
     }
   }
 

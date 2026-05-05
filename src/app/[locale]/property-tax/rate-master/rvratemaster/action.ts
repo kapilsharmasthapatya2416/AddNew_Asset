@@ -1,6 +1,8 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { getUserIdFromCookies } from "@/lib/utils/auth-session";
 import { locales } from "@/i18n/config";
 import { IRateMaster, ISelectOption, IZoneDescription, RateCategory, AssessmentYearRangeOption, IRateCreate, IBackendRateMaster } from "@/types/RVRateMaster";
 import * as rateMasterService from "@/lib/api/RVRateMaster.services";
@@ -357,7 +359,16 @@ export async function bulkCreateRateMasterAction(
       return { success: false, message: 'No rates to create. Please enter at least one rate value.' };
     }
 
-    const result = await rateMasterService.bulkCreateRateMaster(rates);
+    // Set createdBy from authenticated user
+    const userId = getUserIdFromCookies(await cookies());
+    if (!userId) {
+      return { success: false, message: 'User not authenticated. Cannot set createdBy.' };
+    }
+    const ratesWithUser = rates.map(rate => ({
+      ...rate,
+      createdBy: userId,
+    }));
+    const result = await rateMasterService.bulkCreateRateMaster(ratesWithUser);
       
     if (result.success) {
       for (const locale of locales) {
@@ -394,7 +405,19 @@ export async function bulkUpdateRateMasterAction(
       return { success: false, message: 'No rates to update. Please enter at least one rate value.' };
     }
 
-    const result = await rateMasterService.bulkUpdateRateMaster(payload);
+    // Set updatedBy from authenticated user
+    const userId = getUserIdFromCookies(await cookies());
+    if (!userId) {
+      return { success: false, message: 'User not authenticated. Cannot set updatedBy.' };
+    }
+    const payloadWithUser = payload.map(item => ({
+      ...item,
+      data: {
+        ...item.data,
+        UpdatedBy: userId,
+      },
+    }));
+    const result = await rateMasterService.bulkUpdateRateMaster(payloadWithUser);
     
     if (result.success) {
       for (const locale of locales) {
