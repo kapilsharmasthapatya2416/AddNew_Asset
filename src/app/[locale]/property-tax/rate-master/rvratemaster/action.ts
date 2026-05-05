@@ -26,8 +26,7 @@ export async function getDetailedRatesAction(
   try {
     return await getDetailedRates(rateSection, useGroup, assessmentYear, pageNumber, pageSize);
   } catch (error) {
-    console.error("❌ Action Error [getDetailedRatesAction]:", error);
-    throw new Error("Failed to fetch detailed rates. Please try again.");
+    throw error;
   }
 }
 
@@ -56,8 +55,7 @@ export async function getRateMasterPagedAction(
       taxZoneIds
     );
   } catch (error) {
-    console.error("❌ Action Error [getRateMasterPagedAction]:", error);
-    throw new Error("Failed to fetch paginated rate master data. Please try again.");
+    throw error;
   }
 }
 
@@ -90,7 +88,6 @@ export async function getZoneDescriptionsPaged(
       totalCount: response.totalCount || 0,
     };
   } catch (error) {
-    console.error('❌ Action Error [getZoneDescriptionsPaged]:', error);
     throw error;
   }
 }
@@ -113,7 +110,6 @@ export async function getAllZoneDescriptions(): Promise<IZoneDescription[]> {
         description: String(item.remark ?? '').trim(),
       }));
   } catch (error) {
-    console.error('❌ Action Error [getAllZoneDescriptions]:', error);
     throw error;
   }
 }
@@ -145,7 +141,6 @@ export async function getZoneOptions(): Promise<ISelectOption[]> {
       value: String(item.id || item.Id),
     })).filter((opt: ISelectOption) => opt.value && opt.value !== 'undefined' && opt.value !== '0');
   } catch (error) {
-    console.error('❌ Action Error [getZoneOptions]:', error);
     throw error;
   }
 }
@@ -173,7 +168,6 @@ export async function getUseGroupOptions(): Promise<ISelectOption[]> {
       value: String(item.typeOfUseGroupId || item.TypeOfUseGroupId),
     })).filter((opt: ISelectOption) => opt.value && opt.value !== 'undefined' && opt.value !== '0');
   } catch (error) {
-    console.error('❌ Action Error [getUseGroupOptions]:', error);
     throw error;
   }
 }
@@ -202,7 +196,6 @@ export async function getAssessmentYears(): Promise<AssessmentYearRangeOption[]>
       .filter((opt: AssessmentYearRangeOption) => opt.value && opt.value !== 'undefined')
       .sort((a, b) => a.label.localeCompare(b.label));
   } catch (error) {
-    console.error('❌ Action Error [getAssessmentYears]:', error);
     throw error;
   }
 }
@@ -223,7 +216,6 @@ export async function getConstructionTypes(): Promise<RateCategory[]> {
       isActive: item.isActive,
     }));
   } catch (error) {
-    console.error('❌ Action Error [getConstructionTypes]:', error);
     throw error;
   }
 }
@@ -268,10 +260,8 @@ export async function getRateMasterByFilters(
 ) {
   try {
     return await rateMasterService.getRateMasterByFilters(zoneSection, useGroup, assessmentYear);
-  } catch (error: unknown) {
-    console.error('❌ Action Error [getRateMasterByFilters]:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch rates. Please try again.';
-    throw new Error(errorMessage);
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -303,8 +293,7 @@ export async function getRateMasterData(pageNumber: number = 1, pageSize: number
       totalCount: zoneDescriptionsResult.totalCount
     };
   } catch (error) {
-    console.error('❌ Action Error [getRateMasterData]:', error);
-    throw new Error('Failed to load RV Rate Master data. Please try again.');
+    throw error;
   }
 }
 
@@ -333,7 +322,6 @@ export async function deleteRateMasterAction(backendRates: IBackendRateMaster[])
     }
     return result;
   } catch (error) {
-    console.error('❌ Action Error [deleteRateMasterAction]:', error);
     return { success: false, message: 'Failed to delete rates. Please try again.' };
   }
 }
@@ -378,8 +366,6 @@ export async function bulkCreateRateMasterAction(
     }
     return { success: false, message: result.message || 'Failed to create rates' };
   } catch (error: unknown) {
-    console.error('❌ Action Error [bulkCreateRateMasterAction]:', error);
-    
     // Handle ApiError specifically
     if (error && typeof error === 'object' && 'statusCode' in error) {
       const apiError = error as { statusCode: number; message?: string };
@@ -427,7 +413,6 @@ export async function bulkUpdateRateMasterAction(
     }
     return { success: false, message: result.message || 'Failed to update rates' };
   } catch (error) {
-    console.error('❌ Action Error [bulkUpdateRateMasterAction]:', error);
     return { success: false, message: error instanceof Error ? error.message : 'Failed to update rates. Please try again.' };
   }
 }
