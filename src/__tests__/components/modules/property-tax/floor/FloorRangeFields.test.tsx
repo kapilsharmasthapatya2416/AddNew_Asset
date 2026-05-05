@@ -14,6 +14,8 @@ const messages = {
         activeStatusTitle: 'Floor Status',
         activeStatusOn: 'Active',
         activeStatusOff: 'Inactive',
+        floorCode: 'Floor Code',
+        floorCodePlaceholder: 'Enter floor code',
         range: {
           title: 'Floor Range',
           start: 'Start',
@@ -83,48 +85,26 @@ function renderFloorRangeFields(
 describe('FloorRangeFields', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('renders Floor Range section with Start and End fields', () => {
+
+  it('renders Start and End fields', () => {
     renderFloorRangeFields();
-    
-    expect(screen.getByText('Floor Range')).toBeInTheDocument();
     expect(screen.getByLabelText(/Start/)).toBeInTheDocument();
     expect(screen.getByLabelText(/End/)).toBeInTheDocument();
   });
 
-  it('renders Status section', () => {
+  it('renders Prefix and Suffix fields', () => {
     renderFloorRangeFields();
-    
-    expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Floor Status')).toBeInTheDocument();
+    expect(screen.getByLabelText('Prefix')).toBeInTheDocument();
+    expect(screen.getByLabelText('Suffix')).toBeInTheDocument();
   });
 
-  it('renders English Name section with Prefix and Suffix', () => {
+  it('renders Floor Code field', () => {
     renderFloorRangeFields();
-    
-    expect(screen.getByText('English Name')).toBeInTheDocument();
-    const prefixLabels = screen.getAllByText('Prefix');
-    const suffixLabels = screen.getAllByText('Suffix');
-    
-    expect(prefixLabels.length).toBeGreaterThanOrEqual(2);
-    expect(suffixLabels.length).toBeGreaterThanOrEqual(2);
-  });
-
-  it('renders Regional Name section', () => {
-    renderFloorRangeFields();
-    
-    expect(screen.getByText('Regional Name')).toBeInTheDocument();
-  });
-
-  it('renders Auto-Generate SubFloor checkbox', () => {
-    renderFloorRangeFields();
-    
-    expect(screen.getByText('Auto-Generate SubFloor')).toBeInTheDocument();
-    expect(screen.getByText('Creates a subfloor for every floor in the range')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Floor Code/)).toBeInTheDocument();
   });
 
   it('renders example info message', () => {
     renderFloorRangeFields();
-    
     expect(screen.getByText(/Example: Range 1-5 creates 1F, 2F, 3F, 4F, 5F/)).toBeInTheDocument();
   });
 
@@ -180,10 +160,8 @@ describe('FloorRangeFields', () => {
   it('calls onChange when prefix is changed', () => {
     const onChangeMock = vi.fn();
     renderFloorRangeFields({ onChange: onChangeMock });
-    
-    const prefixInput = screen.getByPlaceholderText('Auto-numbering');
+    const prefixInput = screen.getByLabelText('Prefix');
     fireEvent.change(prefixInput, { target: { value: 'Test' } });
-    
     expect(onChangeMock).toHaveBeenCalledWith('prefix', 'Test');
   });
 

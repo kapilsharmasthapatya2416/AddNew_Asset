@@ -232,6 +232,22 @@ export async function deleteFloor(id: number): Promise<void> {
 ============================================================ */
 export async function createFloorRange(data: FloorRangePayload): Promise<void> {
   try {
+    // Input validation
+    if (!data.rangeFrom || data.rangeFrom.trim() === '') {
+      throw new Error('rangeFrom required');
+    }
+    if (!data.rangeTo || data.rangeTo.trim() === '') {
+      throw new Error('rangeTo required');
+    }
+    const rangeFromNum = Number(data.rangeFrom);
+    const rangeToNum = Number(data.rangeTo);
+    if (isNaN(rangeFromNum) || isNaN(rangeToNum)) {
+      throw new Error('Range values must be valid numbers');
+    }
+    if (rangeFromNum > rangeToNum) {
+      throw new Error('rangeFrom cannot be greater than rangeTo');
+    }
+
     const payload: FloorRangePayload = {
       rangeFrom: data.rangeFrom.trim(),
       rangeTo: data.rangeTo.trim(),
@@ -243,9 +259,9 @@ export async function createFloorRange(data: FloorRangePayload): Promise<void> {
         floorCode: data.template.floorCode?.trim() ?? '0',
         description: data.template.description?.trim() ?? '',
         sequenceNo: Number(data.template.sequenceNo) || 0,
-        maxFloorNo: Number(data.template.maxFloorNo) || Number(data.rangeTo),
+        maxFloorNo: Number(data.template.maxFloorNo) || rangeToNum,
       },
-      startSequenceNo: Number(data.startSequenceNo) || Number(data.rangeFrom),
+      startSequenceNo: Number(data.startSequenceNo) || rangeFromNum,
     };
 
     console.log('API Service Floor Range Payload:', JSON.stringify(payload, null, 2));
