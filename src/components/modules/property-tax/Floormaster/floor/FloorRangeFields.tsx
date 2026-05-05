@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Input, ValidationMessage } from '@/components/common';
-import type { FloorRangeFormModel } from '@/types/floor.types';
+
 
 /* ================= TYPES ================= */
 import type { FloorRangeFieldsProps } from '@/types/floor.types';
