@@ -132,3 +132,57 @@ export interface SubFloorMasterProps {
   sortBy?: string;
   sortOrder?: string;
 }
+
+/* =====================================================
+   FLOOR RANGE - TEMPLATE MODEL
+===================================================== */
+export interface FloorRangeTemplate {
+  isActive: boolean;
+  createdBy: number;
+  floorCode: string;
+  description: string;
+  sequenceNo: number;
+  maxFloorNo: number;
+}
+
+/* =====================================================
+   FLOOR RANGE - API PAYLOAD
+===================================================== */
+export interface FloorRangePayload {
+  rangeFrom: string;
+  rangeTo: string;
+  prefix: string;
+  suffix: string;
+  template: FloorRangeTemplate;
+  startSequenceNo: number;
+}
+
+/* =====================================================
+   FLOOR RANGE - FORM MODEL (UI)
+===================================================== */
+export interface FloorRangeFormModel {
+  rangeFrom: number;
+  rangeTo: number;
+  prefix: string;
+  suffix: string;
+  floorCode: string;
+  isActive: boolean;
+  autoGenerateSubFloor: boolean;
+}
+
+/* =====================================================
+   FLOOR RANGE - FIELDS PROPS (COMPONENT)
+===================================================== */
+export interface FloorRangeFieldsProps {
+  formData: FloorRangeFormModel;
+  errors: {
+    rangeFrom?: string;
+    rangeTo?: string;
+    prefix?: string;
+    suffix?: string;
+    floorCode?: string;
+  };
+  showError: (field: keyof FloorRangeFormModel) => boolean;
+  onChange: (field: keyof FloorRangeFormModel, value: string | number | boolean) => void;
+  onBlur: (field: keyof FloorRangeFormModel) => void;
+}

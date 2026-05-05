@@ -6,6 +6,7 @@ import { locales } from "@/i18n/config";
 import {
   getFloorPaged,
   createFloor,
+  createFloorRange,
   updateFloor,
   deleteFloor,
  
@@ -22,6 +23,7 @@ import { ApiError } from "@/lib/utils/api";
 import type {
   Floor,
   FloorFormModel,
+  FloorRangePayload,
   SubFloor,
   SubFloorFormModel,
   PagedResponse,
@@ -211,6 +213,48 @@ export async function deleteFloorAction(
       success: false,
       messageKey: "messages.deleteFailed",
     };
+  }
+}
+
+/* ============================================================
+   CREATE FLOOR RANGE (BULK CREATE)
+============================================================ */
+export async function createFloorRangeAction(
+  data: FloorRangePayload
+): Promise<{ success: boolean; message?: string; messageKey?: string; statusCode?: number; floorsCreated?: number }> {
+  try {
+    await createFloorRange(data);
+
+    for (const locale of locales) {
+      revalidatePath(`/${locale}/property-tax/floormaster/floor`, "page");
+    }
+
+    const floorsCreated = parseInt(data.rangeTo) - parseInt(data.rangeFrom) + 1;
+    return { success: true, floorsCreated };
+  } catch (error: unknown) {
+    // Handle 409 Conflict (duplicate record)
+    if (error instanceof ApiError && error.statusCode === 409) {
+      return {
+        success: false,
+        messageKey: "messages.duplicateRecord",
+        statusCode: 409,
+      };
+    }
+
+    // Handle other API errors
+    if (error instanceof ApiError) {
+      return {
+        success: false,
+        message: error.responseText,
+        statusCode: error.statusCode,
+      };
+    }
+
+    // Handle generic errors
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    }
+    return { success: false, messageKey: "messages.createFailed" };
   }
 }
 

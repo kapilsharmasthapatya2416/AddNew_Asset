@@ -2,6 +2,7 @@ import { apiClient } from '@/services/api.service';
 import {
   Floor,
   FloorFormModel,
+  FloorRangePayload,
   PagedResponse,
 } from '@/types/floor.types';
 import { ApiError } from '@/lib/utils/api';
@@ -222,6 +223,44 @@ export async function deleteFloor(id: number): Promise<void> {
     );
   } catch (err) {
     console.error('Delete floor error:', err);
+    throw err;
+  }
+}
+
+/* ============================================================
+   CREATE FLOOR RANGE (BULK CREATE)
+============================================================ */
+export async function createFloorRange(data: FloorRangePayload): Promise<void> {
+  try {
+    const payload: FloorRangePayload = {
+      rangeFrom: data.rangeFrom.trim(),
+      rangeTo: data.rangeTo.trim(),
+      prefix: data.prefix?.trim() ?? '',
+      suffix: data.suffix?.trim() ?? '',
+      template: {
+        isActive: data.template.isActive,
+        createdBy: data.template.createdBy || 1,
+        floorCode: data.template.floorCode?.trim() ?? '0',
+        description: data.template.description?.trim() ?? '',
+        sequenceNo: Number(data.template.sequenceNo) || 0,
+        maxFloorNo: Number(data.template.maxFloorNo) || Number(data.rangeTo),
+      },
+      startSequenceNo: Number(data.startSequenceNo) || Number(data.rangeFrom),
+    };
+
+    console.log('API Service Floor Range Payload:', JSON.stringify(payload, null, 2));
+
+    const response = await apiClient.post('/Floor/Range', payload);
+
+    if (!response.success) {
+      throw new ApiError(
+        response.statusCode || 500,
+        response.error || '',
+        'Create floor range failed'
+      );
+    }
+  } catch (err) {
+    console.error('Create floor range error:', err);
     throw err;
   }
 }
