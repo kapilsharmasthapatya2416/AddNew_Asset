@@ -3,11 +3,8 @@
 import React, { useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { BuildingIcon } from "lucide-react";
 import { toast } from "sonner";
 import { 
-  Card, 
-  CardContent, 
   MasterTable, 
   EditButton, 
   DeleteButton, 
@@ -23,7 +20,6 @@ import { getOfficeColumns } from "./OfficeColumns";
 import { useOfficeSearch } from "@/hooks/useOfficeSearch";
 import { useOfficePagination } from "@/hooks/useOfficePagination";
 import { getOfficeTypeOptions } from "@/config/office-master.config";
-import { cn } from "@/lib/utils/cn";
 import { OfficeStatsCards } from "./OfficeStatsCards";
 
 export function OfficeMaster({
@@ -132,7 +128,7 @@ export function OfficeMaster({
           onPageChange={changePage}
           onPageSizeChange={(size) => handlePageSizeChange(String(size))}
           actionLabel={tCommon("table.columns.actions")}
-          paginationConfig={{ enabled: true, showPageSizeSelector: true }}
+          paginationConfig={{ enabled: true, showPageSizeSelector: false }}
           headerExtra={
             <div className="flex flex-col md:flex-row items-center gap-4 w-full">
               <SearchInput
@@ -177,6 +173,16 @@ export function OfficeMaster({
               <span className="text-sm text-gray-700">
                 {tCommon("table.showing")} {paginationInfo.start} {tCommon("table.to")} {paginationInfo.end} {tCommon("table.of")} {totalCount}
               </span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{tCommon("table.rowsPerPage")}:</span>
+                <Select
+                  value={String(pageSize)}
+                  onChange={(e) => handlePageSizeChange(e.target.value)}
+                  options={[10, 20, 30, 40, 50].map((s) => ({ label: String(s), value: String(s) }))}
+                  selectSize="sm"
+                  className="w-20"
+                />
+              </div>
             </div>
           }
           getRowKey={(row) => String(row.officeId)}

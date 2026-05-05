@@ -1,4 +1,3 @@
-import React from "react";
 import { BuildingIcon, Building2, CheckCircle2, Globe2 } from "lucide-react";
 import { Card, CardContent } from "@/components/common";
 import { cn } from "@/lib/utils/cn";

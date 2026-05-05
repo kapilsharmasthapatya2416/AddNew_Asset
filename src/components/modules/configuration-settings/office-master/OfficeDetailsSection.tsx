@@ -1,14 +1,14 @@
 import React from "react";
 import { Input, Select } from "@/components/common";
-import type { Office } from "@/types/office.types";
+import type { Office, OfficeFormModel } from "@/types/office.types";
 import { getOfficeTypeOptions } from "@/config/office-master.config";
 
 interface OfficeDetailsSectionProps {
   formData: Partial<Office>;
-  errors: Record<string, string>;
+  errors: Partial<Record<keyof OfficeFormModel, string>>;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
   handleBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
-  showError: (name: string) => boolean;
+  showError: (name: any) => boolean;
   t: (key: string) => string;
 }
 

@@ -3,13 +3,11 @@
 import { 
   CancelButton, 
   SaveButton, 
-  Drawer,
-  ValidationMessage
+  Drawer
 } from "@/components/common";
-import { CheckCircle2, X, AlertCircle, Building2 } from "lucide-react";
+import { AlertCircle, Building2 } from "lucide-react";
 import { Office } from "@/types/office.types";
 import { useOfficeForm } from "@/hooks/useOfficeForm";
-import { cn } from "@/lib/utils/cn";
 import { OfficeStatusToggle } from "./OfficeStatusToggle";
 import { OfficeDetailsSection } from "./OfficeDetailsSection";
 import { OfficeContactSection } from "./OfficeContactSection";
