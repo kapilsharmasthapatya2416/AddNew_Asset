@@ -84,7 +84,7 @@ export function useRateMasterOperations({
           rateSquareMeter: Number(val),
           rateSquareFeet: Number((Number(val) * 10.7639).toFixed(2)),
           rateRemark: rateFrequency === "Yearly" ? "YearWise Rate" : "MonthWise Rate",
-          createdBy: 0,
+          createdBy: 1,
           floorId: Number(row.floorID ?? 67),
           isActive: true,
         };
@@ -206,31 +206,67 @@ export function useRateMasterOperations({
         submission.useGroup // Pass the target use group
       );
 
-      const createPayload = [...updates, ...inserts].map(rate => ({
-        isActive: rate.isActive,
-        createdBy: 0,
-        taxZoneId: rate.taxZoneId,
-        floorId: rate.floorId,
-        constructionTypeId: rate.constructionTypeId,
-        typeOfUseGroupId: rate.typeOfUseGroupId,
-        yearRangeRVId: rate.YearRangeRVId,
-        rateSquareMeter: rate.rateSquareMeter,
-        rateSquareFeet: rate.rateSquareFeet,
-        rateSectionId: rate.rateSectionId,
-        rateRemark: rate.rateRemark,
-      }));
-
-      if (createPayload.length > 0) {
+      let updateSucceeded = true;
+      if (updates.length > 0) {
+        const bulkUpdatePayload = updates.map(rate => ({
+          id: rate.Id!,
+          data: {
+            IsActive: rate.isActive,
+            UpdatedBy: 1,
+            TaxZoneId: rate.taxZoneId,
+            FloorId: rate.floorId,
+            ConstructionTypeId: rate.constructionTypeId,
+            TypeOfUseGroupId: rate.typeOfUseGroupId,
+            YearRangeRVId: rate.YearRangeRVId,
+            RateSquareMeter: rate.rateSquareMeter,
+            RateSquareFeet: rate.rateSquareFeet,
+            RateSectionId: rate.rateSectionId,
+            RateRemark: rate.rateRemark,
+          }
+        }));
         try {
-          const result = await bulkCreateRateMasterAction(createPayload);
-          if (result.success) {
-            successCount++;
-          } else {
-            errorMessages.push(result.message || 'Failed to create rates');
+          const updateResult = await bulkUpdateRateMasterAction(bulkUpdatePayload);
+          if (!updateResult.success) {
+            updateSucceeded = false;
+            const useGroupLabel = useGroupOptions.find(u => u.value === submission.useGroup)?.label || submission.useGroup;
+            errorMessages.push(`${useGroupLabel} (Update): ${updateResult.message || 'Failed to update rates'}`);
           }
         } catch (error) {
+          updateSucceeded = false;
           errorMessages.push(error instanceof Error ? error.message : 'Server action failed');
         }
+      }
+
+      let createSucceeded = true;
+      if (inserts.length > 0) {
+        const createPayload = inserts.map(rate => ({
+          isActive: rate.isActive,
+          createdBy: 1,
+          taxZoneId: rate.taxZoneId,
+          floorId: rate.floorId,
+          constructionTypeId: rate.constructionTypeId,
+          typeOfUseGroupId: rate.typeOfUseGroupId,
+          yearRangeRVId: rate.YearRangeRVId,
+          rateSquareMeter: rate.rateSquareMeter,
+          rateSquareFeet: rate.rateSquareFeet,
+          rateSectionId: rate.rateSectionId,
+          rateRemark: rate.rateRemark,
+        }));
+        try {
+          const createResult = await bulkCreateRateMasterAction(createPayload);
+          if (!createResult.success) {
+            createSucceeded = false;
+            const useGroupLabel = useGroupOptions.find(u => u.value === submission.useGroup)?.label || submission.useGroup;
+            errorMessages.push(`${useGroupLabel} (Create): ${createResult.message || 'Failed to create new rates'}`);
+          }
+        } catch (error) {
+          createSucceeded = false;
+          errorMessages.push(error instanceof Error ? error.message : 'Server action failed');
+        }
+      }
+
+      if ((updates.length > 0 || inserts.length > 0) && updateSucceeded && createSucceeded) {
+        successCount++;
       }
     }
 
@@ -339,7 +375,7 @@ export function useRateMasterOperations({
           id: rate.Id!,
           data: {
             IsActive: rate.isActive,
-            UpdatedBy: 0,
+            UpdatedBy: 1,
             TaxZoneId: rate.taxZoneId,
             FloorId: rate.floorId,
             ConstructionTypeId: rate.constructionTypeId,
@@ -363,7 +399,7 @@ export function useRateMasterOperations({
       if (inserts.length > 0) {
         const createPayload = inserts.map(rate => ({
           isActive: rate.isActive,
-          createdBy: 0,
+          createdBy: 1,
           taxZoneId: rate.taxZoneId,
           floorId: rate.floorId,
           constructionTypeId: rate.constructionTypeId,

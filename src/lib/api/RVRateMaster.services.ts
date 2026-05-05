@@ -55,23 +55,15 @@ export async function getDetailedRates(
  * Backend expects an array of rate objects directly
  */
 export async function bulkCreateRateMaster(payload: IRateCreate[]): Promise<{ success: boolean; message: string; data?: unknown }> {
-  console.log('🔄 bulkCreateRateMaster calling POST /Rate/Bulk');
-  console.log('  📊 Payload count:', payload?.length);
-  if (payload?.length > 0) {
-    console.log('  📊 Sample payload:', JSON.stringify(payload[0], null, 2));
-  }
-  
+  // Debug logs removed for production
   const response = await apiClient.post<{ data?: unknown }>(`/Rate/Bulk`, payload);
-  console.log('📥 API response:', { success: response.success, statusCode: response.statusCode, error: response.error });
-  
+
   if (!response.success) {
     throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to bulk create rate master');
   }
   return { success: true, message: 'Bulk create successful', data: response.data };
 }
-
 /* ========== GET REQUESTS (Data Fetching) ========== */
-
 /**
  * Fetch paged rate master data for the main list
  */
@@ -282,7 +274,7 @@ export async function getRateMasterByFilters(
 ): Promise<IBackendRateMaster[]> {
   const params = new URLSearchParams({
     PageNumber: '1',
-    PageSize: '1000',
+    PageSize: '-1', // fetch all records, no cap
   });
 
   if (zoneSection && zoneSection !== "ALL" && zoneSection !== "undefined" && !isNaN(Number(zoneSection))) {
@@ -305,25 +297,18 @@ export async function getRateMasterByFilters(
 }
 
 /* ========== POST/PUT/DELETE REQUESTS (Mutations) ========== */
-
 /**
  * Bulk purge rate master records (DELETE /Rate/Bulk/purge)
  */
-export async function bulkPurgeRateMaster(ids: number[]): Promise<{ success: boolean; message: string; data?: unknown }> {
-  console.log('🗑️ bulkPurgeRateMaster called with IDs:', ids);
-  
+export async function bulkPurgeRateMaster(ids: number[]): Promise<{ success: boolean; message: string; data?: unknown }> {  
   // Pass body through options parameter (RequestInit includes body property)
   const response = await apiClient.delete<unknown>(`/Rate/Bulk/purge`, {
     body: JSON.stringify(ids),
   });
-  
-  console.log('🗑️ Delete response:', response);
-  
+   
   if (!response.success) {
     console.error('❌ Delete failed:', response.error);
     throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to bulk purge rate master');
-  }
-  
-  console.log('✅ Delete successful');
+  } 
   return { success: true, message: 'Bulk purge successful', data: response.data };
 }

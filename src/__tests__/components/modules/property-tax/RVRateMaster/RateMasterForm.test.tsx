@@ -76,10 +76,26 @@ const mockMessages = {
       generateNewRateDetails: "Generate New Rate Details",
       fillRateDetails: "Fill rate details",
       validationIncompleteMatrix: "Please complete the matrix before submitting",
+      active: "Active",
+      ratesConfigured: "{count} Rate(s) Configured",
     },
     sections: {
       rateFrequency: "Rate Frequency",
       matrixCompletion: "Matrix Completion",
+      quickImport: "Quick Import:",
+      rateEntryMatrix: "Rate Entry Matrix",
+    },
+    buttons: {
+      downloadTemplate: "Download Template",
+      uploadExcel: "Upload Excel",
+      addRates: "Add Rates",
+      updateRates: "Update Rates",
+      deleteRates: "Delete Rates",
+    },
+    filters: {
+      rateSection: "Rate Section",
+      typeOfUseGroup: "Type of Use Group",
+      assessmentYearRange: "Assessment Year Range",
     },
     options: {
       monthly: "Monthly",
@@ -98,6 +114,10 @@ const mockMessages = {
     update: "Update",
     delete: "Delete",
     rateUnit: "Rate Unit",
+    currencySymbol: "₹",
+    action: {
+      deleteRow: "Delete Row",
+    },
     multiSelect: {
       noOptionsAvailable: "No options available",
     },
@@ -105,6 +125,8 @@ const mockMessages = {
       showingEntries: "Showing entries",
       rowsPerPage: "Rows per page",
       page: "Page",
+      noData: "No data available",
+      noRecordsFound: "No records found",
     },
   },
 };

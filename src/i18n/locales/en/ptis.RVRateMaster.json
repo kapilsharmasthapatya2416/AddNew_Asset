@@ -36,6 +36,7 @@
     "uploadExcel": "Upload Excel"
   },
   "messages": {
+    "csvOnly": "Please upload a valid CSV file. Excel (.xlsx) files are not supported.",
     "rateConfiguration": "Rate Configuration",
     "ratesConfigured": "{count} Rate(s) Configured",
     "active": "Active",

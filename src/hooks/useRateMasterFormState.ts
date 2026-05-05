@@ -202,17 +202,26 @@ export function useRateMasterFormState({
 
   const [matrixData, setMatrixData] = useState(defaultMatrixData);
 
-  // Calculate the number of filled rates
-  const filledRatesCount = matrixData.reduce((count, row: MatrixRow) => {
-    return count + rateCategories.filter(cat => {
-      const key = cat.constructionCode || cat.constructionId;
-      const value = row[key] as number;
-      return value && value > 0;
-    }).length;
-  }, 0);
+  // Calculate the number of filled rates across ALL zones (not just current page)
+  const filledRatesCount = useMemo(() => {
+    let count = 0;
+    allZones.forEach((zone) => {
+      const zoneEdits = allZoneEdits[zone.zoneNo];
+      if (zoneEdits) {
+        rateCategories.forEach((cat) => {
+          const key = cat.constructionCode || cat.constructionId;
+          const value = zoneEdits[key];
+          if (value && value > 0) {
+            count++;
+          }
+        });
+      }
+    });
+    return count;
+  }, [allZones, allZoneEdits, rateCategories]);
 
-  // Calculate total possible rates
-  const totalPossibleRates = matrixData.length * rateCategories.length;
+  // Calculate total possible rates across ALL zones (not just current page)
+  const totalPossibleRates = allZones.length * rateCategories.length;
 
   // Calculate completion percentage
   const completionPercentage = totalPossibleRates > 0 
@@ -257,18 +266,25 @@ export function useRateMasterFormState({
     if (mode === 'edit' || mode === 'delete') {
       if (urlZone) {
         setSelectedZone(urlZone);
+      } else if (filterValues?.zone) {
+        setSelectedZone(filterValues.zone);
       } else if (zoneOptions && zoneOptions.length > 0) {
         setSelectedZone(zoneOptions[0].value);
       }
-      
+
       if (urlUseGroup) {
         setSelectedUseGroup(urlUseGroup);
+      } else if (filterValues?.useGroup) {
+        setSelectedUseGroup(filterValues.useGroup);
       } else if (useGroupOptions && useGroupOptions.length > 0) {
         setSelectedUseGroup(useGroupOptions[0].value);
       }
-      
+
       if (urlAssessmentYear) {
         setAssessmentYear(urlAssessmentYear);
+      } else if (filterValues?.year) {
+        const foundAssessment = assessmentYears?.find(y => String(y.value) === String(filterValues.year));
+        setAssessmentYear(foundAssessment ? foundAssessment.value : filterValues.year);
       } else if (assessmentYears && assessmentYears.length > 0) {
         setAssessmentYear(assessmentYears[0].value);
       }

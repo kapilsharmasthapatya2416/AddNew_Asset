@@ -25,14 +25,22 @@ const RateMasterPageServer = async ({ searchParams }: PageProps) => {
   const zonePage = Number(params?.page) || 1;
   const zonePageSize = Number(params?.pageSize) || 10;
 
-  // Fetch all master data in one call
+  // Fetch all master data in one call (for mapping, fetch all zones, not just paginated)
+  const [
+    allMasterData,
+    paginatedZonesResult
+  ] = await Promise.all([
+    getRateMasterData(1, Number.MAX_SAFE_INTEGER), // get all zones for mapping
+    getZoneDescriptionsPaged(zonePage, zonePageSize)
+  ]);
+
   const {
     constructionTypes,
     rateSections: zones,
     useGroups,
     assessmentYears,
-    zoneDescriptions
-  } = await getRateMasterData();
+    zoneDescriptions // all zones, not paged
+  } = allMasterData;
 
   // Determine initial/selected values
   const selectedZone = params?.zone || (zones.length > 0 ? zones[0].value : "ALL");
@@ -41,8 +49,7 @@ const RateMasterPageServer = async ({ searchParams }: PageProps) => {
   const selectedUseGroup = params?.useGroup || (firstValidUseGroup?.value ?? '');
   const selectedYear = params?.year || (assessmentYears.length > 0 ? assessmentYears[0].value : "ALL");
 
-  // STEP 1: Get paginated zones from server 
-  const paginatedZonesResult = await getZoneDescriptionsPaged(zonePage, zonePageSize);
+  // STEP 1: Use paginated zones for UI
   const paginatedZones = paginatedZonesResult.items;
   const totalZonePages = paginatedZonesResult.totalPages;
   const totalZonesCount = paginatedZonesResult.totalCount;

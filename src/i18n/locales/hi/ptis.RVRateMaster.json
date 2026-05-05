@@ -36,6 +36,7 @@
     "uploadExcel": "एक्सेल अपलोड करें"
   },
   "messages": {
+    "csvOnly": "कृपया केवल वैध CSV फ़ाइल अपलोड करें। Excel (.xlsx) फ़ाइलें समर्थित नहीं हैं।",
     "rateConfiguration": "दर विन्यास",
     "ratesConfigured": "{count} दरें विन्यस्त",
     "active": "सक्रिय",
@@ -83,6 +84,7 @@
     "validationDownloadTemplateFailed": "टेम्पलेट डाउनलोड करने में विफल",
     "validationUploadValidFile": "कृपया एक मान्य CSV या Excel फ़ाइल अपलोड करें",
     "validationRatesAlreadyExist": "चयनित फ़िल्टर के लिए दरें पहले से मौजूद हैं। कृपया अपडेट करें",
+    "validationIncompleteMatrix": "कृपया सभी दर मान भरें। वर्तमान पूर्णता: {percentage}%",
     "validationFileEmpty": "फ़ाइल खाली या अवैध है",
     "validationParseFailed": "फ़ाइल पार्स करने में विफल। कृपया प्रारूप की जाँच करें।",
     "validationReadFileFailed": "फ़ाइल पढ़ने में विफल",

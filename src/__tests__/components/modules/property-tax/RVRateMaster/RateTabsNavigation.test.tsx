@@ -29,7 +29,7 @@ describe("RateTabsNavigation", () => {
     vi.clearAllMocks();
   });
 
-  it("renders both tabs", () => {
+  it("renders only Rateable Value tab (Capital Value is hidden)", () => {
     render(
       <NextIntlClientProvider locale="en" messages={mockMessages}>
         <RateTabsNavigation />
@@ -37,7 +37,8 @@ describe("RateTabsNavigation", () => {
     );
 
     expect(screen.getByText("Rateable Value")).toBeInTheDocument();
-    expect(screen.getByText("Capital Value")).toBeInTheDocument();
+    // Capital Value tab is intentionally hidden until feature is implemented
+    expect(screen.queryByText("Capital Value")).not.toBeInTheDocument();
   });
 
   it("shows Rateable Value as active on rvratemaster path", () => {
@@ -66,18 +67,6 @@ describe("RateTabsNavigation", () => {
     // Verify navigation logic
   });
 
-  it("navigates to Capital Value when clicked", () => {
-    render(
-      <NextIntlClientProvider locale="en" messages={mockMessages}>
-        <RateTabsNavigation />
-      </NextIntlClientProvider>
-    );
-
-    const capitalTab = screen.getByText("Capital Value");
-    fireEvent.click(capitalTab);
-    // Verify navigation logic
-  });
-
   it("renders with proper styling", () => {
     render(
       <NextIntlClientProvider locale="en" messages={mockMessages}>
@@ -86,9 +75,7 @@ describe("RateTabsNavigation", () => {
     );
 
     const rateableTab = screen.getByText("Rateable Value").closest("button");
-    const capitalTab = screen.getByText("Capital Value").closest("button");
     
     expect(rateableTab).toHaveClass("px-4", "py-2");
-    expect(capitalTab).toHaveClass("px-4", "py-2");
   });
 });

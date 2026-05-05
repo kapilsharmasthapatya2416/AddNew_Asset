@@ -278,7 +278,7 @@ export function SearchSelect({
         aria-activedescendant={
           highlightedIndex >= 0 ? `${fallbackName}-option-${highlightedIndex}` : undefined
         }
-        disabled={disabled || !hasOptions}
+        disabled={disabled}
         inputMode={inputMode}
         onFocus={(e) => {
           e.target.select();

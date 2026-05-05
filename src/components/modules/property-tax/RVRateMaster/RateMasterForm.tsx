@@ -1315,9 +1315,9 @@ return (
       : "bg-gray-50 text-gray-500 border-gray-200";
   }}
   translations={{
-    action: "Actions",
-    currencySymbol: "₹",
-    deleteRow: "Delete row",
+    action: tCommon('table.columns.actions'),
+    currencySymbol: tCommon('currencySymbol'),
+    deleteRow: tCommon('table.actions.delete'),
   }}
  />
                 </div>               

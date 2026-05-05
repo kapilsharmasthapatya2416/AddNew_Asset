@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Tabs } from "@/components/common";
 import TableHeader from "@/components/common/TableHeader";
-import { Calculator, Landmark } from "lucide-react";
+import { Calculator} from "lucide-react";
 
 export function RateTabsNavigation() {
   const pathname = usePathname();
@@ -13,6 +13,7 @@ export function RateTabsNavigation() {
   const t = useTranslations("ptis_RVRateMaster");
 
   // Determine active tab from pathname
+  // Only show Rateable Value tab until Capital Value is implemented
   const tabConfig = [
     {
       value: "rvratemaster",
@@ -21,13 +22,15 @@ export function RateTabsNavigation() {
       headerTitle: t("header.rateableTitle"),
       headerSubtitle: t("header.rateableDescription"),
     },
-    {
-      value: "cvratemaster",
-      label: t("header.capitalTab"),
-      icon: Landmark,
-      headerTitle: t("header.capitalTitle"),
-      headerSubtitle: t("header.capitalDescription"),
-    },
+    // The Capital Value tab is intentionally hidden for now.
+    // Uncomment and enable this tab when the /cvratemaster route and feature are implemented in a future PR.
+    // {
+    //   value: "cvratemaster",
+    //   label: t("header.capitalTab"),
+    //   icon: Landmark,
+    //   headerTitle: t("header.capitalTitle"),
+    //   headerSubtitle: t("header.capitalDescription"),
+    // },
   ];
 
   const activeValue = tabConfig.find(tab => pathname.endsWith(tab.value))?.value || "rvratemaster";

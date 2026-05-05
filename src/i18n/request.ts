@@ -21,7 +21,6 @@ export default getRequestConfig(async ({ locale }) => {
     constructionMessages,
     floorMessages,
     taxzoneMessages,
-    ptisRVRateMasterMessages,
     quickDataEntryMessages,
     rateSectionMasterMessages,
     assessmentYearRangeMessages,
@@ -29,6 +28,7 @@ export default getRequestConfig(async ({ locale }) => {
     floorFactorMasterMessages,
     weightageMasterMessages,
     depreciationMessages,
+    ptisRVRateMasterMessages,
     modulesMessages,
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
@@ -36,7 +36,6 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/construction.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/floor.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/taxzone.json`).then((m) => m.default),
-    import(`./locales/${validatedLocale}/ptis.RVRateMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/quickDataEntry.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/rateSectionMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/assessmentYearRange.json`).then((m) => m.default),
@@ -44,6 +43,7 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/floorFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/weightageMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/depreciation.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/ptis.RVRateMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
   ]);
 
@@ -55,7 +55,6 @@ export default getRequestConfig(async ({ locale }) => {
       construction: constructionMessages,
       floor: floorMessages,
       taxZone: taxzoneMessages.taxZone,
-      ptis_RVRateMaster: ptisRVRateMasterMessages,
       quickDataEntry: quickDataEntryMessages,
       rateSectionMaster: rateSectionMasterMessages,
       assessmentYearRange: assessmentYearRangeMessages,
@@ -63,6 +62,7 @@ export default getRequestConfig(async ({ locale }) => {
       floorFactorMaster: floorFactorMasterMessages.floorFactorMaster,
       weightageMaster: weightageMasterMessages.weightageMaster,
       depreciation: depreciationMessages,
+      ptis_RVRateMaster: ptisRVRateMasterMessages,
       modules: modulesMessages,
     },
   };

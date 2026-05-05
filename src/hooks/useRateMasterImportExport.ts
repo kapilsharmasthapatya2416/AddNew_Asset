@@ -463,9 +463,9 @@ export function useRateMasterImportExport({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-    if (!validTypes.includes(file.type) && !file.name.endsWith('.csv') && !file.name.endsWith('.xlsx')) {
-      toast.error(t('messages.validationUploadValidFile'));
+    const validTypes = ['text/csv', 'application/vnd.ms-excel'];
+    if (!validTypes.includes(file.type) && !file.name.endsWith('.csv')) {
+      toast.error(t('ptis_RVRateMaster.messages.csvOnly'));
       return;
     }
 
@@ -484,28 +484,29 @@ export function useRateMasterImportExport({
         const excelDataByZone = new Map<string, Record<string, number>>();
         let importedRateCount = 0;
         
-        dataLines.forEach((line, index) => {
-          if (index < allZones.length) {
-            const values = line.split(',').map(v => v.trim());
-            const zone = allZones[index];
-            const zoneEdits: Record<string, number> = {};
-            
-            rateCategories.forEach((cat, catIndex) => {
-              const valueIndex = 1 + catIndex;
-              if (valueIndex < values.length) {
-                const parsedValue = parseFloat(values[valueIndex]);
-                const finalValue = isNaN(parsedValue) ? 0 : parsedValue;
-                if (finalValue > 0) {
-                  importedRateCount++;
-                  const key = cat.constructionCode || cat.constructionId;
-                  zoneEdits[key] = finalValue;
-                }
+        dataLines.forEach((line) => {
+          const values = line.split(',').map(v => v.trim());
+          // The first column is expected to be Tax Zone No
+          const taxZoneNo = values[0];
+          const zone = allZones.find(z => String(z.zoneNo) === taxZoneNo);
+          if (!zone) return; // skip if zone not found
+          const zoneEdits: Record<string, number> = {};
+
+          rateCategories.forEach((cat, catIndex) => {
+            const valueIndex = 1 + catIndex;
+            if (valueIndex < values.length) {
+              const parsedValue = parseFloat(values[valueIndex]);
+              const finalValue = isNaN(parsedValue) ? 0 : parsedValue;
+              if (finalValue > 0) {
+                importedRateCount++;
+                const key = cat.constructionCode || cat.constructionId;
+                zoneEdits[key] = finalValue;
               }
-            });
-            
-            if (Object.keys(zoneEdits).length > 0) {
-              excelDataByZone.set(zone.zoneNo, zoneEdits);
             }
+          });
+
+          if (Object.keys(zoneEdits).length > 0) {
+            excelDataByZone.set(zone.zoneNo, zoneEdits);
           }
         });
         

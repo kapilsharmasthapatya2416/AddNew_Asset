@@ -96,11 +96,14 @@ export async function getZoneOptions(): Promise<ISelectOption[]> {
       pageSize: -1,
     });
     const items = response.rateSectionMaster || [];
-    const activeItems = items.filter((item: RateItem) => item.isActive === true);
-    
-    return activeItems.map((item: RateItem) => ({
-      label: item.description || "",
-      value: String(item.rateSectionNo || ""),
+    // Only include items with a valid numeric Id
+    const activeItems = items.filter((item: RateItem & { Id?: number }) =>
+      item.isActive === true && typeof item.Id === 'number' && item.Id > 0
+    );
+
+    return activeItems.map((item: RateItem & { Id?: number; RateSectionNo?: string; Description?: string }) => ({
+      label: item.Description || String(item.RateSectionNo || ""),
+      value: String(item.Id),
     })).filter((opt: ISelectOption) => opt.value && opt.value !== 'undefined' && opt.value !== '0');
   } catch (error) {
     console.error('❌ Action Error [getZoneOptions]:', error);
@@ -295,26 +298,20 @@ export async function bulkCreateRateMasterAction(
   // Wrap everything in try-catch to ensure we always return a serializable response
   try {   
    // Validate input
-    if (!rates) {
-      // console.log removed
+    if (!rates) {     
       return { success: false, message: 'No rates data received.' };
     }
     
-    if (!Array.isArray(rates)) {
-      // console.log removed
+    if (!Array.isArray(rates)) {     
       return { success: false, message: 'Invalid rates data format. Expected an array.' };
     }
     
-    if (rates.length === 0) {
-      // console.log removed
+    if (rates.length === 0) {    
       return { success: false, message: 'No rates to create. Please enter at least one rate value.' };
     }
-    
-    // console.log removed
 
     const result = await rateMasterService.bulkCreateRateMaster(rates);
-    // console.log removed
-    
+      
     if (result.success) {
       for (const locale of locales) {
         revalidatePath(`/${locale}/property-tax/rate-master/rvratemaster`);
