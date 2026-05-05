@@ -504,7 +504,7 @@
         "PercentagePlaceholder": "टक्केवारी टाका"
     },
     "oldDetails": {
-        "title": "जुने कर आणि ऐतिहासिक डेटा",
+        "title": "जुने कर",
         "error": {
             "title": "जुने तपशील लोड करताना त्रुटी",
             "description": "ऐतिहासिक मालमत्ता डेटा मिळवताना आम्हाला त्रुटी आली."
@@ -517,7 +517,10 @@
         "oldTaxation": {
             "error": {
                 "title": "जुनी कर आकारणी त्रुटी",
-                "description": "ऐतिहासिक कर आकारणी नोंदी लोड करण्यात अपयश."
+                "description": "ऐतिहासिक कर आकारणी नोंदी लोड करण्यात अपयश।",
+                "errorId": "त्रुटी आयडी: {id}",
+                "goHome": "मुख्यपृष्ठावर जा",
+                "tryAgain": "पुन्हा प्रयत्न करा"
             },
             "loading": {
                 "message": "जुनी कर आकारणी लोड होत आहे...",
@@ -529,7 +532,10 @@
         "floorInformation": {
             "error": {
                 "title": "मजला माहिती त्रुटी",
-                "description": "ऐतिहासिक मजल्याचा तपशील मिळवता आला नाही."
+                "description": "ऐतिहासिक मजल्याचा तपशील मिळवता आला नाही.",
+                "errorId": "त्रुटी आयडी: {id}",
+                "goHome": "मुख्यपृष्ठावर जा",
+                "tryAgain": "पुन्हा प्रयत्न करा"
             },
             "loading": {
                 "message": "मजला माहिती लोड होत आहे...",
@@ -560,7 +566,7 @@
         "alv": "ALV (वार्षिक भाडे मूल्य)",
         "propertyTax": "मालमत्ता कर",
         "totalTax": "एकूण कर",
-        "floorDetailsTitle": "ऐतिहासिक मजला माहिती",
+        "floorDetailsTitle": "मजला माहिती",
         "updateFloorDetailsTitle": "मजल्याची माहिती अपडेट करा",
         "oldTaxDetailsTitle": "कर तपशील",
         "zoneNamePlaceholder": "झोन टाका",

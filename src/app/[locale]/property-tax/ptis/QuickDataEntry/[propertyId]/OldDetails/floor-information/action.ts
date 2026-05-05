@@ -9,7 +9,7 @@ import {
     saveOldFloorDetails,
     updateOldFloorDetails,
     deleteOldFloorDetails,
-    getOldFloordetailsForFloorInformation
+    getOldFloorDetailsForFloorInformation
 } from "@/lib/api/old-details-floor-information.service";
 import { ActionResult } from "@/types/common.types";
 import {
@@ -139,7 +139,7 @@ export async function GetSubTypeOfUsesAction(
  */
 export async function GetOldFloorDetailsAction(propertyId: number): Promise<ActionResult<OldFloorDetail[]>> {
     try {
-        const response = await getOldFloordetailsForFloorInformation(propertyId);
+        const response = await getOldFloorDetailsForFloorInformation(propertyId);
         return {
             success: true,
             data: response.items?.floorDetails || []

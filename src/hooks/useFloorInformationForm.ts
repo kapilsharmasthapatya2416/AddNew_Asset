@@ -72,7 +72,8 @@ export function useFloorInformationForm({
       } else {
         urlParams.delete('typeOfUseId');
       }
-      router.replace(`${pathname}?${urlParams.toString()}`, { scroll: false });
+      const queryString = urlParams.toString();
+      router.replace(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
     }
   };
 
@@ -122,7 +123,8 @@ export function useFloorInformationForm({
     if (currentParam) {
       const urlParams = new URLSearchParams(searchParams);
       urlParams.delete('typeOfUseId');
-      router.replace(`${pathname}?${urlParams.toString()}`, { scroll: false });
+      const queryString = urlParams.toString();
+      router.replace(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
     }
   };
 
@@ -156,12 +158,8 @@ export function useFloorInformationForm({
 
       let result;
       if (formData.id) {
-        console.log("Update data");
-
         result = await UpdateOldFloorDetailsAction(propertyId, formData.id, payload, locale);
       } else {
-        console.log("Add data");
-
         result = await SaveOldFloorDetailsAction(propertyId, payload, locale);
       }
 

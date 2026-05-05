@@ -12,7 +12,7 @@ export default function OldTaxationError({ error, reset }: ErrorProps) {
     <ErrorPage
       error={error}
       reset={reset}
-      translationNamespace="common.error"
+      translationNamespace="quickDataEntry.oldDetails.oldTaxation.error"
     />
   );
 }

@@ -1,5 +1,3 @@
-import { OldTaxDetail } from "./ptis.types";
-
 /**
  * Interface representing the basic old property details returned from the API.
  */
@@ -269,19 +267,6 @@ export interface OldTaxesDetailsResponse {
   message: string;
   items: OldTaxesDetails;
   errors: unknown | null;
-}
-
-export interface OldTaxYear {
-  financeYearId: number;
-  year: number;
-  yearCode: string | null;
-  rVorCV: string;
-  rVorCVValue: number;
-  taxes: OldTaxDetail[];
-  taxTotal: number;
-  interest: number;
-  netTotal: number;
-  remark?: string;
 }
 
 export interface TaxationBreakdownFormProps {

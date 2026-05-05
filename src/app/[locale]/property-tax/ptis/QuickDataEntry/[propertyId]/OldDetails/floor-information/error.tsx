@@ -12,7 +12,7 @@ import { ErrorPage } from "@/components/common";
       <ErrorPage
         error={error}
         reset={reset}
-         translationNamespace="common.error"
+         translationNamespace="quickDataEntry.oldDetails.floorInformation.error"
       />
     );
   }

@@ -1,7 +1,6 @@
 /* ---------------- FLOOR INFORMATION SERVICES ---------------- */
 
 import { apiClient } from "@/services/api.service";
-import { handleApiResponse } from "../utils/api";
 import {
      SubFloor,
      Floor,
@@ -13,6 +12,7 @@ import {
 } from "@/types/property-old-details.types";
 
 import { PagedResponse } from "@/types/common.types";
+ import { handleApiResponse } from "@/lib/utils/api";
 
 /* ---------------- GET FLOORS ---------------- */
 export async function getFloors( pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<Floor>> {
@@ -80,7 +80,7 @@ export async function getSubTypeOfUses( typeOfUseId: number, pageNumber: number,
 }
 
 /* ---------------- GET OLD FLOOR DETAILS ---------------- */
-export async function getOldFloordetailsForFloorInformation(propertyId: number): Promise<OldFloorDetailsResponse> {
+export async function getOldFloorDetailsForFloorInformation(propertyId: number): Promise<OldFloorDetailsResponse> {
     const response = await apiClient.get<OldFloorDetailsResponse>(`/Property/${propertyId}/floor-details-old`);
     return handleApiResponse(response, `Failed to fetch old floor details for property ${propertyId}`);
 }

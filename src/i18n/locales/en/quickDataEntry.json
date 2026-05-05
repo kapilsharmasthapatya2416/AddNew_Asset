@@ -504,7 +504,7 @@
         "PercentagePlaceholder": "Enter percentage"
     },
     "oldDetails": {
-        "title": "Old Taxation & Historical Data",
+        "title": "Old Taxation",
         "loading": {
             "message": "Loading Old Details...",
             "description": "Please wait while we fetch the historical information",
@@ -515,6 +515,13 @@
             "description": "There was a problem fetching the historical information. Please try again."
         },
         "oldTaxation": {
+            "error": {
+                "title": "Old Taxation Error",
+                "description": "Failed to load historical taxation records.",
+                "errorId": "Error ID: {id}",
+                "goHome": "Go Home",
+                "tryAgain": "Try Again"
+            },
             "loading": {
                 "message": "Loading Old Taxation...",
                 "description": "Fetching historical tax data"
@@ -523,6 +530,13 @@
             "updateError": "Failed to update old property taxation details"
         },
         "floorInformation": {
+            "error": {
+                "title": "Floor Information Error",
+                "description": "Failed to load historical floor records.",
+                "errorId": "Error ID: {id}",
+                "goHome": "Go Home",
+                "tryAgain": "Try Again"
+            },
             "loading": {
                 "message": "Loading Floor Info...",
                 "description": "Fetching historical floor records"
@@ -552,7 +566,7 @@
         "alv": "ALV (Annual Letting Value)",
         "propertyTax": "Property Tax",
         "totalTax": "Total Tax",
-        "floorDetailsTitle": "Historical Floor Information",
+        "floorDetailsTitle": "Floor Information",
         "updateFloorDetailsTitle": "Update Floor Information",
         "oldTaxDetailsTitle": "Taxation Breakdown",
         "zoneNamePlaceholder": "Enter zone",
