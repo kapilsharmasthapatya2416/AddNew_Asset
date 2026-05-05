@@ -2,7 +2,7 @@
 "use client";
 import { useTranslations } from 'next-intl';
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -14,11 +14,11 @@ import {
   MapPin,
   AlertCircle,
   Layers3,
+  ChevronDown,
 } from "lucide-react";
 
 import type { UseGroup, UseGroupIconKey, UseGroupFormProps } from "@/types/typeOfUse.types";
 import { Input } from "@/components/common/Input";
-import { Select } from "@/components/common/select";
 
 import {
   createUseGroup,
@@ -70,6 +70,8 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submittedOnce, setSubmittedOnce] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [iconDropdownOpen, setIconDropdownOpen] = useState(false);
+  const iconDropdownRef = useRef<HTMLDivElement>(null);
 
   // Removed unused iconOpen and iconWrapRef
 
@@ -100,6 +102,23 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
 
 
   const isActiveStatus = formData.isActive ?? true;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (iconDropdownRef.current && !iconDropdownRef.current.contains(event.target as Node)) {
+        setIconDropdownOpen(false);
+      }
+    };
+
+    if (iconDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [iconDropdownOpen]);
 
   const handleStatusToggle = () => {
     setFormData((p) => ({
@@ -354,23 +373,57 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
               />
             </div>
 
-            {/* ICON DROPDOWN (using Select component) */}
+            {/* ICON DROPDOWN (custom with icon display) */}
             <div className="flex flex-col">
-              <Select
-                label={t('group.fields.iconType')}
-                options={ICON_OPTIONS.map(opt => ({
-                  label: opt.label,
-                  value: opt.value
-                }))}
-                value={getIconKey(formData.groupIcon)}
-                onChange={val => {
-                  setFormData((p) => ({ ...p, groupIcon: `${val}-icon` }));
-                }}
-                placeholder={t('group.fields.iconType')}
-                required
-                className="mt-1.5"
-              />
-              {/* (optional) spacing to match other fields */}
+              <label className="mb-1.5 text-sm font-semibold text-gray-700">
+                {t('group.fields.iconType')} <span className="text-red-500">*</span>
+              </label>
+              <div ref={iconDropdownRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIconDropdownOpen(!iconDropdownOpen)}
+                  className="flex items-center justify-between w-full h-10 px-4 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all"
+                >
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const selectedOption = ICON_OPTIONS.find(opt => opt.value === getIconKey(formData.groupIcon));
+                      const IconComponent = selectedOption?.Icon || Home;
+                      return (
+                        <>
+                          <IconComponent size={18} className="text-blue-600" />
+                          <span className="text-gray-800">{selectedOption?.label || 'Select icon'}</span>
+                        </>
+                      );
+                    })()}
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </button>
+
+                {iconDropdownOpen && (
+                  <ul className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                    {ICON_OPTIONS.map((option) => {
+                      const IconComponent = option.Icon;
+                      const isSelected = getIconKey(formData.groupIcon) === option.value;
+                      return (
+                        <li
+                          key={option.value}
+                          onClick={() => {
+                            setFormData((p) => ({ ...p, groupIcon: `${option.value}-icon` }));
+                            setIconDropdownOpen(false);
+                          }}
+                          className={`flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors hover:bg-blue-50 ${
+                            isSelected ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-800'
+                          }`}
+                        >
+                          <IconComponent size={18} className={isSelected ? 'text-blue-600' : 'text-gray-600'} />
+                          <span>{option.label}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+              {/* spacing to match other fields */}
               <div className="h-[18px]" />
             </div>
           </div>
