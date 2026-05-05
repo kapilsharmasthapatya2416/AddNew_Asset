@@ -16,7 +16,7 @@ vi.mock("next/navigation", () => ({
 
 // Mock Drawer component
 vi.mock("@/components/common/Drawer", () => ({
-  Drawer: ({ children, open, title }: any) => (
+  Drawer: ({ children, open, title }: { children: React.ReactNode; open: boolean; title?: string }) => (
     <div data-testid="drawer" data-open={open}>
       {title && <div data-testid="drawer-title">{title}</div>}
       {children}
@@ -25,8 +25,9 @@ vi.mock("@/components/common/Drawer", () => ({
 }));
 
 // Mock RateMasterForm
+import type { ISelectOption } from "@/types/RVRateMaster";
 vi.mock("@/components/modules/property-tax/RVRateMaster/RateMasterForm", () => ({
-  default: ({ mode, zones, useGroups }: any) => (
+  default: ({ mode, zones, useGroups }: { mode: string; zones?: ISelectOption[]; useGroups?: ISelectOption[] }) => (
     <div data-testid="rate-master-form" data-mode={mode}>
       <div>Zones: {zones?.length || 0}</div>
       <div>UseGroups: {useGroups?.length || 0}</div>

@@ -253,7 +253,6 @@ export async function createUseTypeApi(input: {
   searchSequence: number;
   isActive: boolean;
   createdBy?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): Promise<UseType> {
   const payload = {
     typeOfUseCode: input.typeOfUseCode?.trim(),
@@ -286,7 +285,6 @@ export async function updateUseTypeApi(input: {
   searchSequence: number;
   isActive: boolean;
   updatedBy?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): Promise<UseType> {
   const payload = {
     typeOfUseId: input.typeOfUseId,

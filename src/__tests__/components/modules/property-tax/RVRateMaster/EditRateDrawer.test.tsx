@@ -1,3 +1,4 @@
+import type { IBackendRateMaster } from "@/types/RVRateMaster";
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextIntlClientProvider } from "next-intl";
@@ -16,7 +17,7 @@ vi.mock("next/navigation", () => ({
 
 // Mock Drawer component
 vi.mock("@/components/common/Drawer", () => ({
-  Drawer: ({ children, open, title, onClose }: any) => (
+  Drawer: ({ children, open, title, onClose }: { children: React.ReactNode; open: boolean; title?: string; onClose: () => void }) => (
     <div data-testid="drawer" data-open={open}>
       {title && <div data-testid="drawer-title">{title}</div>}
       <button onClick={onClose} data-testid="close-button">Close</button>
@@ -27,7 +28,7 @@ vi.mock("@/components/common/Drawer", () => ({
 
 // Mock RateMasterForm
 vi.mock("@/components/modules/property-tax/RVRateMaster/RateMasterForm", () => ({
-  default: ({ mode, backendRates, filterValues }: any) => (
+  default: ({ mode, backendRates, filterValues }: { mode: string; backendRates?: IBackendRateMaster[]; filterValues?: { zone?: string; useGroup?: string } }) => (
     <div data-testid="rate-master-form" data-mode={mode}>
       <div>Backend Rates: {backendRates?.length || 0}</div>
       <div>Filter Zone: {filterValues?.zone || 'none'}</div>

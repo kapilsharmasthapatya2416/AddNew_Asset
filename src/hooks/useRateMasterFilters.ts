@@ -46,6 +46,7 @@ export function useRateMasterFilters({
       const hasMonthly = backendRates.some(r => r.rateRemark === "MonthWise Rate");
       const hasYearWise = backendRates.some(r => r.rateRemark === "YearWise Rate");
       const newFrequency = (hasMonthly && !hasYearWise) ? "Monthly" : "Yearly";
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional prop-to-state sync for rate frequency
       setRateFrequency(prev => prev === newFrequency ? prev : newFrequency);
     }
   }, [backendRates]);
@@ -55,6 +56,7 @@ export function useRateMasterFilters({
   useEffect(() => {
     if (backendRates && Array.isArray(backendRates)) {
       const newRatesJson = JSON.stringify(backendRates);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional prop-to-state sync with deep comparison
       setFetchedBackendRates(prev => {
         const prevJson = JSON.stringify(prev);
         // Always update if the data actually changed

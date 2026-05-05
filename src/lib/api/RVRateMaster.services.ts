@@ -10,7 +10,7 @@ export { ApiError };
  * Bulk update rate master records (PUT /Rate/Bulk)
  * Accepts array of { id, data } objects as required by backend
  */
-export async function bulkUpdateRateMaster(payload: Array<{ id: number, data: any }>): Promise<{ success: boolean; message: string; data?: unknown }> {
+export async function bulkUpdateRateMaster(payload: Array<{ id: number, data: Record<string, unknown> }>): Promise<{ success: boolean; message: string; data?: unknown }> {
   const response = await apiClient.put<{ data?: unknown }>(`/Rate/Bulk`, payload);
   if (!response.success) {
     throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to bulk update rate master');
@@ -28,7 +28,7 @@ export async function getDetailedRates(
   assessmentYear?: string,
   pageNumber: number = 1,
   pageSize: number = -1
-): Promise<any> {
+): Promise<unknown> {
   const params = new URLSearchParams();
   params.append('PageNumber', pageNumber.toString());
   params.append('PageSize', pageSize.toString());
@@ -135,7 +135,7 @@ export async function getRateMasterPaged(
 
         groupedData.set(key, {
           id: String(item.Id),
-          rateSection: rateSectionNo as any,
+          rateSection: rateSectionNo as "A" | "B" | "C",
           zoneNo: taxZoneNo,
           useGroup: typeOfUseGroupId,
           assessmentYear: `${yearRangeRVId}`,
@@ -210,7 +210,7 @@ export async function getRateMasterTableData(
         if (!groupedData.has(key)) {
           groupedData.set(key, {
             id: String(item.Id),
-            rateSection: rateSectionNo as any,
+            rateSection: rateSectionNo as "A" | "B" | "C",
             zoneNo: taxZoneNo,
             assessmentYear: yearRangeRVId,
             useGroup: typeOfUseGroupId,

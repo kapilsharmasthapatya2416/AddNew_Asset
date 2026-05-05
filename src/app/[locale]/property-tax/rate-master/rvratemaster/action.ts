@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { locales } from "@/i18n/config";
-import { IRateMaster, ISelectOption, IZoneDescription, RateCategory, AssessmentYearRangeOption, IRateCreate } from "@/types/RVRateMaster";
+import { IRateMaster, ISelectOption, IZoneDescription, RateCategory, AssessmentYearRangeOption, IRateCreate, IBackendRateMaster } from "@/types/RVRateMaster";
 import * as rateMasterService from "@/lib/api/RVRateMaster.services";
 import { queryRateSections } from "@/lib/api/rateSection.services";
 import type { RateItem } from "@/types/rateSectionMaster.types";
@@ -45,11 +45,11 @@ export async function getZoneDescriptionsPaged(
     const items = response.items || [];
     
     const descriptions = items
-      .filter((item: any) => item.isActive === true)
-      .map((item: any) => ({
-        taxZoneId: item.id || item.Id, // PK is 'Id' in TaxZoneMaster table
-        zoneNo: String(item.taxZoneNo).trim(),
-        description: String(item.remark || '').trim(),
+      .filter((item: { isActive?: boolean; id?: number; Id?: number }) => item.isActive === true && (typeof item.id === 'number' || typeof item.Id === 'number'))
+      .map((item: { id?: number; Id?: number; taxZoneNo?: string; remark?: string }) => ({
+        taxZoneId: typeof item.id === 'number' ? item.id : (item.Id as number),
+        zoneNo: String(item.taxZoneNo ?? '').trim(),
+        description: String(item.remark ?? '').trim(),
       }));
     
     return {
@@ -74,11 +74,11 @@ export async function getAllZoneDescriptions(): Promise<IZoneDescription[]> {
     // Debug: log raw API response to verify field names
     
     return items
-      .filter((item: any) => item.isActive === true)
-      .map((item: any) => ({
-        taxZoneId: item.id || item.Id, // PK is 'Id' in TaxZoneMaster table
-        zoneNo: String(item.taxZoneNo).trim(),
-        description: String(item.remark || '').trim(),
+      .filter((item: { isActive?: boolean; id?: number; Id?: number }) => item.isActive === true && (typeof item.id === 'number' || typeof item.Id === 'number'))
+      .map((item: { id?: number; Id?: number; taxZoneNo?: string; remark?: string }) => ({
+        taxZoneId: typeof item.id === 'number' ? item.id : (item.Id as number),
+        zoneNo: String(item.taxZoneNo ?? '').trim(),
+        description: String(item.remark ?? '').trim(),
       }));
   } catch (error) {
     console.error('❌ Action Error [getAllZoneDescriptions]:', error);
@@ -119,12 +119,12 @@ export async function getUseGroupOptions(): Promise<ISelectOption[]> {
     });
     
     const activeItems = (response.items || [])
-      .filter(item => item.status === 'Active' && item.typeOfUseGroupId && item.typeOfUseGroupId > 0);
+      .filter((item: { status?: string; typeOfUseGroupId?: number }) => item.status === 'Active' && item.typeOfUseGroupId && item.typeOfUseGroupId > 0);
     
-    return activeItems.map(item => ({
+    return activeItems.map((item: { groupName?: string; typeOfUseGroupId?: number }) => ({
       label: item.groupName || String(item.typeOfUseGroupId),
       value: String(item.typeOfUseGroupId),
-    })).filter(opt => opt.value && opt.value !== 'undefined' && opt.value !== '0');
+    })).filter((opt: ISelectOption) => opt.value && opt.value !== 'undefined' && opt.value !== '0');
   } catch (error) {
     console.error('❌ Action Error [getUseGroupOptions]:', error);
     throw error;
@@ -140,12 +140,12 @@ export async function getAssessmentYears(): Promise<AssessmentYearRangeOption[]>
     const items = response.items || [];
     
     return items
-      .filter((item: any) => item.isActive === true && item.id)
-      .map((item: any) => ({
-        label: `${item.fromYear}-${item.toYear}`,
-        value: String(item.id),
-        fromYear: item.fromYear,
-        toYear: item.toYear,
+      .filter((item: { isActive?: boolean; id?: number }) => item.isActive === true && item.id)
+      .map((item: { id?: number; fromYear?: string | number; toYear?: string | number; isActive?: boolean }) => ({
+        label: `${item.fromYear ?? ''}-${item.toYear ?? ''}`,
+        value: String(item.id ?? ''),
+        fromYear: item.fromYear ?? '',
+        toYear: item.toYear ?? '',
       }))
       .filter((opt: AssessmentYearRangeOption) => opt.value && opt.value !== 'undefined')
       .sort((a, b) => a.label.localeCompare(b.label));
@@ -163,7 +163,7 @@ export async function getConstructionTypes(): Promise<RateCategory[]> {
     const response = await getConstructionPaged(1, -1);
     const allItems = response.items || [];
 
-    return allItems.map((item: any) => ({
+    return allItems.map((item: { id?: number; Id?: number; constructionCode?: string; description?: string; isActive?: boolean }) => ({
       Id: item.id ?? item.Id,
       constructionId: String(item.id ?? item.Id),
       constructionCode: item.constructionCode,
@@ -216,7 +216,7 @@ export async function getRateMasterByFilters(
 ) {
   try {
     return await rateMasterService.getRateMasterByFilters(zoneSection, useGroup, assessmentYear);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ Action Error [getRateMasterByFilters]:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch rates. Please try again.';
     throw new Error(errorMessage);
@@ -261,13 +261,13 @@ export async function getRateMasterData(pageNumber: number = 1, pageSize: number
 /**
  * Delete rate master record(s)
  */
-export async function deleteRateMasterAction(backendRates: any[]) {  
+export async function deleteRateMasterAction(backendRates: IBackendRateMaster[]) {  
   if (!backendRates || backendRates.length === 0) {
     return { success: false, message: 'No rates found to delete.' };
   }
   const ids = backendRates
     .map(rate => rate.Id || rate.id)
-    .filter(id => id && id > 0);
+    .filter((id): id is number => typeof id === 'number' && id > 0);
 
   if (ids.length === 0) {
     return { success: false, message: 'No valid rate IDs found to delete.' };
@@ -343,7 +343,7 @@ export async function bulkCreateRateMasterAction(
  * Bulk update rate master records
  */
 export async function bulkUpdateRateMasterAction(
-  payload: Array<{ id: number, data: any }>
+  payload: Array<{ id: number, data: Record<string, unknown> }>
 ): Promise<{ success: boolean; message?: string; data?: unknown }> {
   try {
     if (!payload || payload.length === 0) {

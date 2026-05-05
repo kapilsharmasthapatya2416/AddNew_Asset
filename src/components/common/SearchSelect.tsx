@@ -9,8 +9,23 @@ export interface SearchSelectOption {
 }
 
 export interface SearchSelectProps {
-  id: string;
-  name: string;
+    /**
+     * Optional custom placeholder text when loading.
+     */
+    loadingPlaceholder?: string;
+
+    /**
+     * Optional custom placeholder text when no options are available.
+     */
+    noOptionsPlaceholder?: string;
+  /**
+   * Optional id for the input. If not provided, a default will be used.
+   */
+  id?: string;
+  /**
+   * Optional name for the input. If not provided, a default will be used.
+   */
+  name?: string;
   options: SearchSelectOption[];
   value: string;
   onChange: (name: string, value: string) => void;
@@ -95,7 +110,12 @@ export function SearchSelect({
   label,
   sanitizeInput,
   inputMode = 'text',
+  loadingPlaceholder,
+  noOptionsPlaceholder,
 }: SearchSelectProps): React.ReactElement {
+  // Fallback id and name for backward compatibility
+  const fallbackId = id || name || 'search-select';
+  const fallbackName = name || id || 'search-select';
 
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -166,10 +186,10 @@ export function SearchSelect({
       setHasTyped(false);
       // Only clear value if user actually typed something that doesn't match
       if (hasTyped) {
-        onChange(name, '');
+        onChange(fallbackName, '');
       }
     }
-  }, [hasOptions, validOptions, displayValue, name, onChange, hasTyped]);
+  }, [hasOptions, validOptions, displayValue, fallbackName, onChange, hasTyped]);
 
   /* ---------------- Select option ---------------- */
 
@@ -180,7 +200,7 @@ export function SearchSelect({
     setHasTyped(false);
     setIsOpen(false);
     setHighlightedIndex(-1);
-    onChange(name, val); // safe call
+    onChange(fallbackName, val); // always a string
   };
 
   /* ---------------- Input change ---------------- */
@@ -229,28 +249,34 @@ export function SearchSelect({
   /* ---------------- Render ---------------- */
 
   const t = useTranslations("common");
-  const noOptionsPlaceholder = t("multiSelect.noOptionsAvailable");
+  const defaultNoOptionsPlaceholder = t("multiSelect.noOptionsAvailable");
 
   return (
     <div ref={wrapperRef} className="relative">
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium mb-1 text-gray-700">
+        <label htmlFor={fallbackId} className="block text-sm font-medium mb-1 text-gray-700">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       <input
-        id={id}
+        id={fallbackId}
         type="text"
-        name={name}
+        name={fallbackName}
         value={displayValue}
-        placeholder={isLoading ? 'Loading...' : (!hasOptions ? noOptionsPlaceholder : placeholder)}
+        placeholder={
+          isLoading
+            ? loadingPlaceholder || 'Loading...'
+            : (!hasOptions
+                ? (noOptionsPlaceholder || defaultNoOptionsPlaceholder)
+                : placeholder)
+        }
         required={required}
         autoComplete="off"
         role="combobox"
         aria-expanded={isOpen}
-        aria-controls={`${name}-listbox`}
+        aria-controls={`${fallbackName}-listbox`}
         aria-activedescendant={
-          highlightedIndex >= 0 ? `${name}-option-${highlightedIndex}` : undefined
+          highlightedIndex >= 0 ? `${fallbackName}-option-${highlightedIndex}` : undefined
         }
         disabled={disabled || !hasOptions}
         inputMode={inputMode}
@@ -276,7 +302,7 @@ export function SearchSelect({
       {isOpen && filteredOptions.length > 0 && (
         <ul
           ref={listRef}
-          id={`${name}-listbox`}
+          id={`${fallbackName}-listbox`}
           role="listbox"
           className="absolute left-0 right-0 z-10000 mt-1 max-h-60 overflow-auto
           rounded-lg border bg-white shadow-lg text-gray-900"
@@ -284,7 +310,7 @@ export function SearchSelect({
           {filteredOptions.map((opt, index) => (
             <li
               key={opt.value}
-              id={`${name}-option-${index}`}
+              id={`${fallbackName}-option-${index}`}
               role="option"
               aria-selected={index === highlightedIndex}
               onMouseDown={() => handleSelect(opt.value)}

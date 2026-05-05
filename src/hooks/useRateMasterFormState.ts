@@ -69,7 +69,7 @@ export function useRateMasterFormState({
   setSelectedZone,
   setSelectedUseGroup,
   setAssessmentYear,
-  rateFrequency,
+  // rateFrequency, // unused
   setRateFrequency,
   zoneDescriptions,
   allZones,
@@ -222,6 +222,7 @@ export function useRateMasterFormState({
   // Sync matrixData with defaultMatrixData when pagination changes or when allZoneEdits updates
   useEffect(() => {
     if (defaultMatrixData.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional state sync from derived data
       setMatrixData(defaultMatrixData);
     }
   }, [defaultMatrixData]);
@@ -291,6 +292,7 @@ export function useRateMasterFormState({
         setAssessmentYear(foundAssessment ? foundAssessment.value : filterValues.year);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setSelectedZone, setSelectedUseGroup, setAssessmentYear are stable setState functions
   }, [filterValues, assessmentYears, zoneOptions, useGroupOptions, mode]);
 
   // Process backendRates prop (fetched server-side) to populate matrix data (edit/delete mode)
@@ -298,11 +300,13 @@ export function useRateMasterFormState({
     const isEditMode = mode === 'edit' || mode === 'delete';
     if (!isEditMode) return;
     
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (!selectedZone || !selectedUseGroup || !assessmentYear) {
       setMatrixData(defaultMatrixData);
       setShowMatrix(false);
       return;
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
     
     // Prefer backendRates prop (from SSR) over fetchedBackendRates state
     // backendRates prop is always fresh from server, fetchedBackendRates may be stale
@@ -357,6 +361,7 @@ export function useRateMasterFormState({
       }));
       setMatrixData(zeroMatrix);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setRateFrequency and setMatrixData are stable setState functions
   }, [fetchedBackendRates, backendRates, selectedZone, selectedUseGroup, assessmentYear, mode, paginatedZoneDescriptions, zoneDescriptions, rateCategories, defaultMatrixData]);
 
   // Initialize allZoneEdits with existing matrixData in edit mode
@@ -389,6 +394,7 @@ export function useRateMasterFormState({
           }
         }
       });
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional state update from backend data
       setAllZoneEdits(initialEdits);
       allZoneEditsInitializedRef.current = true;
     }
@@ -398,6 +404,7 @@ export function useRateMasterFormState({
   useEffect(() => {
     allZoneEditsInitializedRef.current = false;
     // Also clear allZoneEdits when backendRates prop changes (new filter selection)
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional state reset when filters change
     setAllZoneEdits({});
   }, [selectedZone, selectedUseGroup, assessmentYear, backendRates]);
 
@@ -408,7 +415,7 @@ export function useRateMasterFormState({
       const isEditMode = !!id || !!editData || !!bulkEditData;
       
       if (isEditMode || hasFilterValues) {
-        setShowMatrix(true);
+        setShowMatrix(true); // eslint-disable-line react-hooks/set-state-in-effect
       }
     }
   }, [showMultipliersSection, id, editData, bulkEditData, filterValues?.zone, filterValues?.useGroup]);
@@ -419,11 +426,13 @@ export function useRateMasterFormState({
       const hasFilterValues = !!filterValues?.zone && !!filterValues?.useGroup;
       const isEditMode = !!id || !!editData || !!bulkEditData;
       
+      /* eslint-disable react-hooks/set-state-in-effect */
       if (isEditMode && (editData || bulkEditData)) {
         setShowMatrix(true);
       } else if (hasFilterValues) {
         setShowMatrix(true);
       }
+      /* eslint-enable react-hooks/set-state-in-effect */
 
       if (typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search);
@@ -433,6 +442,7 @@ export function useRateMasterFormState({
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setAssessmentYear is a stable setState function
   }, [showCopyRateSection, id, editData, bulkEditData, assessmentYears, filterValues?.zone, filterValues?.useGroup]);
 
   // Populate assessmentYear from backend data on edit
@@ -447,6 +457,7 @@ export function useRateMasterFormState({
     } else if (editData && editData.assessmentYear) {
       setAssessmentYear(editData.assessmentYear);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setAssessmentYear is a stable setState function
   }, [editData, backendRates, assessmentYears]);
 
   // Save matrix data to sessionStorage whenever it changes
@@ -466,6 +477,7 @@ export function useRateMasterFormState({
   }, [matrixStorageKey]);
 
   // Sync paginated zone data from server-provided props when they change
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (paginatedZonesData) {
       setPaginatedZoneDescriptions(paginatedZonesData.items);
@@ -475,6 +487,7 @@ export function useRateMasterFormState({
       setMatrixPageSize(paginatedZonesData.pageSize);
     }
   }, [paginatedZonesData]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Handle pagination changes via URL navigation
   const handleMatrixPaginationChange = (newPageNumber: number, newPageSize: number) => {

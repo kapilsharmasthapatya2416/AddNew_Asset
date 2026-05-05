@@ -32,16 +32,11 @@ export const Tooltip = ({
 }: TooltipProps): React.ReactElement => {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
-  const [mounted, setMounted] = useState(false);
+  const [mounted] = useState(true); // Initialize as true for client-side rendering
   const triggerRef = useRef<HTMLElement | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const tooltipId = useId();
-
-  /* ---------------- Mount detection ---------------- */
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   /* ---------------- Show tooltip ---------------- */
   const show = (): void => {

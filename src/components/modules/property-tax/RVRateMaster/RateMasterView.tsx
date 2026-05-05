@@ -157,7 +157,16 @@ export default function RateMasterView({
         1,         // Page Number
         -1         // Page Size: -1 means fetch all records
       );
-      const allRates = detailedRatesResponse?.items || [];
+      const allRates = ((detailedRatesResponse as { items?: unknown[] })?.items || []) as Array<{
+        rateSection?: string;
+        taxZone?: string;
+        typeOfUseGroup?: string;
+        yearRangeRV?: string;
+        constructionType?: string;
+        rateSquareMeter?: number;
+        rateSquareFeet?: number;
+        rateRemark?: string;
+      }>;
 
       if (!allRates || allRates.length === 0) {
         toast.dismiss();
@@ -178,7 +187,7 @@ export default function RateMasterView({
       ];
 
       // Helper function to escape CSV values
-      const escapeCsvValue = (value: any): string => {
+      const escapeCsvValue = (value: unknown): string => {
         if (value === null || value === undefined) return '';
         const str = String(value);
         if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
@@ -188,7 +197,7 @@ export default function RateMasterView({
       };
 
 
-      const rows = allRates.map((rate: any) => [
+      const rows = allRates.map((rate: { rateSection?: string; taxZone?: string; typeOfUseGroup?: string; yearRangeRV?: string; constructionType?: string; rateSquareMeter?: number; rateSquareFeet?: number; rateRemark?: string }) => [
         escapeCsvValue(rate.rateSection),
         escapeCsvValue(rate.taxZone),
         escapeCsvValue(rate.typeOfUseGroup),
@@ -202,7 +211,7 @@ export default function RateMasterView({
 
       const csvContent = [
         headers.map((h: string) => escapeCsvValue(h)).join(','),
-        ...rows.map((row: any[]) => row.join(','))
+        ...rows.map((row: string[]) => row.join(','))
       ].join('\r\n');
 
       const BOM = '\uFEFF';
@@ -251,7 +260,7 @@ export default function RateMasterView({
         return false;
       return true;
     });
-  }, [rateMasterData, selectedZone, selectedYear, selectedUseGroup, isPaginationEnabled, pageNumber, pageSize]);
+  }, [rateMasterData, selectedZone, selectedYear, selectedUseGroup, isPaginationEnabled]);
 
   /* ---------------- Calculate Rates Configured ---------------- */
 

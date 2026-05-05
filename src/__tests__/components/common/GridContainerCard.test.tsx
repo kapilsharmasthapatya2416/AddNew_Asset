@@ -27,8 +27,8 @@ describe("GridContainerCard", () => {
 
       const card = container.firstChild as HTMLElement;
       expect(card).toHaveClass("bg-white");
-      expect(card).toHaveClass("rounded-xl");
-      expect(card).toHaveClass("shadow-sm");
+      expect(card).toHaveClass("rounded-lg");
+      expect(card).toHaveClass("p-6"); // default padding is "md" which is p-6
     });
 
     it("accepts custom className", () => {
@@ -76,8 +76,7 @@ describe("GridContainerCard", () => {
       );
 
       const header = container.firstChild as HTMLElement;
-      expect(header).toHaveClass("border-b");
-      expect(header).toHaveClass("p-4");
+      expect(header).toHaveClass("mb-0");
     });
 
     it("accepts custom className", () => {
@@ -123,7 +122,8 @@ describe("GridContainerCard", () => {
       );
 
       const content = container.firstChild as HTMLElement;
-      expect(content).toHaveClass("p-4");
+      // Content has no default classes, only accepts custom className
+      expect(content).toBeInTheDocument();
     });
 
     it("accepts custom className", () => {

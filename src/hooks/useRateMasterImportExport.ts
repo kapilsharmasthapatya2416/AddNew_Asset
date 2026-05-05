@@ -34,7 +34,7 @@ interface UseRateMasterImportExportProps {
   setShowMatrix: (show: boolean) => void;
   showMatrix: boolean;
   showCopyRateSection?: boolean;
-  t: (key: string, params?: any) => string;
+  t: ReturnType<typeof import("next-intl").useTranslations>;
   multipliers: Record<string, number>;
   setMultipliers: (multipliers: Record<string, number>) => void;
 }
@@ -59,7 +59,7 @@ export function useRateMasterImportExport({
   showCopyRateSection,
   t,
   multipliers,
-  setMultipliers,
+  // setMultipliers, // unused
 }: UseRateMasterImportExportProps) {
   // State for Copy Rates from Another Use Group
   const [sourceUseGroup, setSourceUseGroup] = useState("");
@@ -88,6 +88,7 @@ export function useRateMasterImportExport({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Read URL params and open sections after hydration
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -102,10 +103,12 @@ export function useRateMasterImportExport({
       }
     }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Initialize tempMultipliers when multipliers section opens
   useEffect(() => {
     if (showMultipliersInline) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional state initialization from prop
       setTempMultipliers({ ...multipliers });
     }
   }, [showMultipliersInline, multipliers]);
@@ -291,7 +294,7 @@ export function useRateMasterImportExport({
       return;
     }
 
-    let yearRangeToUse = assessmentYear;
+    const yearRangeToUse = assessmentYear;
     if (!yearRangeToUse) {
       toast.error(t('messages.selectAssessmentYearRangeFull'));
       return;
@@ -317,9 +320,9 @@ export function useRateMasterImportExport({
       // Group fetched rates by zone
       const ratesByZone = new Map<string, Map<string, number>>();
       fetchedRates.forEach((rate: IBackendRateMaster) => {
-        const zoneId = rate.taxZoneId ?? (rate as any).TaxZoneId;
-        const constructionTypeId = rate.constructionTypeId ?? (rate as any).ConstructionTypeId;
-        const rateSqm = rate.rateSquareMeter ?? (rate as any).RateSquareMeter;
+        const zoneId = rate.taxZoneId ?? (rate as { TaxZoneId?: number }).TaxZoneId;
+        const constructionTypeId = rate.constructionTypeId ?? (rate as { ConstructionTypeId?: number }).ConstructionTypeId;
+        const rateSqm = rate.rateSquareMeter ?? (rate as { RateSquareMeter?: number }).RateSquareMeter;
         
         if (zoneId === undefined || constructionTypeId === undefined) return;
         

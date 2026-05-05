@@ -40,9 +40,9 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
   showCopyRateSection,
   showMultipliersSection,
   hideMatrixSection,
-  sourceUseGroup: initialSourceUseGroup,
-  fetchedRates,
-  year: _initialYear,
+  // sourceUseGroup: initialSourceUseGroup, // unused
+  // fetchedRates, // unused
+  // year: _initialYear, // unused
   onClose,
   mode: propMode,
   paginatedZonesData,
@@ -111,10 +111,10 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
     setIsCheckingRates,
     allFiltersSelected,
     errors,
-    setErrors,
+    // setErrors, // unused
     zoneRemarksMap,
     filledRatesCount,
-    totalPossibleRates,
+    // totalPossibleRates, // unused
     completionPercentage,
     matrixStorageKey,
     handleMatrixPaginationChange,
@@ -227,6 +227,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
     };
 
     checkExistingRates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setExistingRateFound and setIsCheckingRates are stable setState functions
   }, [selectedZone, selectedUseGroup, assessmentYear, id, editData, bulkEditData, t, allFiltersSelected]);
 
   // Update URL params when dropdown values change
@@ -1274,7 +1275,7 @@ return (
     // Find the row to get zoneNo
     const targetRow = matrixData.find(row => String(row.id) === rowId);
     // Support both 'zoneNo' and legacy 'zone' property
-    const zoneNo = (targetRow?.zoneNo || (targetRow as any)?.zone) as string;
+    const zoneNo = (targetRow?.zoneNo || (typeof targetRow === 'object' && targetRow && 'zone' in targetRow ? (targetRow as { zone?: string }).zone : undefined)) as string;
     // Update matrixData for current page
     setMatrixData(prev => {
       const updated = prev.map(row => {

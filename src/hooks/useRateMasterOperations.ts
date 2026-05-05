@@ -32,7 +32,7 @@ export function useRateMasterOperations({
 
   // Build payload from matrix data
   const buildPayloadFromMatrix = useCallback((
-    matrixData: any[],
+    matrixData: Array<Record<string, unknown>>,
     _currentMultiplier: number,
     existingBackendRates: IBackendRateMaster[] = [],
     targetUseGroup?: string // NEW: optional parameter for target use group (used for multipliers)
@@ -73,10 +73,10 @@ export function useRateMasterOperations({
         
         const zoneNoVal = String(row.zoneNo ?? row.zone ?? '');
         const taxZoneIdVal = row.taxZoneId || Number(zoneNoVal);
-        const existing = findExistingRate(taxZoneIdVal, constructionId);
+        const existing = findExistingRate(Number(taxZoneIdVal), constructionId);
         
         const payload: RatePayload = {
-          taxZoneId: row.taxZoneId || Number(zoneNoVal),
+          taxZoneId: Number(row.taxZoneId) || Number(zoneNoVal),
           constructionTypeId: Number(constructionId),
           typeOfUseGroupId: Number(useGroupForPayload), // Use the correct use group
           YearRangeRVId: Number(assessmentYear),
@@ -89,8 +89,8 @@ export function useRateMasterOperations({
           isActive: true,
         };
         
-        const rowRates = (row as any).rates;
-        const rateCellInRow = Array.isArray(rowRates) ? rowRates.find((r: any) => 
+        const rowRates = (row as { rates?: Array<Record<string, unknown>> }).rates;
+        const rateCellInRow = Array.isArray(rowRates) ? rowRates.find((r) => 
           r.rateCategory === rowKey || Number(r.constructionTypeId) === Number(constructionId)
         ) : undefined;
         const rateIdInRow = rateCellInRow?.id || rateCellInRow?.Id;
@@ -109,7 +109,7 @@ export function useRateMasterOperations({
   }, [rateCategories, selectedUseGroup, assessmentYear, selectedZone, rateFrequency]);
 
   // Bulk create handler
-  const handleBulkCreate = useCallback(async (completeMatrixData: any[]) => {
+  const handleBulkCreate = useCallback(async (completeMatrixData: Array<Record<string, unknown>>) => {
     if (!assessmentYear) {
       toast.error(t('messages.validationSelectAssessmentYear'));
       return { success: false };
@@ -207,23 +207,22 @@ export function useRateMasterOperations({
       );
 
       const createPayload = [...updates, ...inserts].map(rate => ({
-        Id: 0,
-        IsActive: rate.isActive,
-        CreatedBy: 0,
-        TaxZoneId: rate.taxZoneId,
-        FloorId: rate.floorId,
-        ConstructionTypeId: rate.constructionTypeId,
-        TypeOfUseGroupId: rate.typeOfUseGroupId,
-        YearRangeRVId: rate.YearRangeRVId,
-        RateSquareMeter: rate.rateSquareMeter,
-        RateSquareFeet: rate.rateSquareFeet,
-        RateSectionId: rate.rateSectionId,
-        RateRemark: rate.rateRemark,
+        isActive: rate.isActive,
+        createdBy: 0,
+        taxZoneId: rate.taxZoneId,
+        floorId: rate.floorId,
+        constructionTypeId: rate.constructionTypeId,
+        typeOfUseGroupId: rate.typeOfUseGroupId,
+        yearRangeRVId: rate.YearRangeRVId,
+        rateSquareMeter: rate.rateSquareMeter,
+        rateSquareFeet: rate.rateSquareFeet,
+        rateSectionId: rate.rateSectionId,
+        rateRemark: rate.rateRemark,
       }));
 
       if (createPayload.length > 0) {
         try {
-          const result = await bulkCreateRateMasterAction(createPayload as any);
+          const result = await bulkCreateRateMasterAction(createPayload);
           if (result.success) {
             successCount++;
           } else {
@@ -251,7 +250,7 @@ export function useRateMasterOperations({
   }, [assessmentYear, selectedZone, selectedUseGroup, multipliers, rateCategories, mode, id, t, buildPayloadFromMatrix, useGroupOptions]);
 
   // Bulk update handler
-  const handleBulkUpdate = useCallback(async (completeMatrixData: any[]) => {
+  const handleBulkUpdate = useCallback(async (completeMatrixData: Array<Record<string, unknown>>) => {
     if (!assessmentYear) {
       toast.error(t('messages.validationSelectAssessmentYear'));
       return { success: false };
@@ -352,7 +351,7 @@ export function useRateMasterOperations({
             RateRemark: rate.rateRemark,
           }
         }));
-        const updateResult = await bulkUpdateRateMasterAction(bulkUpdatePayload as any);
+        const updateResult = await bulkUpdateRateMasterAction(bulkUpdatePayload);
         if (!updateResult.success) {
           updateSucceeded = false;
           const useGroupLabel = useGroupOptions.find(u => u.value === submission.useGroup)?.label || submission.useGroup;
@@ -363,20 +362,19 @@ export function useRateMasterOperations({
       let createSucceeded = true;
       if (inserts.length > 0) {
         const createPayload = inserts.map(rate => ({
-          Id: 0,
-          IsActive: rate.isActive,
-          CreatedBy: 0,
-          TaxZoneId: rate.taxZoneId,
-          FloorId: rate.floorId,
-          ConstructionTypeId: rate.constructionTypeId,
-          TypeOfUseGroupId: rate.typeOfUseGroupId,
-          YearRangeRVId: rate.YearRangeRVId,
-          RateSquareMeter: rate.rateSquareMeter,
-          RateSquareFeet: rate.rateSquareFeet,
-          RateSectionId: rate.rateSectionId,
-          RateRemark: rate.rateRemark,
+          isActive: rate.isActive,
+          createdBy: 0,
+          taxZoneId: rate.taxZoneId,
+          floorId: rate.floorId,
+          constructionTypeId: rate.constructionTypeId,
+          typeOfUseGroupId: rate.typeOfUseGroupId,
+          yearRangeRVId: rate.YearRangeRVId,
+          rateSquareMeter: rate.rateSquareMeter,
+          rateSquareFeet: rate.rateSquareFeet,
+          rateSectionId: rate.rateSectionId,
+          rateRemark: rate.rateRemark,
         }));
-        const createResult = await bulkCreateRateMasterAction(createPayload as any);
+        const createResult = await bulkCreateRateMasterAction(createPayload);
         if (!createResult.success) {
           createSucceeded = false;
           const useGroupLabel = useGroupOptions.find(u => u.value === submission.useGroup)?.label || submission.useGroup;
@@ -405,7 +403,7 @@ export function useRateMasterOperations({
   }, [assessmentYear, selectedZone, selectedUseGroup, multipliers, rateCategories, t, buildPayloadFromMatrix, useGroupOptions]);
 
   // Delete handler
-  const handleDelete = useCallback(async (latestBackendRates: IBackendRateMaster[], matrixData: any[]) => {
+  const handleDelete = useCallback(async (latestBackendRates: IBackendRateMaster[], matrixData: Array<Record<string, unknown>>) => {
     if (!latestBackendRates || latestBackendRates.length === 0) {
       toast.error(t('messages.noRatesToDelete'));
       return { success: false };
