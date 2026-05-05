@@ -27,6 +27,7 @@ export default getRequestConfig(async ({ locale }) => {
     ptisMessages,
     floorFactorMasterMessages,
     weightageMasterMessages,
+    depreciationMessages,
     modulesMessages,
     officeMessages
   ] = await Promise.all([
@@ -41,6 +42,7 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/ptis.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/floorFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/weightageMaster.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/depreciation.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/office.json`).catch(() => ({})).then((m) => m.default || m),
   ]);
@@ -59,6 +61,7 @@ export default getRequestConfig(async ({ locale }) => {
       ptis: ptisMessages,
       floorFactorMaster: floorFactorMasterMessages.floorFactorMaster,
       weightageMaster: weightageMasterMessages.weightageMaster,
+      depreciation: depreciationMessages,
       modules: modulesMessages,
       office: officeMessages,
     },
