@@ -105,8 +105,24 @@ export default function FloorForm({ id, initialData }: Readonly<FloorFormProps>)
       if (data.rangeTo > 999) {
         newErrors.rangeTo = t('form.validation.rangeMaxValue', { count: 999 });
       }
-      if (!data.floorCode || data.floorCode.trim() === '') {
+      // Sanitize and validate floorCode
+      const sanitizedFloorCode = sanitizeFloorCode(data.floorCode);
+      if (!sanitizedFloorCode) {
         newErrors.floorCode = t('form.validation.codeRequired');
+      } else {
+        const floorCodeErrors = validateFloorForm(
+          {
+            floorCode: sanitizedFloorCode,
+            description: '',
+            sequenceNo: 0,
+            isActive: data.isActive,
+          },
+          t,
+          false
+        );
+        if (floorCodeErrors.floorCode) {
+          newErrors.floorCode = floorCodeErrors.floorCode;
+        }
       }
       return newErrors;
     },

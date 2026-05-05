@@ -248,6 +248,9 @@ export async function createFloorRange(data: FloorRangePayload): Promise<void> {
       throw new Error('rangeFrom cannot be greater than rangeTo');
     }
 
+    // Validate template.floorCode (same as createFloor)
+    if (!data.template.floorCode?.trim()) throw new Error('floorCode required');
+
     const payload: FloorRangePayload = {
       rangeFrom: data.rangeFrom.trim(),
       rangeTo: data.rangeTo.trim(),
@@ -256,7 +259,7 @@ export async function createFloorRange(data: FloorRangePayload): Promise<void> {
       template: {
         isActive: data.template.isActive,
         createdBy: data.template.createdBy || 1,
-        floorCode: data.template.floorCode?.trim() ?? '0',
+        floorCode: data.template.floorCode.trim(),
         description: data.template.description?.trim() ?? '',
         sequenceNo: Number(data.template.sequenceNo) || 0,
         maxFloorNo: Number(data.template.maxFloorNo) || rangeToNum,

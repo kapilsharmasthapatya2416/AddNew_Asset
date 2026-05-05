@@ -51,6 +51,23 @@ const messages = {
         activeStatusTitle: 'Active Status',
         activeStatusOn: 'Active',
         activeStatusOff: 'Inactive',
+        range: {
+          start: 'Start',
+          end: 'End',
+          prefix: 'Prefix',
+          suffix: 'Suffix',
+          startPlaceholder: 'Enter start value',
+          endPlaceholder: 'Enter end value',
+        },
+        rangeExample: 'E.g. F1-F5',
+        englishName: {
+          label: 'English Name',
+          placeholder: 'Enter English name',
+          prefix: 'English Prefix',
+          prefixPlaceholder: 'Enter English prefix',
+          suffix: 'English Suffix',
+          suffixPlaceholder: 'Enter English suffix',
+        },
         validation: {
           codeRequired: 'Floor code is required',
           codeMaxLength: 'Max {count} characters',
@@ -59,6 +76,8 @@ const messages = {
           descriptionMaxLength: 'Max {count} characters',
           descriptionFormat: 'Invalid format',
           mustBeActive: 'Must be active on create',
+          rangeStartMinValue: 'Start value must be at least 1',
+          rangeEndMinValue: 'End value must be at least 1',
         },
       },
       validation: { mustBeNumber: 'Must be a valid number' },
@@ -73,6 +92,7 @@ const messages = {
         createSuccess: 'Floor {code} created',
         updateSuccess: 'Floor {code} updated',
         deleteSuccess: 'Deleted',
+        createRangeSuccess: '{count} floors created',
       },
     },
   },
@@ -293,6 +313,7 @@ describe('FloorForm — Range Mode', () => {
     fireEvent.click(screen.getByText('Floor Range'));
     fireEvent.change(screen.getByLabelText(/Start/), { target: { value: '1' } });
     fireEvent.change(screen.getByLabelText(/End/), { target: { value: '2' } });
+    fireEvent.change(screen.getByLabelText(/Floor Code/), { target: { value: 'FLOOR-RANGE' } });
     submitForm(document.body);
     await waitFor(() => {
       expect(createFloorRangeAction).toHaveBeenCalled();
