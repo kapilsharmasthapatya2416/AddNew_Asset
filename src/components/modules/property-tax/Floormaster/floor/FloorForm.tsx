@@ -93,23 +93,21 @@ export default function FloorForm({ id, initialData }: Readonly<FloorFormProps>)
   const validateRange = useCallback(
     (data: FloorRangeFormModel): Record<string, string> => {
       const newErrors: Record<string, string> = {};
-      
       if (!data.rangeFrom || data.rangeFrom < 1) {
         newErrors.rangeFrom = t('form.validation.rangeStartMinValue');
       }
-      
       if (!data.rangeTo || data.rangeTo < 1) {
         newErrors.rangeTo = t('form.validation.rangeEndMinValue');
       }
-      
       if (data.rangeFrom && data.rangeTo && data.rangeFrom > data.rangeTo) {
         newErrors.rangeFrom = t('form.validation.rangeStartLessThanEnd');
       }
-      
       if (data.rangeTo > 999) {
         newErrors.rangeTo = t('form.validation.rangeMaxValue', { count: 999 });
       }
-      
+      if (!data.floorCode || data.floorCode.trim() === '') {
+        newErrors.floorCode = t('form.validation.codeRequired');
+      }
       return newErrors;
     },
     [t]
@@ -215,7 +213,7 @@ export default function FloorForm({ id, initialData }: Readonly<FloorFormProps>)
           template: {
             isActive: rangeData.isActive,
             createdBy: 1,
-            floorCode: '0',
+            floorCode: rangeData.floorCode,
             description: '',
             sequenceNo: 0,
             maxFloorNo: rangeData.rangeTo,
