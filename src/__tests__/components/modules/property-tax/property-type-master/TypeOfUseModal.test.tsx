@@ -1,7 +1,8 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { NextIntlClientProvider } from "next-intl";
-import TypeOfUseModal, { type TypeOfUseItem } from "@/components/modules/property-tax/property-type-master/TypeOfUseModal";
+import TypeOfUseModal from "@/components/modules/property-tax/property-type-master/TypeOfUseModal";
+import type { TypeOfUseItem } from "@/types/typeOfUse.types";
 
 describe("TypeOfUseModal", () => {
   const mockItems: TypeOfUseItem[] = [

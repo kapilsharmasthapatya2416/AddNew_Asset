@@ -29,14 +29,15 @@ export async function getPropertyTypeCategories(): Promise<PropertyTypeCategory[
 
     const items = response.data.items ?? [];
 
-    // Filter only active categories and validate structure (including date fields)
+    // Validate structure (including date fields) but don't filter by isActive
+    // This allows edit forms to show deactivated categories for existing records
     return items.filter((item): item is PropertyTypeCategory => {
       return (
         typeof item === "object" &&
         item !== null &&
         typeof item.id === "number" &&
         typeof item.propertyTypeCategory === "string" &&
-        item.isActive === true &&
+        typeof item.isActive === "boolean" &&
         typeof item.createdDate === "string" &&
         (typeof item.updatedDate === "string" || item.updatedDate === null)
       );

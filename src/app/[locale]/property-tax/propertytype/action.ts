@@ -5,7 +5,7 @@ import type { UseType } from "@/types/typeOfUse.types";
 import { revalidatePath } from "next/cache";
 import { locales } from "@/i18n/config";
 import { createPropertyType, deletePropertyType, getPropertyTypesPaged, getPropertyTypeById, updatePropertyType } from "@/lib/api/property-type-crud.service";
-import { getPropertyTypeAndTypeOfUseValidation, getValidationByPropertyTypeId, updatePropertyTypeValidations } from "@/lib/api/property-type-validation-mapping.service";
+import { getPropertyTypeAndTypeOfUseValidation, updatePropertyTypeValidations } from "@/lib/api/property-type-validation-mapping.service";
 import { getPropertyTypeCategories } from "@/lib/api/property-type-category.service";
 import { ApiError } from "@/lib/utils/api";
 import { PropertyType, PropertyTypeFormModel, PropertyTypeAndTypeOfUseValidation } from "@/types/property-type.types";
@@ -222,16 +222,13 @@ export async function getValidationsByPropertyTypeIdsAction(
       return [];
     }
     
-    // Fetch validations for each property type in parallel using server-side filtering
-    // This avoids downloading the entire validation table
-    const validationPromises = propertyTypeIds.map((id) => 
-      getValidationByPropertyTypeId(id)
-    );
+    // Fetch all validations once and filter client-side
+    // This avoids N round-trips for N property types on the page
+    const allValidations = await getPropertyTypeAndTypeOfUseValidation();
     
-    const validationArrays = await Promise.all(validationPromises);
-    
-    // Flatten the array of arrays into a single array
-    return validationArrays.flat();
+    // Filter to only the requested property type IDs
+    const propertyTypeIdSet = new Set(propertyTypeIds);
+    return allValidations.filter((v) => propertyTypeIdSet.has(v.propertyTypeId));
   } catch (error) {
     throw error; // rethrow so the UI does not treat load failure as "no mappings"
   }

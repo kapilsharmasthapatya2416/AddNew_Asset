@@ -61,6 +61,9 @@ export default function PropertyTypeForm({
     new Set(initialTypeOfUseIds)
   );
 
+  // Track createdId from successful creation in add mode to avoid re-creating on validation save failure
+  const [persistedPropertyTypeId, setPersistedPropertyTypeId] = React.useState<number | null>(null);
+
   // Handler for toggling selection (no limit)
   const toggleTypeOfUse = (touId: number) => {
     setSelectedTypeOfUseIds((prev) => {
@@ -91,13 +94,24 @@ export default function PropertyTypeForm({
     e.preventDefault();
 
     // 1. Submit the main property type form
-    const { success, createdId } = await originalHandleSubmit(e);
-    if (!success) return; // Validation failed or API error — don't proceed
+    // In edit mode: always submit to update the property type
+    // In add mode: skip if already created (persistedPropertyTypeId exists)
+    let createdId: number | undefined;
+    if (isEdit || !persistedPropertyTypeId) {
+      const result = await originalHandleSubmit(e);
+      if (!result.success) return; // Validation failed or API error — don't proceed
+      createdId = result.createdId;
+      
+      // Persist the created ID in add mode so we don't re-create on retry
+      if (!isEdit && createdId) {
+        setPersistedPropertyTypeId(createdId);
+      }
+    }
 
     // 2. Determine the property type ID for saving validations
-    // For edit mode: use existing id
-    // For add mode: use createdId returned from the create action
-    const propertyTypeId = id ?? createdId;
+    // Edit mode: use existing id
+    // Add mode: use persisted ID first (from previous attempt), then createdId
+    const propertyTypeId = isEdit ? id : (persistedPropertyTypeId ?? createdId);
 
     // 3. Save type of use validations
     // For edit mode: always call to handle clearing (even if empty array)

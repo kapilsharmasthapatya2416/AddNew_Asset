@@ -39,7 +39,17 @@ export async function getValidationByPropertyTypeId(propertyTypeId: number): Pro
       );
     }
     
-    return response.data?.items ?? [];
+    // If API returns success with empty/non-JSON body, fail loudly instead of silently returning []
+    // This prevents the edit page from treating missing data as "no mappings" and deleting everything
+    if (!response.data) {
+      throw new ApiError(
+        500,
+        "Server returned success but no data - cannot load validation mappings",
+        "Invalid API response"
+      );
+    }
+    
+    return response.data.items ?? [];
   } catch (error) {
     throw error;
   }
@@ -68,24 +78,51 @@ export async function createPropertyTypeValidation(
         "Create validation failed"
       );
     }
-    return response.data!;
+    
+    // Handle 201/204 responses without body
+    if (!response.data) {
+      throw new ApiError(
+        500,
+        "Server returned success but no data - cannot read created mapping ID",
+        "Invalid API response"
+      );
+    }
+    
+    return response.data;
   } catch (error) {
     throw error;
   }
 }
 
-/** Creates multiple PropertyType to TypeOfUse validation mappings */
+/** 
+ * Creates multiple PropertyType to TypeOfUse validation mappings 
+ * @deprecated This function is not atomic and can leave partial state on failure.
+ * Use updatePropertyTypeValidations instead which has proper rollback logic.
+ */
 export async function createPropertyTypeValidationBulk(
   propertyTypeId: number,
   typeOfUseIds: number[]
 ): Promise<void> {
   try {
-    // Create all mappings in parallel
-    await Promise.all(
-      typeOfUseIds.map((typeOfUseId) =>
-        createPropertyTypeValidation(propertyTypeId, typeOfUseId)
-      )
-    );
+    // Create mappings sequentially to allow for rollback on failure
+    const created: number[] = [];
+    
+    for (const typeOfUseId of typeOfUseIds) {
+      try {
+        const mapping = await createPropertyTypeValidation(propertyTypeId, typeOfUseId);
+        created.push(mapping.id);
+      } catch (error) {
+        // Rollback all created mappings
+        await Promise.all(
+          created.map((id) => 
+            deletePropertyTypeValidation(id).catch(() => {
+              // Ignore rollback errors - already logged at service layer
+            })
+          )
+        );
+        throw error;
+      }
+    }
   } catch (error) {
     throw error;
   }
@@ -113,7 +150,32 @@ export async function deletePropertyTypeValidation(id: number): Promise<void> {
 export async function deleteValidationsByPropertyTypeId(propertyTypeId: number): Promise<void> {
   try {
     const validations = await getValidationByPropertyTypeId(propertyTypeId);
-    await Promise.all(validations.map((v) => deletePropertyTypeValidation(v.id)));
+    
+    // Delete mappings one by one, tracking successes for rollback
+    const deletedMappings: PropertyTypeAndTypeOfUseValidation[] = [];
+    let deleteError: Error | null = null;
+    
+    for (const validation of validations) {
+      try {
+        await deletePropertyTypeValidation(validation.id);
+        deletedMappings.push(validation);
+      } catch (error) {
+        deleteError = error as Error;
+        break; // Stop on first failure
+      }
+    }
+    
+    // If any delete failed, restore deleted mappings
+    if (deleteError) {
+      await Promise.all(
+        deletedMappings.map((m) =>
+          createPropertyTypeValidation(propertyTypeId, m.typeOfUseId).catch((_restoreError) => {
+            // Restore failed - error already logged at service layer
+          })
+        )
+      );
+      throw deleteError;
+    }
   } catch (error) {
     throw error;
   }

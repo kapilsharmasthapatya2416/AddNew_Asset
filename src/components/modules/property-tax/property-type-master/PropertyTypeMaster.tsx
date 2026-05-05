@@ -15,7 +15,8 @@ import { PageContainer, SearchInput, Select } from "@/components/common";
 import { getPropertyTypeColumns } from "./PropertyTypeColumns";
 import { usePropertyTypeSearch } from "@/hooks/usePropertyTypeSearch";
 import { usePropertyTypePagination } from "@/hooks/usePropertyTypePagination";
-import TypeOfUseModal, { TypeOfUseItem } from "./TypeOfUseModal";
+import TypeOfUseModal from "./TypeOfUseModal";
+import type { TypeOfUseItem } from "@/types/typeOfUse.types";
 
 /* ================= PAGE ================= */
 export function PropertyTypeMaster({
@@ -216,7 +217,7 @@ export function PropertyTypeMaster({
                 <span className="text-sm text-gray-600">{tCommon("table.rowsPerPage")}:</span>
                 <Select
                   value={String(pageSize)}
-                  onChange={handlePageSizeChange}
+                  onChange={(_, value) => handlePageSizeChange(value)}
                   options={[10, 20, 30, 40, 50].map((s) => ({
                     label: String(s),
                     value: String(s),

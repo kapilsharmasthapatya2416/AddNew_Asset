@@ -99,7 +99,7 @@ export const TypeOfUseSection = ({
                   label: type === "ALL" ? t("form.typeOfUseSection.allTypes") : type,
                   value: type,
                 }))}
-                onChange={(value) => setSelectedTouType(value)}
+                onChange={(_, value) => setSelectedTouType(value)}
               />
             </div>
           </div>

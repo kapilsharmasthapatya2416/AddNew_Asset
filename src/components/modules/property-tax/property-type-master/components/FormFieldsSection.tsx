@@ -83,7 +83,7 @@ export const FormFieldsSection = ({
           label={t("form.fields.category.label")}
           required
           value={formData.propertyTypeCategoryId && formData.propertyTypeCategoryId !== 0 ? String(formData.propertyTypeCategoryId) : ""}
-          onChange={handleCategoryChange}
+          onChange={(_, value) => handleCategoryChange(value)}
           options={[
             { label: t("form.fields.category.placeholder"), value: "", disabled: true },
             ...categories.map((cat) => ({
