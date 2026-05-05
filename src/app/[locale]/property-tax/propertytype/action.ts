@@ -1,4 +1,5 @@
 "use server";
+import { cookies } from "next/headers";
 import { getUseTypesPagedServer } from "@/lib/api/typeofusemaster.service";
 import type { UseType } from "@/types/typeOfUse.types";
 
@@ -11,6 +12,7 @@ import { ApiError } from "@/lib/utils/api";
 import { PropertyType, PropertyTypeFormModel, PropertyTypeAndTypeOfUseValidation } from "@/types/property-type.types";
 import { PropertyTypeCategory } from "@/types/property-type-category.types";
 import { PagedResponse } from "@/types/common.types";
+import { getUserIdFromCookies } from "@/lib/utils/cookie";
 
 // SSR action to fetch all TypeOfUse (for PropertyTypeForm)
 // Uses -1 pageSize to fetch all records without pagination
@@ -62,7 +64,9 @@ export async function createPropertyTypeAction(
   data: PropertyTypeFormModel
 ): Promise<{ success: boolean; message?: string; statusCode?: number; createdId?: number }> {
   try {
-    const createdPropertyType = await createPropertyType(data);
+    const cookieStore = await cookies();
+    const userId = getUserIdFromCookies(cookieStore) || 1;
+    const createdPropertyType = await createPropertyType(data, userId);
     
     // Revalidate all locale variants of the property type page
     for (const locale of locales) {
@@ -114,7 +118,9 @@ export async function updatePropertyTypeAction(
   data: PropertyTypeFormModel
 ): Promise<{ success: boolean; message?: string; statusCode?: number }> {
   try {
-    await updatePropertyType(data);
+    const cookieStore = await cookies();
+    const userId = getUserIdFromCookies(cookieStore) || 1;
+    await updatePropertyType(data, userId);
     // Revalidate all locale variants of the property type page
     for (const locale of locales) {
       revalidatePath(`/${locale}/property-tax/propertytype`, "page");
@@ -240,7 +246,9 @@ export async function updatePropertyTypeValidationsAction(
   typeOfUseIds: number[]
 ): Promise<{ success: boolean; message?: string }> {
   try {
-    await updatePropertyTypeValidations(propertyTypeId, typeOfUseIds);
+    const cookieStore = await cookies();
+    const userId = getUserIdFromCookies(cookieStore) || 1;
+    await updatePropertyTypeValidations(propertyTypeId, typeOfUseIds, userId);
     // Revalidate all locale variants of the property type page
     for (const locale of locales) {
       revalidatePath(`/${locale}/property-tax/propertytype`, "page");

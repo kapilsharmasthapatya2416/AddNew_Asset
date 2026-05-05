@@ -3,7 +3,7 @@ import type { Column } from "@/components/common/MasterTable";
 import type { PropertyType, PropertyTypeAndTypeOfUseValidation } from "@/types/property-type.types";
 import type { PropertyTypeCategory } from "@/types/property-type-category.types";
 import type { UseType } from "@/types/typeOfUse.types";
-import { SortAscButton, SortDescButton, SortDefaultButton } from "@/components/common/ActionButtons";
+import { SortAscButton, SortDescButton, SortDefaultButton, BadgeListButton } from "@/components/common/ActionButtons";
 
 /**
  * Renders a sortable column header with sort icon
@@ -182,36 +182,18 @@ export function getPropertyTypeColumns(
           .filter(Boolean);
         if (codes.length === 0) return "-";
         
-        // Show first few codes and a count badge if there are more
-        const displayCodes = codes.slice(0, 3);
-        const remainingCount = codes.length - 3;
-        
         return (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
+          <BadgeListButton
+            items={codes as string[]}
+            maxVisible={3}
+            onClick={() => {
               if (onTypeOfUseClick && row) {
                 onTypeOfUseClick(row);
               }
             }}
-            className="flex flex-wrap gap-1 items-center cursor-pointer hover:opacity-80 transition-opacity underline"
             title={tCommon("table.clickToView")}
-          >
-            {displayCodes.map((code, idx) => (
-              <span
-                key={idx}
-                className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-mono font-bold"
-              >
-                {code}
-              </span>
-            ))}
-            {remainingCount > 0 && (
-              <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-600 text-xs font-medium">
-                +{remainingCount}
-              </span>
-            )}
-          </button>
+            className="underline"
+          />
         );
       },
     },

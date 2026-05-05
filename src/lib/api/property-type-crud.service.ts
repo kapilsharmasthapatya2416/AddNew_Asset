@@ -83,7 +83,7 @@ export async function getPropertyTypeById(propertyTypeId: number): Promise<Prope
  * Returns the created PropertyType with ID if the API provides it, otherwise null.
  * The property type IS created successfully even if null is returned.
  */
-export async function createPropertyType(data: PropertyTypeFormModel): Promise<PropertyType | null> {
+export async function createPropertyType(data: PropertyTypeFormModel, userId: number): Promise<PropertyType | null> {
   try {
     validateCreateFormData(data);
     const payload = {
@@ -93,7 +93,7 @@ export async function createPropertyType(data: PropertyTypeFormModel): Promise<P
       searchSequence: Number(data.searchSequence) || 0,
       propertyTypeCategoryId: data.propertyTypeCategoryId ?? null,
       isActive: data.isActive,
-      createdBy: 1, // TODO: Get from auth context
+      createdBy: userId,
     };
     const response = await apiClient.post<PropertyType>("/PropertyTypeMaster", payload);
     if (!response.success) {
@@ -112,7 +112,7 @@ export async function createPropertyType(data: PropertyTypeFormModel): Promise<P
 }
 
 /** Updates an existing property type */
-export async function updatePropertyType(data: PropertyTypeFormModel): Promise<void> {
+export async function updatePropertyType(data: PropertyTypeFormModel, userId: number): Promise<void> {
   try {
     validateUpdateFormData(data);
     const payload = {
@@ -123,7 +123,7 @@ export async function updatePropertyType(data: PropertyTypeFormModel): Promise<v
       searchSequence: Number(data.searchSequence) || 0,
       propertyTypeCategoryId: data.propertyTypeCategoryId ?? null,
       isActive: data.isActive,
-      updatedBy: data.updatedBy ?? 1, // TODO: Get from auth context
+      updatedBy: userId,
     };
     const response = await apiClient.put<unknown>(`/PropertyTypeMaster/${encodeURIComponent(String(data.id))}`, payload);
     if (!response.success) {

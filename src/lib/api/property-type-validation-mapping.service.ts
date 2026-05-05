@@ -58,14 +58,15 @@ export async function getValidationByPropertyTypeId(propertyTypeId: number): Pro
 /** Creates a new PropertyType to TypeOfUse validation mapping */
 export async function createPropertyTypeValidation(
   propertyTypeId: number,
-  typeOfUseId: number
+  typeOfUseId: number,
+  userId: number
 ): Promise<PropertyTypeAndTypeOfUseValidation> {
   try {
     const payload = {
       propertyTypeId,
       typeOfUseId,
       isActive: true,
-      createdBy: 1, // TODO: Get from auth context
+      createdBy: userId,
     };
     const response = await apiClient.post<PropertyTypeAndTypeOfUseValidation>(
       "/PropertyDescriptionAndTypeOfUseValidation",
@@ -101,7 +102,8 @@ export async function createPropertyTypeValidation(
  */
 export async function createPropertyTypeValidationBulk(
   propertyTypeId: number,
-  typeOfUseIds: number[]
+  typeOfUseIds: number[],
+  userId: number
 ): Promise<void> {
   try {
     // Create mappings sequentially to allow for rollback on failure
@@ -109,7 +111,7 @@ export async function createPropertyTypeValidationBulk(
     
     for (const typeOfUseId of typeOfUseIds) {
       try {
-        const mapping = await createPropertyTypeValidation(propertyTypeId, typeOfUseId);
+        const mapping = await createPropertyTypeValidation(propertyTypeId, typeOfUseId, userId);
         created.push(mapping.id);
       } catch (error) {
         // Rollback all created mappings
@@ -147,7 +149,7 @@ export async function deletePropertyTypeValidation(id: number): Promise<void> {
 }
 
 /** Deletes all validation mappings for a specific property type */
-export async function deleteValidationsByPropertyTypeId(propertyTypeId: number): Promise<void> {
+export async function deleteValidationsByPropertyTypeId(propertyTypeId: number, userId: number): Promise<void> {
   try {
     const validations = await getValidationByPropertyTypeId(propertyTypeId);
     
@@ -169,7 +171,7 @@ export async function deleteValidationsByPropertyTypeId(propertyTypeId: number):
     if (deleteError) {
       await Promise.all(
         deletedMappings.map((m) =>
-          createPropertyTypeValidation(propertyTypeId, m.typeOfUseId).catch((_restoreError) => {
+          createPropertyTypeValidation(propertyTypeId, m.typeOfUseId, userId).catch((_restoreError) => {
             // Restore failed - error already logged at service layer
           })
         )
@@ -184,7 +186,8 @@ export async function deleteValidationsByPropertyTypeId(propertyTypeId: number):
 /** Updates validation mappings for a property type (replaces all existing with new set) */
 export async function updatePropertyTypeValidations(
   propertyTypeId: number,
-  newTypeOfUseIds: number[]
+  newTypeOfUseIds: number[],
+  userId: number
 ): Promise<void> {
   try {
     // Get existing mappings
@@ -201,7 +204,7 @@ export async function updatePropertyTypeValidations(
     
     for (const typeOfUseId of toAdd) {
       try {
-        const created = await createPropertyTypeValidation(propertyTypeId, typeOfUseId);
+        const created = await createPropertyTypeValidation(propertyTypeId, typeOfUseId, userId);
         createdMappings.push({ id: created.id, typeOfUseId });
       } catch (error) {
         addError = error as Error;
@@ -239,7 +242,7 @@ export async function updatePropertyTypeValidations(
     if (deleteError) {
       // Restore deleted mappings by recreating them
       const restorePromises = deletedMappings.map((m) =>
-        createPropertyTypeValidation(propertyTypeId, m.typeOfUseId).catch((_restoreError) => {
+        createPropertyTypeValidation(propertyTypeId, m.typeOfUseId, userId).catch((_restoreError) => {
           // Restore failed - error already logged at service layer
         })
       );
