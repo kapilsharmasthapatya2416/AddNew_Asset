@@ -14,7 +14,7 @@ export interface SelectProps {
   options: Option[];
   value?: string;
   name?: string;
-  onChange?: (value: string, e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>, value: string) => void;
   onBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
   placeholder?: string;
   className?: string;
@@ -113,7 +113,7 @@ export function Select({
           value: val,
         },
       } as React.ChangeEvent<HTMLSelectElement>;
-      onChange(val, event);
+      onChange(event, val);
     }
   };
 
