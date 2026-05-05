@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { getUserIdFromCookies } from "@/lib/utils/auth-session";
 import { locales } from "@/i18n/config";
+import { ApiError } from "@/lib/utils/api";
 import { IRateMaster, ISelectOption, IZoneDescription, RateCategory, AssessmentYearRangeOption, IRateCreate, IBackendRateMaster } from "@/types/RVRateMaster";
 import * as rateMasterService from "@/lib/api/RVRateMaster.services";
 import { queryRateSections } from "@/lib/api/rateSection.services";
@@ -26,7 +27,10 @@ export async function getDetailedRatesAction(
   try {
     return await getDetailedRates(rateSection, useGroup, assessmentYear, pageNumber, pageSize);
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load detailed rates for RV Rate Master');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load detailed rates for RV Rate Master');
   }
 }
 
@@ -55,7 +59,10 @@ export async function getRateMasterPagedAction(
       taxZoneIds
     );
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load RV Rate Master data');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load RV Rate Master data');
   }
 }
 
@@ -88,7 +95,10 @@ export async function getZoneDescriptionsPaged(
       totalCount: response.totalCount || 0,
     };
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load zones for RV Rate Master');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load zones for RV Rate Master');
   }
 }
 
@@ -110,7 +120,10 @@ export async function getAllZoneDescriptions(): Promise<IZoneDescription[]> {
         description: String(item.remark ?? '').trim(),
       }));
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load all zones for RV Rate Master');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load all zones for RV Rate Master');
   }
 }
 
@@ -141,7 +154,10 @@ export async function getZoneOptions(): Promise<ISelectOption[]> {
       value: String(item.id || item.Id),
     })).filter((opt: ISelectOption) => opt.value && opt.value !== 'undefined' && opt.value !== '0');
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load rate sections for RV Rate Master');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load rate sections for RV Rate Master');
   }
 }
 
@@ -168,7 +184,10 @@ export async function getUseGroupOptions(): Promise<ISelectOption[]> {
       value: String(item.typeOfUseGroupId || item.TypeOfUseGroupId),
     })).filter((opt: ISelectOption) => opt.value && opt.value !== 'undefined' && opt.value !== '0');
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load use groups for RV Rate Master');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load use groups for RV Rate Master');
   }
 }
 
@@ -196,7 +215,10 @@ export async function getAssessmentYears(): Promise<AssessmentYearRangeOption[]>
       .filter((opt: AssessmentYearRangeOption) => opt.value && opt.value !== 'undefined')
       .sort((a, b) => a.label.localeCompare(b.label));
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load assessment years for RV Rate Master');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load assessment years for RV Rate Master');
   }
 }
 
@@ -216,7 +238,10 @@ export async function getConstructionTypes(): Promise<RateCategory[]> {
       isActive: item.isActive,
     }));
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load construction types for RV Rate Master');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load construction types for RV Rate Master');
   }
 }
 
@@ -261,7 +286,10 @@ export async function getRateMasterByFilters(
   try {
     return await rateMasterService.getRateMasterByFilters(zoneSection, useGroup, assessmentYear);
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to filter RV Rate Master data');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to filter RV Rate Master data');
   }
 }
 
@@ -293,7 +321,10 @@ export async function getRateMasterData(pageNumber: number = 1, pageSize: number
       totalCount: zoneDescriptionsResult.totalCount
     };
   } catch (error) {
-    throw error;
+    if (error instanceof ApiError) {
+      throw new ApiError(error.statusCode, error.responseText, 'Failed to load RV Rate Master page data');
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Failed to load RV Rate Master page data');
   }
 }
 
@@ -302,7 +333,7 @@ export async function getRateMasterData(pageNumber: number = 1, pageSize: number
 /**
  * Delete rate master record(s)
  */
-export async function deleteRateMasterAction(backendRates: IBackendRateMaster[]) {  
+export async function deleteRateMasterAction(backendRates: IBackendRateMaster[]): Promise<{ success: boolean; message?: string; statusCode?: number }> {  
   if (!backendRates || backendRates.length === 0) {
     return { success: false, message: 'No rates found to delete.' };
   }
@@ -321,7 +352,17 @@ export async function deleteRateMasterAction(backendRates: IBackendRateMaster[])
       }
     }
     return result;
-  } catch (_error) {
+  } catch (error: unknown) {
+    if (error instanceof ApiError) {
+      return {
+        success: false,
+        message: error.responseText,
+        statusCode: error.statusCode
+      };
+    }
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    }
     return { success: false, message: 'Failed to delete rates. Please try again.' };
   }
 }
@@ -331,7 +372,7 @@ export async function deleteRateMasterAction(backendRates: IBackendRateMaster[])
  */
 export async function bulkCreateRateMasterAction(
   rates: IRateCreate[]
-): Promise<{ success: boolean; message?: string; data?: unknown }> {
+): Promise<{ success: boolean; message?: string; data?: unknown; statusCode?: number }> {
   // Wrap everything in try-catch to ensure we always return a serializable response
   try {   
    // Validate input
@@ -366,17 +407,17 @@ export async function bulkCreateRateMasterAction(
     }
     return { success: false, message: result.message || 'Failed to create rates' };
   } catch (error: unknown) {
-    // Handle ApiError specifically
-    if (error && typeof error === 'object' && 'statusCode' in error) {
-      const apiError = error as { statusCode: number; message?: string };
-      if (apiError.statusCode === 409) {
-        return { success: false, message: 'A record with the same details already exists.' };
-      }
+    if (error instanceof ApiError) {
+      return {
+        success: false,
+        message: error.responseText,
+        statusCode: error.statusCode
+      };
     }
-    
-    // Return a serializable error message
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create rates. Please try again.';
-    return { success: false, message: errorMessage };
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    }
+    return { success: false, message: 'Failed to create rates. Please try again.' };
   }
 }
 
@@ -385,7 +426,7 @@ export async function bulkCreateRateMasterAction(
  */
 export async function bulkUpdateRateMasterAction(
   payload: Array<{ id: number, data: Record<string, unknown> }>
-): Promise<{ success: boolean; message?: string; data?: unknown }> {
+): Promise<{ success: boolean; message?: string; data?: unknown; statusCode?: number }> {
   try {
     if (!payload || payload.length === 0) {
       return { success: false, message: 'No rates to update. Please enter at least one rate value.' };
@@ -412,7 +453,17 @@ export async function bulkUpdateRateMasterAction(
       return { success: true, message: result.message, data: result.data };
     }
     return { success: false, message: result.message || 'Failed to update rates' };
-  } catch (error) {
-    return { success: false, message: error instanceof Error ? error.message : 'Failed to update rates. Please try again.' };
+  } catch (error: unknown) {
+    if (error instanceof ApiError) {
+      return {
+        success: false,
+        message: error.responseText,
+        statusCode: error.statusCode
+      };
+    }
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    }
+    return { success: false, message: 'Failed to update rates. Please try again.' };
   }
 }
