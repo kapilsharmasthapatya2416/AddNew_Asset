@@ -507,13 +507,20 @@
         "title": "Old Taxation & Historical Data",
         "loading": {
             "message": "Loading Old Details...",
-            "description": "Please wait while we fetch the historical information"
+            "description": "Please wait while we fetch the historical information",
+            "saving": "Saving..."
+        },
+        "error": {
+            "title": "Unable to load old details",
+            "description": "There was a problem fetching the historical information. Please try again."
         },
         "oldTaxation": {
             "loading": {
                 "message": "Loading Old Taxation...",
                 "description": "Fetching historical tax data"
-            }
+            },
+            "updateSuccess": "Old property taxation details updated successfully",
+            "updateError": "Failed to update old property taxation details"
         },
         "floorInformation": {
             "loading": {
@@ -609,7 +616,7 @@
             "interestAmount": "Interest Amount",
             "netPayableTotal": "Net Payable Total",
             "remarks": "Remarks",
-            "saveAssessment": "Update Old Taxs",
+            "saveAssessment": "Update Old Taxes",
             "saveConfirmDescription": "Are you sure you want to save this taxation breakdown?",
             "saveSuccess": "Taxation breakdown saved successfully",
             "saveError": "Failed to save data",

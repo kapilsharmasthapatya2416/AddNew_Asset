@@ -46,13 +46,13 @@ export default function OldTaxationForm({
         setIsSubmitting(true);
         try {
           const payload = {
-            ...propertyOldDetails,
+            ...(propertyOldDetails ?? {}),
             ...formData,
           };
           await updatePropertyOldDetailsAction(propertyId, payload, locale);
-          toast.success("Property details updated successfully");
+          toast.success(t("oldDetails.oldTaxation.updateSuccess"));
         } catch (error) {
-          toast.error("Failed to update property details");
+          toast.error(t("oldDetails.oldTaxation.updateError"));
           console.error(error);
         } finally {
           setIsSubmitting(false);
@@ -63,7 +63,7 @@ export default function OldTaxationForm({
 
   return (
     <div className="p-3 space-y-6">
-      <div className="bg-white rounded-2xl shadow-lg border-1 border-blue-100 p-5 bg-red-600  ">
+      <div className="bg-white rounded-2xl shadow-lg border border-blue-100 p-5">
         <h3 className="text-lg font-bold text-blue-800 mb-6 pb-3 border-b-2 border-blue-100 flex items-center gap-2">
           {t("oldDetails.title")}
         </h3>
@@ -240,7 +240,7 @@ export default function OldTaxationForm({
           >
             <div className="flex gap-2 text-2">
               <Save className="w-4 h-4" />
-              {isSubmitting ? t("saving") : t("property.updateButton")}
+              {isSubmitting ? t("oldDetails.loading.saving") : t("property.updateButton")}
             </div>
           </Button>
         </div>

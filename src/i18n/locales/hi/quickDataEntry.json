@@ -511,7 +511,8 @@
         },
         "loading": {
             "message": "पुराने विवरण लोड हो रहे हैं...",
-            "description": "कृपया प्रतीक्षा करें, हम ऐतिहासिक जानकारी ला रहे हैं"
+            "description": "कृपया प्रतीक्षा करें, हम ऐतिहासिक जानकारी ला रहे हैं",
+             "saving": "बचत हो रही है..."
         },
         "oldTaxation": {
             "error": {
@@ -521,7 +522,9 @@
             "loading": {
                 "message": "पुराना कराधान लोड हो रहा है...",
                 "description": "ऐतिहासिक कर डेटा प्राप्त किया जा रहा है"
-            }
+            },
+            "updateSuccess": "पुरानी संपत्ति कराधान विवरण सफलतापूर्वक अपडेट किया गया",
+            "updateError": "पुरानी संपत्ति कराधान विवरण अपडेट करने में विफल"
         },
         "floorInformation": {
             "error": {
@@ -598,11 +601,12 @@
         "button": {
             "add": "जोड़ें",
             "CheckBoxbutton": "पंजीकरण"
-        },
+        },      
         "floordtails": {
             "selectPlaceholder": "चुनें",
             "yearPlaceholder": "वर्ष",
             "carpetAreaPlaceholder": "वर्गफुट / वर्गमीटर",
+            "use": "उपयोग",
             "autoCalculate": "स्वचालित गणना"
         },
         "taxationBreakdown": {

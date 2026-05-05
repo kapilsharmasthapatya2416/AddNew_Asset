@@ -1,7 +1,7 @@
 import FloorInformationForm from '@/components/modules/property-tax/ptis/QuickDataEntry/old-details/FloorInformation/FloorInformationForm';
 import { setRequestLocale } from 'next-intl/server';
 import {
-    GetFloorsAction,
+    getFloorsAction,
     GetSubFloorsAction,
     GetConstructionTypesAction,
     GetTypeOfUsesAction,
@@ -33,7 +33,7 @@ export default async function FloorInformationPage({ params, searchParams }: Pag
         subUseTypesRes,
         oldFloorDetailsRes
     ] = await Promise.all([
-        GetFloorsAction(1, -1),
+        getFloorsAction(1, -1),
         GetSubFloorsAction(1, -1),
         GetConstructionTypesAction(1, -1),
         GetTypeOfUsesAction(1, -1),

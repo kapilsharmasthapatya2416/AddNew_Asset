@@ -5,11 +5,11 @@ import {
     getSubFloors,
     getConstructionTypes,
     getTypeOfUses,
-    getSubTypeOfUses,
-    getOldFloordetails,
+    getSubTypeOfUses,    
     saveOldFloorDetails,
     updateOldFloorDetails,
-    deleteOldFloorDetails
+    deleteOldFloorDetails,
+    getOldFloordetailsForFloorInformation
 } from "@/lib/api/old-details-floor-information.service";
 import { ActionResult } from "@/types/common.types";
 import {
@@ -19,7 +19,8 @@ import {
     SubTypeOfUse,
     TypeOfUse,
     OldFloorDetail,
-    OldFloorDetailsResponse
+    OldFloorDetailsResponse,
+    SaveOldFloorDetailPayload
 } from "@/types/property-old-details.types";
 import { revalidatePath } from "next/cache";
 
@@ -31,7 +32,7 @@ function getActionErrorMessage(error: unknown): string {
     return 'Something went wrong. Please try again.';
 }
 
-export async function GetFloorsAction(
+export async function getFloorsAction(
     pageNumber: number,
     pageSize: number,
     searchTerm?: string
@@ -138,7 +139,7 @@ export async function GetSubTypeOfUsesAction(
  */
 export async function GetOldFloorDetailsAction(propertyId: number): Promise<ActionResult<OldFloorDetail[]>> {
     try {
-        const response = await getOldFloordetails(propertyId);
+        const response = await getOldFloordetailsForFloorInformation(propertyId);
         return {
             success: true,
             data: response.items?.floorDetails || []
@@ -157,7 +158,11 @@ export async function GetOldFloorDetailsAction(propertyId: number): Promise<Acti
  * @param data The floor detail data
  * @param locale The current locale for revalidation
  */
-export async function SaveOldFloorDetailsAction(propertyId: number, data: unknown, locale: string): Promise<ActionResult<OldFloorDetailsResponse>> {
+export async function SaveOldFloorDetailsAction(
+    propertyId: number, 
+    data: SaveOldFloorDetailPayload, 
+    locale: string
+): Promise<ActionResult<OldFloorDetailsResponse>> {
     try {
         const response = await saveOldFloorDetails(propertyId, data);
         
@@ -185,7 +190,7 @@ export async function SaveOldFloorDetailsAction(propertyId: number, data: unknow
 export async function UpdateOldFloorDetailsAction(
     propertyId: number,
     floorDetailId: number,
-    data: unknown,
+    data: SaveOldFloorDetailPayload,
     locale: string
 ): Promise<ActionResult<OldFloorDetailsResponse>> {
     try {

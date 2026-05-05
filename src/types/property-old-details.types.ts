@@ -213,6 +213,30 @@ export interface FloorTableRow {
   subUse: string | null;
   areaSqFt: number;
 }
+
+/**
+ * Payload for creating or updating an old floor detail record.
+ */
+export interface SaveOldFloorDetailPayload {
+  /** Property identifier */
+  propertyId: number;
+  /** Identifier for the floor master */
+  oldFloorId: number;
+  /** Identifier for the sub-floor master (optional) */
+  oldSubFloorId: number | null;
+  /** Construction year as a string (YYYY) */
+  oldConstructionYear: string;
+  /** Identifier for construction type master */
+  oldConstructionTypeId: number;
+  /** Identifier for type of use master */
+  oldTypeOfUseId: number;
+  /** Identifier for sub-type of use master (optional) */
+  oldSubTypeOfUseId: number | null;
+  /** Carpet area in square feet */
+  oldCarpetAreaSqFeet: number;
+  /** Whether the record is flagged for removal */
+  markedForDeletion: boolean;
+}
 /* =====================================================
    OLD TAXES DETAILS - API RESPONSE MODELS
 ===================================================== */
