@@ -316,13 +316,12 @@ export function useRateMasterFormState({
     const isEditMode = mode === 'edit' || mode === 'delete';
     if (!isEditMode) return;
     
-    /* eslint-disable react-hooks/set-state-in-effect */
     if (!selectedZone || !selectedUseGroup || !assessmentYear) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional state reset when filters are incomplete
       setMatrixData(defaultMatrixData);
       setShowMatrix(false);
       return;
     }
-    /* eslint-enable react-hooks/set-state-in-effect */
     
     // Prefer backendRates prop (from SSR) over fetchedBackendRates state
     // backendRates prop is always fresh from server, fetchedBackendRates may be stale
@@ -434,7 +433,8 @@ export function useRateMasterFormState({
       const isEditMode = !!id || !!editData || !!bulkEditData;
       
       if (isEditMode || hasFilterValues) {
-        setShowMatrix(true); // eslint-disable-line react-hooks/set-state-in-effect
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional UI state update based on multipliers section prop
+        setShowMatrix(true);
       }
     }
   }, [showMultipliersSection, id, editData, bulkEditData, filterValues?.zone, filterValues?.useGroup]);
@@ -445,13 +445,12 @@ export function useRateMasterFormState({
       const hasFilterValues = !!filterValues?.zone && !!filterValues?.useGroup;
       const isEditMode = !!id || !!editData || !!bulkEditData;
       
-      /* eslint-disable react-hooks/set-state-in-effect */
       if (isEditMode && (editData || bulkEditData)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional UI state update based on copy section prop
         setShowMatrix(true);
       } else if (hasFilterValues) {
         setShowMatrix(true);
       }
-      /* eslint-enable react-hooks/set-state-in-effect */
 
       if (typeof window !== 'undefined') {
         const params = new URLSearchParams(window.location.search);
@@ -496,17 +495,17 @@ export function useRateMasterFormState({
   }, [matrixStorageKey]);
 
   // Sync paginated zone data from server-provided props when they change
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (paginatedZonesData) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setPaginatedZoneDescriptions(paginatedZonesData.items);
       setMatrixTotalPages(paginatedZonesData.totalPages);
       setMatrixTotalCount(paginatedZonesData.totalCount);
       setMatrixPageNumber(paginatedZonesData.pageNumber);
       setMatrixPageSize(paginatedZonesData.pageSize);
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [paginatedZonesData]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Handle pagination changes via URL navigation
   const handleMatrixPaginationChange = (newPageNumber: number, newPageSize: number) => {

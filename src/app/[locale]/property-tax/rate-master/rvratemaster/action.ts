@@ -321,7 +321,7 @@ export async function deleteRateMasterAction(backendRates: IBackendRateMaster[])
       }
     }
     return result;
-  } catch (error) {
+  } catch (_error) {
     return { success: false, message: 'Failed to delete rates. Please try again.' };
   }
 }

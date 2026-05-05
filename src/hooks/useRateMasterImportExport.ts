@@ -88,7 +88,6 @@ export function useRateMasterImportExport({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Read URL params and open sections after hydration
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -96,6 +95,7 @@ export function useRateMasterImportExport({
       const showMultipliers = params.get('showMultipliers');
       
       if (showCopyRates === 'true') {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional state update from URL params
         setCopySectionsExpanded(true);
       }
       if (showMultipliers === 'true') {
@@ -103,7 +103,6 @@ export function useRateMasterImportExport({
       }
     }
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Initialize tempMultipliers when multipliers section opens
   useEffect(() => {

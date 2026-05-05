@@ -448,10 +448,8 @@ export function useRateMasterOperations({
       toast.error(t('messages.noRatesToDelete'));
       return { success: false };
     }
-
-
+    
     // Helper to safely get value for both camelCase and PascalCase keys
-
     // Count configured (non-zero) rates across all backend rates
     const configuredRatesCount = latestBackendRates.reduce((count, rate) => {
       // Count each backend row with a non-zero rateSquareMeter/RateSquareMeter
@@ -467,7 +465,7 @@ export function useRateMasterOperations({
       toast.error(result.message || t('messages.ratesDeleteFailed'));
       return { success: false };
     }
-  }, [t, rateCategories]);
+  }, [t]);
 
   return {
     handleBulkCreate,
