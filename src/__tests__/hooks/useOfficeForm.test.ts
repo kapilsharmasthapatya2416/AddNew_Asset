@@ -4,6 +4,8 @@ import { useOfficeForm } from "@/hooks/useOfficeForm";
 import * as actions from "@/app/[locale]/configuration-settings/office-master/action";
 import { officeValidations } from "@/lib/utils/validation";
 import { toast } from "sonner";
+import { Office } from "@/types/office.types";
+import { ChangeEvent, FormEvent } from "react";
 
 // Mock dependencies
 vi.mock("next/navigation", () => ({
@@ -63,7 +65,7 @@ describe("useOfficeForm", () => {
       officeName: "Head Office",
       type: "Main",
       isActive: true,
-    } as any;
+    } as Office;
 
     const { result } = renderHook(() =>
       useOfficeForm({ ...mockProps, officeId: 1, initialData })
@@ -80,7 +82,7 @@ describe("useOfficeForm", () => {
     act(() => {
       result.current.handleChange({
         target: { name: "officeName", value: "New Office Name" },
-      } as any);
+      } as ChangeEvent<HTMLInputElement>);
     });
 
     expect(result.current.formData.officeName).toBe("New Office Name");
@@ -92,7 +94,7 @@ describe("useOfficeForm", () => {
     act(() => {
       result.current.handleChange({
         target: { name: "officeIncharge", value: "123", type: "number" },
-      } as any);
+      } as ChangeEvent<HTMLInputElement>);
     });
 
     expect(result.current.formData.officeIncharge).toBe(123);
@@ -115,13 +117,13 @@ describe("useOfficeForm", () => {
   });
 
   it("should call createOfficeAction on submit when adding", async () => {
-    const mockResult = { success: true };
-    (actions.createOfficeAction as any).mockResolvedValue(mockResult);
+    const mockResult = { success: true, message: "" };
+    vi.mocked(actions.createOfficeAction).mockResolvedValue(mockResult);
 
     const { result } = renderHook(() => useOfficeForm(mockProps));
 
     await act(async () => {
-      await result.current.handleSubmit({ preventDefault: vi.fn() } as any);
+      await result.current.handleSubmit({ preventDefault: vi.fn() } as unknown as FormEvent);
     });
 
     expect(actions.createOfficeAction).toHaveBeenCalledWith(result.current.formData);
@@ -130,15 +132,15 @@ describe("useOfficeForm", () => {
   });
 
   it("should call updateOfficeAction on submit when editing", async () => {
-    const mockResult = { success: true };
-    (actions.updateOfficeAction as any).mockResolvedValue(mockResult);
+    const mockResult = { success: true, message: "" };
+    vi.mocked(actions.updateOfficeAction).mockResolvedValue(mockResult);
 
     const { result } = renderHook(() =>
       useOfficeForm({ ...mockProps, officeId: 1 })
     );
 
     await act(async () => {
-      await result.current.handleSubmit({ preventDefault: vi.fn() } as any);
+      await result.current.handleSubmit({ preventDefault: vi.fn() } as unknown as FormEvent);
     });
 
     expect(actions.updateOfficeAction).toHaveBeenCalledWith(result.current.formData);
@@ -147,12 +149,12 @@ describe("useOfficeForm", () => {
 
   it("should handle validation errors on submission", async () => {
     const validationErrors = { officeName: "Required" };
-    (officeValidations.validate as any).mockReturnValue(validationErrors);
+    vi.mocked(officeValidations.validate).mockReturnValue(validationErrors);
 
     const { result } = renderHook(() => useOfficeForm(mockProps));
 
     await act(async () => {
-      await result.current.handleSubmit({ preventDefault: vi.fn() } as any);
+      await result.current.handleSubmit({ preventDefault: vi.fn() } as unknown as FormEvent);
     });
 
     expect(result.current.errors.officeName).toBe("Required");
@@ -161,12 +163,12 @@ describe("useOfficeForm", () => {
 
   it("should handle server errors", async () => {
     const mockResult = { success: false, message: "Duplicate code" };
-    (actions.createOfficeAction as any).mockResolvedValue(mockResult);
+    vi.mocked(actions.createOfficeAction).mockResolvedValue(mockResult);
 
     const { result } = renderHook(() => useOfficeForm(mockProps));
 
     await act(async () => {
-      await result.current.handleSubmit({ preventDefault: vi.fn() } as any);
+      await result.current.handleSubmit({ preventDefault: vi.fn() } as unknown as FormEvent);
     });
 
     expect(actions.createOfficeAction).toHaveBeenCalled();

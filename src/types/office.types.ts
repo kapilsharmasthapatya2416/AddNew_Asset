@@ -5,7 +5,7 @@ import { PagedResponse } from "./common.types";
  * Used in UI forms to capture user input
  */
 export interface OfficeFormModel {
-  [key: string]: any;
+  [key: string]: unknown;
   officeId?: number;
   officeCode: string;
   officeName: string;
