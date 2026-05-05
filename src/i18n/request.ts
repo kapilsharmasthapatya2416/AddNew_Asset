@@ -28,6 +28,7 @@ export default getRequestConfig(async ({ locale }) => {
     floorFactorMasterMessages,
     weightageMasterMessages,
     typeofusemasterMessages,
+    depreciationMessages,
     modulesMessages,
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
@@ -42,6 +43,7 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/floorFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/weightageMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/typeofusemaster.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/depreciation.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
   ]);
 
@@ -60,6 +62,7 @@ export default getRequestConfig(async ({ locale }) => {
       floorFactorMaster: floorFactorMasterMessages.floorFactorMaster,
       weightageMaster: weightageMasterMessages.weightageMaster,
       typeofusemaster: typeofusemasterMessages,
+      depreciation: depreciationMessages,
       modules: modulesMessages,
     },
   };
