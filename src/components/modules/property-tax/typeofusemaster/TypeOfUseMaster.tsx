@@ -626,9 +626,9 @@ export default function TypeOfUseMaster({
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
           {/* Types */}
           <div className="lg:col-span-5 rounded-2xl border border-slate-200 bg-white shadow-sm min-h-[400px] lg:h-[600px] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between rounded-t-2xl border-b border-slate-100 px-4 py-3 bg-white z-10 flex-shrink-0">
+            <div className="flex items-center justify-between rounded-t-2xl border-b border-slate-100 px-4 py-3 bg-white z-10 flex-shrink-0 gap-4 ">
               <div className="font-semibold text-slate-900">{t('type.title')}</div>
-              <SearchInput
+              <SearchInput className="mb-0 ml-auto w-full max-w-sm"
                 value={typeSearch}
                 onChange={(val) => {
                   const currentGroup = allGroups.find((g) => g.typeOfUseGroupId === selectedGroupId);
@@ -726,14 +726,17 @@ export default function TypeOfUseMaster({
 
                           {/* CENTER: Meta badges */}
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-purple-700 bg-purple-50 px-2 py-1 rounded-md border border-purple-300 text-xs whitespace-nowrap">
+                            {/* <span className="text-purple-700 bg-purple-50 px-2 py-1 rounded-md border border-purple-300 text-xs whitespace-nowrap">
                               {t("seq")}: <b>{typeItem.searchSequence ?? "—"}</b>
-                            </span>
+                            </span> */}
                             {/* <StatusBadge value={typeItem.status ?? "Active"} /> */}
                           </div>
 
                           {/* RIGHT: Action buttons */}
                           <div className="flex items-center gap-2 shrink-0 ml-auto">
+                            <span className="text-purple-700 bg-purple-50 px-2 py-1 rounded-md border border-purple-300 text-xs whitespace-nowrap">
+                              {t("seq")}: <b>{typeItem.searchSequence ?? "—"}</b>
+                            </span>
 
                             <StatusBadge value={typeItem.status ?? "Active"} />
 

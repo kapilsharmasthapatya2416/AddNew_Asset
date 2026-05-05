@@ -9,8 +9,6 @@ import type {
 } from "@/types/typeOfUse.types";
 import type { PagedResponse } from "@/types/common.types";
 
-
-
 /** -------------------- ICON MAPPING (GROUP) -------------------- */
 function iconKeyToApi(iconKey: UseGroupIconKey): string {
   switch (iconKey) {
@@ -32,7 +30,6 @@ function iconKeyToApi(iconKey: UseGroupIconKey): string {
 }
 
 /** -------------------- MAP API -> UI (GROUP) -------------------- */
-//
 function mapApiGroupToUi(g: Record<string, unknown>): UseGroup {
   return {
     typeOfUseGroupId: Number(g.id ?? g.typeOfUseGroupId ?? g.typeOfUseGroupID ?? 0),
@@ -48,7 +45,6 @@ function mapApiGroupToUi(g: Record<string, unknown>): UseGroup {
 }
 
 /** -------------------- MAP API -> UI (TYPE) -------------------- */
-//
 function mapApiTypeToUi(t: Record<string, unknown>): UseType {
   return {
     typeOfUseId: Number(t.id ?? t.typeOfUseId ?? t.typeOfUseID ?? 0),

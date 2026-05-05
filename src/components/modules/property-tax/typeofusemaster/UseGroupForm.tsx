@@ -22,6 +22,7 @@ import type { UseGroup, UseGroupIconKey } from "@/types/typeOfUse.types";
 // import Drawer from "@/components/common/Drawer";
 // import { ActionButton } from "@/components/common/Buttons";
 import { Input } from "@/components/common/Input";
+import { Select } from "@/components/common/select";
 
 
 
@@ -381,53 +382,27 @@ export default function UseGroupForm({ id, initialData, allGroups: allGroupsProp
               />
             </div>
 
-            {/* ICON DROPDOWN */}
-            <div className="flex flex-col" ref={iconWrapRef}>
-              <label className="text-sm font-semibold text-gray-700">
-                {t('group.fields.iconType')} <span className="text-red-500">*</span>
-              </label>
-
-              <div className="relative mt-1.5">
-                <button
-                  type="button"
-                  onClick={() => setIconOpen((v) => !v)}
-                  className="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:border-blue-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                >
-                  <div className="flex items-center gap-2">
-                    <selectedIconOption.Icon className="h-4 w-4" />
-                    {selectedIconOption.label}
-                  </div>
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-
-                {iconOpen && (
-                  <div className="absolute z-50 mt-2 w-full text-gray-700 overflow-hidden rounded-xl border border-gray-200 bg-white shadow">
-                    {ICON_OPTIONS.map((opt) => {
-                      const active = opt.value === getIconKey(formData.groupIcon);
-                      return (
-                        <button
-                          key={opt.label}
-                          type="button"
-                          onClick={() => {
-                            // Convert UseGroupIconKey back to groupIcon string format
-                            const iconStr = `${opt.value}-icon`;
-                            setFormData((p) => ({ ...p, groupIcon: iconStr }));
-                            setIconOpen(false);
-                          }}
-                          className="flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-gray-50"
-                        >
-                          <div className="flex items-center gap-2">
-                            <opt.Icon className="h-4 w-4" />
-                            {opt.label}
-                          </div>
-                          {active && <Check className="h-4 w-4" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
+            {/* ICON DROPDOWN (using Select component) */}
+            <div className="flex flex-col">
+              <Select
+                label={t('group.fields.iconType')}
+                options={ICON_OPTIONS.map(opt => ({
+                  label: (
+                    <span className="flex items-center gap-2">
+                      <opt.Icon className="h-4 w-4" />
+                      {opt.label}
+                    </span>
+                  ),
+                  value: opt.value
+                }))}
+                value={getIconKey(formData.groupIcon)}
+                onChange={val => {
+                  setFormData((p) => ({ ...p, groupIcon: `${val}-icon` }));
+                }}
+                placeholder={t('group.fields.iconType')}
+                required
+                className="mt-1.5"
+              />
               {/* (optional) spacing to match other fields */}
               <div className="h-[18px]" />
             </div>

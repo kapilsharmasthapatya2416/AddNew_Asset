@@ -328,23 +328,7 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
         <div className="rounded-xl border border-[#DCEAFF] bg-slate-50 p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             {/* Type Code */}
-            <div className="flex flex-col">
-              <Input
-                label={t('type.fields.typeId')}
-                name="typeOfUseCode"
-                value={formData.typeOfUseCode}
-                onChange={handleChange}
-                placeholder={t('type.placeholders.typeId')}
-                fullWidth
-                required={true}
-                className="rounded-xl px-4 py-2"
-                maxLength={10}
-              />
-              <ValidationMessage
-                message={errors.code}
-                visible={submittedOnce && !!errors.code}
-              />
-            </div>
+            
 
             {/* Type Dropdown */}
             <div className="flex flex-col">
@@ -402,32 +386,32 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
                 visible={submittedOnce && !!errors.groupId}
               />
 
-              {selectedGroup && (
+              {/* {selectedGroup && (
                 <div className="mt-2 text-xs text-slate-600">
                   {t('type.selectedGroup', { group: selectedGroup.groupName, defaultValue: 'Selected: ' })}<b>{selectedGroup.groupName}</b>
                 </div>
-              )}
+              )} */}
             </div>
 
-            {/* ✅ Description (REQUIRED) */}
             <div className="flex flex-col">
               <Input
-                label={t('type.fields.description')}
-                name="description"
-                value={formData.description || ""}
+                label={t('type.fields.typeId')}
+                name="typeOfUseCode"
+                value={formData.typeOfUseCode}
                 onChange={handleChange}
-                placeholder={t('type.placeholders.description')}
+                placeholder={t('type.placeholders.typeId')}
                 fullWidth
+                required={true}
                 className="rounded-xl px-4 py-2"
-                maxLength={100}
-                required
+                maxLength={10}
               />
               <ValidationMessage
-                message={errors.description}
-                visible={submittedOnce && !!errors.description}
+                message={errors.code}
+                visible={submittedOnce && !!errors.code}
               />
             </div>
 
+            
             {/* Search Sequence */}
             <div className="flex flex-col">
               <Input
@@ -445,8 +429,27 @@ export default function UseTypeForm({ id, initialData, allGroups: allGroupsProp 
                 message={errors.searchSequence}
                 visible={submittedOnce && !!errors.searchSequence}
               />
-              <p className="mt-1 text-xs text-gray-500">{t('type.displayOrder')}</p>
             </div>
+
+            {/* ✅ Description (REQUIRED) */}
+            <div className="flex flex-col col-span-2">
+              <Input
+                label={t('type.fields.description')}
+                name="description"
+                value={formData.description || ""}
+                onChange={handleChange}
+                placeholder={t('type.placeholders.description')}
+                fullWidth
+                className="rounded-xl px-4 py-2"
+                maxLength={100}
+                required
+              />
+              <ValidationMessage
+                message={errors.description}
+                visible={submittedOnce && !!errors.description}
+              />
+            </div>
+
           </div>
         </div>
 
