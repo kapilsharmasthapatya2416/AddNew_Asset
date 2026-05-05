@@ -2,47 +2,11 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import {
   ArrowLeft,
-  BarChart3,
-  Building,
-  Building2,
-  Calculator,
   ChevronDown,
   ChevronRight,
-  ClipboardCheck,
-  ClipboardList,
-  Cog,
-  Database,
   FileText,
-  Home,
-  LayoutDashboard,
-  LayoutGrid,
-  List,
-  Map,
-  MapPin,
-  Receipt,
-  Search,
-  Users,
-  Wrench,
-  Briefcase,
-  Settings,
-  Shield,
-  Layers,
-  User,
-  Activity,
-  Globe,
-  FileBarChart,
-  Folder,
-  HardDrive,
-  Box,
-  Boxes,
-  FileSearch,
-  UserCog,
-  ShieldCheck,
-  ListTree,
-  FileSpreadsheet,
-  LandPlot,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { resolveIcon } from '@/lib/utils/icon-mapping';
 import { getTranslations } from 'next-intl/server';
 import { locales } from '@/i18n/config';
 import type { MenuItem } from '@/types/menu.types';
@@ -59,133 +23,6 @@ function withLocale(locale: string, href: string): string {
   return `/${locale}${path}`;
 }
 
-/** Lucide export names from menu config / getIconNameForScreen — explicit map for tree-shaking */
-const MENU_ICON_MAP: Record<string, LucideIcon> = {
-  Home,
-  BarChart3,
-  Search,
-  LayoutDashboard,
-  ClipboardCheck,
-  ClipboardList,
-  FileText,
-  Wrench,
-  LayoutGrid,
-  Map,
-  MapPin,
-  Database,
-  Users,
-  Briefcase,
-  Settings,
-  Shield,
-  Layers,
-  User,
-  Activity,
-  Globe,
-  FileBarChart,
-  Folder,
-  HardDrive,
-  Box,
-  Boxes,
-  Building,
-  Building2,
-  Calculator,
-  Cog,
-  List,
-  Receipt,
-  FileSearch,
-  UserCog,
-  ShieldCheck,
-  ListTree,
-  FileSpreadsheet,
-  LandPlot,
-};
-
-/** Map common screen/module names to appropriate icons */
-const NAME_TO_ICON_MAP: Record<string, string> = {
-  // Common menu names
-  'dashboard': 'LayoutDashboard',
-  'home': 'Home',
-  'search': 'Search',
-  'search property': 'FileSearch',
-  'property search': 'FileSearch',
-  'ptis': 'Building2',
-  'property': 'Building',
-  'property tax': 'Building2',
-  'masters': 'Database',
-  'master': 'Database',
-  'report': 'FileBarChart',
-  'reports': 'FileBarChart',
-  'report engine': 'FileBarChart',
-  'gis': 'Map',
-  'map': 'Map',
-  'user': 'User',
-  'users': 'Users',
-  'user management': 'UserCog',
-  'settings': 'Settings',
-  'configuration': 'Cog',
-  'configuration settings': 'Cog',
-  'office': 'Building',
-  'office master': 'Building',
-  'ward': 'MapPin',
-  'ward master': 'MapPin',
-  'tax': 'Receipt',
-  'tax zone': 'LandPlot',
-  'taxzone': 'LandPlot',
-  'assessment': 'ClipboardList',
-  'floor': 'Layers',
-  'construction': 'Building2',
-  'rate': 'Calculator',
-  'rate section': 'Calculator',
-  'capital value': 'Calculator',
-  'rateable value': 'Calculator',
-  'admin': 'ShieldCheck',
-  'security': 'Shield',
-  'role': 'Shield',
-  'screen': 'ListTree',
-};
-
-/** Helper to get icon from screen/module name */
-function getIconFromName(name: string): string {
-  const lowerName = name.toLowerCase().trim();
-  
-  // Exact match first
-  if (NAME_TO_ICON_MAP[lowerName]) {
-    return NAME_TO_ICON_MAP[lowerName];
-  }
-  
-  // Partial match - check if name contains any key
-  for (const [key, icon] of Object.entries(NAME_TO_ICON_MAP)) {
-    if (lowerName.includes(key) || key.includes(lowerName)) {
-      return icon;
-    }
-  }
-  
-  return 'LayoutGrid';
-}
-
-/** Helper to resolve icon by name, supporting case-insensitivity and name-based fallback */
-function resolveIcon(iconName?: string, menuName?: string): LucideIcon {
-  // Try explicit icon name first
-  if (iconName) {
-    // Direct match
-    if (MENU_ICON_MAP[iconName]) return MENU_ICON_MAP[iconName];
-    
-    // Case-insensitive match
-    const lowerName = iconName.toLowerCase();
-    const found = Object.keys(MENU_ICON_MAP).find(k => k.toLowerCase() === lowerName);
-    if (found) return MENU_ICON_MAP[found];
-  }
-  
-  // Fallback: derive icon from menu name
-  if (menuName) {
-    const derivedIconName = getIconFromName(menuName);
-    if (MENU_ICON_MAP[derivedIconName]) {
-      return MENU_ICON_MAP[derivedIconName];
-    }
-  }
-  
-  return LayoutGrid;
-}
 
 /**
  * App sidebar: menu tree and copy are rendered on the server (SSR).

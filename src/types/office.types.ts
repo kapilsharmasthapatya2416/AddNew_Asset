@@ -26,7 +26,6 @@ export interface OfficeFormModel {
  * Server response model for office data
  */
 export interface Office {
-  [key: string]: unknown;
   officeId: number;
   officeCode: string;
   officeName: string;

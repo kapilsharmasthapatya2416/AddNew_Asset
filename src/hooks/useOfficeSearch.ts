@@ -67,12 +67,12 @@ export function useOfficeSearch({
     setSearch(sanitized);
   };
 
-  const handleTypeChange = (value: string) => {
-    setSelectedType(value);
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedType(e.target.value);
   };
 
-  const handleStatusChange = (value: string) => {
-    setSelectedStatus(value);
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedStatus(e.target.value);
   };
 
   return {

@@ -3,7 +3,7 @@
 import React, { useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { BuildingIcon, Building2, CheckCircle2, Globe2 } from "lucide-react";
+import { BuildingIcon } from "lucide-react";
 import { toast } from "sonner";
 import { 
   Card, 
@@ -22,7 +22,9 @@ import { deleteOfficeAction } from "@/app/[locale]/configuration-settings/office
 import { getOfficeColumns } from "./OfficeColumns";
 import { useOfficeSearch } from "@/hooks/useOfficeSearch";
 import { useOfficePagination } from "@/hooks/useOfficePagination";
+import { getOfficeTypeOptions } from "@/config/office-master.config";
 import { cn } from "@/lib/utils/cn";
+import { OfficeStatsCards } from "./OfficeStatsCards";
 
 export function OfficeMaster({
   data, pageNumber, pageSize, totalCount, totalPages, sortBy, sortOrder, type, status
@@ -103,47 +105,6 @@ export function OfficeMaster({
 
   const columns = getOfficeColumns(t, tCommon, sortBy, sortOrder, onSort);
 
-  const stats = [
-    {
-      label: t("stats.total"),
-      value: totalCount,
-      icon: BuildingIcon,
-      bgColor: "bg-blue-500",
-      iconBg: "bg-blue-50",
-      iconColor: "text-blue-600",
-      accentColor: "bg-blue-600"
-    },
-    {
-      label: t("stats.headOffices"),
-      subLabel: tCommon("table.onThisPage"),
-      value: data.filter(o => o.type === "Head Office").length,
-      icon: Building2,
-      bgColor: "bg-purple-500",
-      iconBg: "bg-purple-50",
-      iconColor: "text-purple-600",
-      accentColor: "bg-purple-600"
-    },
-    {
-      label: t("stats.activeOffices"),
-      subLabel: tCommon("table.onThisPage"),
-      value: data.filter(o => o.isActive).length,
-      icon: CheckCircle2,
-      bgColor: "bg-green-500",
-      iconBg: "bg-green-50",
-      iconColor: "text-green-600",
-      accentColor: "bg-green-600"
-    },
-    {
-      label: t("stats.regionalOffices"),
-      subLabel: tCommon("table.onThisPage"),
-      value: data.filter(o => o.type === "Regional Office").length,
-      icon: Globe2,
-      bgColor: "bg-orange-500",
-      iconBg: "bg-orange-50",
-      iconColor: "text-orange-600",
-      accentColor: "bg-orange-600"
-    }
-  ];
 
   return (
     <PageContainer
@@ -157,52 +118,7 @@ export function OfficeMaster({
       }
     >
       <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <Card
-                key={index}
-                className="group relative overflow-hidden border-none bg-white shadow-sm transition-all duration-300 hover:shadow-md"
-              >
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-                      <div className="flex items-baseline gap-1">
-                        <p className="text-3xl font-bold text-slate-900 tracking-tight">{stat.value}</p>
-                        {"subLabel" in stat && (
-                          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
-                            {stat.subLabel}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div
-                      className={cn(
-                        "rounded-2xl p-3 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm",
-                        stat.iconBg,
-                        stat.iconColor
-                      )}
-                    >
-                      <Icon className="h-6 w-6" />
-                    </div>
-                  </div>
-                  
-                  {/* Decorative Elements */}
-                  <div className={cn(
-                    "absolute -bottom-4 -right-4 h-24 w-24 rounded-full opacity-[0.03] transition-all duration-500 group-hover:scale-150",
-                    stat.bgColor
-                  )} />
-                  <div className={cn(
-                    "absolute top-0 left-0 h-full w-1.5 transition-all duration-300",
-                    stat.accentColor
-                  )} />
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        <OfficeStatsCards data={data} totalCount={totalCount} t={t} tCommon={tCommon} />
 
         <MasterTable<Office>
           columns={columns}
@@ -231,14 +147,7 @@ export function OfficeMaster({
                   onChange={handleTypeChange}
                   options={[
                     { label: t("list.filters.allTypes"), value: "" },
-                    { label: t("form.fields.type.options.mainOffice") || "Main Office", value: "Main Office" },
-                    { label: t("form.fields.type.options.zonalOffice") || "Zonal Office", value: "Zonal Office" },
-                    { label: t("form.fields.type.options.departmentOffice") || "Department Office", value: "Department Office" },
-                    { label: t("form.fields.type.options.wardOffice") || "Ward Office", value: "Ward Office" },
-                    { label: t("form.fields.type.options.subOffice") || "Sub Office", value: "Sub Office" },
-                    { label: t("form.fields.type.options.headOffice") || "Head Office", value: "Head Office" },
-                    { label: t("form.fields.type.options.regionalOffice") || "Regional Office", value: "Regional Office" },
-                    { label: t("form.fields.type.options.branchOffice") || "Branch Office", value: "Branch Office" },
+                    ...getOfficeTypeOptions(t)
                   ]}
                   className="min-w-[180px]"
                   placeholder={t("list.filters.type")}

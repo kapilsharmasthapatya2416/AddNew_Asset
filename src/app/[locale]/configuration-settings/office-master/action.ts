@@ -10,6 +10,21 @@ import { PagedResponse } from "@/types/common.types";
 import { cookies } from "next/headers";
 import { getUserIdFromCookies } from "@/lib/utils/auth-session";
 
+function parseOfficeActionError(error: unknown, operation: string) {
+  if (error instanceof ApiError) {
+    const errors: Record<string, string> = {};
+    const lowerMsg = error.responseText.toLowerCase();
+    if (lowerMsg.includes("office code") || lowerMsg.includes("already exists")) {
+      errors.officeCode = error.responseText;
+    }
+    return { success: false, message: error.responseText, statusCode: error.statusCode, errors };
+  }
+  if (error instanceof Error) {
+    return { success: false, message: error.message };
+  }
+  return { success: false, message: `Failed to ${operation} office` };
+}
+
 export async function fetchOfficePagedServerAction(
   pageNumber: number,
   pageSize: number,
@@ -69,18 +84,7 @@ export async function createOfficeAction(
     }
     return { success: true };
   } catch (error: unknown) {
-    if (error instanceof ApiError) {
-      const errors: Record<string, string> = {};
-      const lowerMsg = error.responseText.toLowerCase();
-      if (lowerMsg.includes("office code") || lowerMsg.includes("already exists")) {
-        errors.officeCode = error.responseText;
-      }
-      return { success: false, message: error.responseText, statusCode: error.statusCode, errors };
-    }
-    if (error instanceof Error) {
-      return { success: false, message: error.message };
-    }
-    return { success: false, message: "Failed to create office" };
+    return parseOfficeActionError(error, "create");
   }
 }
 
@@ -101,18 +105,7 @@ export async function updateOfficeAction(
     }
     return { success: true };
   } catch (error: unknown) {
-    if (error instanceof ApiError) {
-      const errors: Record<string, string> = {};
-      const lowerMsg = error.responseText.toLowerCase();
-      if (lowerMsg.includes("office code") || lowerMsg.includes("already exists")) {
-        errors.officeCode = error.responseText;
-      }
-      return { success: false, message: error.responseText, statusCode: error.statusCode, errors };
-    }
-    if (error instanceof Error) {
-      return { success: false, message: error.message };
-    }
-    return { success: false, message: "Failed to update office" };
+    return parseOfficeActionError(error, "update");
   }
 }
 
