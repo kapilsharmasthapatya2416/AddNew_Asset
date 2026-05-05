@@ -92,13 +92,21 @@
       }
     },
     "detailsSection": "कार्यालय तपशील",
+    "contactSection": "संपर्क माहिती",
+    "additionalSection": "व्यवस्थापन आणि कर्मचारी",
     "validation": {
       "officeCodeRequired": "कार्यालय कोड आवश्यक आहे",
-      "officeNameRequired": "कार्यालयाचे नाव आवश्यक आहे"
+      "officeNameRequired": "कार्यालयाचे नाव आवश्यक आहे",
+      "typeRequired": "कार्यालय प्रकार आवश्यक आहे",
+      "invalidEmail": "अवैध ईमेल आयडी",
+      "invalidPincode": "अवैध पिनकोड",
+      "codeMaxLength": "कोड जास्तीत जास्त {count} अक्षरांचा असावा",
+      "nameMaxLength": "नाव जास्तीत जास्त {count} अक्षरांचा असावे",
+      "codeFormat": "कोडमध्ये फक्त अक्षरे, अंक आणि अंडरस्कोर असू शकतात"
     },
     "status": {
-      "label": "Active Status",
-      "description": "Office is currently"
+      "label": "सक्रिय स्थिती",
+      "description": "कार्यालय सध्या आहे"
     },
     "actions": {
       "cancel": "रद्द करा",
@@ -107,15 +115,15 @@
     }
   },
   "delete": {
-    "confirmTitle": "Delete Office ({id})?",
-    "confirmDescription": "Are you sure you want to delete this office record?",
-    "successMessage": "Office deleted successfully",
-    "errorMessage": "Cannot delete Office."
+    "confirmTitle": "कार्यालय ({id}) हटवायचे?",
+    "confirmDescription": "तुम्हाला खात्री आहे की तुम्हाला हे कार्यालय रेकॉर्ड हटवायचे आहे?",
+    "successMessage": "कार्यालय यशस्वीरित्या हटवले गेले",
+    "errorMessage": "कार्यालय हटवता आले नाही."
   },
   "apiErrors": {
-    "duplicateCode": "Office code already exists.",
-    "validationError": "Invalid data provided.",
-    "notFound": "Office not found.",
+    "duplicateCode": "कार्यालय कोड आधीच अस्तित्वात आहे.",
+    "validationError": "अवैध डेटा प्रदान केला.",
+    "notFound": "कार्यालय आढळले नाही.",
     "inUse": "हा रेकॉर्ड वापरात असल्याने तो काढता येणार नाही."
   },
   "stats": {

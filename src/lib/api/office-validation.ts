@@ -31,6 +31,9 @@ export function validateCreateFormData(data: OfficeFormModel): void {
   if (!data.officeName?.trim()) {
     throw new ApiError(400, "Office name is required", "Validation failed");
   }
+  if (!data.type?.trim()) {
+    throw new ApiError(400, "Office type is required", "Validation failed");
+  }
 }
 
 /**
