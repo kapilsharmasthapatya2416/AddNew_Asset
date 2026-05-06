@@ -24,17 +24,17 @@ export  function Drawer({
 }: DrawerProps) {
   React.useEffect(() => {
     if (open) {
-      document.body.classList.add("overlay-open");
+      document.body.classList.add("drawer-open");
     } else {
-      const otherOverlays = document.querySelectorAll(".overlay-instance");
-      if (otherOverlays.length === 0) {
-        document.body.classList.remove("overlay-open");
+      const otherDrawers = document.querySelectorAll(".drawer-instance");
+      if (otherDrawers.length === 0) {
+        document.body.classList.remove("drawer-open");
       }
     }
     return () => {
-      const otherOverlays = document.querySelectorAll(".overlay-instance");
-      if (otherOverlays.length <= 1) {
-        document.body.classList.remove("overlay-open");
+      const otherDrawers = document.querySelectorAll(".drawer-instance");
+      if (otherDrawers.length <= 1) {
+        document.body.classList.remove("drawer-open");
       }
     };
   }, [open]);
@@ -52,7 +52,7 @@ export  function Drawer({
     <>
  
         <div
-        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm"
         onClick={onClose}
         role="button"
         tabIndex={0}
@@ -66,8 +66,8 @@ export  function Drawer({
  
       <div
         className={`
-          overlay-instance
-          fixed top-0 right-0 z-50 h-full
+          drawer-instance
+          fixed top-0 right-0 z-[110] h-full
           ${widthClass}
           bg-[#F8FAFF]
           shadow-2xl
