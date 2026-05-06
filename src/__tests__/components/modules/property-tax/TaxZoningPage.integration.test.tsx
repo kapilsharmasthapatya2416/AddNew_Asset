@@ -2,10 +2,13 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import type { ReactNode } from "react";
 import TaxZoningPage from "@/components/modules/property-tax/taxzoningmaster/TaxZoningPage";
-import { TaxZone, Ward } from "@/types/taxzoning.types";
+import { TaxZone, Ward, TaxZoningPageProps } from "@/types/taxzoning.types";
 
 // Mock imports
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }) }));
+vi.mock("next/navigation", () => ({ 
+    useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+    useSearchParams: () => new URLSearchParams(),
+}));
 vi.mock("next-intl", () => ({
     useTranslations: () => (key: string) => key,
     useLocale: () => "en",
@@ -56,8 +59,8 @@ describe("TaxZoningPage Integration", () => {
                 pageSize={10}
                 totalCount={1}
                 totalPages={1}
-                taxZones={mockTaxZones as any}
-                wardsData={mockWardsData as any}
+                taxZones={mockTaxZones as unknown as TaxZoningPageProps["taxZones"]}
+                wardsData={mockWardsData as unknown as TaxZoningPageProps["wardsData"]}
             />
         );
 

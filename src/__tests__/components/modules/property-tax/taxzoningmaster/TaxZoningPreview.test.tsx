@@ -53,11 +53,11 @@ describe("TaxZoningPreview", () => {
       toProps: "005",
       taxZones: {
         ...mockProps.taxZones,
-        items: [{ taxZoneId: 1, taxZoneNo: "TZ1" } as unknown as TaxZone]
+        items: [{ id: 1, taxZoneNo: "TZ1" } as unknown as TaxZone]
       },
       wardsData: {
         ...mockProps.wardsData,
-        items: [{ wardId: 1, wardNo: "W1" } as unknown as Ward]
+        items: [{ id: 1, wardNo: "W1" } as unknown as Ward]
       }
     };
     renderWithIntl(<TaxZoningPreview {...propsWithSelection} />);

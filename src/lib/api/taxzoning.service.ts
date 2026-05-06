@@ -11,7 +11,7 @@ export async function getTaxZonePagedServer(
     PageSize: pageSize.toString(),
   });
 
-  const response = await apiClient.get<any>(
+  const response = await apiClient.get<PagedResponse<TaxZone> | { items: PagedResponse<TaxZone> }>(
     `/TaxZone?${params.toString()}`
   );
 
@@ -20,12 +20,12 @@ export async function getTaxZonePagedServer(
   }
 
   const rootData = response.data;
-  if (rootData.items && typeof rootData.items === 'object' && Array.isArray(rootData.items.items)) {
-    return rootData.items;
+  if ('items' in rootData && rootData.items && typeof rootData.items === 'object' && 'items' in rootData.items && Array.isArray(rootData.items.items)) {
+    return rootData.items as PagedResponse<TaxZone>;
   }
 
-  if (Array.isArray(rootData.items)) {
-    return rootData;
+  if ('items' in rootData && Array.isArray(rootData.items)) {
+    return rootData as PagedResponse<TaxZone>;
   }
 
   // Normalize array response to PagedResponse
@@ -41,7 +41,7 @@ export async function getTaxZonePagedServer(
     };
   }
 
-  return rootData;
+  return rootData as PagedResponse<TaxZone>;
 }
 
 export async function getWardPagedServer(
@@ -53,7 +53,7 @@ export async function getWardPagedServer(
     PageSize: pageSize.toString(),
   });
 
-  const response = await apiClient.get<any>(
+  const response = await apiClient.get<PagedResponse<Ward> | { items: PagedResponse<Ward> }>(
     `/Ward?${params.toString()}`
   );
 
@@ -62,12 +62,12 @@ export async function getWardPagedServer(
   }
 
   const rootData = response.data;
-  if (rootData.items && typeof rootData.items === 'object' && Array.isArray(rootData.items.items)) {
-    return rootData.items;
+  if ('items' in rootData && rootData.items && typeof rootData.items === 'object' && 'items' in rootData.items && Array.isArray(rootData.items.items)) {
+    return rootData.items as PagedResponse<Ward>;
   }
 
-  if (Array.isArray(rootData.items)) {
-    return rootData;
+  if ('items' in rootData && Array.isArray(rootData.items)) {
+    return rootData as PagedResponse<Ward>;
   }
 
   // Normalize array response to PagedResponse
@@ -83,7 +83,7 @@ export async function getWardPagedServer(
     };
   }
 
-  return rootData;
+  return rootData as PagedResponse<Ward>;
 }
 
 export async function getTaxZoningPagedServer(
@@ -102,7 +102,7 @@ export async function getTaxZoningPagedServer(
   if (wardId) params.append("WardId", wardId.toString());
   if (groupBy) params.append("GroupBy", groupBy);
 
-  const response = await apiClient.get<any>(
+  const response = await apiClient.get<PagedResponse<TaxZoning> | { items: PagedResponse<TaxZoning> }>(
     `/TaxZoning?${params.toString()}`
   );
 
@@ -112,13 +112,13 @@ export async function getTaxZoningPagedServer(
 
   // Handle double-nested items structure: { success, message, items: { items: [], ... } }
   const rootData = response.data;
-  if (rootData.items && typeof rootData.items === 'object' && Array.isArray(rootData.items.items)) {
-    return rootData.items;
+  if ('items' in rootData && rootData.items && typeof rootData.items === 'object' && 'items' in rootData.items && Array.isArray(rootData.items.items)) {
+    return rootData.items as PagedResponse<TaxZoning>;
   }
 
   // Handle single-nested items structure: { items: [], ... }
-  if (Array.isArray(rootData.items)) {
-    return rootData;
+  if ('items' in rootData && Array.isArray(rootData.items)) {
+    return rootData as PagedResponse<TaxZoning>;
   }
 
   // Handle flat array response
@@ -134,7 +134,7 @@ export async function getTaxZoningPagedServer(
     };
   }
 
-  return rootData;
+  return rootData as PagedResponse<TaxZoning>;
 }
 
 export async function getTaxZoningByWardServer(
@@ -148,7 +148,7 @@ export async function getTaxZoningByWardServer(
     PageNumber: pageNumber.toString(),
   });
 
-  const response = await apiClient.get<any>(
+  const response = await apiClient.get<PagedResponse<TaxZoning> | { items: PagedResponse<TaxZoning> }>(
     `/TaxZoning?${params.toString()}`
   );
 
@@ -157,12 +157,12 @@ export async function getTaxZoningByWardServer(
   }
 
   const rootData = response.data;
-  if (rootData.items && typeof rootData.items === 'object' && Array.isArray(rootData.items.items)) {
-    return rootData.items;
+  if ('items' in rootData && rootData.items && typeof rootData.items === 'object' && 'items' in rootData.items && Array.isArray(rootData.items.items)) {
+    return rootData.items as PagedResponse<TaxZoning>;
   }
 
-  if (Array.isArray(rootData.items)) {
-    return rootData;
+  if ('items' in rootData && Array.isArray(rootData.items)) {
+    return rootData as PagedResponse<TaxZoning>;
   }
 
   if (Array.isArray(rootData)) {
@@ -177,7 +177,7 @@ export async function getTaxZoningByWardServer(
     };
   }
 
-  return rootData;
+  return rootData as PagedResponse<TaxZoning>;
 }
 
 export async function getAllTaxZoningServer(
@@ -194,7 +194,7 @@ export async function getAllTaxZoningServer(
   if (taxZoneId) params.append("TaxZoneId", taxZoneId.toString());
   if (wardId) params.append("WardId", wardId.toString());
 
-  const response = await apiClient.get<any>(
+  const response = await apiClient.get<PagedResponse<TaxZoning> | { items: PagedResponse<TaxZoning> }>(
     `/TaxZoning?${params.toString()}`
   );
 
@@ -203,12 +203,12 @@ export async function getAllTaxZoningServer(
   }
 
   const rootData = response.data;
-  if (rootData.items && typeof rootData.items === 'object' && Array.isArray(rootData.items.items)) {
-    return rootData.items;
+  if ('items' in rootData && rootData.items && typeof rootData.items === 'object' && 'items' in rootData.items && Array.isArray(rootData.items.items)) {
+    return rootData.items as PagedResponse<TaxZoning>;
   }
 
-  if (Array.isArray(rootData.items)) {
-    return rootData;
+  if ('items' in rootData && Array.isArray(rootData.items)) {
+    return rootData as PagedResponse<TaxZoning>;
   }
 
   if (Array.isArray(rootData)) {
@@ -223,7 +223,7 @@ export async function getAllTaxZoningServer(
     };
   }
 
-  return rootData;
+  return rootData as PagedResponse<TaxZoning>;
 }
 
 export async function getTaxZoningPropertyNoServer(
@@ -240,7 +240,7 @@ export async function getTaxZoningPropertyNoServer(
   if (taxZoneId) params.append("TaxZoneId", taxZoneId.toString());
   if (wardId) params.append("WardId", wardId.toString());
 
-  const response = await apiClient.get<any>(
+  const response = await apiClient.get<PagedResponse<TaxZoningPropertyNo> | { items: PagedResponse<TaxZoningPropertyNo> }>(
     `/TaxZoning?${params.toString()}`
   );
 
@@ -249,12 +249,12 @@ export async function getTaxZoningPropertyNoServer(
   }
 
   const rootData = response.data;
-  if (rootData.items && typeof rootData.items === 'object' && Array.isArray(rootData.items.items)) {
-    return rootData.items;
+  if ('items' in rootData && rootData.items && typeof rootData.items === 'object' && 'items' in rootData.items && Array.isArray(rootData.items.items)) {
+    return rootData.items as PagedResponse<TaxZoningPropertyNo>;
   }
 
-  if (Array.isArray(rootData.items)) {
-    return rootData;
+  if ('items' in rootData && Array.isArray(rootData.items)) {
+    return rootData as PagedResponse<TaxZoningPropertyNo>;
   }
 
   if (Array.isArray(rootData)) {
@@ -269,7 +269,7 @@ export async function getTaxZoningPropertyNoServer(
     };
   }
 
-  return rootData;
+  return rootData as PagedResponse<TaxZoningPropertyNo>;
 }
 
 export async function createTaxZoning(
