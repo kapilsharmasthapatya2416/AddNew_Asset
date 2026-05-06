@@ -154,29 +154,14 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }): JS
     }
   }, [computed, close]);
 
-  // ESC close and body class management
+  // ESC close
   useEffect(() => {
-    if (!open) {
-      const otherOverlays = document.querySelectorAll(".overlay-instance");
-      if (otherOverlays.length === 0) {
-        document.body.classList.remove("overlay-open");
-      }
-      return;
-    }
-
-    document.body.classList.add("overlay-open");
-
+    if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleCancel();
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      const otherOverlays = document.querySelectorAll(".overlay-instance");
-      if (otherOverlays.length <= 1) {
-        document.body.classList.remove("overlay-open");
-      }
-    };
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, handleCancel]);
 
   // SSR safe
@@ -217,9 +202,9 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }): JS
               <div
                 role="dialog"
                 aria-modal="true"
-                className="overlay-instance relative w-[420px] h-[420px] max-w-[92vw] max-h-[92vh] overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_rgba(0,0,0,0.25)] border border-gray-200 flex flex-col"
+                className="relative w-[420px] h-[420px] max-w-[92vw] max-h-[92vh] overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_rgba(0,0,0,0.25)] border border-gray-200 flex flex-col"
               >
-                 {/* Top gradient bar */}
+                {/* Top gradient bar */}
                 <div className={`h-1 w-full bg-gradient-to-r ${headerBar}`} />
 
                 {/* Close */}
