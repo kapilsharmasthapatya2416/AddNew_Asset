@@ -144,10 +144,20 @@ export const sanitizePositiveDecimal = (value: string): string => {
   // Remove all non-numeric characters except dot
   let sanitized = value.replace(/[^\d.]/g, '');
 
+  // Return empty string for just a decimal point
+  if (sanitized === '.') {
+    return '';
+  }
+
   // Allow only one decimal point
   const parts = sanitized.split('.');
   if (parts.length > 2) {
     sanitized = parts[0] + '.' + parts.slice(1).join('');
+  }
+
+  // Prepend 0 to values starting with decimal point (e.g., ".5" → "0.5")
+  if (sanitized.startsWith('.')) {
+    sanitized = '0' + sanitized;
   }
 
   // Remove leading zeros (except for decimals like 0.5)

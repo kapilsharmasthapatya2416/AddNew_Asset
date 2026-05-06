@@ -170,18 +170,6 @@ export interface RateMasterPageProps {
 }
 
 /**
- * Props for Rate Master form component
- */
-export interface RateMasterFormProps {
-  zoneOptions: ISelectOption[];
-  useGroupOptions: ISelectOption[];
-  zoneDescriptions: IZoneDescription[];
-  rateCategories: RateCategory[];
-  onClose: () => void;
-  onSuccess: (data: IRateMaster) => void;
-  editData?: IRateMaster | null;
-}
-/**
  * Props for Rate form component (add/edit)
  */
 export interface RateFormProps {

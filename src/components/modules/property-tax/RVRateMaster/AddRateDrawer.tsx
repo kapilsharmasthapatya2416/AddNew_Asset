@@ -63,7 +63,6 @@ export default function AddRateDrawer({
         onClose={handleClose}
         paginatedZonesData={paginatedZonesData}
         initialExistingRatesCheck={initialExistingRatesCheck}
-        onSuccess={() => {}}
       />
     </Drawer>
   );

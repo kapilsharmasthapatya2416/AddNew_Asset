@@ -18,7 +18,7 @@ vi.mock("@/app/[locale]/property-tax/rate-master/rvratemaster/action", () => ({
 }));
 
 // Mock hooks
-vi.mock("@/hooks/useRateMasterFilters", () => ({
+vi.mock("@/hooks/RVRateMaster/useRateMasterFilters", () => ({
   useRateMasterFilters: () => ({
     selectedZone: "1",
     selectedUseGroup: "1",

@@ -169,7 +169,6 @@ const mockProps = {
     pageSize: 10,
   },
   onClose: vi.fn(),
-  onSuccess: vi.fn(),
 };
 
 describe("RateMasterForm", () => {

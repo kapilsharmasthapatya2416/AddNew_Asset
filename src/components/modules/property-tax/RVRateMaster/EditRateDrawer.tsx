@@ -80,7 +80,6 @@ export default function EditRateDrawer({
         onClose={handleClose}
         mode={mode}
         paginatedZonesData={paginatedZonesData}
-        onSuccess={() => {}}
       />
     </Drawer>
   );

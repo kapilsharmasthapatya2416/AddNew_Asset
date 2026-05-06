@@ -230,13 +230,13 @@ export async function getConstructionTypes(): Promise<RateCategory[]> {
     const response = await getConstructionPaged(1, -1);
     const allItems = response.items || [];
 
-    return allItems.map((item: { id?: number; Id?: number; constructionCode?: string; description?: string; isActive?: boolean }) => ({
-      Id: item.id ?? item.Id,
-      constructionId: String(item.id ?? item.Id),
-      constructionCode: item.constructionCode,
-      description: item.description || '',
-      isActive: item.isActive,
-    }));
+    return allItems
+      .filter((item: { isActive?: boolean }) => item.isActive === true)
+      .map((item: { id?: number; Id?: number; constructionCode?: string; description?: string }) => ({
+        constructionId: String(item.id ?? item.Id ?? ''),
+        constructionCode: item.constructionCode,
+        description: item.description || '',
+      }));
   } catch (error) {
     if (error instanceof ApiError) {
       throw new ApiError(error.statusCode, error.responseText, 'Failed to load construction types for RV Rate Master');

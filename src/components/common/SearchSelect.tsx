@@ -310,7 +310,7 @@ export function SearchSelect({
           ref={listRef}
           id={`${fallbackName}-listbox`}
           role="listbox"
-          className="absolute left-0 right-0 z-10000 mt-1 max-h-60 overflow-auto
+          className="absolute left-0 right-0 z-[10000] mt-1 max-h-60 overflow-auto
           rounded-lg border bg-white shadow-lg text-gray-900"
         >
           {filteredOptions.map((opt, index) => (

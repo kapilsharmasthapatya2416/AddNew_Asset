@@ -405,7 +405,7 @@ export async function createSubTypeApi(input: {
     throw new Error(response.error ?? "Create sub-type failed");
   }
  
-  return response.data as UseSubType;
+  return mapApiSubTypeToUi(response.data);
 }
  
 export async function updateSubTypeApi(input: {
@@ -434,7 +434,7 @@ export async function updateSubTypeApi(input: {
     throw new Error(response.error ?? "Update sub-type failed");
   }
  
-  return response.data as UseSubType;
+  return mapApiSubTypeToUi(response.data);
 }
  
 /** DELETE SubType - /api/SubTypeOfUse/{id} */
