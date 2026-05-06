@@ -33,8 +33,14 @@ function sanitizeParams(raw: AgeFactorCVMasterSearchParams) {
         : DEFAULT_PAGE_SIZE;
 
     const searchTerm = raw.q?.trim() || undefined;
-    const selectedYearRange = raw.selectedYearRange?.trim() || undefined;
-    const constructionType = raw.constructionType?.trim() || undefined;
+    
+    // Validate that IDs are actually numeric to prevent NaN propagation
+    const rawYear = raw.selectedYearRange?.trim();
+    const selectedYearRange = (rawYear && Number.isFinite(Number(rawYear))) ? rawYear : undefined;
+
+    const rawConst = raw.constructionType?.trim();
+    const constructionType = (rawConst && Number.isFinite(Number(rawConst))) ? rawConst : undefined;
+    
     const sortBy = raw.sortBy?.trim() || undefined;
     const sortOrder = raw.sortOrder?.trim() || undefined;
 

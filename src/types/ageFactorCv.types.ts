@@ -1,12 +1,6 @@
-export interface PagedResponse<T> {
-  items: T[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-  hasPrevious: boolean;
-  hasNext: boolean;
-}
+import { PagedResponse } from "./common.types";
+
+export type { PagedResponse };
 
 // ---------------------------------------------
 // Age Factor CV Master

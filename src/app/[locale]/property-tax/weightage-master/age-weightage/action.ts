@@ -21,11 +21,10 @@ import {
   AgeFactorCVMasterUpdate,
   BulkAgeFactorCVMasterCreate,
   BulkAgeFactorCVMasterUpdate,
-  PagedResponse as MasterPagedResponse,
+  PagedResponse,
 } from "@/types/ageFactorCv.types";
 import { ConstructionType } from "@/types/construction.types";
 import { getConstructionPaged } from "@/lib/api/construction-crud.service";
-import { PagedResponse } from "@/types/common.types";
 
 
 /**
@@ -55,21 +54,28 @@ export async function fetchAgeFactorCVMasterPagedServerAction(
   constructionTypeId?: number,
   sortBy?: string,
   sortOrder?: string
-): Promise<MasterPagedResponse<AgeFactorCVMaster>> {
+): Promise<PagedResponse<AgeFactorCVMaster>> {
   try {
     // Sanitize and clamp pagination parameters to prevent SSR crashes or bad API requests
     const normalizedPageNumber = Math.max(1, Number(pageNumber) || 1);
     const normalizedPageSize = Math.max(1, Math.min(100, Number(pageSize) || 10));
 
-    const yearRangeParam =
-      selectedYearRange && selectedYearRange.trim() !== "" ? Number(selectedYearRange.trim()) : undefined;
+    const trimmedYearRange = selectedYearRange?.trim();
+    const parsedYearRangeParam = trimmedYearRange && trimmedYearRange !== "" ? Number(trimmedYearRange) : undefined;
+    const yearRangeParam = parsedYearRangeParam !== undefined && Number.isFinite(parsedYearRangeParam)
+      ? parsedYearRangeParam
+      : undefined;
+
+    const normalizedConstructionTypeId = constructionTypeId !== undefined && Number.isFinite(constructionTypeId)
+      ? constructionTypeId
+      : undefined;
 
     const response = await getAgeFactorCVMasterWithParams({
       pageNumber: normalizedPageNumber,
       pageSize: normalizedPageSize,
       searchTerm,
       yearRangeCVId: yearRangeParam,
-      constructionTypeId,
+      constructionTypeId: normalizedConstructionTypeId,
       sortBy: sortBy?.trim() || undefined,
       sortOrder: sortOrder?.trim() || undefined,
     });
@@ -80,15 +86,18 @@ export async function fetchAgeFactorCVMasterPagedServerAction(
 
     const data = response.data;
     
+    const totalCount = data.totalCount ?? 0;
+    const computedTotalPages = data.totalPages ?? Math.max(1, Math.ceil(totalCount / normalizedPageSize));
+    
     // Ensure all pagination fields are present and have sensible defaults to prevent UI breakage
     return {
       items: data.items || [],
-      totalCount: data.totalCount ?? 0,
+      totalCount,
       pageNumber: data.pageNumber ?? normalizedPageNumber,
       pageSize: data.pageSize ?? normalizedPageSize,
-      totalPages: data.totalPages ?? Math.max(1, Math.ceil((data.totalCount ?? 0) / normalizedPageSize)),
+      totalPages: computedTotalPages,
       hasPrevious: data.hasPrevious ?? (normalizedPageNumber > 1),
-      hasNext: data.hasNext ?? (normalizedPageNumber < (data.totalPages ?? 1))
+      hasNext: data.hasNext ?? (normalizedPageNumber < computedTotalPages)
     };
   } catch (error: unknown) {
     throw error;

@@ -109,19 +109,20 @@ export const useAgeFactorCvWeightage = ({
             ? constructionTypeOptions.filter(ct => ct.value === constructionType) 
             : constructionTypeOptions;
             
+        // Precompute a set of existing keys for O(1) lookups to avoid O(N*M*L) complexity
+        const existingKeys = new Set(
+            allAgeFactors
+                .filter(af => af.id > 0)
+                .map(af => `${af.constructionTypeId}-${af.yearRangeCVId || af.yearRangeCVID}-${af.ageFrom}-${af.ageTo}`)
+        );
+
         let count = 0;
         types.forEach(ct => {
             const ctId = parseInt(ct.value);
             ranges.forEach(range => {
                 const [from, to] = range.split("-").map(Number);
-                const exists = allAgeFactors.some(af => 
-                    af.id > 0 &&
-                    af.constructionTypeId === ctId &&
-                    (af.yearRangeCVId === yearId || af.yearRangeCVID === yearId) &&
-                    af.ageFrom === from &&
-                    af.ageTo === to
-                );
-                if (!exists) count++;
+                const key = `${ctId}-${yearId}-${from}-${to}`;
+                if (!existingKeys.has(key)) count++;
             });
         });
         return count;

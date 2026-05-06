@@ -24,6 +24,11 @@ export async function getAgeFactorCVMasterWithParams(
   // Add parameters to query string if they exist
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
+      // Safety check: Skip numeric values that are NaN or Infinity
+      if (typeof value === 'number' && !Number.isFinite(value)) {
+        return;
+      }
+
       // Map frontend camelCase to backend PascalCase
       const apiKey = key === 'yearRangeCVId' ? 'YearRangeCVId' :
                      key === 'constructionTypeId' ? 'ConstructionTypeId' :

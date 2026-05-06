@@ -226,10 +226,12 @@ export const useAgeFactorCvBulkOps = ({
             let matchesAge = true;
             if (selectedAgeRange) {
                 const [minAge, maxAge] = selectedAgeRange.split("-").map(Number);
-                matchesAge = row.ageFrom >= minAge && row.ageTo <= maxAge;
+                // Exact match for dropdown selection to avoid updating overlapping sub-ranges
+                matchesAge = row.ageFrom === minAge && row.ageTo === maxAge;
             } else if (ageFrom || ageTo) {
+                // Inclusive logic for manual min/max inputs
                 matchesAge = (!ageFrom || row.ageFrom >= parseInt(ageFrom)) &&
-                    (!ageTo || row.ageTo <= parseInt(ageTo));
+                             (!ageTo || row.ageTo <= parseInt(ageTo));
             }
 
             const rowYearId = row.yearRangeCVId || row.yearRangeCVID || 0;
