@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextIntlClientProvider } from 'next-intl';
+import { toast } from 'sonner';
 
 // ── Hoisted spies (must be above vi.mock so the factory can close over them) ─
 const pushSpy = vi.hoisted(() => vi.fn());
@@ -311,7 +312,6 @@ describe('FloorForm — Range Mode', () => {
   });
 
   it('shows error toast if createFloorRangeAction fails', async () => {
-    const { toast } = require('sonner');
     vi.mocked(createFloorRangeAction).mockResolvedValue({ success: false, message: 'Server error' });
     renderAdd();
     fireEvent.click(screen.getByText('Floor Range'));
