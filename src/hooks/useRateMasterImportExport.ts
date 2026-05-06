@@ -157,9 +157,9 @@ export function useRateMasterImportExport({
       // Group fetched rates by zone
       const ratesByZone = new Map<string, Map<string, number>>();
       fetchedRates.forEach((rate: IBackendRateMaster) => {
-        // Read both camelCase and PascalCase fields for robustness
-        const zoneId = rate.taxZoneId ?? rate.TaxZoneId;
-        const constructionTypeId = rate.constructionTypeId ?? rate.ConstructionTypeId;
+        // Read camelCase fields
+        const zoneId = rate.taxZoneId;
+        const constructionTypeId = rate.constructionTypeId;
 
         if (!zoneId || !constructionTypeId) {
           return;
@@ -172,7 +172,7 @@ export function useRateMasterImportExport({
           ratesByZone.set(zoneKey, new Map());
         }
         const zoneRates = ratesByZone.get(zoneKey)!;
-        const rateSqM = rate.rateSquareMeter ?? rate.RateSquareMeter;
+        const rateSqM = rate.rateSquareMeter;
         if (rateSqM !== undefined) {
           zoneRates.set(constructionKey, rateSqM);
         }
@@ -269,8 +269,7 @@ export function useRateMasterImportExport({
         (ay) => String(ay.value) === String(assessmentYear)
       )?.label || assessmentYear;
       toast.success(t('messages.ratesCopiedSuccess', { source: sourceRateSectionLabel, group: useGroupLabel, year: yearRangeLabel }));
-    } catch (error) {
-      console.error("Error copying rates from rate section:", error);
+    } catch (_error) {
       toast.error(t('messages.validationCopyFailed'));
     }
   };
@@ -318,9 +317,10 @@ export function useRateMasterImportExport({
       // Group fetched rates by zone
       const ratesByZone = new Map<string, Map<string, number>>();
       fetchedRates.forEach((rate: IBackendRateMaster) => {
-        const zoneId = rate.taxZoneId ?? (rate as { TaxZoneId?: number }).TaxZoneId;
-        const constructionTypeId = rate.constructionTypeId ?? (rate as { ConstructionTypeId?: number }).ConstructionTypeId;
-        const rateSqm = rate.rateSquareMeter ?? (rate as { RateSquareMeter?: number }).RateSquareMeter;
+        // Read camelCase fields only
+        const zoneId = rate.taxZoneId;
+        const constructionTypeId = rate.constructionTypeId;
+        const rateSqm = rate.rateSquareMeter;
         
         if (zoneId === undefined || constructionTypeId === undefined) return;
         
@@ -395,8 +395,7 @@ export function useRateMasterImportExport({
       const sourceUseGroupLabel = useGroupOptions.find(opt => opt.value === sourceUseGroup)?.label || sourceUseGroup;
       const zoneLabel = zoneOptions.find(opt => opt.value === selectedZone)?.label || selectedZone;
       toast.success(t('messages.ratesCopiedSuccess', { source: sourceUseGroupLabel, group: zoneLabel, year: yearRangeToUse }));
-    } catch (error) {
-      console.error("Error copying rates:", error);
+    } catch (_error) {
       toast.error(t('messages.validationCopyFailed'));
     }
   };
@@ -445,8 +444,7 @@ export function useRateMasterImportExport({
       document.body.removeChild(link);
       
       toast.success('Template downloaded successfully!');
-    } catch (error) {
-      console.error('Error downloading template:', error);
+    } catch (_error) {
       toast.error('Failed to download template');
     }
   };
@@ -527,8 +525,7 @@ export function useRateMasterImportExport({
         if (!showMatrix) {
           setShowMatrix(true);
         }
-      } catch (error) {
-        console.error('Error parsing file:', error);
+      } catch (_error) {
         toast.error(t('messages.validationParseFailed'));
       }
     };

@@ -2,20 +2,13 @@ import { describe, it, expect } from 'vitest';
 
 type RateCategory = { constructionId: string; constructionCode?: string };
 type IBackendRateMaster = {
-  Id?: number;
-  id?: number;
-  TaxZoneId?: number;
-  taxZoneId?: number;
-  ConstructionTypeId?: number;
-  constructionTypeId?: number;
-  TypeOfUseGroupId?: number;
-  typeOfUseGroupId?: number;
-  YearRangeRVId?: number;
-  yearRangeRVId?: number;
-  RateSectionId?: number;
-  rateSectionId?: number;
-  RateSquareMeter?: number;
-  rateSquareMeter?: number;
+  id: number;
+  taxZoneId: number;
+  constructionTypeId: number;
+  typeOfUseGroupId: number;
+  yearRangeRVId: number;
+  rateSectionId: number;
+  rateSquareMeter: number;
 };
 
 type RatePayload = {
@@ -47,11 +40,11 @@ function buildPayloadFromMatrix(
 
   function findExistingRate(taxZoneId: number, constructionId: string) {
     return existingBackendRates.find((r) => {
-      const rTaxZoneId = r.TaxZoneId ?? r.taxZoneId;
-      const rConstructionTypeId = r.ConstructionTypeId ?? r.constructionTypeId;
-      const rTypeOfUseGroupId = r.TypeOfUseGroupId ?? r.typeOfUseGroupId;
-      const rYearRangeRVId = r.YearRangeRVId ?? r.yearRangeRVId;
-      const rRateSectionId = r.RateSectionId ?? r.rateSectionId;
+      const rTaxZoneId = r.taxZoneId;
+      const rConstructionTypeId = r.constructionTypeId;
+      const rTypeOfUseGroupId = r.typeOfUseGroupId;
+      const rYearRangeRVId = r.yearRangeRVId;
+      const rRateSectionId = r.rateSectionId;
 
       return (
         Number(rTaxZoneId) === taxZoneId &&
@@ -91,11 +84,11 @@ function buildPayloadFromMatrix(
         isActive: true,
       };
 
-      const existingId = existing?.Id || existing?.id;
+      const existingId = existing?.id;
 
       if (existingId) {
         // Only include in updates if value actually changed
-        const originalValue = existing?.rateSquareMeter ?? existing?.RateSquareMeter ?? 0;
+        const originalValue = existing?.rateSquareMeter ?? 0;
         if (Number(val) !== Number(originalValue)) {
           payload.Id = Number(existingId);
           updates.push(payload);
@@ -122,7 +115,7 @@ describe('RVRateMaster selective update', () => {
     // Existing backend rates
     const existingBackendRates: IBackendRateMaster[] = [
       {
-        Id: 100,
+        id: 100,
         taxZoneId: 1,
         constructionTypeId: 1,
         typeOfUseGroupId: 5,
@@ -131,7 +124,7 @@ describe('RVRateMaster selective update', () => {
         rateSquareMeter: 500, // original value
       },
       {
-        Id: 101,
+        id: 101,
         taxZoneId: 1,
         constructionTypeId: 2,
         typeOfUseGroupId: 5,
@@ -166,7 +159,7 @@ describe('RVRateMaster selective update', () => {
   it('does not include unchanged rates in updates', () => {
     const existingBackendRates: IBackendRateMaster[] = [
       {
-        Id: 100,
+        id: 100,
         taxZoneId: 1,
         constructionTypeId: 1,
         typeOfUseGroupId: 5,
@@ -224,7 +217,7 @@ describe('RVRateMaster selective update', () => {
   it('handles mix of changed, unchanged, and new rates', () => {
     const existingBackendRates: IBackendRateMaster[] = [
       {
-        Id: 100,
+        id: 100,
         taxZoneId: 1,
         constructionTypeId: 1,
         typeOfUseGroupId: 5,
@@ -233,7 +226,7 @@ describe('RVRateMaster selective update', () => {
         rateSquareMeter: 500, // A: unchanged
       },
       {
-        Id: 101,
+        id: 101,
         taxZoneId: 2,
         constructionTypeId: 1,
         typeOfUseGroupId: 5,

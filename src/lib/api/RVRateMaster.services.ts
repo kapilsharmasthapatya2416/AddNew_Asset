@@ -10,12 +10,18 @@ export { ApiError };
  * Bulk update rate master records (PUT /Rate/Bulk)
  * Accepts array of { id, data } objects as required by backend
  */
-export async function bulkUpdateRateMaster(payload: Array<{ id: number, data: Record<string, unknown> }>): Promise<{ success: boolean; message: string; data?: unknown }> {
-  const response = await apiClient.put<{ data?: unknown }>(`/Rate/Bulk`, payload);
-  if (!response.success) {
-    throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to bulk update rate master');
+export async function bulkUpdateRateMaster(payload: Array<{ id: number, data: Record<string, unknown> }>): Promise<void> {
+  try {
+    const response = await apiClient.put<{ data?: unknown }>(`/Rate/Bulk`, payload);
+    if (!response.success) {
+      throw new ApiError(response.statusCode ?? 500, response.error || 'Failed to bulk update rate master', 'Bulk update rate master failed');
+    }
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Bulk update rate master failed');
   }
-  return { success: true, message: 'Bulk update successful', data: response.data };
 }
 
 /**
@@ -29,39 +35,53 @@ export async function getDetailedRates(
   pageNumber: number = 1,
   pageSize: number = -1
 ): Promise<unknown> {
-  const params = new URLSearchParams();
-  params.append('PageNumber', pageNumber.toString());
-  params.append('PageSize', pageSize.toString());
+  try {
+    const params = new URLSearchParams();
+    params.append('PageNumber', pageNumber.toString());
+    params.append('PageSize', pageSize.toString());
 
-  if (rateSection && rateSection !== "ALL" && !isNaN(Number(rateSection))) {
-    params.append('RateSectionId', rateSection);
-  }
-  if (useGroup && useGroup !== "ALL" && !isNaN(Number(useGroup))) {
-    params.append('TypeOfUseGroupId', useGroup);
-  }
-  if (assessmentYear && assessmentYear !== "ALL" && !isNaN(Number(assessmentYear))) {
-    params.append('YearRangeRVId', assessmentYear);
-  }
+    if (rateSection && rateSection !== "ALL" && !isNaN(Number(rateSection))) {
+      params.append('RateSectionId', rateSection);
+    }
+    if (useGroup && useGroup !== "ALL" && !isNaN(Number(useGroup))) {
+      params.append('TypeOfUseGroupId', useGroup);
+    }
+    if (assessmentYear && assessmentYear !== "ALL" && !isNaN(Number(assessmentYear))) {
+      params.append('YearRangeRVId', assessmentYear);
+    }
 
-  const response = await apiClient.get(`/Rate/detailed?${params.toString()}`);
-  if (!response.success || !response.data) {
-    throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to fetch detailed rates');
+    const response = await apiClient.get(`/Rate/detailed?${params.toString()}`);
+    if (!response.success) {
+      throw new ApiError(response.statusCode ?? 500, response.error || 'Failed to fetch detailed rates', 'Get detailed rates failed');
+    }
+    if (!response.data) {
+      throw new ApiError(500, 'No data received from server', 'Invalid response format');
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Get detailed rates failed');
   }
-  return response.data;
 }
 
 /**
  * Bulk create rate master records (POST /Rate/Bulk)
  * Backend expects an array of rate objects directly
  */
-export async function bulkCreateRateMaster(payload: IRateCreate[]): Promise<{ success: boolean; message: string; data?: unknown }> {
-  // Debug logs removed for production
-  const response = await apiClient.post<{ data?: unknown }>(`/Rate/Bulk`, payload);
-
-  if (!response.success) {
-    throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to bulk create rate master');
+export async function bulkCreateRateMaster(payload: IRateCreate[]): Promise<void> {
+  try {
+    const response = await apiClient.post<{ data?: unknown }>(`/Rate/Bulk`, payload);
+    if (!response.success) {
+      throw new ApiError(response.statusCode ?? 500, response.error || 'Failed to bulk create rate master', 'Bulk create rate master failed');
+    }
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Bulk create rate master failed');
   }
-  return { success: true, message: 'Bulk create successful', data: response.data };
 }
 /* ========== GET REQUESTS (Data Fetching) ========== */
 /**
@@ -78,41 +98,45 @@ export async function getRateMasterPaged(
   assessmentYear?: string | { value: string },
   taxZoneIds?: number[]
 ): Promise<PagedResponse<IRateMaster>> {
-  const params = new URLSearchParams({
-    PageNumber: pageNumber.toString(),
-    PageSize: pageSize.toString(),
-  });
+  try {
+    const params = new URLSearchParams({
+      PageNumber: pageNumber.toString(),
+      PageSize: pageSize.toString(),
+    });
 
-  function getValue(val?: string | { value: string }): string {
-    if (!val) return '';
-    if (typeof val === 'object' && val && 'value' in val) return val.value || '';
-    return typeof val === 'string' ? val : '';
-  }
+    function getValue(val?: string | { value: string }): string {
+      if (!val) return '';
+      if (typeof val === 'object' && val && 'value' in val) return val.value || '';
+      return typeof val === 'string' ? val : '';
+    }
 
-  const rateSectionStr = getValue(rateSection);
-  const useGroupStr = getValue(useGroup);
-  const assessmentYearStr = getValue(assessmentYear);
+    const rateSectionStr = getValue(rateSection);
+    const useGroupStr = getValue(useGroup);
+    const assessmentYearStr = getValue(assessmentYear);
 
-  if (rateSectionStr && rateSectionStr !== "ALL" && rateSectionStr !== "undefined" && rateSectionStr.trim() !== "" && !isNaN(Number(rateSectionStr))) {
-    params.append('RateSectionId', rateSectionStr);
-  }
-  if (useGroupStr && useGroupStr !== "ALL" && useGroupStr !== "undefined" && useGroupStr.trim() !== "" && !isNaN(Number(useGroupStr))) {
-    params.append('TypeOfUseGroupId', useGroupStr);
-  }
-  if (assessmentYearStr && assessmentYearStr !== "ALL" && assessmentYearStr !== "undefined" && assessmentYearStr.trim() !== "" && !isNaN(Number(assessmentYearStr))) {
-    params.append('YearRangeRVId', assessmentYearStr);
-  }
+    if (rateSectionStr && rateSectionStr !== "ALL" && rateSectionStr !== "undefined" && rateSectionStr.trim() !== "" && !isNaN(Number(rateSectionStr))) {
+      params.append('RateSectionId', rateSectionStr);
+    }
+    if (useGroupStr && useGroupStr !== "ALL" && useGroupStr !== "undefined" && useGroupStr.trim() !== "" && !isNaN(Number(useGroupStr))) {
+      params.append('TypeOfUseGroupId', useGroupStr);
+    }
+    if (assessmentYearStr && assessmentYearStr !== "ALL" && assessmentYearStr !== "undefined" && assessmentYearStr.trim() !== "" && !isNaN(Number(assessmentYearStr))) {
+      params.append('YearRangeRVId', assessmentYearStr);
+    }
 
-  // Add TaxZoneIds filter if provided (for server-side zone pagination)
-  // Backend may support comma-separated TaxZoneIds or multiple params
-  if (taxZoneIds && taxZoneIds.length > 0) {
-    params.append('TaxZoneIds', taxZoneIds.join(','));
-  }
+    // Add TaxZoneIds filter if provided (for server-side zone pagination)
+    // Backend may support comma-separated TaxZoneIds or multiple params
+    if (taxZoneIds && taxZoneIds.length > 0) {
+      params.append('TaxZoneIds', taxZoneIds.join(','));
+    }
 
-  const response = await apiClient.get<PagedResponse<IBackendRateMaster>>(`/Rate?${params.toString()}`);
-  if (!response.success || !response.data) {
-    throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to fetch paged rate data');
-  }
+    const response = await apiClient.get<PagedResponse<IBackendRateMaster>>(`/Rate?${params.toString()}`);
+    if (!response.success) {
+      throw new ApiError(response.statusCode ?? 500, response.error || 'Failed to fetch paged rate data', 'Get paged rate data failed');
+    }
+    if (!response.data) {
+      throw new ApiError(500, 'No data received from server', 'Invalid response format');
+    }
 
   const data = response.data;
   const backendData: IBackendRateMaster[] = data.items || [];
@@ -122,13 +146,13 @@ export async function getRateMasterPaged(
 
   backendData.forEach((item) => {
     try {
-      // Read both camelCase and PascalCase fields for robustness
-      const taxZoneId = item.taxZoneId ?? item.TaxZoneId;
+      // Read camelCase fields
+      const taxZoneId = item.taxZoneId;
       const taxZoneNo = String(taxZoneIdToNo.get(taxZoneId) || item.taxZoneNo || taxZoneId).trim();
-      const typeOfUseGroupId = String(item.typeOfUseGroupId ?? item.TypeOfUseGroupId);
-      const rateSectionId = item.rateSectionId ?? item.RateSectionId;
+      const typeOfUseGroupId = String(item.typeOfUseGroupId);
+      const rateSectionId = item.rateSectionId;
       const rateSectionNo = item.rateSectionNo || String(rateSectionId);
-      const yearRangeRVId = item.yearRangeRVId ?? item.YearRangeRVId ?? item.yearRangeId ?? item.YearRangeId;
+      const yearRangeRVId = item.yearRangeRVId ?? item.yearRangeId;
       
       // Simplified grouping key: only by taxZoneNo since filters are applied on backend
       // This ensures one row per tax zone in the matrix grid
@@ -141,8 +165,8 @@ export async function getRateMasterPaged(
         }));
 
         groupedData.set(key, {
-          id: String(item.Id ?? item.id),
-          rateSection: rateSectionNo as "A" | "B" | "C",
+          id: String(item.id),
+          rateSection: rateSectionNo,
           zoneNo: taxZoneNo,
           useGroup: typeOfUseGroupId,
           assessmentYear: `${yearRangeRVId}`,
@@ -152,7 +176,7 @@ export async function getRateMasterPaged(
 
       const group = groupedData.get(key);
       if (group) {
-        const constructionTypeId = Number(item.constructionTypeId ?? item.ConstructionTypeId);
+        const constructionTypeId = Number(item.constructionTypeId);
         const construction = constructionTypes.find(ct => Number(ct.constructionId) === constructionTypeId);
 
         if (construction) {
@@ -162,9 +186,9 @@ export async function getRateMasterPaged(
           if (rateIndex !== -1) {
             // If rate already exists, keep the non-zero value (prefer filled data over nulls)
             const existingRate = group.rates[rateIndex].ratePerSqMtr;
-            const newRate = item.rateSquareMeter ?? item.RateSquareMeter;
+            const newRate = item.rateSquareMeter;
             group.rates[rateIndex].ratePerSqMtr = existingRate && existingRate !== 0 ? existingRate : newRate;
-            group.rates[rateIndex].id = item.Id ?? item.id;
+            group.rates[rateIndex].id = item.id;
           }
         }
       }
@@ -205,8 +229,12 @@ export async function getRateMasterPaged(
     totalPages: data.totalPages || 0,
     hasPrevious: data.hasPrevious || false,
     hasNext: data.hasNext || false,
-  };
-}
+  };  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Get paged rate data failed');
+  }}
 
 /**
  * Get all rate master data from backend (unpaged)
@@ -217,8 +245,11 @@ export async function getRateMasterTableData(
 ): Promise<IRateMaster[]> {
   try {
     const response = await apiClient.get<PagedResponse<IBackendRateMaster>>(`/Rate?PageSize=-1`);
-    if (!response.success || !response.data) {
-      throw new Error(response.error || 'Failed to fetch rate master data');
+    if (!response.success) {
+      throw new ApiError(response.statusCode ?? 500, response.error || 'Failed to fetch rate master data', 'Get rate master data failed');
+    }
+    if (!response.data) {
+      throw new ApiError(500, 'No data received from server', 'Invalid response format');
     }
 
     const data = response.data;
@@ -236,8 +267,8 @@ export async function getRateMasterTableData(
 
         if (!groupedData.has(key)) {
           groupedData.set(key, {
-            id: String(item.Id),
-            rateSection: rateSectionNo as "A" | "B" | "C",
+            id: String(item.id),
+            rateSection: rateSectionNo,
             zoneNo: taxZoneNo,
             assessmentYear: yearRangeRVId,
             useGroup: typeOfUseGroupId,
@@ -257,18 +288,20 @@ export async function getRateMasterTableData(
           const rateIndex = rateMaster.rates.findIndex(r => r.rateCategory === constructionCode);
           if (rateIndex !== -1) {
             rateMaster.rates[rateIndex].ratePerSqMtr = item.rateSquareMeter;
-            rateMaster.rates[rateIndex].id = item.Id;
+            rateMaster.rates[rateIndex].id = item.id;
           }
         }
-      } catch (error) {
-        console.error('Error processing rate item:', error);
+      } catch {
+        // Skip invalid rate items
       }
     });
 
     return Array.from(groupedData.values());
   } catch (error) {
-    console.error('Error fetching rate master data:', error);
-    return [];
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Get rate master data failed');
   }
 }
 
@@ -295,8 +328,15 @@ export async function getRateMasterById(
   constructionTypes: RateCategory[],
   zoneDescriptions: IZoneDescription[]
 ): Promise<IRateMaster | null> {
-  const allData = await getRateMasterTableData(constructionTypes, zoneDescriptions);
-  return allData.find((item) => item.id === id) || null;
+  try {
+    const allData = await getRateMasterTableData(constructionTypes, zoneDescriptions);
+    return allData.find((item) => item.id === id) || null;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', `Get rate master ${id} failed`);
+  }
 }
 
 /**
@@ -307,43 +347,58 @@ export async function getRateMasterByFilters(
   useGroup: string,
   assessmentYear: string
 ): Promise<IBackendRateMaster[]> {
-  const params = new URLSearchParams({
-    PageNumber: '1',
-    PageSize: '-1', // fetch all records, no cap
-  });
+  try {
+    const params = new URLSearchParams({
+      PageNumber: '1',
+      PageSize: '-1', // fetch all records, no cap
+    });
 
-  if (zoneSection && zoneSection !== "ALL" && zoneSection !== "undefined" && !isNaN(Number(zoneSection))) {
-    params.append('RateSectionId', zoneSection);
-  }
-  if (useGroup && useGroup !== "ALL" && useGroup !== "undefined" && !isNaN(Number(useGroup))) {
-    params.append('TypeOfUseGroupId', useGroup);
-  }
-  if (assessmentYear && assessmentYear !== "ALL" && assessmentYear !== "undefined" && !isNaN(Number(assessmentYear))) {
-    params.append('YearRangeRVId', assessmentYear);
-  }
+    if (zoneSection && zoneSection !== "ALL" && zoneSection !== "undefined" && !isNaN(Number(zoneSection))) {
+      params.append('RateSectionId', zoneSection);
+    }
+    if (useGroup && useGroup !== "ALL" && useGroup !== "undefined" && !isNaN(Number(useGroup))) {
+      params.append('TypeOfUseGroupId', useGroup);
+    }
+    if (assessmentYear && assessmentYear !== "ALL" && assessmentYear !== "undefined" && !isNaN(Number(assessmentYear))) {
+      params.append('YearRangeRVId', assessmentYear);
+    }
 
-  const response = await apiClient.get<PagedResponse<IBackendRateMaster>>(`/Rate?${params.toString()}`);
-  if (!response.success || !response.data) {
-    throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to fetch rate data by filters');
-  }
+    const response = await apiClient.get<PagedResponse<IBackendRateMaster>>(`/Rate?${params.toString()}`);
+    if (!response.success) {
+      throw new ApiError(response.statusCode ?? 500, response.error || 'Failed to fetch rate data by filters', 'Get rate data by filters failed');
+    }
+    if (!response.data) {
+      throw new ApiError(500, 'No data received from server', 'Invalid response format');
+    }
 
-  const data = response.data;
-  return data.items || [];
+    const data = response.data;
+    return data.items || [];
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Get rate data by filters failed');
+  }
 }
 
 /* ========== POST/PUT/DELETE REQUESTS (Mutations) ========== */
 /**
  * Bulk purge rate master records (DELETE /Rate/Bulk/purge)
  */
-export async function bulkPurgeRateMaster(ids: number[]): Promise<{ success: boolean; message: string; data?: unknown }> {  
-  // Pass body through options parameter (RequestInit includes body property)
-  const response = await apiClient.delete<unknown>(`/Rate/Bulk/purge`, {
-    body: JSON.stringify(ids),
-  });
-   
-  if (!response.success) {
-    console.error('❌ Delete failed:', response.error);
-    throw new ApiError(response.statusCode || 500, "", response.error || 'Failed to bulk purge rate master');
-  } 
-  return { success: true, message: 'Bulk purge successful', data: response.data };
+export async function bulkPurgeRateMaster(ids: number[]): Promise<void> {  
+  try {
+    // Pass body through options parameter (RequestInit includes body property)
+    const response = await apiClient.delete<unknown>(`/Rate/Bulk/purge`, {
+      body: JSON.stringify(ids),
+    });
+     
+    if (!response.success) {
+      throw new ApiError(response.statusCode ?? 500, response.error || 'Failed to bulk purge rate master', 'Bulk purge rate master failed');
+    }
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, error instanceof Error ? error.message : 'Unknown error', 'Bulk purge rate master failed');
+  }
 }

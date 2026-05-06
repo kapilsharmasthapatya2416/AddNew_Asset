@@ -161,8 +161,8 @@ export function useRateMasterFormState({
               return { ...baseRow, ...edits };
             });
           }
-        } catch (e) {
-          console.error('Failed to parse stored matrix data:', e);
+        } catch (_e) {
+          // Failed to parse stored matrix data, will use default
         }
       }
     }
@@ -326,7 +326,6 @@ export function useRateMasterFormState({
     // Prefer backendRates prop (from SSR) over fetchedBackendRates state
     // backendRates prop is always fresh from server, fetchedBackendRates may be stale
     const ratesToUse = (backendRates && backendRates.length > 0) ? backendRates : fetchedBackendRates;
-    console.log(`✅ useRateMasterFormState: Processing rates for zone=${selectedZone}, useGroup=${selectedUseGroup}, year=${assessmentYear}, ratesCount=${ratesToUse.length}`);
     setShowMatrix(true);
     
     if (ratesToUse && Array.isArray(ratesToUse) && ratesToUse.length > 0) {
@@ -341,14 +340,14 @@ export function useRateMasterFormState({
       const activeZones = paginatedZoneDescriptions.length > 0 ? paginatedZoneDescriptions : zoneDescriptions;
       const updatedMatrix = activeZones.map((z, idx) => {
         const zoneRates = ratesToUse.filter((row: IBackendRateMaster) => {
-          const taxZoneId = row.taxZoneId ?? row.TaxZoneId;
+          const taxZoneId = row.taxZoneId;
           return taxZoneId === z.taxZoneId || String(taxZoneId) === z.zoneNo;
         });
         const rateValues: { [key: string]: number } = {};
         zoneRates.forEach((rate: IBackendRateMaster) => {
-          const constructionTypeId = rate.constructionTypeId ?? rate.ConstructionTypeId;
+          const constructionTypeId = rate.constructionTypeId;
           const constructionKey = String(constructionTypeId);
-          const rateSqM = rate.rateSquareMeter ?? rate.RateSquareMeter;
+          const rateSqM = rate.rateSquareMeter;
           if (rateSqM !== undefined) {
             rateValues[constructionKey] = rateSqM;
           }

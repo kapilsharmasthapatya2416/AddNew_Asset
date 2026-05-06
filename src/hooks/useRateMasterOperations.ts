@@ -45,11 +45,11 @@ export function useRateMasterOperations({
 
     function findExistingRate(taxZoneId: number, constructionId: string) {
       return existingBackendRates.find(r => {
-        const rTaxZoneId = r.TaxZoneId ?? r.taxZoneId;
-        const rConstructionTypeId = r.ConstructionTypeId ?? r.constructionTypeId;
-        const rTypeOfUseGroupId = r.TypeOfUseGroupId ?? r.typeOfUseGroupId;
-        const rYearRangeRVId = r.YearRangeRVId ?? r.yearRangeRVId ?? r.yearRangeId ?? r.YearRangeId;
-        const rRateSectionId = r.RateSectionId ?? r.rateSectionId;
+        const rTaxZoneId = r.taxZoneId;
+        const rConstructionTypeId = r.constructionTypeId;
+        const rTypeOfUseGroupId = r.typeOfUseGroupId;
+        const rYearRangeRVId = r.yearRangeRVId ?? r.yearRangeId;
+        const rRateSectionId = r.rateSectionId;
         
         return (
           Number(rTaxZoneId) === taxZoneId &&
@@ -93,12 +93,12 @@ export function useRateMasterOperations({
         const rateCellInRow = Array.isArray(rowRates) ? rowRates.find((r) => 
           r.rateCategory === rowKey || Number(r.constructionTypeId) === Number(constructionId)
         ) : undefined;
-        const rateIdInRow = rateCellInRow?.id || rateCellInRow?.Id;
-        const existingId = rateIdInRow || existing?.Id || existing?.id;
+        const rateIdInRow = rateCellInRow?.id;
+        const existingId = rateIdInRow || existing?.id;
         
         if (existingId) {
           // Only include in updates if value actually changed
-          const originalValue = existing?.rateSquareMeter ?? existing?.RateSquareMeter ?? 0;
+          const originalValue = existing?.rateSquareMeter ?? 0;
           if (Number(val) !== Number(originalValue)) {
             payload.Id = Number(existingId);
             updates.push(payload);
@@ -146,8 +146,8 @@ export function useRateMasterOperations({
           toast.error(t('messages.validationRatesAlreadyExist'));
           return { success: false };
         }
-      } catch (err) {
-        console.error('Failed to check existing rates before add:', err);
+      } catch (_err) {
+        // Continue with operation even if check fails
       }
     }
 
@@ -330,8 +330,7 @@ export function useRateMasterOperations({
         String(selectedUseGroup),
         String(assessmentYear)
       );
-    } catch (err) {
-      console.error('Failed to fetch backend rates for update:', err);
+    } catch (_err) {
       toast.error(t('messages.validationFetchUpdateFailed'));
       return { success: false };
     }
@@ -354,8 +353,8 @@ export function useRateMasterOperations({
       let multipliedBackendRates: IBackendRateMaster[] = [];
       try {
         multipliedBackendRates = await getRateMasterByFilters(selectedZone, useGroup, assessmentYear);
-      } catch (err) {
-        console.error('Failed to fetch backend rates for multiplied use group:', useGroup, err);
+      } catch (_err) {
+        // Continue with empty backend rates for this multiplied use group
       }
 
       allRateSubmissions.push({ matrixData: multipliedMatrixData, useGroup, multiplier, backendRates: multipliedBackendRates });
@@ -448,12 +447,11 @@ export function useRateMasterOperations({
       toast.error(t('messages.noRatesToDelete'));
       return { success: false };
     }
-    
-    // Helper to safely get value for both camelCase and PascalCase keys
+
     // Count configured (non-zero) rates across all backend rates
     const configuredRatesCount = latestBackendRates.reduce((count, rate) => {
-      // Count each backend row with a non-zero rateSquareMeter/RateSquareMeter
-      return count + (Number(rate.rateSquareMeter ?? rate.RateSquareMeter) > 0 ? 1 : 0);
+      // Count each backend row with a non-zero rateSquareMeter
+      return count + (Number(rate.rateSquareMeter) > 0 ? 1 : 0);
     }, 0);
 
     const result = await deleteRateMasterAction(latestBackendRates);

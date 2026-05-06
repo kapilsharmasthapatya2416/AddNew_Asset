@@ -1,15 +1,10 @@
 "use client";
 
-import { useMemo, useEffect, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import {  CheckCircle, MapPin, Calendar, Users } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { 
-  SearchSelect, 
-  StatusBadge, 
-  MatrixGrid,
-  AddButton,
-} from "@/components/common";
+import { SearchSelect, StatusBadge, MatrixGrid,AddButton} from "@/components/common";
 import { MatrixGridPagination } from "@/components/common/MatrixGrid";
 import { DownloadButton, EditLabelButton, DeleteLabelButton } from "@/components/common/ActionButtons";
 import type { MatrixColumn } from "@/components/common";
@@ -28,8 +23,6 @@ const singleColorClassHeader = "text-blue-1000";
 // This will be set inside the component to ensure rateCategories is available
 export default function RateMasterView({
   rateMasterData = [],
-  pageNumber = 1,
-  pageSize = 10,
   totalPages = 0,
   totalCount = 0,
   zones = [],
@@ -48,6 +41,10 @@ export default function RateMasterView({
   const t = useTranslations("ptis_RVRateMaster");
   const tCommon = useTranslations("common");
 
+  // Pagination state from search params 
+  const pageNumber = Number(searchParams?.get("page")) || 1;
+  const pageSize = Number(searchParams?.get("pageSize")) || 10;
+
   // Create a map of zoneNo to remark (description) for tooltips
   const zoneRemarksMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -65,22 +62,6 @@ export default function RateMasterView({
 
   // Check if pagination is enabled
   const isPaginationEnabled = totalPages !== undefined && pageNumber !== undefined;
-
-  // Debug logging
-  useEffect(() => {
-    console.log('📊 RateMasterView Props:', {
-      rateMasterDataCount: rateMasterData.length,
-      pageNumber,
-      pageSize,
-      totalPages,
-      totalCount,
-      isPaginationEnabled,
-      initialZone,
-      initialUseGroup,
-      initialYear,
-      sampleData: rateMasterData[0]
-    });
-  }, [rateMasterData, pageNumber, pageSize, totalPages, totalCount, isPaginationEnabled, initialZone, initialUseGroup, initialYear]);
 
   /* ---------------- Filters ---------------- */
 
@@ -234,8 +215,7 @@ export default function RateMasterView({
 
       toast.dismiss();
       toast.success(t('messages.ratesDownloaded'));
-    } catch (error) {
-      console.error('Error downloading rates:', error);
+    } catch (_error) {
       toast.dismiss();
       toast.error(t('messages.downloadFailed'));
     }

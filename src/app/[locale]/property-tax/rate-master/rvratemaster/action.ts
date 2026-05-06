@@ -338,20 +338,18 @@ export async function deleteRateMasterAction(backendRates: IBackendRateMaster[])
     return { success: false, message: 'No rates found to delete.' };
   }
   const ids = backendRates
-    .map(rate => rate.Id || rate.id)
+    .map(rate => rate.id)
     .filter((id): id is number => typeof id === 'number' && id > 0);
 
   if (ids.length === 0) {
     return { success: false, message: 'No valid rate IDs found to delete.' };
   }
   try {
-    const result = await rateMasterService.bulkPurgeRateMaster(ids);    
-    if (result.success) {
-      for (const locale of locales) {
-        revalidatePath(`/${locale}/property-tax/rate-master/rvratemaster`);
-      }
+    await rateMasterService.bulkPurgeRateMaster(ids);
+    for (const locale of locales) {
+      revalidatePath(`/${locale}/property-tax/rate-master/rvratemaster`);
     }
-    return result;
+    return { success: true, message: 'Rates deleted successfully' };
   } catch (error: unknown) {
     if (error instanceof ApiError) {
       return {
@@ -397,15 +395,12 @@ export async function bulkCreateRateMasterAction(
       ...rate,
       createdBy: userId,
     }));
-    const result = await rateMasterService.bulkCreateRateMaster(ratesWithUser);
+    await rateMasterService.bulkCreateRateMaster(ratesWithUser);
       
-    if (result.success) {
-      for (const locale of locales) {
-        revalidatePath(`/${locale}/property-tax/rate-master/rvratemaster`);
-      }
-      return { success: true, message: result.message, data: result.data };
+    for (const locale of locales) {
+      revalidatePath(`/${locale}/property-tax/rate-master/rvratemaster`);
     }
-    return { success: false, message: result.message || 'Failed to create rates' };
+    return { success: true, message: 'Rates created successfully' };
   } catch (error: unknown) {
     if (error instanceof ApiError) {
       return {
@@ -444,15 +439,12 @@ export async function bulkUpdateRateMasterAction(
         UpdatedBy: userId,
       },
     }));
-    const result = await rateMasterService.bulkUpdateRateMaster(payloadWithUser);
+    await rateMasterService.bulkUpdateRateMaster(payloadWithUser);
     
-    if (result.success) {
-      for (const locale of locales) {
-        revalidatePath(`/${locale}/property-tax/rate-master/rvratemaster`);
-      }
-      return { success: true, message: result.message, data: result.data };
+    for (const locale of locales) {
+      revalidatePath(`/${locale}/property-tax/rate-master/rvratemaster`);
     }
-    return { success: false, message: result.message || 'Failed to update rates' };
+    return { success: true, message: 'Rates updated successfully' };
   } catch (error: unknown) {
     if (error instanceof ApiError) {
       return {

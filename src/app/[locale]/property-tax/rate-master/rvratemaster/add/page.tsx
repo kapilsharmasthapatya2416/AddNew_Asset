@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+// import { Suspense } from "react"; // Removed as Suspense is no longer used
 import {PageContainer} from "@/components/common/PageContainer";
 import RateMasterView from "@/components/modules/property-tax/RVRateMaster/RateMasterView";
 import AddRateDrawer from "@/components/modules/property-tax/RVRateMaster/AddRateDrawer";
@@ -108,32 +108,28 @@ export default async function AddRatePage({ searchParams }: PageProps) {
   return (
     <>
       <PageContainer className="pt-24">
-        <Suspense fallback={null}>
-          <RateMasterView
-            rateMasterData={tableData ?? []}
-            zones={zones ?? []}
-            useGroups={useGroups ?? []}
-            assessmentYears={assessmentYears ?? []}
-            rateCategories={constructionTypes.map((ct: { constructionId: string; constructionCode?: string; description?: string }) => ({ constructionId: ct.constructionId, constructionCode: ct.constructionCode, description: ct.description }))}
-            initialZone={initialZone}
-            initialUseGroup={initialUseGroup}
-            initialYear={initialYear}
-          />
-        </Suspense>
-      </PageContainer>
-      <Suspense fallback={null}>
-        <AddRateDrawer
-          zones={zones}
-          useGroups={useGroups}
-          assessmentYears={assessmentYears}
-          assessmentYearRanges={assessmentYearRanges}
-          zoneDescriptions={paginatedZonesResult.items}
-          allZones={allZonesResult}
+        <RateMasterView
+          rateMasterData={tableData ?? []}
+          zones={zones ?? []}
+          useGroups={useGroups ?? []}
+          assessmentYears={assessmentYears ?? []}
           rateCategories={constructionTypes.map((ct: { constructionId: string; constructionCode?: string; description?: string }) => ({ constructionId: ct.constructionId, constructionCode: ct.constructionCode, description: ct.description }))}
-          paginatedZonesData={paginatedZonesData}
-          initialExistingRatesCheck={initialExistingRatesCheck}
+          initialZone={initialZone}
+          initialUseGroup={initialUseGroup}
+          initialYear={initialYear}
         />
-      </Suspense>
+      </PageContainer>
+      <AddRateDrawer
+        zones={zones}
+        useGroups={useGroups}
+        assessmentYears={assessmentYears}
+        assessmentYearRanges={assessmentYearRanges}
+        zoneDescriptions={paginatedZonesResult.items}
+        allZones={allZonesResult}
+        rateCategories={constructionTypes.map((ct: { constructionId: string; constructionCode?: string; description?: string }) => ({ constructionId: ct.constructionId, constructionCode: ct.constructionCode, description: ct.description }))}
+        paginatedZonesData={paginatedZonesData}
+        initialExistingRatesCheck={initialExistingRatesCheck}
+      />
     </>
   );
 }

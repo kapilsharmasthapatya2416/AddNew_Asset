@@ -88,7 +88,7 @@ const mockProps = {
   rateMasterData: [
     {
       id: "1",
-      rateSection: "A" as const,
+      rateSection: "1",
       zoneNo: "1",
       useGroup: "Residential",
       assessmentYear: "2023-2024",

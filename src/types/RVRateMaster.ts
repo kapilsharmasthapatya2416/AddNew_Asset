@@ -40,7 +40,7 @@ export interface IRateValue {
  */
 export interface IRateMaster {
   id?: string;
-  rateSection: "A" | "B" | "C";
+  rateSection: string;
   zoneNo: string;
   assessmentYear: string;
   useGroup: string;
@@ -117,36 +117,24 @@ export interface IZoneDescription {
  * Backend API Response Types
  */
 export interface IBackendRateMaster {
-  id?: number; // Optional for backward compatibility
-  Id: number; 
+  id: number;
   year: number;
   floorId: number;
-  FloorId?: number;
   constructionTypeId: number;
-  ConstructionTypeId?: number;
   typeOfUseGroupId: number;
-  TypeOfUseGroupId?: number;
   rateSectionId: number;
-  RateSectionId?: number;
   taxZoneId: number;
-  TaxZoneId?: number;
-  yearRangeRVId: number; // Backend field name for RV assessment year range
-  YearRangeRVId?: number;
-  yearRangeId?: number; // Deprecated: kept for backward compatibility
-  YearRangeId?: number;
-  taxZoneNo?: string; // Optional for backward compatibility
-  floorID?: string; // Optional for backward compatibility
-  constructionID?: string; // Optional for backward compatibility
-  typeOfUseGroupID?: string; // Optional for backward compatibility
-  rateSectionNo?: string; // Optional for backward compatibility
+  yearRangeRVId: number; 
+  yearRangeId?: number; 
+  taxZoneNo?: string; 
+  floorID?: string; 
+  constructionID?: string; 
+  typeOfUseGroupID?: string; 
+  rateSectionNo?: string; 
   rateSquareMeter: number;
-  RateSquareMeter?: number;
   rateSquareFeet: number;
-  RateSquareFeet?: number;
   rateRemark: string;
-  RateRemark?: string;
   isActive: boolean;
-  IsActive?: boolean;
   createdDate: string;
   updatedDate: string | null;
   createdBy?: number;

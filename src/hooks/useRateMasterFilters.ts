@@ -61,7 +61,6 @@ export function useRateMasterFilters({
         const prevJson = JSON.stringify(prev);
         // Always update if the data actually changed
         if (prevJson !== newRatesJson) {
-          console.log('✅ useRateMasterFilters: backendRates prop changed, updating fetchedBackendRates');
           return backendRates;
         }
         return prev;
