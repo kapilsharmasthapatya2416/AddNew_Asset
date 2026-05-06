@@ -5,7 +5,6 @@ import { Input } from "@/components/common/Input";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { X } from "lucide-react";
 import {
-    SaveButton,
     UpdateButton,
     ClearButton,
     ApplyButton,
@@ -14,8 +13,8 @@ import {
 } from "@/components/common/ActionButtons";
 
 interface AgeFactorCvHeaderExtraProps {
-    t: (key: string, values?: any) => string;
-    tW: (key: string, values?: any) => string;
+    t: (key: string, values?: Record<string, string | number>) => string;
+    tW: (key: string, values?: Record<string, string | number>) => string;
     assessmentYearOptions: Option[];
     constructionTypeOptions: Option[];
     ageRangeOptions: Option[];
@@ -90,7 +89,7 @@ export const AgeFactorCvHeaderExtra: React.FC<AgeFactorCvHeaderExtraProps> = ({
                 <div className="w-[140px] z-30">
                     <SearchSelect
                         name="assessmentYear"
-                        options={assessmentYearOptions as any}
+                        options={assessmentYearOptions}
                         value={selectedYear}
                         onChange={(_, val) => handleAssessmentYearChange(val)}
                         placeholder={t('placeholders.select')}
@@ -104,7 +103,7 @@ export const AgeFactorCvHeaderExtra: React.FC<AgeFactorCvHeaderExtraProps> = ({
                 <div className="w-[180px] z-30">
                     <SearchSelect
                         name="constructionType"
-                        options={constructionTypeOptions as any}
+                        options={constructionTypeOptions}
                         value={constructionType}
                         onChange={(_, val) => handleConstructionTypeChange(val)}
                         placeholder={t('placeholders.select')}
@@ -119,7 +118,7 @@ export const AgeFactorCvHeaderExtra: React.FC<AgeFactorCvHeaderExtraProps> = ({
                     <div className="w-[140px] z-30">
                         <SearchSelect
                             name="ageRange"
-                            options={ageRangeOptions as any}
+                            options={ageRangeOptions}
                             value={selectedAgeRange}
                             onChange={(_, val) => handleAgeRangeChange(val)}
                             placeholder={t('placeholders.selectRange')}

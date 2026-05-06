@@ -8,8 +8,8 @@ vi.mock("next-intl", () => ({
 }));
 
 const mockT = (key: string) => key;
-const mockTW = (key: string, params?: Record<string, unknown>) => {
-    const map: Record<string, string | ((p?: Record<string, unknown>) => string)> = {
+const mockTW = (key: string, params?: Record<string, string | number>) => {
+    const map: Record<string, string | ((p?: Record<string, string | number>) => string)> = {
         "common.buttons.apply": "Apply",
         "common.buttons.clear": "Clear",
         "common.buttons.update": "Update",
@@ -19,7 +19,7 @@ const mockTW = (key: string, params?: Record<string, unknown>) => {
         "common.buttons.updating": "Updating...",
         "common.buttons.add": "Add",
         "common.buttons.cancel_btn": "Cancel",
-        "common.labels.pendingRecordCreates": (p?: Record<string, unknown>) => p?.count !== undefined ? `${p.count} pending creates` : "pending creates",
+        "common.labels.pendingRecordCreates": (p?: Record<string, string | number>) => p?.count !== undefined ? `${p.count} pending creates` : "pending creates",
     };
     const value = map[key];
     if (typeof value === "function") return value(params);
@@ -32,8 +32,8 @@ const ageRangeOptions = [{ label: "0-10", value: "0-10" }];
 
 function buildDefaultProps(overrides = {}) {
     return {
-        t: mockT as any,
-        tW: mockTW as any,
+        t: mockT,
+        tW: mockTW,
         assessmentYearOptions,
         constructionTypeOptions,
         ageRangeOptions,

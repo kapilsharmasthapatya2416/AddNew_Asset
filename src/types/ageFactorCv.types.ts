@@ -84,6 +84,7 @@ export interface AgeFactorCVBulkUpdateItem {
     factor: number;
     yearRangeCVId: number;
     isActive: boolean;
+    updatedBy: number;
   };
 }
 

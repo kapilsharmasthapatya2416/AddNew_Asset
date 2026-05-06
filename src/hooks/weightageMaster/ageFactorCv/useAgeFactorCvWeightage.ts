@@ -23,10 +23,10 @@ interface UseAgeFactorCvWeightageParams {
 
 export const useAgeFactorCvWeightage = ({
     data,
-    pageNumber,
+    pageNumber: _pageNumber,
     pageSize,
-    totalCount,
-    totalPages,
+    totalCount: _totalCount,
+    totalPages: _totalPages,
     constructionTypeOptions,
     initialAgeRangeOptions,
     allAgeFactors,
@@ -47,21 +47,17 @@ export const useAgeFactorCvWeightage = ({
     // Age Range States
     const [ageFrom, setAgeFrom] = useState<string>("");
     const [ageTo, setAgeTo] = useState<string>("");
-    const [ageRangeOptions, setAgeRangeOptions] = useState<Option[]>(initialAgeRangeOptions || []);
-    
-    useEffect(() => {
-        if (initialAgeRangeOptions) {
-            setAgeRangeOptions(prev => {
-                const combined = [...initialAgeRangeOptions];
-                prev.forEach(opt => {
-                    if (!combined.find(c => c.value === opt.value)) {
-                        combined.push(opt);
-                    }
-                });
-                return combined;
-            });
-        }
-    }, [initialAgeRangeOptions]);
+    const [userAddedAgeRanges, setUserAddedAgeRanges] = useState<Option[]>([]);
+
+    const ageRangeOptions = useMemo(() => {
+        const combined = [...(initialAgeRangeOptions || [])];
+        userAddedAgeRanges.forEach(opt => {
+            if (!combined.find(c => c.value === opt.value)) {
+                combined.push(opt);
+            }
+        });
+        return combined;
+    }, [initialAgeRangeOptions, userAddedAgeRanges]);
 
     const [selectedAgeRange, setSelectedAgeRange] = useState<string>("");
     const [isAddYearRangeModalOpen, setIsAddYearRangeModalOpen] = useState(false);
@@ -223,7 +219,7 @@ export const useAgeFactorCvWeightage = ({
             addToast('info', t('messages.ageRangeExists'));
             return;
         }
-        setAgeRangeOptions(prev => [...prev, { label: `${ageFrom}-${ageTo}`, value: newRange }]);
+        setUserAddedAgeRanges(prev => [...prev, { label: `${ageFrom}-${ageTo}`, value: newRange }]);
         setSelectedAgeRange(newRange);
         addToast('success', t('messages.ageRangeAdded', { from: ageFrom, to: ageTo }));
         setIsAgeRangeAdded(true);

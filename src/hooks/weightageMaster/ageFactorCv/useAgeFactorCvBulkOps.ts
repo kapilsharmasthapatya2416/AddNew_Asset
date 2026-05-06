@@ -113,8 +113,8 @@ export const useAgeFactorCvBulkOps = ({
         setIsBulkUpdating(true);
         try {
             const userId = getUserIdFromCookie() || 1;
-            const creates: any[] = [];
-            const updates: any[] = [];
+            const creates: BulkAgeFactorCVMasterCreate = [];
+            const updates: BulkAgeFactorCVMasterUpdate = [];
 
             for (const [uid, updatedData] of updatedEntries) {
                 const originalRow = findRowByUid(uid);
@@ -184,7 +184,7 @@ export const useAgeFactorCvBulkOps = ({
         setIsGeneratingAll(true);
         try {
             const userId = getUserIdFromCookie() || 1;
-            const ageFactors: any[] = [];
+            const ageFactors: BulkAgeFactorCVMasterCreate = [];
             const defaultFactor = parseFloat(factorValue) || 0.00;
             
             const yearsToProcess = selectedYear ? [selectedYear] : [];

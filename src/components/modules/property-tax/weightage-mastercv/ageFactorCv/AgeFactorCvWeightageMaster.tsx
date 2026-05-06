@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MasterTable, Column } from "@/components/common/MasterTable";
+import { MasterTable } from "@/components/common/MasterTable";
 import { ToastContainer } from "@/components/common/Toast";
 import { SaveButton, UpdateButton, ClearButton } from "@/components/common/ActionButtons";
 import { AgeFactorCVMaster } from "@/types/ageFactorCv.types";
@@ -57,7 +57,6 @@ const AgeFactorCvWeightageMaster: React.FC<AgeFactorCvWeightageMasterProps> = ({
         newRecordsCount,
         canGenerateAll,
         getRowUid,
-        addToast,
         removeToast,
         handleCellChange,
         handleUpdate,

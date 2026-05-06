@@ -4,6 +4,7 @@ import { describe, it, expect, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 
 import AgeFactorCvBuilding from "@/components/modules/property-tax/weightage-mastercv/ageFactorCv/AgeFactorCvBuilding";
+import { AgeFactorCVMaster } from "@/types/ageFactorCv.types";
 
 vi.mock("next/navigation", () => ({
     useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
@@ -17,12 +18,12 @@ vi.mock("next-intl", () => ({
 
 // Mock the child component to simplify testing the wrapper
 vi.mock("@/components/modules/property-tax/weightage-mastercv/ageFactorCv/AgeFactorCvWeightageMaster", () => ({
-    default: (props: any) => <div data-testid="age-factor-master">{JSON.stringify(props.data.length)}</div>
+    default: (props: { data: AgeFactorCVMaster[] }) => <div data-testid="age-factor-master">{JSON.stringify(props.data.length)}</div>
 }));
 
 describe("AgeFactorCvBuilding Wrapper", () => {
     const mockProps = {
-        data: [{ id: 1 }] as any,
+        data: [{ id: 1 }] as AgeFactorCVMaster[],
         pageNumber: 1,
         pageSize: 10,
         totalCount: 1,

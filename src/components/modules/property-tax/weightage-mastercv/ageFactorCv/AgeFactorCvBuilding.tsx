@@ -1,6 +1,7 @@
 import React from "react";
 import AgeFactorCvWeightageMaster from "./AgeFactorCvWeightageMaster";
-import { AgeFactorCVMaster, Option } from "@/types/ageFactorCv.types";
+import { AgeFactorCVMaster } from "@/types/ageFactorCv.types";
+import { Option } from "@/components/common/select";
 
 interface AgeFactorCvBuildingProps {
     data: AgeFactorCVMaster[];
