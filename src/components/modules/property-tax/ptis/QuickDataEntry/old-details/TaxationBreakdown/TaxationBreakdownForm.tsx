@@ -141,8 +141,12 @@ export default function TaxationBreakdownForm({
           <Label className="text-sm font-semibold text-gray-700 ml-1">{t("assessmentYear")}</Label>
           <Input
             type="text"
+            inputMode="numeric"
+            pattern="[0-9]{4}"
+            maxLength={4}
+            title="Enter a 4-digit year"
             value={formData.year}
-            onChange={(e) => handleMetaChange('year', e.target.value)}
+            onChange={(e) => handleMetaChange('year', e.target.value.replace(/\D/g, "").slice(0, 4))}
             placeholder={t("assessmentYear")}
             className="h-[46px] border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
           />

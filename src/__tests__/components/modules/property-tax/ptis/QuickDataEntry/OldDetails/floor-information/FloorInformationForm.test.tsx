@@ -3,9 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import FloorInformationForm from '@/components/modules/property-tax/ptis/QuickDataEntry/old-details/FloorInformation/FloorInformationForm';
 import { useFloorInformationForm } from '@/hooks/useFloorInformationForm';
 import { useConfirm } from '@/components/common';
-// import FloorInformationForm from '@/components/modules/property-tax/ptis/QuickDataEntry/old-details/FloorInformation/FloorInformationForm';
-// import { useFloorInformationForm } from '@/hooks/useFloorInformationForm';
-// import { useConfirm } from '@/components/common/ConfirmProvider';
 
 import { OldFloorDetail } from '@/types/property-old-details.types';
 

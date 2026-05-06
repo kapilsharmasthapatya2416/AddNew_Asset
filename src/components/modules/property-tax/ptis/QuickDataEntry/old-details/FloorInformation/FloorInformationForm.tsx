@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { Button, DeleteButton, EditButton, Input, MasterTable, SearchSelect, useConfirm, ValidationMessage } from "@/components/common";
 import { Label } from "@/components/common/label";
 import { Layers, Plus, RotateCcw, Save } from "lucide-react";
@@ -49,6 +49,22 @@ export default function FloorInformationForm({
     initialSubUseTypeOptions
   });
 
+  // Client-side pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 4;
+
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return existingFloorDetails.slice(start, start + pageSize);
+  }, [existingFloorDetails, currentPage]);
+
+  const totalPages = Math.ceil(existingFloorDetails.length / pageSize);
+
+  // Reset to first page if current page exceeds total pages after a delete
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(totalPages);
+  }
+
   // Transformation helpers for SearchSelect
   const initialFloorOptions = useMemo(() => floorOptions.map(opt => ({ label: opt.description, value: String(opt.id) })), [floorOptions]);
   const initialSubFloorOptions = useMemo(() => subFloorOptions.map(opt => ({ label: opt.description, value: String(opt.id) })), [subFloorOptions]);
@@ -65,7 +81,7 @@ export default function FloorInformationForm({
         </h3>
 
         {/* Floor Entry Form Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 border border-blue-100 rounded-xl overflow-hidden bg-gray-50/30 p-5">
           {/* Floor */}
           <div className="space-y-2 relative focus-within:z-50">
             <Label className="text-sm font-bold text-blue-900 flex items-center gap-1">
@@ -211,10 +227,10 @@ export default function FloorInformationForm({
         </div>
 
         {/* MasterTable Section */}
-        <div className="border border-blue-100 rounded-xl overflow-hidden bg-gray-50/30">
+        <div className="border border-blue-100 rounded-xl overflow-hidden bg-gray-50/30 mb-10">
           <MasterTable
             columns={getFloorInformationColumns(t)}
-            data={existingFloorDetails.map(f => ({
+            data={paginatedData.map(f => ({
               id: f.id,
               originalRow: f, // Keep reference for edit
               floor: f.floorDescription,
@@ -225,6 +241,15 @@ export default function FloorInformationForm({
               subUse: f.subTypeOfUseDescription,
               areaSqFt: f.oldCarpetAreaSqFeet,
             }))}
+            pageNumber={currentPage}
+            pageSize={pageSize}
+            totalCount={existingFloorDetails.length}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            paginationConfig={{
+              enabled: true,
+              showPageSizeSelector: false
+            }}
 
             getRowKey={(row: FloorTableRow) => String(row.id || "")}
             maxBodyHeightClassName="max-h-[400px]"

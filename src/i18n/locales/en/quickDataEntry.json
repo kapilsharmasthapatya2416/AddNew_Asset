@@ -512,7 +512,10 @@
         },
         "error": {
             "title": "Unable to load old details",
-            "description": "There was a problem fetching the historical information. Please try again."
+            "description": "There was a problem fetching the historical information. Please try again.",
+            "errorId": "Error ID: {id}",
+            "goHome": "Go Home",
+            "tryAgain": "Try Again"
         },
         "oldTaxation": {
             "error": {

@@ -51,7 +51,7 @@ export async function getFloorsAction(
     }
 }
 
-export async function GetSubFloorsAction(
+export async function getSubFloorsAction(
      pageNumber: number,
     pageSize: number,
     searchTerm?: string
@@ -71,7 +71,7 @@ export async function GetSubFloorsAction(
 }
 
 //  Fetches all Construction Types.
-export async function GetConstructionTypesAction(
+export async function getConstructionTypesAction(
     pageNumber: number,
     pageSize: number,
     searchTerm?: string
@@ -91,7 +91,7 @@ export async function GetConstructionTypesAction(
 }
 
 // Fetches all Type of Uses.
-export async function GetTypeOfUsesAction(
+export async function getTypeOfUsesAction(
     pageNumber: number,
     pageSize: number,
     searchTerm?: string
@@ -114,7 +114,7 @@ export async function GetTypeOfUsesAction(
  * Fetches Sub Type of Use list based on the selected Type of Use ID.
  * @param typeOfUseId The ID of the selected Type of Use
  */
-export async function GetSubTypeOfUsesAction(
+export async function getSubTypeOfUsesAction(
     typeOfUseId: number,
     pageNumber: number,
     pageSize: number,
@@ -137,7 +137,7 @@ export async function GetSubTypeOfUsesAction(
  * Fetches existing Old Floor Details for a property.
  * @param propertyId The ID of the property
  */
-export async function GetOldFloorDetailsAction(propertyId: number): Promise<ActionResult<OldFloorDetail[]>> {
+export async function getOldFloorDetailsAction(propertyId: number): Promise<ActionResult<OldFloorDetail[]>> {
     try {
         const response = await getOldFloorDetailsForFloorInformation(propertyId);
         return {
@@ -158,7 +158,7 @@ export async function GetOldFloorDetailsAction(propertyId: number): Promise<Acti
  * @param data The floor detail data
  * @param locale The current locale for revalidation
  */
-export async function SaveOldFloorDetailsAction(
+export async function saveOldFloorDetailsAction(
     propertyId: number, 
     data: SaveOldFloorDetailPayload, 
     locale: string

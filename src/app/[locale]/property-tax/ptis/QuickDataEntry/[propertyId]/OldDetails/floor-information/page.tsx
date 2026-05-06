@@ -2,11 +2,11 @@ import FloorInformationForm from '@/components/modules/property-tax/ptis/QuickDa
 import { setRequestLocale } from 'next-intl/server';
 import {
     getFloorsAction,
-    GetSubFloorsAction,
-    GetConstructionTypesAction,
-    GetTypeOfUsesAction,
-    GetSubTypeOfUsesAction,
-    GetOldFloorDetailsAction
+    getSubFloorsAction,
+    getConstructionTypesAction,
+    getTypeOfUsesAction,
+    getSubTypeOfUsesAction,
+    getOldFloorDetailsAction
 } from './action';
 
 import { SubTypeOfUse } from '@/types/property-old-details.types';
@@ -29,20 +29,20 @@ export default async function FloorInformationPage({ params, searchParams }: Pag
         floorsRes,
         subFloorsRes,
         constructionTypesRes,
-        TypeOfUseRes,
+        typeOfUseRes,
         subUseTypesRes,
         oldFloorDetailsRes
     ] = await Promise.all([
         getFloorsAction(1, -1),
-        GetSubFloorsAction(1, -1),
-        GetConstructionTypesAction(1, -1),
-        GetTypeOfUsesAction(1, -1),
-        typeOfUseId ? GetSubTypeOfUsesAction(Number(typeOfUseId),1,-1) : Promise.resolve({ success: true, data: [] as SubTypeOfUse[] }),
-        GetOldFloorDetailsAction(Number(propertyId))
+        getSubFloorsAction(1, -1),
+        getConstructionTypesAction(1, -1),
+        getTypeOfUsesAction(1, -1),
+        typeOfUseId ? getSubTypeOfUsesAction(Number(typeOfUseId),1,-1) : Promise.resolve({ success: true, data: [] as SubTypeOfUse[] }),
+        getOldFloorDetailsAction(Number(propertyId))
     ]);
 
     // ✅ Consolidated error handling (for master data)
-    const masterDataResponses = [floorsRes, subFloorsRes, constructionTypesRes, TypeOfUseRes];
+    const masterDataResponses = [floorsRes, subFloorsRes, constructionTypesRes, typeOfUseRes];
     const failedMasterResponse = masterDataResponses.find(res => !res.success);
 
     if (failedMasterResponse && !failedMasterResponse.success) {
@@ -53,7 +53,7 @@ export default async function FloorInformationPage({ params, searchParams }: Pag
     const floors = floorsRes.success ? floorsRes.data : [];
     const subFloors = subFloorsRes.success ? subFloorsRes.data : [];
     const constructionTypes = constructionTypesRes.success ? constructionTypesRes.data : [];
-    const useTypes = TypeOfUseRes.success ? TypeOfUseRes.data : [];
+    const useTypes = typeOfUseRes.success ? typeOfUseRes.data : [];
     const subUseTypeList = subUseTypesRes.success ? subUseTypesRes.data : [];
     const existingFloors = oldFloorDetailsRes.success ? oldFloorDetailsRes.data : [];
 

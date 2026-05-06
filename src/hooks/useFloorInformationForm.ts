@@ -3,9 +3,9 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import {
-  SaveOldFloorDetailsAction,
-  UpdateOldFloorDetailsAction,
-  DeleteOldFloorDetailsAction
+  saveOldFloorDetailsAction,
+  DeleteOldFloorDetailsAction,
+  UpdateOldFloorDetailsAction
 } from "@/app/[locale]/property-tax/ptis/QuickDataEntry/[propertyId]/OldDetails/floor-information/action";
 import { SubTypeOfUse, OldFloorDetail } from "@/types/property-old-details.types";
 import { hasErrors } from "@/lib/utils/validation";
@@ -160,7 +160,7 @@ export function useFloorInformationForm({
       if (formData.id) {
         result = await UpdateOldFloorDetailsAction(propertyId, formData.id, payload, locale);
       } else {
-        result = await SaveOldFloorDetailsAction(propertyId, payload, locale);
+        result = await saveOldFloorDetailsAction(propertyId, payload, locale);
       }
 
       if (result.success) {
