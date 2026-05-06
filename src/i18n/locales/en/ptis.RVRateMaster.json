@@ -111,7 +111,9 @@
   },
   "placeholders": {
     "selectUseGroup": "Select use group...",
-    "selectRateSection": "Select rate section..."
+    "selectRateSection": "Select rate section...",
+    "selectAssessmentYear": "-- Select --",
+    "selectAssessmentYearRange": "Select year range..."
   },
   "columns": {
     "taxZoneNo": "Tax Zone No",

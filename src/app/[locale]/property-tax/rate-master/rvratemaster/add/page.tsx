@@ -1,4 +1,3 @@
-// import { Suspense } from "react"; // Removed as Suspense is no longer used
 import {PageContainer} from "@/components/common/PageContainer";
 import RateMasterView from "@/components/modules/property-tax/RVRateMaster/RateMasterView";
 import AddRateDrawer from "@/components/modules/property-tax/RVRateMaster/AddRateDrawer";
@@ -96,8 +95,6 @@ export default async function AddRatePage({ searchParams }: PageProps) {
     pageSize: matrixPageSize,
   };
 
-
-  // Convert assessmentYears to the expected format (ensure fromYear/toYear are strings)
   const assessmentYearRanges = assessmentYears.map((ay: { label: string; value: string; fromYear: string | number; toYear: string | number }) => ({
     label: ay.label,
     value: ay.value,

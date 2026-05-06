@@ -18,9 +18,7 @@ import {
   Eraser,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown,
-  TrendingUp,
-  ClipboardCopy
+  ArrowDown
 } from "lucide-react";
 import { Button, type ButtonProps } from "./ActionButton";
 import { cn } from "@/lib/utils/cn";
@@ -220,78 +218,6 @@ export function DeleteButton(
       aria-label={ariaLabel ?? "Delete"}
       {...props}
     />
-  );
-}
-
-export function MultiplierButton({
-  title,
-  disabled,
-  onClick,
-  className = "",
-}: {
-  title?: string;
-  disabled?: boolean;
-  onClick?: () => void;
-  className?: string;
-}) {
-  return (
-    <button
-      type="button"
-      title={title || "Use Group Multipliers"}
-      disabled={disabled}
-      className={`w-9 h-9 bg-blue-600 border-blue-600 text-blue-100 transition-all duration-200 rounded-full flex items-center justify-center text-base ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-400 hover:text-white hover:scale-105 active:scale-95'} ${className}`}
-      onClick={onClick}
-    >
-      <TrendingUp size={16} />
-    </button>
-  );
-}
-
-export function GenerateMatrixButton({
-  title,
-  disabled,
-  onClick,
-  className = "",
-}: {
-  title?: string;
-  disabled?: boolean;
-  onClick?: () => void;
-  className?: string;
-}) {
-  return (
-    <button
-      type="button"
-      title={title || "Generate Rate Matrix"}
-      disabled={disabled}
-      className={`w-9 h-9 bg-blue-600 border-blue-600 text-blue-100 transition-all duration-200 rounded-full flex items-center justify-center text-base ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-400 hover:text-white hover:scale-105 active:scale-95'} ${className}`}
-      onClick={onClick}
-    >
-      <Plus className="h-4 w-4" />
-    </button>
-  );
-}
-
-export function CopyRatesButton({
-  title,
-  disabled,
-  onClick,
-  className = "",
-}: {
-  title?: string;
-  disabled?: boolean;
-  onClick?: () => void;
-  className?: string;
-}) {
-  return (
-    <button
-      type="button"
-      title={title || "Copy Rates"}
-      disabled={disabled}
-      className={`w-9 h-9 bg-blue-600 border-blue-600 text-blue-100 transition-all duration-200 rounded-full flex items-center justify-center text-base ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-400 hover:text-white hover:scale-105 active:scale-95'} ${className}`}
-      onClick={onClick}
-    >
-      <ClipboardCopy size={16} />
-    </button>
   );
 }
 

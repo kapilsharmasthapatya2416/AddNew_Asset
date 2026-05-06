@@ -112,6 +112,12 @@ const mockMessages = {
       typeOfUseGroup: "Type of Use Group",
       assessmentYearRange: "Assessment Year Range",
     },
+    placeholders: {
+      selectRateSection: "Select rate section...",
+      selectUseGroup: "Select use group...",
+      selectAssessmentYear: "-- Select --",
+      selectAssessmentYearRange: "Select year range...",
+    },
     options: {
       monthly: "Monthly",
       yearly: "Yearly",

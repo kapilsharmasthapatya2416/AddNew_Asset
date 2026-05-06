@@ -109,7 +109,9 @@
   },
   "placeholders": {
     "selectUseGroup": "वापर गट निवडा...",
-    "selectRateSection": "दर विभाग निवडा..."
+    "selectRateSection": "दर विभाग निवडा...",
+    "selectAssessmentYear": "-- निवडा --",
+    "selectAssessmentYearRange": "वर्ष श्रेणी निवडा..."
   },
   "columns": {
     "taxZoneNo": "करयोग्य क्षेत्र क्रमांक",

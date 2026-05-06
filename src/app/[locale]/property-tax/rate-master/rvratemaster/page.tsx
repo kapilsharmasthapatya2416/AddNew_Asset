@@ -30,7 +30,7 @@ const RateMasterPageServer = async ({ searchParams }: PageProps) => {
     allMasterData,
     paginatedZonesResult
   ] = await Promise.all([
-    getRateMasterData(1, -1), // get all zones for mapping (pageSize: -1 gets all items)
+    getRateMasterData(1, -1), 
     getZoneDescriptionsPaged(zonePage, zonePageSize)
   ]);
 

@@ -1,14 +1,13 @@
 "use client";
-
 // Ensure finance year dropdown always shows options and binds correctly
 // (must be after 'use client' and before imports)
 // This useEffect should be inside the component, not at the top level
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Building2, Grid2X2, MapPin, Calendar, Users, CheckCircle, CalendarDays, TrendingUp } from "lucide-react";
+import { Building2, Grid2X2, MapPin, Calendar, Users, CheckCircle, CalendarDays, TrendingUp, Plus, ClipboardCopy } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
-import { SaveButton, DeleteLabelButton, DownloadButton, UploadButton, MultiplierButton, GenerateMatrixButton, CopyRatesButton, CloseIconButton, TabButton } from "@/components/common/ActionButtons";
+import { SaveButton, DeleteLabelButton, DownloadButton, UploadButton, IconButton, CloseIconButton, TabButton } from "@/components/common/ActionButtons";
 import { ValidationMessage } from "@/components/common/ValidationMessage";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { SearchSelect } from "@/components/common/SearchSelect";
@@ -431,7 +430,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
       {/* Content */}
       <div className="space-y-3">
         {/* Rate Frequency + Quick Import Section */}
-        <div className="flex flex-col md:flex-row items-center justify-between bg-[#f8faff] border border-blue-200 rounded-xl px-2 md:px-3 py-2 gap-2 md:gap-0 shadow-md">
+        <div className="flex flex-col md:flex-row items-center justify-between bg-[#f8faff] border border-blue-200 rounded-xl px-2 md:px-3 py-1 gap-2 md:gap-0 shadow-md">
           <div className="flex items-center gap-2 w-full md:w-auto">
             <div className="flex items-center gap-2">
               <Calendar size={18} className="text-blue-600" />
@@ -517,7 +516,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                 name="zone"
                 label=""
                 options={zoneOptions}
-                placeholder="Select Rate Section"
+                placeholder={t('placeholders.selectRateSection')}
                 value={selectedZone}
                 onChange={(_name, value) => handleDropdownChange('zone', value)}
                 className={`text-black ${errors.zone ? 'border-red-500' : ''}`}
@@ -525,8 +524,6 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
 
               <ValidationMessage message={errors.zone} visible={!!errors.zone} />
             </div>
-
-
 
             {/* Use Group */}
             <div className="w-full md:flex-1 md:min-w-37.5 md:max-w-50">
@@ -539,7 +536,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                 name="useGroup"
                 label=""
                 options={useGroupOptions}
-                placeholder="Select Use Group"
+                placeholder={t('placeholders.selectUseGroup')}
                 value={selectedUseGroup}
                 onChange={(_name, value) => handleDropdownChange('useGroup', value)}
                 className={`text-black ${errors.useGroup ? 'border-red-500' : ''}`}
@@ -563,7 +560,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                       name="assessmentYear"
                       label=""
                       options={assessmentYears}
-                      placeholder="-- Select --"
+                      placeholder={t('placeholders.selectAssessmentYear')}
                       value={assessmentYear}
                       onChange={(_name, value) => handleDropdownChange('assessmentYear', value)}
                       className={`text-black ${errors.assessmentYear ? 'border-red-500' : ''}`}
@@ -590,7 +587,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                         label: range.label,
                         value: range.value,
                       })) ?? []}
-                      placeholder="Select Year Range"
+                      placeholder={t('placeholders.selectAssessmentYearRange')}
                       value={assessmentYear}
                       onChange={(_name, value) => handleDropdownChange('assessmentYear', value)}
                       className={`text-black ${errors.assessmentYear ? 'border-red-500' : ''}`}
@@ -599,7 +596,9 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                     <ValidationMessage message={errors.assessmentYear} visible={!!errors.assessmentYear} />
                   </div>
                   {/* Multiplier Button */}
-                  <MultiplierButton
+                  <IconButton
+                    icon={TrendingUp}
+                    variant="primary"
                     title={existingRateFound ? t('messages.validationRatesAlreadyExist') : "Use Group Multipliers"}
                     disabled={!allFiltersSelected || existingRateFound || isCheckingRates}
                     onClick={() => {
@@ -616,7 +615,9 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                       setShowMultipliersInline(!showMultipliersInline);
                     }}
                   />
-                  <GenerateMatrixButton
+                  <IconButton
+                    icon={Plus}
+                    variant="primary"
                     title={existingRateFound ? t('messages.validationRatesAlreadyExist') : "Generate Rate Matrix"}
                     disabled={!allFiltersSelected || existingRateFound || isCheckingRates}
                     onClick={async () => {
@@ -678,7 +679,9 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
 
                   {/* Copy Rates Toggle Button - only in add mode */}
                   {mode === "add" && (
-                    <CopyRatesButton
+                    <IconButton
+                      icon={ClipboardCopy}
+                      variant="primary"
                       title={existingRateFound ? t('messages.validationRatesAlreadyExist') : "Copy Rates"}
                       disabled={!allFiltersSelected || existingRateFound || isCheckingRates}
                       onClick={() => {
@@ -699,7 +702,6 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
 
               </div>
             )}
-
             {/* Multiplier Button and + Button for Add Mode only - REMOVED DUPLICATE ICONS */}
           </div>
 
@@ -712,8 +714,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                   <div className="flex-1 max-w-2xl">
                     <div className="rounded-xl border border-blue-200 bg-white shadow-md relative h-50px flex flex-col">
                       {/* Close Button */}
-                      <CloseIconButton
-                        title="Close"
+                      <CloseIconButton                       
                         onClick={() => {
                           const params = new URLSearchParams(window.location.search);
                           params.delete('showCopyRates');
@@ -721,8 +722,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                           const currentPath = window.location.pathname;
                           const newUrl = params.toString() ? `${currentPath}?${params.toString()}` : currentPath;
                           window.history.pushState({}, '', newUrl);
-                          setCopySectionsExpanded(false);
-                          // Keep multipliers open if it was open
+                          setCopySectionsExpanded(false);     
                         }}
                       />
 
@@ -754,7 +754,6 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                                 </div>
                                 <div>
                                   <h4 className="text-sm font-semibold text-gray-800">{t('sections.copyRatesUseGroupTitle')}</h4>
-                                  {/* <p className="text-xs text-gray-500">{t('sections.copyRatesUseGroupSubtitle')}</p> */}
                                 </div>
                               </div>
 
@@ -865,8 +864,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                               <h4 className="text-sm font-semibold text-gray-800">{t('sections.multipliersTitle')}</h4>
                               {/* <p className="text-xs text-gray-500">{t('sections.multipliersSubtitle')}</p> */}
                             </div>
-                            <CloseIconButton
-                              title="Close"
+                            <CloseIconButton          
                               onClick={() => {
                                 const params = new URLSearchParams(window.location.search);
                                 params.delete('showMultipliers');
@@ -893,22 +891,18 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                                   }
                                   rowId={"multiplier"}
                                   columnId={option.value}
-                                  metaLabel={option.label}
-                                  //className="w-full h-7 text-xs font-medium px-2 text-center border border-blue-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                                  metaLabel={option.label}                        
                                   className="w-full px-2 text-center font-medium h-7 text-xs rounded-md border border-blue-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                                   onCellChange={(
                                     _row: string,
                                     col: string,
                                     val: string | number
                                   ) => {
-                                    // setMultiplierInputs removed (cleanup)
-                                    // Update tempMultipliers immediately so the button state updates in real-time
                                     const numValue = Number(val);
                                     if (!isNaN(numValue) && numValue >= 0) {
                                       setTempMultipliers(prev => ({ ...prev, [col]: numValue }));
                                     }
                                   }}
-                                // Focus/blur logic handled by MatrixCellInput's internal handlers
                                 />
                               </div>
                             ))}
@@ -959,10 +953,8 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                             </div>
                             <div className="flex-1">
                               <h4 className="text-sm font-semibold text-gray-800">{t('sections.multipliersTitle')}</h4>
-                              {/* <p className="text-xs text-gray-500">{t('sections.multipliersSubtitle')}</p> */}
                             </div>
-                            <CloseIconButton
-                              title="Close"
+                            <CloseIconButton                            
                               onClick={() => {
                                 const params = new URLSearchParams(window.location.search);
                                 params.delete('showMultipliers');
@@ -996,8 +988,7 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({
                                     _row: string,
                                     col: string,
                                     val: string | number
-                                  ) => {
-                                    // setMultiplierInputs removed (cleanup)
+                                  ) => {               
                                     // Update tempMultipliers immediately so the button state updates in real-time
                                     const numValue = Number(val);
                                     if (!isNaN(numValue) && numValue >= 0) {
