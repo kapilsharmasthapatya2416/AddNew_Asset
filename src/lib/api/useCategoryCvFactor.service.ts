@@ -23,7 +23,12 @@ import { ApiError } from '../utils/api';
  * @returns Promise resolving to ApiResponse containing items array
  */
 export async function getUseFactorCVMaster(): Promise<ApiResponse<{ items: UseFactorCVMaster[] }>> {
-  return apiClient.get<{ items: UseFactorCVMaster[] }>('/UseFactorCVMaster');
+  const response = await apiClient.get<{ items: UseFactorCVMaster[] }>('/UseFactorCVMaster');
+  if (!response.success) {
+    const t = await getTranslations('useCategoryFactorMaster');
+    throw new ApiError(response.statusCode || 500, response.error || t('errors.fetchFailed'), 'Fetch all Use Factor CV Master failed');
+  }
+  return response;
 }
 
 /**
@@ -51,7 +56,12 @@ export async function getUseFactorCVMasterWithParams(
     ? `/UseFactorCVMaster?${searchParams.toString()}`
     : '/UseFactorCVMaster';
 
-  return apiClient.get<PagedResponse<UseFactorCVMaster>>(endpoint);
+  const response = await apiClient.get<PagedResponse<UseFactorCVMaster>>(endpoint);
+  if (!response.success) {
+    const t = await getTranslations('useCategoryFactorMaster');
+    throw new ApiError(response.statusCode || 500, response.error || t('errors.fetchFailed'), 'Fetch Use Factor CV Master with params failed');
+  }
+  return response;
 }
 
 /**
@@ -64,7 +74,12 @@ export async function getUseFactorCVMasterById(id: number): Promise<ApiResponse<
     const t = await getTranslations('useCategoryFactorMaster');
     throw new ApiError(400, t('errors.invalidId'), "Validation");
   }
-  return apiClient.get<UseFactorCVMaster>(`/UseFactorCVMaster/${id}`);
+  const response = await apiClient.get<UseFactorCVMaster>(`/UseFactorCVMaster/${id}`);
+  if (!response.success) {
+    const t = await getTranslations('useCategoryFactorMaster');
+    throw new ApiError(response.statusCode || 500, response.error || t('errors.fetchFailed'), 'Fetch Use Factor CV Master by ID failed');
+  }
+  return response;
 }
 
 /**
@@ -146,8 +161,9 @@ export async function updateUseFactorCVMaster(
     }
 
   } catch (error) {
-    console.error('Error updating Use Factor CV Master:', error);
-    throw error;
+    if (error instanceof ApiError) throw error;
+    const t = await getTranslations('useCategoryFactorMaster');
+    throw new ApiError(500, t('errors.updateFailed'), error instanceof Error ? error.message : String(error));
   }
 }
 
@@ -182,10 +198,21 @@ export async function createUseFactorCVMaster(
     };
 
 
-    return await apiClient.post<unknown>('/UseFactorCVMaster', requestPayload);
+    const response = await apiClient.post<unknown>('/UseFactorCVMaster', requestPayload);
+    
+    if (!response.success) {
+      throw new ApiError(
+        response.statusCode || 500,
+        response.error || t('errors.createFailed'),
+        'Create Use Factor CV Master failed'
+      );
+    }
+
+    return response;
   } catch (error) {
-    console.error('Error creating Use Factor CV Master:', error);
-    throw error;
+    if (error instanceof ApiError) throw error;
+    const t = await getTranslations('useCategoryFactorMaster');
+    throw new ApiError(500, t('errors.createFailed'), error instanceof Error ? error.message : String(error));
   }
 }
 
@@ -204,10 +231,22 @@ export async function bulkCreateUseFactorCVMaster(
     }
 
 
-    return await apiClient.post<unknown>('/UseFactorCVMaster/bulk', payload);
+    const response = await apiClient.post<unknown>('/UseFactorCVMaster/bulk', payload);
+
+    if (!response.success) {
+      const t = await getTranslations('useCategoryFactorMaster');
+      throw new ApiError(
+        response.statusCode || 500,
+        response.error || t('errors.bulkCreateFailed'),
+        'Bulk create Use Factor CV Master failed'
+      );
+    }
+
+    return response;
   } catch (error) {
-    console.error('Error in bulk creating Use Factor CV Master:', error);
-    throw error;
+    if (error instanceof ApiError) throw error;
+    const t = await getTranslations('useCategoryFactorMaster');
+    throw new ApiError(500, t('errors.bulkCreateFailed'), error instanceof Error ? error.message : String(error));
   }
 }
 
@@ -247,8 +286,9 @@ export async function bulkUpdateUseFactorCVMaster(
     }
 
   } catch (error) {
-    console.error('Error in bulk updating Use Factor CV Master:', error);
-    throw error;
+    if (error instanceof ApiError) throw error;
+    const t = await getTranslations('useCategoryFactorMaster');
+    throw new ApiError(500, t('errors.bulkUpdateFailed'), error instanceof Error ? error.message : String(error));
   }
 }
 
@@ -272,10 +312,14 @@ export async function getTypeOfUseWithParams(
       searchParams.append(key, String(value));
     }
   });
-
   const endpoint = searchParams.toString() 
     ? `/TypeOfUse?${searchParams.toString()}`
     : '/TypeOfUse';
 
-  return apiClient.get<PagedResponse<TypeOfUseResponse>>(endpoint);
+  const response = await apiClient.get<PagedResponse<TypeOfUseResponse>>(endpoint);
+  if (!response.success) {
+    const t = await getTranslations('useCategoryFactorMaster');
+    throw new ApiError(response.statusCode || 500, response.error || t('errors.fetchFailed'), 'Fetch Type of Use with params failed');
+  }
+  return response;
 }
