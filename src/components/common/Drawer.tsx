@@ -22,6 +22,23 @@ export  function Drawer({
   children,
   footer,
 }: DrawerProps) {
+  React.useEffect(() => {
+    if (open) {
+      document.body.classList.add("overlay-open");
+    } else {
+      const otherOverlays = document.querySelectorAll(".overlay-instance");
+      if (otherOverlays.length === 0) {
+        document.body.classList.remove("overlay-open");
+      }
+    }
+    return () => {
+      const otherOverlays = document.querySelectorAll(".overlay-instance");
+      if (otherOverlays.length <= 1) {
+        document.body.classList.remove("overlay-open");
+      }
+    };
+  }, [open]);
+
   if (!open) return null;
  
   const widthClass = {
@@ -49,6 +66,7 @@ export  function Drawer({
  
       <div
         className={`
+          overlay-instance
           fixed top-0 right-0 z-50 h-full
           ${widthClass}
           bg-[#F8FAFF]
