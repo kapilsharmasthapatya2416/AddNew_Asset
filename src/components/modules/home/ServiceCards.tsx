@@ -2,7 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { Service, ServiceCardProps } from "@/types/home.types";
+import { Service, ServiceCardProps } from "@/types/home/home.types";
+import { cn } from "@/lib/utils/cn";
+import { Badge } from "@/components/common/Badge";
 import {
     Home,
     Droplet,
@@ -40,24 +42,31 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     stats
 }) => {
     return (
-        <Link href={link} className="block group decoration-0 no-underline">
-            <div className="relative p-4 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 min-h-[110px] flex flex-col justify-end border-l-[6px] border-solid border-[#004c8c] hover:scale-[1.02]">
-                <div className="absolute top-[1px] right-[5px] flex flex-col items-end z-10">
+        <Link href={link} className="block group decoration-0 no-underline h-full">
+            <div className={cn(
+                "relative p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 min-h-[180px]",
+                "flex flex-col justify-between border-l-[6px] border-solid border-[#004c8c] hover:scale-[1.02] h-full"
+            )}>
+                <div className="absolute top-2 right-3 flex flex-col items-end z-10 gap-1">
                     {stats?.map((stat: { label: string; value: string }, index: number) => (
-                        <div
+                        <Badge 
                             key={index}
-                            className="py-1 px-[5px] rounded-xl text-[12px] text-[#004c8c] whitespace-nowrap font-bold bg-blue-50/50 mb-1"
+                            variant="secondary"
+                            size="sm"
+                            className="bg-blue-50/50 text-[#004c8c] border-blue-100 font-bold"
                         >
-                            {stat.label}: <strong>{stat.value}</strong>
-                        </div>
+                            {stat.label}: {stat.value}
+                        </Badge>
                     ))}
                 </div>
-                <div className="flex flex-col">
-                    <div className="mb-2 group-hover:scale-110 transition-transform duration-300 origin-left">
+                <div className="flex flex-col h-full pt-2">
+                    <div className="mb-4 group-hover:scale-110 transition-transform duration-300 origin-left">
                         {getIcon(icon)}
                     </div>
-                    <div className="text-lg font-semibold text-gray-800 group-hover:text-[#004c8c] transition-colors">{title}</div>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">{subtext}</p>
+                    <div className="mt-auto">
+                        <div className="text-xl font-bold text-gray-800 group-hover:text-[#004c8c] transition-colors leading-tight">{title}</div>
+                        <p className="text-sm text-gray-500 mt-2 leading-relaxed line-clamp-3">{subtext}</p>
+                    </div>
                 </div>
             </div>
         </Link>
@@ -72,8 +81,8 @@ const ServiceCards: React.FC<ServiceCardsProps> = ({ services = [] }) => {
     if (!services || !services.length) return null;
 
     return (
-        <section className="p-4 sm:p-6 max-w-7xl mx-auto min-h-[250px]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <section className="w-full p-4 sm:p-8 md:p-12 min-h-[400px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 sm:gap-10 max-w-7xl mx-auto">
                 {services.map((service) => (
                     <ServiceCard key={service.id} {...service} />
                 ))}

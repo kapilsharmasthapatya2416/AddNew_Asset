@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { logoutAction } from '@/app/[locale]/login/actions';
 
 export type LanguageType = 'English' | 'हिन्दी (Hindi)' | 'मराठी (Marathi)';
@@ -34,8 +34,7 @@ export function useHeaderState(initialIp = '192.168.1.100') {
         return `${hours}h ${minutes}m`;
     };
 
-    const router = useRouter();
-
+    const { locale } = useParams();
     const handleLogout = async () => {
         toast.info('Logging out...');
 
@@ -52,7 +51,7 @@ export function useHeaderState(initialIp = '192.168.1.100') {
         } catch { }
 
         // Call Server Action to clear cookies
-        await logoutAction();
+        await logoutAction(typeof locale === 'string' ? locale : 'en');
     };
 
     const handleProfile = () => {

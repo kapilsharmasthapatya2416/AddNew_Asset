@@ -2,11 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useHeaderState } from '@/hooks/useHeaderState';
+import { useHeaderState } from '@/hooks/home/useHeaderState';
 
 import { Settings, User } from "lucide-react";
 
 import { UserProfilePopup } from "./UserProfilePopup";
+import { Button } from "@/components/common/ActionButton";
 
 interface NavbarProps {
     username?: string;
@@ -57,12 +58,14 @@ export const Navbar = ({ username, ulbName }: NavbarProps) => {
                     </div>
 
                     {/* Logout button */}
-                    <button
+                    <Button
                         onClick={handleLogout}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                        variant="danger"
+                        size="xs"
+                        className="rounded-full px-4 shadow-md hover:shadow-lg hover:scale-105"
                     >
                         Logout
-                    </button>
+                    </Button>
                 </div>
             </nav>
 
