@@ -195,7 +195,6 @@ export async function updateFloor(data: FloorFormModel, userId: string): Promise
       throw new ApiError(response.statusCode || 500, response.error || '', 'Update floor failed');
     }
   } catch (err) {
-    console.error('Update floor error:', err);
     throw err;
   }
 }
@@ -226,7 +225,6 @@ export async function deleteFloor(id: number, _userId: string): Promise<void> {
       'Delete floor failed'
     );
   } catch (err) {
-    console.error('Delete floor error:', err);
     throw err;
   }
 }
@@ -303,7 +301,6 @@ export async function createFloorRange(data: FloorRangePayload, userId: string):
       );
     }
   } catch (err) {
-    console.error('Create floor range error:', err);
     throw err;
   }
 }
