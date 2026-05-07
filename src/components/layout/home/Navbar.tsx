@@ -50,7 +50,7 @@ export const Navbar = ({ username, ulbName }: NavbarProps) => {
                             </div>
                             <div className="hidden sm:flex items-baseline gap-1">
                                 <span className="text-xs text-blue-200">{t('app.welcome')}</span>
-                                <span className="text-sm font-semibold text-white">{username || "User"}</span>
+                                <span className="text-sm font-semibold text-white">{username || t('app.defaultUser')}</span>
                             </div>
                         </button>
 

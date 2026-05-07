@@ -44,7 +44,7 @@ export const UserProfilePopup: React.FC<UserProfilePopupProps> = ({ isOpen, onCl
                 <button 
                     onClick={onClose}
                     className="p-1 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600"
-                    title="Close"
+                    title={t('buttons.close')}
                 >
                     <X className="w-4 h-4" />
                 </button>
