@@ -1,13 +1,21 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ServiceCards from '@/components/modules/home/ServiceCards';
 import { Service } from '@/types/home/home.types';
+import { toast } from 'sonner';
 
 // Mock next/link
 vi.mock('next/link', () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => (
     <a href={href}>{children}</a>
   ),
+}));
+
+// Mock sonner toast
+vi.mock('sonner', () => ({
+  toast: {
+    error: vi.fn(),
+  },
 }));
 
 const mockServices: Service[] = [
@@ -37,6 +45,10 @@ const mockServices: Service[] = [
 ];
 
 describe('ServiceCards Component', () => {
+  beforeEach(() => {
+    vi.mocked(toast.error).mockClear();
+  });
+
   it('renders service cards for provided services', () => {
     render(<ServiceCards services={mockServices} />);
     expect(screen.getByText('Property Tax')).toBeInTheDocument();
@@ -96,6 +108,25 @@ describe('ServiceCards Component', () => {
     const { container } = render(<ServiceCards services={mockServices} />);
     const section = container.querySelector('section');
     expect(section).toHaveClass('w-full', 'min-h-[400px]');
+  });
+
+  it('displays error toast when error prop is provided', () => {
+    render(<ServiceCards services={mockServices} error="Failed to load services" />);
+    expect(toast.error).toHaveBeenCalledWith('Failed to load services', expect.objectContaining({
+      duration: 5000,
+      id: 'services-load-error',
+    }));
+  });
+
+  it('does not display error toast when no error prop', () => {
+    render(<ServiceCards services={mockServices} />);
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+
+  it('renders section with correct accessibility attributes', () => {
+    const { container } = render(<ServiceCards services={mockServices} />);
+    const section = container.querySelector('section');
+    expect(section).toHaveAttribute('aria-label', 'Available Services');
   });
 
   it('renders cards with left border styling', () => {

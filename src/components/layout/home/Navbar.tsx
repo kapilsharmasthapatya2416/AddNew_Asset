@@ -77,7 +77,7 @@ export const Navbar = ({ username, ulbName }: NavbarProps) => {
             {/* Animated Welcome Message with prefers-reduced-motion check */}
             <div className="bg-[#d1ecf1] text-[#004c8c] font-bold py-1 text-sm sm:text-base text-center overflow-hidden">
                 <div className="inline-block animate-marquee whitespace-nowrap px-4">
-                    {t('app.welcomeTo', { name: displayUlbName })} &ndash; {t('app.smartGovernance')}
+                    {t('app.welcomeTo', { name: displayUlbName })} – {t('app.smartGovernance')}
                 </div>
             </div>
 

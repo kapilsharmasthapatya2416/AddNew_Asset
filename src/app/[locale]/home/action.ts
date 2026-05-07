@@ -1,53 +1,31 @@
 'use server';
 
-import { Service, DashboardStats } from "@/types/home/home.types";
+import { Service } from "@/types/home/home.types";
 import { getModuleMaster } from "@/lib/api/home/module-master.service";
 import { ModuleMaster } from "@/types/home/module-master.types";
+import { getIconNameForModule, getRouteForModule } from "@/config/home-services.config";
 
 /**
- * Maps API Module codes to UI Icon names
+ * Response type for listServices including error state
  */
-const iconMap: Record<string, string> = {
-    'pt': 'property-tax',
-    'wt': 'water-tax',
-    'tl': 'bajar-parwana',
-    'bd': 'birth-death',
-    'gc': 'garbage-collection',
-    'bp': 'building-permission',
-    'gr': 'grievance',
-    'rts': 'rts',
-    'am': 'assets',
-};
-
-/**
- * Maps API Module codes to UI Routes
- */
-const routeMap: Record<string, string> = {
-    'pt': 'property-tax/ptis',
-    'wt': 'water-tax',
-    'tl': 'bajar-parwana',
-    'bd': 'birth-death-certificates',
-    'gc': 'garbage-collection',
-    'bp': 'building-permission',
-    'gr': 'grievance',
-    'rts': 'rts',
-    'am': 'assets',
-};
+export interface ListServicesResponse {
+    services: Service[];
+    error?: string;
+}
 
 /**
  * Maps ModuleMaster API item to the UI Service interface
  */
 function mapModuleToService(module: ModuleMaster, locale: string): Service {
     const code = module.moduleCode.toLowerCase();
-    const route = routeMap[code];
     return {
         id: module.id,
         name: module.moduleName,
         title: module.departmentName,
         subtext: module.moduleDescription || `Access ${module.moduleName} services and manage your applications.`,
-        icon: iconMap[code] || 'property-tax',
-        link: route ? `/${locale}/${route}` : '#',
-        // Mock stats for now as the API doesn't provide them yet
+        icon: getIconNameForModule(code),
+        link: getRouteForModule(code, locale),
+        // TODO: Implement actual stats API when available
         stats: [
             { label: "Total", value: "0" },
             { label: "Paid", value: "0" },
@@ -58,21 +36,21 @@ function mapModuleToService(module: ModuleMaster, locale: string): Service {
 
 /**
  * Fetches home services data from the ModuleMaster API
+ * Returns both services and potential error message for UI feedback
  */
-export async function listServices(locale: string): Promise<Service[]> {
+export async function listServices(locale: string): Promise<ListServicesResponse> {
     try {
         const response = await getModuleMaster();
         const modules = response.items ?? [];
         
         if (modules.length === 0) {
             console.warn("listServices: No modules returned from API");
-            return [];
+            return { services: [] };
         }
 
-        return modules.map(m => mapModuleToService(m, locale));
+        return { services: modules.map(m => mapModuleToService(m, locale)) };
     } catch (error) {
-        // Detailed logging to help identify the root cause of the terminal/API error
-        // We log as warning/error on server but return empty to prevent UI crash
+        // Detailed logging to help identify the root cause of the API error
         let status: unknown = undefined;
         let context: unknown = undefined;
         if (typeof error === "object" && error !== null && "statusCode" in error) {
@@ -86,19 +64,15 @@ export async function listServices(locale: string): Promise<Service[]> {
             status,
             context
         });
-        // Return empty array instead of throwing to allow the Home screen to render
-        // This "fixes" the terminal error/crash while still logging the issue.
-        return [];
+        
+        // Return empty array with error message to allow Home screen to render
+        // while notifying the UI about the failure
+        return { 
+            services: [], 
+            error: "Failed to load services. Please try refreshing the page." 
+        };
     }
 }
 
-/**
- * Fetches dashboard statistics (Server-side)
- */
-export async function getDashboardStats(): Promise<DashboardStats> {
-    return {
-        totalUsers: 12345,
-        activeProperties: 678,
-        totalRevenue: 987654,
-    };
-}
+// NOTE: getDashboardStats removed - implement actual API call when stats endpoint is available
+// export async function getDashboardStats(): Promise<DashboardStats> { ... }
