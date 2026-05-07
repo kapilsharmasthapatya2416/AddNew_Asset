@@ -85,3 +85,35 @@ export type TaxZoningPageProps = {
   wardsData: PagedResponse<Ward>;
   allProperties?: ActionResult<PagedResponse<TaxZoning>>;
 };
+export interface TaxZoningFormProps {
+  t: (key: string, values?: Record<string, string | number>) => string;
+  zone: string;
+  setZone: (val: string) => void;
+  zoneOptions: SelectOption[];
+  isTaxZoneValid: boolean;
+  submitted: boolean;
+  ward: string[];
+  setWard: (val: string[]) => void;
+  wardOptions: SelectOption[];
+  isWardValid: boolean;
+  fromProps: string;
+  setFromProps: (val: string) => void;
+  toProps: string;
+  setToProps: (val: string) => void;
+  propertyOptionsByWard: SelectOption[];
+  isPropertyValid: boolean;
+  saving: boolean;
+  isFormValid: boolean;
+  handleSubmit: (e: React.FormEvent) => void;
+  onClear: () => void;
+}
+
+
+export interface TaxZoningServerPageProps {
+  searchParams: {
+    page?: string;
+    pageSize?: string;
+    taxZoneId?: string;
+    wardId?: string;
+  };
+}

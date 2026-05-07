@@ -1,20 +1,12 @@
 import TaxZoningPage from "@/components/modules/property-tax/taxzoningmaster/TaxZoningPage";
 
 import { fetchTaxZonePagedAction, fetchWardPagedAction, getTaxZoningPagedAction, getTaxZoningPropertyNoPagedAction } from "./actions";
+import { TaxZoningServerPageProps } from "@/types/taxzoning.types";
 
 // Force dynamic rendering - this page requires runtime API data
 export const dynamic = 'force-dynamic';
 
-interface PageProps {
-  searchParams: {
-    page?: string;
-    pageSize?: string;
-    taxZoneId?: string;
-    wardId?: string;
-  };
-}
-
-export default async function Page({ searchParams }: PageProps) {
+export default async function Page({ searchParams }: TaxZoningServerPageProps) {
   const params = await searchParams;
 
   const pageNumber = Math.max(1, Number(params.page) || 1);

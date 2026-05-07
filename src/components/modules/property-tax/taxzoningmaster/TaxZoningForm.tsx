@@ -5,31 +5,8 @@ import { MapPin, Eye } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Card, CardContent, CardHeader, CardTitle, Select, ValidationMessage, SaveButton, CancelButton } from "@/components/common";
 import { MultiSelectDropdown } from "@/components/common/Dropdown";
-import { SelectOption } from "@/types/taxzoning.types";
+import {TaxZoningFormProps } from "@/types/taxzoning.types";
 import { Label } from "@/components/common/label";
-
-interface TaxZoningFormProps {
-  t: (key: string, values?: Record<string, string | number>) => string;
-  zone: string;
-  setZone: (val: string) => void;
-  zoneOptions: SelectOption[];
-  isTaxZoneValid: boolean;
-  submitted: boolean;
-  ward: string[];
-  setWard: (val: string[]) => void;
-  wardOptions: SelectOption[];
-  isWardValid: boolean;
-  fromProps: string;
-  setFromProps: (val: string) => void;
-  toProps: string;
-  setToProps: (val: string) => void;
-  propertyOptionsByWard: SelectOption[];
-  isPropertyValid: boolean;
-  saving: boolean;
-  isFormValid: boolean;
-  handleSubmit: (e: React.FormEvent) => void;
-  onClear: () => void;
-}
 
 export const TaxZoningForm = ({
   t,
