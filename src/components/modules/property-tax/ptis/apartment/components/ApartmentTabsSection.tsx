@@ -64,7 +64,7 @@ const ApartmentTabsSection: React.FC<ApartmentTabsSectionProps> = ({
         } else {
           setError(result.error || t('error'));
         }
-      } catch (err) {
+      } catch (_err) {
         setError(t('error'));
       } finally {
         setLoading(false);

@@ -1,5 +1,5 @@
 import { validatePropertyId } from './ptis-normalization';
-import type { PtisTab } from '@/types/ptis.types';
+import type { PtisTab } from '@/types/ptis-page.types';
 
 export interface PtisSearchParams {
   wardNo?: string;

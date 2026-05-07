@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApartmentTabsSection from '@/components/modules/property-tax/ptis/apartment/components/ApartmentTabsSection';
+import type React from 'react';
 
 // Mock next-intl
 vi.mock('next-intl', () => ({
