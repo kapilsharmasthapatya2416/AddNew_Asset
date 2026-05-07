@@ -36,7 +36,6 @@ export async function fetchRangesPagedServerAction(
     pageSize: number; // Ranges per page (what user selected)
     totalRanges: number;
     totalPages: number;
-    rangeCountInCurrentPage: number;
     // For backwards compatibility
     totalRecords: number;
   };
@@ -93,7 +92,6 @@ export async function fetchRangesPagedServerAction(
         pageSize: rangePageSize, // Return range page size (what user selected)
         totalRanges,
         totalPages,
-        rangeCountInCurrentPage: uniqueRanges.size,
         totalRecords: finalTotalCount || 0,
       },
     };

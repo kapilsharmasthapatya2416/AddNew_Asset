@@ -34,7 +34,6 @@ export default function DepreciationMaster({
   pageSize,
   totalCount,
   totalPages,
-  rangeCountInCurrentPage,
   locale: localeProp,
 }: Readonly<DepreciationMasterProps>): JSX.Element {
   const t = useTranslations("depreciation.depreciationMaster");
