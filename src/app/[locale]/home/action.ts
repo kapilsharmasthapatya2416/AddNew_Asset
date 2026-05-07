@@ -23,15 +23,15 @@ const iconMap: Record<string, string> = {
  * Maps API Module codes to UI Routes
  */
 const routeMap: Record<string, string> = {
-    'pt': '/property-tax/ptis',
-    'wt': '/water-tax',
-    'tl': '/bajar-parwana',
-    'bd': '/birth-death-certificates',
-    'gc': '/garbage-collection',
-    'bp': '/building-permission',
-    'gr': '/grievance',
-    'rts': '/rts',
-    'am': '/assets',
+    'pt': 'property-tax/ptis',
+    'wt': 'water-tax',
+    'tl': 'bajar-parwana',
+    'bd': 'birth-death-certificates',
+    'gc': 'garbage-collection',
+    'bp': 'building-permission',
+    'gr': 'grievance',
+    'rts': 'rts',
+    'am': 'assets',
 };
 
 /**
@@ -46,7 +46,7 @@ function mapModuleToService(module: ModuleMaster, locale: string): Service {
         title: module.departmentName,
         subtext: module.moduleDescription || `Access ${module.moduleName} services and manage your applications.`,
         icon: iconMap[code] || 'property-tax',
-        link: route ? `/${locale}${route}` : '#',
+        link: route ? `/${locale}/${route}` : '#',
         // Mock stats for now as the API doesn't provide them yet
         stats: [
             { label: "Total", value: "0" },
