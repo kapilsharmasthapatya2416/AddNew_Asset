@@ -42,24 +42,24 @@ const ApartmentTabsSection: React.FC<ApartmentTabsSectionProps> = ({
   const [commercialData, setCommercialData] = React.useState<ApartmentQCDetail[]>([]);
   const [residentialData, setResidentialData] = React.useState<ApartmentQCDetail[]>([]);
   
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(propertyId !== undefined);
   const [error, setError] = React.useState<string | null>(null);
 
   // Fetch apartment QC details on mount
   React.useEffect(() => {
     if (propertyId === undefined) {
-      setAmenitiesData([]);
-      setCommercialData([]);
-      setResidentialData([]);
-      setError(null);
-      setLoading(false);
       return;
     }
+    
+    let isMounted = true;
+    
     async function fetchData() {
       setLoading(true);
       setError(null);
       try {
         const result = await fetchApartmentQCDetailsAction(propertyId);
+        if (!isMounted) return;
+        
         if (result.success && result.data) {
           const items = result.data.items || [];
           setAmenitiesData(items);
@@ -69,12 +69,20 @@ const ApartmentTabsSection: React.FC<ApartmentTabsSectionProps> = ({
           setError(result.error || t('error'));
         }
       } catch (_err) {
+        if (!isMounted) return;
         setError(t('error'));
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
+    
     fetchData();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [propertyId, t]);
 
   // Render the appropriate component based on active tabs
