@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApartmentTabsSection from '@/components/modules/property-tax/ptis/apartment/components/ApartmentTabsSection';
-import type React from 'react';
 
 // Mock next-intl
 vi.mock('next-intl', () => ({
@@ -11,23 +10,6 @@ vi.mock('next-intl', () => ({
 // Mock the action
 vi.mock('@/app/[locale]/property-tax/ptis/actions', () => ({
   fetchApartmentQCDetailsAction: vi.fn(),
-}));
-
-// Mock the Tabs component
-vi.mock('@/components/common/Tabs', () => ({
-  Tabs: ({ items, value, onChange }: { items: Array<{ value: string; label: React.ReactNode }>; value: string; onChange: (val: string) => void }) => (
-    <div data-testid="tabs" data-value={value}>
-      {items?.map((item) => (
-        <button
-          key={item.value}
-          data-testid={`tab-${item.value}`}
-          onClick={() => onChange(item.value)}
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
-  ),
 }));
 
 // Mock child components
@@ -145,10 +127,10 @@ describe('ApartmentTabsSection', () => {
       render(<ApartmentTabsSection locale="en" />);
 
       await waitFor(() => {
-        // Check that the inner tabs testids exist
-        expect(screen.getByTestId('tab-amenities')).toBeInTheDocument();
-        expect(screen.getByTestId('tab-commercial')).toBeInTheDocument();
-        expect(screen.getByTestId('tab-residential')).toBeInTheDocument();
+        // Check that the inner tabs exist by role and accessible name
+        expect(screen.getByRole('tab', { name: /amenities/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /commercial/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /residential/i })).toBeInTheDocument();
       });
     });
 
@@ -156,10 +138,10 @@ describe('ApartmentTabsSection', () => {
       render(<ApartmentTabsSection locale="en" />);
 
       await waitFor(() => {
-        // Check that the QC tabs testids exist
-        expect(screen.getByTestId('tab-rateable')).toBeInTheDocument();
-        expect(screen.getByTestId('tab-capital')).toBeInTheDocument();
-        expect(screen.getByTestId('tab-dual')).toBeInTheDocument();
+        // Check that the QC tabs exist by role and accessible name
+        expect(screen.getByRole('tab', { name: /^rateable$/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /^capital$/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /^dual$/i })).toBeInTheDocument();
       });
     });
   });
@@ -196,7 +178,8 @@ describe('ApartmentTabsSection', () => {
       render(<ApartmentTabsSection locale="en" />);
 
       await waitFor(() => {
-        expect(mockFetchAction).toHaveBeenCalledWith(undefined);
+        // When propertyId is undefined, the action should not be called
+        expect(mockFetchAction).not.toHaveBeenCalled();
       });
     });
   });

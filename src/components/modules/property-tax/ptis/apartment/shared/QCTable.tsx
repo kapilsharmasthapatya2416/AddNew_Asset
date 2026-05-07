@@ -67,7 +67,7 @@ export const QCTable: React.FC<QCTableProps> = ({
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {data.map((row, rowIdx) => (
-            <tr key={row.id || rowIdx} className="hover:bg-gray-50 transition-colors">
+            <tr key={row.id ?? rowIdx} className="hover:bg-gray-50 transition-colors">
               {columns.map((col, colIdx) => {
                 let content: React.ReactNode;
                 if (col.render) {

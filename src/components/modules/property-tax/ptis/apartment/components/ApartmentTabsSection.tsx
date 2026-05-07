@@ -62,6 +62,8 @@ const ApartmentTabsSection: React.FC<ApartmentTabsSectionProps> = ({
         
         if (result.success && result.data) {
           const items = result.data.items || [];
+          // TODO: When API provides category-specific data, filter items by category here.
+          // Currently assigning same items to all tabs; each state kept separate for future filtering.
           setAmenitiesData(items);
           setCommercialData(items);
           setResidentialData(items);
