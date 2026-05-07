@@ -128,8 +128,21 @@ export const useTaxZoning = (props: TaxZoningPageProps) => {
     handleExportCSV: () => handleExportCSV(tableRecords),
     handleImportFile, handleClearImported, isTaxZoneValid, isWardValid, isPropertyValid, onFormClear,
     isFormValid: isTaxZoneValid && isWardValid && isPropertyValid,
-    changePage: (p: number) => { setCurrentPage(p); router.replace(`/${locale}/property-tax/taxzoning?page=${p}&pageSize=${pageSizes}`); },
-    changePageSize: (s: number) => { setPageSize(String(s)); setCurrentPage(1); router.replace(`/${locale}/property-tax/taxzoning?page=1&pageSize=${s}`); },
+    changePage: (p: number) => {
+      setCurrentPage(p);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", String(p));
+      params.set("pageSize", pageSizes);
+      router.replace(`/${locale}/property-tax/taxzoning?${params.toString()}`);
+    },
+    changePageSize: (s: number) => {
+      setPageSize(String(s));
+      setCurrentPage(1);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", "1");
+      params.set("pageSize", String(s));
+      router.replace(`/${locale}/property-tax/taxzoning?${params.toString()}`);
+    },
     handleSubmit: (e: React.FormEvent) => { e.preventDefault(); setSubmitted(true); if (isTaxZoneValid && isWardValid && isPropertyValid) handleUpdate({ zone, ward, previewData, records, wardsData, onSuccess: onFormClear }); },
     handleBulkUpdate: () => bulkUpdateAction(importedChanges, () => { setImportedChanges([]); setHasImportedData(false); })
   };

@@ -3,10 +3,15 @@ import { renderHook, act } from '@testing-library/react';
 import { useTaxZoning } from '@/hooks/taxZoning/useTaxZoning';
 import type { TaxZoningPageProps, TaxZone, Ward } from '@/types/taxzoning.types';
 
-const mockReplace = vi.fn();
+let mockSearchParams = new URLSearchParams();
+const mockReplace = vi.fn((url: string) => {
+  const queryStr = url.split('?')[1];
+  if (queryStr) mockSearchParams = new URLSearchParams(queryStr);
+});
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: mockReplace, refresh: vi.fn() }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => mockSearchParams,
 }));
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
@@ -46,6 +51,10 @@ const baseProps: TaxZoningPageProps = {
 };
 
 describe('useTaxZoning', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockSearchParams = new URLSearchParams();
+  });
   it('should initialize with correct defaults', () => {
     const { result } = renderHook(() => useTaxZoning(baseProps));
     expect(result.current.zone).toBe('');
@@ -150,5 +159,26 @@ describe('useTaxZoning', () => {
   it('should provide correct page size options', () => {
     const { result } = renderHook(() => useTaxZoning(baseProps));
     expect(result.current.pageSizeOptions).toEqual([5, 10, 20, 50, 100]);
+  });
+  it('should update URL while preserving existing params on changePage', () => {
+    const { result } = renderHook(() => useTaxZoning(baseProps));
+    act(() => { result.current.changePage(2); });
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('page=2'));
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('pageSize=5'));
+  });
+
+  it('should reset to page 1 and update URL on changePageSize', () => {
+    const { result } = renderHook(() => useTaxZoning(baseProps));
+    act(() => { result.current.changePageSize(20); });
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('page=1'));
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('pageSize=20'));
+  });
+  it('should preserve taxZoneId when changing page', () => {
+    const { result } = renderHook(() => useTaxZoning(baseProps));
+    act(() => { result.current.setZone('1'); }); // This will call replace with taxZoneId=1
+    mockReplace.mockClear();
+    act(() => { result.current.changePage(2); });
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('taxZoneId=1'));
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('page=2'));
   });
 });

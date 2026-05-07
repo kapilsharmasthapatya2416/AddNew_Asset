@@ -55,13 +55,16 @@ describe('useTaxZoningFile', () => {
     });
 
     it('should create CSV blob and trigger download', () => {
+      const mockCreateObjectURL = vi.fn(() => 'blob:test');
       const mockRevokeObjectURL = vi.fn();
+      global.URL.createObjectURL = mockCreateObjectURL;
       global.URL.revokeObjectURL = mockRevokeObjectURL;
 
       const { result } = renderHook(() => useTaxZoningFile(t, REQUIRED_HEADERS, mockRecords, mockWards, mockTaxZones));
       act(() => { result.current.handleExportCSV(mockRecords); });
 
       expect(mockToast.success).toHaveBeenCalledWith('messages.csvExportSuccess');
+      expect(mockCreateObjectURL).toHaveBeenCalled();
       expect(mockRevokeObjectURL).toHaveBeenCalled();
     });
   });

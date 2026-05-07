@@ -64,7 +64,6 @@ export default getRequestConfig(async ({ locale }) => {
       construction: constructionMessages,
       taxZoning: taxZoningMessages.taxZoning,
       floor: floorMessages.floor,
-      subfloor: floorMessages.subfloor,
       taxZone: taxzoneMessages.taxZone,
       quickDataEntry: quickDataEntryMessages,
       rateSectionMaster: rateSectionMasterMessages,
