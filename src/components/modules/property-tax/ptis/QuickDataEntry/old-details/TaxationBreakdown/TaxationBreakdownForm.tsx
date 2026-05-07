@@ -104,8 +104,8 @@ export default function TaxationBreakdownForm({
           };
 
           // Update existing year or add new one
-          const existingIndex = updatedTaxYears.findIndex(y => 
-            (y.financeYearId > 0 && y.financeYearId === formData.financeYearId) || 
+          const existingIndex = updatedTaxYears.findIndex(y =>
+            (y.financeYearId > 0 && y.financeYearId === formData.financeYearId) ||
             (y.year > 0 && y.year === Number(formData.year))
           );
 
@@ -154,7 +154,7 @@ export default function TaxationBreakdownForm({
             value={formData.year}
             onChange={(e) => handleMetaChange('year', e.target.value.replace(/\D/g, "").slice(0, 4))}
             placeholder={t("assessmentYear")}
-            className="h-[46px] border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
+            className="h-11.5 border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
           />
         </div>
 
@@ -167,7 +167,7 @@ export default function TaxationBreakdownForm({
               value={tax.taxAmount === 0 ? "" : tax.taxAmount}
               onChange={(e) => handleTaxChange(tax.taxId, e.target.value)}
               placeholder={tax.taxName}
-              className="h-[46px] border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
+              className="h-11.5 border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
             />
           </div>
         ))}
@@ -180,7 +180,7 @@ export default function TaxationBreakdownForm({
             type="number"
             value={formData.taxTotal === 0 ? "" : formData.taxTotal}
             placeholder={t("aggregateTaxSum")}
-            className="h-[46px] border-[#cbd5e1] bg-gray-50 cursor-not-allowed hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
+            className="h-11.5 border-[#cbd5e1] bg-gray-50 cursor-not-allowed hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
           />
         </div>
 
@@ -192,7 +192,7 @@ export default function TaxationBreakdownForm({
             value={formData.interest === 0 ? "" : formData.interest}
             onChange={(e) => handleMetaChange('interest', e.target.value)}
             placeholder={t("interestAmount")}
-            className="h-[46px] border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
+            className="h-11.5 border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
           />
         </div>
 
@@ -204,7 +204,7 @@ export default function TaxationBreakdownForm({
             type="number"
             value={formData.netTotal === 0 ? "" : formData.netTotal}
             placeholder={t("netPayableTotal")}
-            className="h-[46px] border-[#cbd5e1] bg-gray-50 cursor-not-allowed hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
+            className="h-11.5 border-[#cbd5e1] bg-gray-50 cursor-not-allowed hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
           />
         </div>
 
@@ -216,7 +216,7 @@ export default function TaxationBreakdownForm({
             value={formData.remark}
             onChange={(e) => handleMetaChange('remark', e.target.value)}
             placeholder={t("remarks")}
-            className="h-[46px] border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
+            className="h-11.5 border-[#cbd5e1] hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 rounded-lg transition-all font-medium text-gray-900 px-4"
           />
         </div>
       </div>
@@ -224,7 +224,7 @@ export default function TaxationBreakdownForm({
         <Button
           onClick={handleSave}
           disabled={isSubmitting}
-          className="w-[17.5%] bg-[#2563eb] hover:bg-blue-700 text-white h-[46px] rounded-xl shadow-lg shadow-blue-900/10 font-bold text-sm flex items-center justify-center gap-2.5 transition-all active:scale-95"
+          className="w-[17.5%] bg-[#2563eb] hover:bg-blue-700 text-white h-11.5 rounded-xl shadow-lg shadow-blue-900/10 font-bold text-sm flex items-center justify-center gap-2.5 transition-all active:scale-95"
         >
           <div className="flex gap-2 text-2">
             <Save className="w-4 h-4" />

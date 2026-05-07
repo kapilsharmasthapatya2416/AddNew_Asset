@@ -9,11 +9,15 @@ import { Tab } from '@/types/property-basic-details.types';
 const TABS: Tab[] = [
     { label: 'Property', href: 'Property', icon: Home },
     { label: 'Society', href: 'Society', icon: Building2 },
+    { label: 'FloorSubmission', href: 'FloorSubmission', icon: Building2 },
+    { label: 'OldDetails', href: 'OldDetails/old-taxation', icon: Building2 },
 ];
 
 const TAB_GRADIENT_CLASSES: Record<string, string> = {
     Property: 'from-blue-500 to-blue-600 border-blue-700',
     Society: 'from-purple-500 to-purple-600 border-purple-700',
+    FloorSubmission: 'from-orange-500 to-orange-600 border-orange-700',
+    OldDetails: "from-rose-500 to-red-600 border-red-700"
 };
 
 export function TabNavigation() {
@@ -22,7 +26,6 @@ export function TabNavigation() {
     const routeParams = useParams();
     const t = useTranslations("quickDataEntry");
 
-    const locale = (routeParams.locale as string) || 'en';
     const propertyId = (routeParams.propertyId as string) || searchParams.get('propertyId') || "";
     const wardNo = searchParams.get("wardNo") || "";
     const wardId = searchParams.get("wardId") || "";
@@ -30,6 +33,9 @@ export function TabNavigation() {
     const partitionNo = searchParams.get("partitionNo") || "";
 
     const activeSegment = pathname.split('/').pop() ?? '';
+
+    // Check if we have search parameters that can resolve authoritative property ID
+    const hasPropertyKeys = wardNo && propertyNo && partitionNo;
 
     const params = new URLSearchParams();
     if (propertyId) params.set('propertyId', propertyId);
@@ -44,14 +50,29 @@ export function TabNavigation() {
         <div className="bg-white border-b-2 border-slate-300 px-3 py-2 shadow-sm overflow-x-auto no-scrollbar">
             <nav className="flex md:grid w-full grid-cols-7 gap-1.5 h-auto p-1 rounded-lg">
                 {TABS.map((tab) => {
-                    const baseTabPath = `/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}`;
+                    const currentPath = pathname.split('?')[0];
+                    const pathSegments = currentPath.split('/').filter(Boolean);
+                    const baseTabPath = `/${pathSegments.slice(0, -1).join('/')}`;
                     const tabPath = `${baseTabPath}/${tab.href}`;
-                    const tabHref = queryString ? `${tabPath}?${queryString}` : tabPath;
+
+                    // For FloorSubmission tab: exclude propertyId if we have search params
+                    // to let the page resolve authoritative ID from backend
+                    let tabQueryString = queryString;
+                    if (tab.href === 'FloorSubmission' && hasPropertyKeys) {
+                        const tabParams = new URLSearchParams();
+                        if (wardNo) tabParams.set('wardNo', wardNo);
+                        if (wardId) tabParams.set('wardId', wardId);
+                        if (propertyNo) tabParams.set('propertyNo', propertyNo);
+                        if (partitionNo) tabParams.set('partitionNo', partitionNo);
+                        tabQueryString = tabParams.toString();
+                    }
+
+                    const tabHref = tabQueryString ? `${tabPath}?${tabQueryString}` : tabPath;
                     const isActive = activeSegment === tab.href || pathname === tabPath;
                     const Icon = tab.icon;
 
                     const gradientClass =
-                        TAB_GRADIENT_CLASSES[tab.label] ?? 'from-gray-500 to-gray-600 border-gray-700';
+                        TAB_GRADIENT_CLASSES[tab.href] ?? 'from-gray-500 to-gray-600 border-gray-700';
 
                     return (
                         <Link
