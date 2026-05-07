@@ -169,3 +169,8 @@ export async function fetchOldTaxesDetailsAction(propertyId: number) {
 
   return createAction(() => ptisService.getOldTaxesDetails(propertyId));
 }
+
+export async function fetchApartmentQCDetailsAction(propertyId?: number) {
+  const { getApartmentQCDetails } = await import('@/lib/api/apartmentQC.service');
+  return createAction(() => getApartmentQCDetails(propertyId));
+}

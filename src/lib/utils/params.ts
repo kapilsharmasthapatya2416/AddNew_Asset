@@ -36,7 +36,7 @@ export function parsePtisSearchParams(
   
   // Validate tab
   const tab: PtisTab = 
-    tabParam === 'capital' || tabParam === 'dual' 
+    tabParam === 'capital' || tabParam === 'dual' || tabParam === 'apartment'
       ? tabParam 
       : 'rateable';
 

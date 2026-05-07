@@ -1,56 +1,187 @@
-import { MdOtherHouses, MdStoreMallDirectory, MdHome } from 'react-icons/md';
-import { Tabs, TabPanel } from '@/components/common/Tabs';
+"use client";
+
 import React from 'react';
+import {
+  MdOtherHouses,
+  MdStoreMallDirectory,
+  MdHome,
+} from 'react-icons/md';
+
+import { Tabs } from '@/components/common/Tabs';
 import { useTranslations } from 'next-intl';
+import { ApartmentQCDetail, ApartmentQCTab } from '@/types/apartmentQC.types';
+import { fetchApartmentQCDetailsAction } from '@/app/[locale]/property-tax/ptis/actions';
+
+// Import category-specific components
+import { AmenitiesRateable, AmenitiesCapital, AmenitiesDual } from '../amenities';
+import { CommercialRateable, CommercialCapital, CommercialDual } from '../commercial';
+import { ResidentialRateable, ResidentialCapital, ResidentialDual } from '../residential';
+
+type InnerTabType = 'amenities' | 'commercial' | 'residential';
 
 interface ApartmentTabsSectionProps {
   locale: string;
   propertyId?: number;
-  initialOldDetails: any;
-  searchParams: Record<string, string | string[] | undefined>;
+  initialOldDetails?: unknown;
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
-
-const ApartmentTabsSection: React.FC<ApartmentTabsSectionProps> = () => {
+const ApartmentTabsSection: React.FC<ApartmentTabsSectionProps> = ({
+  locale: _locale,
+  propertyId,
+  initialOldDetails: _initialOldDetails,
+  searchParams: _searchParams,
+}) => {
   const t = useTranslations('ptis.apartmentTabs');
-  const [activeTab, setActiveTab] = React.useState<string | number>('amenities');
+
+  // Inner tabs: Amenities, Commercial, Residential
+  const [activeInnerTab, setActiveInnerTab] = React.useState<InnerTabType>('amenities');
+  // Outer tabs: Rateable, Capital, Dual
+  const [activeQCTab, setActiveQCTab] = React.useState<ApartmentQCTab>('rateable');
+  
+  // Data state for each category
+  const [amenitiesData, setAmenitiesData] = React.useState<ApartmentQCDetail[]>([]);
+  const [commercialData, setCommercialData] = React.useState<ApartmentQCDetail[]>([]);
+  const [residentialData, setResidentialData] = React.useState<ApartmentQCDetail[]>([]);
+  
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // Fetch apartment QC details on mount
+  React.useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await fetchApartmentQCDetailsAction(propertyId);
+        if (result.success && result.data) {
+          const items = result.data.items || [];
+          // Filter data by category (you can adjust the filter logic based on your API response)
+          // For now, using same data for all tabs - update this when API provides category-specific data
+          setAmenitiesData(items);
+          setCommercialData(items);
+          setResidentialData(items);
+        } else {
+          setError(result.error || t('error'));
+        }
+      } catch (err) {
+        setError(t('error'));
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [propertyId, t]);
+
+  // Render the appropriate component based on active tabs
+  const renderContent = () => {
+    const props = { loading, error };
+
+    if (activeInnerTab === 'amenities') {
+      if (activeQCTab === 'rateable') {
+        return <AmenitiesRateable data={amenitiesData} {...props} />;
+      } else if (activeQCTab === 'capital') {
+        return <AmenitiesCapital data={amenitiesData} {...props} />;
+      } else {
+        return <AmenitiesDual data={amenitiesData} {...props} />;
+      }
+    } else if (activeInnerTab === 'commercial') {
+      if (activeQCTab === 'rateable') {
+        return <CommercialRateable data={commercialData} {...props} />;
+      } else if (activeQCTab === 'capital') {
+        return <CommercialCapital data={commercialData} {...props} />;
+      } else {
+        return <CommercialDual data={commercialData} {...props} />;
+      }
+    } else {
+      // residential
+      if (activeQCTab === 'rateable') {
+        return <ResidentialRateable data={residentialData} {...props} />;
+      } else if (activeQCTab === 'capital') {
+        return <ResidentialCapital data={residentialData} {...props} />;
+      } else {
+        return <ResidentialDual data={residentialData} {...props} />;
+      }
+    }
+  };
+
+  // Inner tabs content (Amenities, Commercial, Residential)
+  const innerTabs = [
+    {
+      value: 'amenities' as InnerTabType,
+      label: (
+        <span className="flex items-center gap-2">
+          <MdOtherHouses className="text-lg" />
+          <span>{t('amenities')}</span>
+        </span>
+      ),
+      content: null,
+    },
+    {
+      value: 'commercial' as InnerTabType,
+      label: (
+        <span className="flex items-center gap-2">
+          <MdStoreMallDirectory className="text-lg" />
+          <span>{t('commercial')}</span>
+        </span>
+      ),
+      content: null,
+    },
+    {
+      value: 'residential' as InnerTabType,
+      label: (
+        <span className="flex items-center gap-2">
+          <MdHome className="text-lg" />
+          <span>{t('residential')}</span>
+        </span>
+      ),
+      content: null,
+    },
+  ];
+
   return (
-    <div className="pt-2">
-      <Tabs
-        value={activeTab}
-        onChange={setActiveTab}
-        items={[
-          {
-            value: 'amenities',
-            label: (
-              <span className="flex items-center gap-1">
-                <MdOtherHouses className="text-lg" /> {t('amenities')}
-              </span>
-            ),
-            content: <div>{t('amenitiesContent')}</div>,
-          },
-          {
-            value: 'commercial',
-            label: (
-              <span className="flex items-center gap-1">
-                <MdStoreMallDirectory className="text-lg" /> {t('commercial')}
-              </span>
-            ),
-            content: <div>{t('commercialContent')}</div>,
-          },
-          {
-            value: 'residential',
-            label: (
-              <span className="flex items-center gap-1">
-                <MdHome className="text-lg" /> {t('residential')}
-              </span>
-            ),
-            content: <div>{t('residentialContent')}</div>,
-          },
-        ]}
-        tabListClassName="bg-[#f6fcfd] p-1 rounded-full flex gap-2"
-      />
-    </div>
+    <section className="w-full">
+      {/* Inner Tabs (Amenities, Commercial, Residential) + QC Tabs (Rateable, Capital, Dual) */}
+      <div className="flex items-center justify-between gap-4 mb-0">
+        {/* Left side: Inner tabs */}
+        <div className="flex-1">
+          <Tabs
+            value={activeInnerTab}
+            onChange={(val) => setActiveInnerTab(val as InnerTabType)}
+            items={innerTabs}
+            variant="pills"
+            size="sm"
+            tabListClassName="
+              rounded-2xl
+              bg-[#f6fcfd]
+              p-1
+              shadow-sm
+              border
+              border-[#d9eef1]
+              flex
+              gap-2
+            "
+          />
+        </div>
+        
+        {/* Right side: QC tabs (Rateable, Capital, Dual) */}
+        <Tabs
+          value={activeQCTab}
+          onChange={(val) => setActiveQCTab(val as ApartmentQCTab)}
+          items={[
+            { value: 'rateable', label: t('rateable'), content: null },
+            { value: 'capital', label: t('capital'), content: null },
+            { value: 'dual', label: t('dual'), content: null },
+          ]}
+          variant="pills"
+          size="sm"
+          tabListClassName="gap-2"
+        />
+      </div>
+
+      {/* Content Area */}
+      {renderContent()}
+    </section>
   );
 };
 
