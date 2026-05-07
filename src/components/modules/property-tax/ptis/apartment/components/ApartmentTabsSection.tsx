@@ -7,7 +7,7 @@ import {
   MdHome,
 } from 'react-icons/md';
 
-import { Tabs } from '@/components/common/Tabs';
+
 import { useTranslations } from 'next-intl';
 import { ApartmentQCDetail, ApartmentQCTab } from '@/types/apartmentQC.types';
 import { fetchApartmentQCDetailsAction } from '@/app/[locale]/property-tax/ptis/actions';
@@ -109,39 +109,7 @@ const ApartmentTabsSection: React.FC<ApartmentTabsSectionProps> = ({
     }
   };
 
-  // Inner tabs content (Amenities, Commercial, Residential)
-  const innerTabs = [
-    {
-      value: 'amenities' as InnerTabType,
-      label: (
-        <span className="flex items-center gap-2">
-          <MdOtherHouses className="text-lg" />
-          <span>{t('amenities')}</span>
-        </span>
-      ),
-      content: null,
-    },
-    {
-      value: 'commercial' as InnerTabType,
-      label: (
-        <span className="flex items-center gap-2">
-          <MdStoreMallDirectory className="text-lg" />
-          <span>{t('commercial')}</span>
-        </span>
-      ),
-      content: null,
-    },
-    {
-      value: 'residential' as InnerTabType,
-      label: (
-        <span className="flex items-center gap-2">
-          <MdHome className="text-lg" />
-          <span>{t('residential')}</span>
-        </span>
-      ),
-      content: null,
-    },
-  ];
+
 
   return (
     <section className="w-full">
