@@ -1,21 +1,21 @@
 /* ---------------- FLOOR INFORMATION SERVICES ---------------- */
 
+
 import { apiClient } from "@/services/api.service";
 import {
-     SubFloor,
-     Floor,
-     ConstructionType,
-     TypeOfUse,
-     SubTypeOfUse,
-     OldFloorDetailsResponse,
-     SaveOldFloorDetailPayload
+    SubFloor,
+    Floor,
+    ConstructionType,
+    TypeOfUse,
+    SubTypeOfUse,
+    OldFloorDetailsResponse,
+    SaveOldFloorDetailPayload,
 } from "@/types/property-old-details.types";
-
 import { PagedResponse } from "@/types/common.types";
- import { handleApiResponse } from "@/lib/utils/api";
+import { handleApiResponse } from "@/lib/utils/api";
 
 /* ---------------- GET FLOORS ---------------- */
-export async function getFloors( pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<Floor>> {
+export async function getFloors(pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<Floor>> {
     const params = new URLSearchParams({
         PageNumber: pageNumber.toString(),
         PageSize: pageSize.toString(),
@@ -109,6 +109,9 @@ export async function deleteOldFloorDetails(propertyId: number, floorDetailId: n
     const response = await apiClient.delete<void>(
         `/Property/${propertyId}/floor-details-old/${floorDetailId}`
     );
-    handleApiResponse(response, "Failed to delete floor details");
+    // DELETE returns 204/empty body, so don't use handleApiResponse (which throws on undefined data)
+    if (!response.success) {
+        throw new Error(response.error || "Failed to delete floor details");
+    }
     // No return needed for void/empty body on success
 }

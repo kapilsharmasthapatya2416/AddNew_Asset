@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import {
   deleteOldFloorDetailsAction,
   saveOldFloorDetailsAction,
@@ -35,6 +36,7 @@ function mapFloorFormToPayload(
 export function useFloorFormApi(propertyId: number, locale: string) {
   const t = useTranslations('quickDataEntry');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   /**
    * Saves or updates a floor detail record.
@@ -56,6 +58,7 @@ export function useFloorFormApi(propertyId: number, locale: string) {
       if (result.success) {
         toast.success(formData.id ? t('oldDetails.floorInformation.updateSuccess') : t('oldDetails.floorInformation.saveSuccess'));
         onSuccess();
+        router.refresh(); // Refresh data so MasterTable updates immediately
       } else {
         toast.error(result.error || t('oldDetails.floorInformation.saveError'));
       }
@@ -64,7 +67,7 @@ export function useFloorFormApi(propertyId: number, locale: string) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [propertyId, locale, t]);
+  }, [propertyId, locale, t, router]);
 
   /**
    * Deletes a floor detail record.

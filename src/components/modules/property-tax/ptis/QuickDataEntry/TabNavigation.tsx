@@ -68,6 +68,8 @@ export function TabNavigation() {
                     }
 
                     const tabHref = tabQueryString ? `${tabPath}?${tabQueryString}` : tabPath;
+                    // activeSegment is derived above as the last segment of the current path (pathname.split('/').pop()).
+                    // This is safe and intentional: it allows us to match the tab by its href segment.
                     const isActive = activeSegment === tab.href || pathname === tabPath;
                     const Icon = tab.icon;
 

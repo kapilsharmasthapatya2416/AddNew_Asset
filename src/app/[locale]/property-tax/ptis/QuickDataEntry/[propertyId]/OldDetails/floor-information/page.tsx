@@ -37,7 +37,8 @@ export default async function FloorInformationPage({ params, searchParams }: Pag
         getSubFloorsAction(1, -1),
         getConstructionTypesAction(1, -1),
         getTypeOfUsesAction(1, -1),
-        typeOfUseId ? getSubTypeOfUsesAction(Number(typeOfUseId),1,-1) : Promise.resolve({ success: true, data: [] as SubTypeOfUse[] }),
+        // Coerce typeOfUseId to a single string before converting to number (handles string[] case)
+        typeOfUseId ? getSubTypeOfUsesAction(Number(typeof typeOfUseId === 'string' ? typeOfUseId : ''), 1, -1) : Promise.resolve({ success: true, data: [] as SubTypeOfUse[] }),
         getOldFloorDetailsAction(Number(propertyId))
     ]);
 
