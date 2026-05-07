@@ -3,7 +3,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useHeaderState } from '@/hooks/useHeaderState';
-import { useParams } from "next/navigation";
 
 import { Settings, User } from "lucide-react";
 
