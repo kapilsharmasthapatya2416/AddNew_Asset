@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getModuleMaster } from '../module-master.service';
-import { isModuleMasterShape, normalizeModuleMaster } from '../module-master-guard';
+import { getModuleMaster } from '@/lib/api/home/module-master.service';
+import { isModuleMasterShape, normalizeModuleMaster } from '@/lib/api/home/module-master-guard';
 
 const validItem = {
   id: 1,
