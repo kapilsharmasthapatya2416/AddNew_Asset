@@ -12,7 +12,7 @@ vi.mock('next/link', () => ({
 
 const mockServices: Service[] = [
   {
-    id: '1',
+    id: 1,
     link: '/property-tax',
     icon: 'property-tax',
     title: 'Property Tax',
@@ -20,7 +20,7 @@ const mockServices: Service[] = [
     stats: [{ label: 'Due', value: '₹5000' }],
   },
   {
-    id: '2',
+    id: 2,
     link: '/water-tax',
     icon: 'water-tax',
     title: 'Water Tax',
@@ -28,7 +28,7 @@ const mockServices: Service[] = [
     stats: [{ label: 'Due', value: '₹1000' }],
   },
   {
-    id: '3',
+    id: 3,
     link: '/garbage-collection',
     icon: 'garbage-collection',
     title: 'Garbage Collection',
@@ -123,7 +123,7 @@ describe('ServiceCards Icon Mapping', () => {
     it(`renders icon for ${icon}`, () => {
       const service: Service[] = [
         {
-          id: '1',
+          id: 1,
           link: '/test',
           icon,
           title,
