@@ -64,15 +64,14 @@ export async function listServices(): Promise<Service[]> {
         const modules = response.items ?? [];
         
         if (modules.length === 0) {
-            // Fallback to empty list if no modules found
             return [];
         }
 
         return modules.map(mapModuleToService);
     } catch (error) {
         console.error("Error in listServices action:", error);
-        // Return empty array on error to prevent page crash
-        return [];
+        // Throwing here allows Next.js error.tsx to catch it and show an error UI
+        throw new Error("Failed to load services. Please try again later.");
     }
 }
 

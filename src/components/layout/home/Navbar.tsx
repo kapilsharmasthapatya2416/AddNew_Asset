@@ -20,7 +20,8 @@ export const Navbar = ({ username, ulbName }: NavbarProps) => {
     const {
         handleLogout,
         showProfileDropdown,
-        setShowProfileDropdown
+        setShowProfileDropdown,
+        isLoggingOut
     } = useHeaderState();
 
     return (
@@ -62,9 +63,10 @@ export const Navbar = ({ username, ulbName }: NavbarProps) => {
                         onClick={handleLogout}
                         variant="danger"
                         size="xs"
+                        disabled={isLoggingOut}
                         className="rounded-full px-4 shadow-md hover:shadow-lg hover:scale-105"
                     >
-                        {t('actions.logout')}
+                        {isLoggingOut ? '...' : t('actions.logout')}
                     </Button>
                 </div>
             </nav>

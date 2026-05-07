@@ -34,8 +34,13 @@ export function useHeaderState(initialIp = '192.168.1.100') {
         return `${hours}h ${minutes}m`;
     };
 
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
     const { locale } = useParams();
     const handleLogout = async () => {
+        if (isLoggingOut) return;
+        
+        setIsLoggingOut(true);
         toast.info('Logging out...');
 
         try {
@@ -50,8 +55,14 @@ export function useHeaderState(initialIp = '192.168.1.100') {
             localStorage.removeItem('ntis_last_activity');
         } catch { }
 
-        // Call Server Action to clear cookies
-        await logoutAction(typeof locale === 'string' ? locale : 'en');
+        try {
+            // Call Server Action to clear cookies
+            await logoutAction(typeof locale === 'string' ? locale : 'en');
+        } catch (error) {
+            console.error("Logout error:", error);
+            toast.error("Logout failed. Please try again.");
+            setIsLoggingOut(false);
+        }
     };
 
     const handleProfile = () => {
@@ -86,6 +97,7 @@ export function useHeaderState(initialIp = '192.168.1.100') {
         showLanguageDropdown,
         showSessionInfo,
         showProfileDropdown,
+        isLoggingOut,
         loginTime,
         ipAddress,
 
