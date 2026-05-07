@@ -127,10 +127,10 @@ describe('ApartmentTabsSection', () => {
       render(<ApartmentTabsSection locale="en" />);
 
       await waitFor(() => {
-        // Check that the inner tabs exist by role and accessible name
-        expect(screen.getByRole('tab', { name: /amenities/i })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: /commercial/i })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: /residential/i })).toBeInTheDocument();
+        // Check that the inner tabs exist by button role and accessible name
+        expect(screen.getByRole('button', { name: /amenities/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /commercial/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /residential/i })).toBeInTheDocument();
       });
     });
 
@@ -138,10 +138,10 @@ describe('ApartmentTabsSection', () => {
       render(<ApartmentTabsSection locale="en" />);
 
       await waitFor(() => {
-        // Check that the QC tabs exist by role and accessible name
-        expect(screen.getByRole('tab', { name: /^rateable$/i })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: /^capital$/i })).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: /^dual$/i })).toBeInTheDocument();
+        // Check that the QC tabs exist by button role and accessible name
+        expect(screen.getByRole('button', { name: /^rateable$/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /^capital$/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /^dual$/i })).toBeInTheDocument();
       });
     });
   });
