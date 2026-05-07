@@ -17,9 +17,8 @@ export default function Error({
 
   return (
     <ErrorPage 
-      statusCode={500}
-      message="We encountered an issue while loading the home screen."
-      onRetry={() => reset()}
+      error={error}
+      reset={reset}
     />
   );
 }
