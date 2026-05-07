@@ -73,12 +73,19 @@ export async function listServices(locale: string): Promise<Service[]> {
     } catch (error) {
         // Detailed logging to help identify the root cause of the terminal/API error
         // We log as warning/error on server but return empty to prevent UI crash
+        let status: unknown = undefined;
+        let context: unknown = undefined;
+        if (typeof error === "object" && error !== null && "statusCode" in error) {
+            status = (error as { statusCode?: unknown }).statusCode;
+        }
+        if (typeof error === "object" && error !== null && "contextMessage" in error) {
+            context = (error as { contextMessage?: unknown }).contextMessage;
+        }
         console.error("listServices API Failure:", {
             message: error instanceof Error ? error.message : "Unknown error",
-            status: (error as any)?.statusCode,
-            context: (error as any)?.contextMessage
+            status,
+            context
         });
-        
         // Return empty array instead of throwing to allow the Home screen to render
         // This "fixes" the terminal error/crash while still logging the issue.
         return [];
