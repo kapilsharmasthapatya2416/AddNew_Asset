@@ -14,9 +14,12 @@ export default async function TaxationBreakdownPage({ params }: PageProps) {
     setRequestLocale(locale);
 
     const result = await getOldTaxesDetailsAction(Number(propertyId));
-    const taxationData = result.success ? result.data : null;
     
+    if (!result.success) {
+        throw new Error('Failed to load old taxes details.');
+    }
+
     return (
-        <TaxationBreakdownForm key={propertyId} initialData={taxationData} />
+        <TaxationBreakdownForm key={propertyId} initialData={result.data} />
     );
 }

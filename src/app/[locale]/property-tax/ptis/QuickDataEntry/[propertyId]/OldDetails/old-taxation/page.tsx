@@ -15,9 +15,13 @@ export default async function OldTaxationPage({ params }: PageProps) {
 
     const result = await getPropertyOldDetailsAction(Number(propertyId));
 
+    if (!result.success) {
+        throw new Error('Failed to fetch property old details');
+    }
+
     return (
         <OldTaxationForm
-            propertyOldDetails={result.success ? result.data : null}
+            propertyOldDetails={result.data}
         />
     );
 }

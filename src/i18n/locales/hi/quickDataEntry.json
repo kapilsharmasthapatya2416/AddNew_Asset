@@ -616,7 +616,7 @@
         "loading": {
             "message": "पुराने विवरण लोड हो रहे हैं...",
             "description": "कृपया प्रतीक्षा करें, हम ऐतिहासिक जानकारी ला रहे हैं",
-             "saving": "बचत हो रही है..."
+            "saving": "बचत हो रही है..."
         },
         "oldTaxation": {
             "error": {
@@ -711,7 +711,7 @@
         "button": {
             "add": "जोड़ें",
             "CheckBoxbutton": "पंजीकरण"
-        },      
+        },
         "floordtails": {
             "selectPlaceholder": "चुनें",
             "yearPlaceholder": "वर्ष",

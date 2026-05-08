@@ -49,7 +49,7 @@ export interface PropertyOldDetailsResponse {
   /** User-friendly message from the server */
   message: string;
   /** The actual property data */
-  items: PropertyOldDetailsApiItem;
+  items: PropertyOldDetailsApiItem | null;
   /** Any validation or server errors */
   errors: unknown | null;
 }
@@ -174,7 +174,7 @@ export interface OldFloorDetails {
 export interface OldFloorDetailsResponse {
   success: boolean;
   message: string;
-  items: OldFloorDetails;
+  items: OldFloorDetails | null;
   errors: unknown | null;
 }
 
@@ -274,7 +274,7 @@ export interface OldTaxesDetails {
 export interface OldTaxesDetailsResponse {
   success: boolean;
   message: string;
-  items: OldTaxesDetails;
+  items: OldTaxesDetails | null;
   errors: unknown | null;
 }
 
