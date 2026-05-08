@@ -1,11 +1,8 @@
 "use client";
 
 import React from 'react';
-import {
-  MdOtherHouses,
-  MdStoreMallDirectory,
-  MdHome,
-} from 'react-icons/md';
+
+import InnerTabs from './InnerTabs';
 
 
 import { useTranslations } from 'next-intl';
@@ -126,48 +123,7 @@ const ApartmentTabsSection: React.FC<ApartmentTabsSectionProps> = ({
       <div className="flex items-center justify-between gap-4 mb-0">
         {/* Left side: Inner tabs */}
         <div className="flex-1">
-          <div
-            className="rounded-2xl bg-[#f6fcfd] p-1 shadow-sm border border-[#d9eef1] flex gap-2"
-            aria-label="Apartment QC category"
-          >
-            {[
-              { value: 'amenities' as InnerTabType, label: (
-                <span className="flex items-center gap-2">
-                  <MdOtherHouses className="text-lg" />
-                  <span>{t('amenities')}</span>
-                </span>
-              ) },
-              { value: 'commercial' as InnerTabType, label: (
-                <span className="flex items-center gap-2">
-                  <MdStoreMallDirectory className="text-lg" />
-                  <span>{t('commercial')}</span>
-                </span>
-              ) },
-              { value: 'residential' as InnerTabType, label: (
-                <span className="flex items-center gap-2">
-                  <MdHome className="text-lg" />
-                  <span>{t('residential')}</span>
-                </span>
-              ) },
-            ].map((tab) => {
-              const isActive = activeInnerTab === tab.value;
-              return (
-                <button
-                  key={tab.value}
-                  type="button"
-                  aria-pressed={isActive}
-                  onClick={() => setActiveInnerTab(tab.value)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-primary text-white'
-                      : 'bg-[#f6fcfd] text-foreground border border-[#d9eef1]'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+          <InnerTabs activeInnerTab={activeInnerTab} setActiveInnerTab={setActiveInnerTab} />
         </div>
         
         {/* Right side: QC tabs (Rateable, Capital, Dual) */}
