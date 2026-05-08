@@ -21,7 +21,7 @@ export async function getPropertyOldDetailsAction(propertyId: number): Promise<A
   }
 }
 
-export async function updatePropertyOldDetailsAction(propertyId: number, data: Partial<PropertyOldDetailsApiItem>, locale: string): Promise<ActionResult<PropertyOldDetailsApiItem>> {
+export async function updatePropertyOldDetailsAction(propertyId: number, data: Partial<PropertyOldDetailsApiItem>, locale: string): Promise<ActionResult<PropertyOldDetailsApiItem | null>> {
   try {
     const result = await updatePropertyOldDetails(propertyId, data);
     revalidatePath(`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/OldDetails/old-taxation`);

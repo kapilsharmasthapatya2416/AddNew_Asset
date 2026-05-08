@@ -50,6 +50,6 @@ export async function getOldTaxesDetails(propertyId: number): Promise<OldTaxesDe
  * @param data The payload containing taxes details.
  */
 export async function saveOldTaxesDetails(propertyId: number, data: OldTaxesDetails): Promise<OldTaxesDetailsResponse> {
-  const response = await apiClient.post<OldTaxesDetailsResponse>(`/Property/${propertyId}/old-taxes-details`, data);
+  const response = await apiClient.put<OldTaxesDetailsResponse>(`/Property/${propertyId}/old-taxes-details`, data);
   return handleApiResponse(response, `Save old taxes details ${propertyId} failed`);
 }
