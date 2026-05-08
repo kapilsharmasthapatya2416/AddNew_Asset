@@ -1,7 +1,6 @@
 'use server';
 
 import { cookies } from "next/headers";
-import { userProfileService } from "@/lib/api/user-profile.service";
 import { getUserProfileCached } from "@/lib/api/user-profile-cache";
 import { Service } from "@/types/home/home.types";
 import { getDepartmentConfig, getDepartmentRoute } from "@/config/home-services.config";
@@ -52,7 +51,7 @@ export async function listServices(locale: string): Promise<ListServicesResponse
             return { services: [], error: "User not authenticated" };
         }
         
-        const response = await userProfileService.getUserProfile(userId);
+        const response = await getUserProfileCached(userId);
         
         if (!response.success || !response.data) {
             return { services: [], error: response.error || "Failed to load user profile" };
@@ -186,7 +185,7 @@ export async function getUserProfileSSR(): Promise<UserProfileDisplayValues | nu
             return null;
         }
         
-        const response = await userProfileService.getUserProfile(userId);
+        const response = await getUserProfileCached(userId);
         
         if (!response.success || !response.data) {
             return null;
