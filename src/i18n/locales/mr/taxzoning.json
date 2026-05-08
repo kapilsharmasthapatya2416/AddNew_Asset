@@ -82,7 +82,7 @@
       "criticalError": "सामूहिक अद्यतनादरम्यान गंभीर त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
       "noRecordsFound": "फाइलमध्ये कोणत्याही वैध नोंदी आढळल्या नाहीत",
       "invalidDataFormat": "फाइलमध्ये अवैध डेटा स्वरूप",
-      "dbOperationCompleted": "डेटाबेस ऑपरेशन पूर्ण:",
+      "dbOperationCompleted": "डेटा इम्पोर्ट ऑपरेशन पूर्ण:",
       "newRecordsCreated": "नवीन नोंदी यशस्वीरित्या तयार केल्या",
       "recordsUpdatedSuccessfully": "नोंदी यशस्वीरित्या अद्यतनित केल्या",
       "newRecordsCreatedAnd": "नवीन नोंदी तयार केल्या आणि",

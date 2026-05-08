@@ -1,6 +1,7 @@
 "use server";
 
-import {createTaxZoning, getAllTaxZoningServer, getTaxZonePagedServer, getTaxZoningByWardServer, getTaxZoningPagedServer, getTaxZoningPropertyNoServer, getWardPagedServer, updateTaxZoning } from "@/lib/api/taxzoning.service";
+import {createTaxZoning, getAllTaxZoningServer, getTaxZonePagedServer, getTaxZoningByWardServer, getTaxZoningPagedServer, getTaxZoningPropertyNoServer, getWardPagedServer, updateTaxZoning } from "@/lib/api/taxZoning/taxzoning.service";
+import { getTranslations } from "next-intl/server";
 import { ApiError } from "@/lib/utils/api";
 import { PagedResponse } from "@/types/common.types";
 import { ActionResult, TaxZone, TaxZoningFormModel, TaxZoning, TaxZoningPropertyNo, Ward } from "@/types/taxzoning.types";
@@ -17,12 +18,12 @@ export async function fetchTaxZonePagedAction(
     return await getTaxZonePagedServer(pageNumber, pageSize);
   } catch (error) {
     if (error instanceof ApiError) {
-      throw error; // preserve message & status
+      throw error;
     }
-
+    const t = await getTranslations("taxZoning");
     throw new ApiError(
       500,
-      "messages.fetchTaxZonesFailed",
+      t("messages.fetchTaxZonesFailed"),
       "fetchTaxZonePagedAction: Unknown error"
     );
   }
@@ -37,8 +38,8 @@ export async function fetchWardPagedAction(
     if (error instanceof ApiError) {
       throw error;
     }
-    // Preserve the original error message and stack if possible
-    const message = error instanceof Error ? error.message : "messages.fetchWardsFailed";
+    const t = await getTranslations("taxZoning");
+    const message = error instanceof Error ? error.message : t("messages.fetchWardsFailed");
     const details = error instanceof Error && error.stack ? error.stack : String(error);
     throw new ApiError(
       500,
@@ -74,9 +75,10 @@ export async function getTaxZoningPagedAction(
       };
     }
 
+    const t = await getTranslations("taxZoning");
     return {
       success: false,
-      error: "messages.fetchZoningDataFailed",
+      error: t("messages.fetchZoningDataFailed"),
       statusCode: 500,
     };
   }
@@ -104,9 +106,10 @@ export async function getTaxZoningPropertyNoPagedAction(
       };
     }
 
+    const t = await getTranslations("taxZoning");
     return {
       success: false,
-      error: "messages.fetchPropertyNoFailed",
+      error: t("messages.fetchPropertyNoFailed"),
       statusCode: 500,
     };
   }
@@ -138,9 +141,10 @@ export async function getTaxZoningByWardAction(
       };
     }
 
+    const t = await getTranslations("taxZoning");
     return {
       success: false,
-      error: "messages.fetchByWardFailed",
+      error: t("messages.fetchByWardFailed"),
     };
   }
 }
@@ -168,9 +172,10 @@ export async function getAllTaxZoningAction(
       };
     }
 
+    const t = await getTranslations("taxZoning");
     return {
       success: false,
-      error: "messages.fetchAllFailed",
+      error: t("messages.fetchAllFailed"),
     };
   }
 }
@@ -189,11 +194,12 @@ export async function createTaxZoningAction(
       message: "messages.createSuccess",
     };
   } catch (error: unknown) {
-    logger.error("Create Tax Zoning Error:", { data }, error);
+    logger.error("Create Tax Zoning Error", { data }, error);
+    const t = await getTranslations("taxZoning");
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "messages.createFailed",
+        error instanceof Error ? error.message : t("messages.createFailed"),
     };
   }
 }
@@ -212,11 +218,12 @@ export async function updateTaxZoningAction(
       message: "messages.updateSuccess",
     };
   } catch (error: unknown) {
-    logger.error("Update Tax Zoning Error:", { data }, error);
+    logger.error("Update Tax Zoning Error", { data }, error);
+    const t = await getTranslations("taxZoning");
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "messages.updateFailed",
+        error instanceof Error ? error.message : t("messages.updateFailed"),
     };
   }
 }

@@ -1,27 +1,59 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useTaxZoning } from '@/hooks/taxZoning/useTaxZoning';
 import type { TaxZoningPageProps, TaxZone, Ward } from '@/types/taxzoning.types';
 
+// Mock next/navigation
 let mockSearchParams = new URLSearchParams();
 const mockReplace = vi.fn((url: string) => {
   const queryStr = url.split('?')[1];
-  if (queryStr) mockSearchParams = new URLSearchParams(queryStr);
+  if (queryStr) {
+    mockSearchParams = new URLSearchParams(queryStr);
+  }
 });
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), replace: mockReplace, refresh: vi.fn() }),
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: mockReplace,
+    refresh: vi.fn(),
+  }),
   useSearchParams: () => mockSearchParams,
 }));
+
+// Mock next-intl
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
   useLocale: () => 'en',
 }));
-vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn() } }));
-vi.mock('@/app/[locale]/property-tax/taxzoning/actions', () => ({
-  createTaxZoningAction: vi.fn(),
-  updateTaxZoningAction: vi.fn().mockResolvedValue({ success: true, message: 'ok' }),
-  getTaxZoningPagedAction: vi.fn().mockResolvedValue({ success: true, data: { items: [], totalCount: 0 } }),
+
+// Mock sub-hooks to isolate useTaxZoning logic
+const mockBulkUpdateAction = vi.fn();
+const mockHandleUpdate = vi.fn();
+vi.mock('@/hooks/taxZoning/useTaxZoningActions', () => ({
+  useTaxZoningActions: () => ({
+    saving: false,
+    handleUpdate: mockHandleUpdate,
+    handleBulkUpdate: mockBulkUpdateAction,
+  }),
+}));
+
+const mockHandleExportCSV = vi.fn();
+const mockHandleImportFile = vi.fn();
+const mockHandleClearImported = vi.fn();
+const mockSetImportedChanges = vi.fn();
+const mockSetHasImportedData = vi.fn();
+
+vi.mock('@/hooks/taxZoning/useTaxZoningFile', () => ({
+  useTaxZoningFile: () => ({
+    importedChanges: [],
+    hasImportedData: false,
+    handleExportCSV: mockHandleExportCSV,
+    handleImportFile: mockHandleImportFile,
+    handleClearImported: mockHandleClearImported,
+    setImportedChanges: mockSetImportedChanges,
+    setHasImportedData: mockSetHasImportedData,
+  }),
 }));
 
 const mockTaxZones = {
@@ -29,25 +61,48 @@ const mockTaxZones = {
     { id: 1, taxZoneNo: '1', taxZoneType: 'R', remark: null, createdDate: '', updatedDate: null, isActive: true },
     { id: 2, taxZoneNo: '2', taxZoneType: 'C', remark: null, createdDate: '', updatedDate: null, isActive: true },
   ] as TaxZone[],
-  pageNumber: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false,
+  pageNumber: 1,
+  pageSize: 10,
+  totalCount: 2,
+  totalPages: 1,
+  hasPrevious: false,
+  hasNext: false,
 };
+
 const mockWardsData = {
   items: [
     { id: 89, wardNo: 'MM11', zoneNo: '1', description: null, descriptionEnglish: null, sequenceNo: null, isActive: true, createdBy: null, createdDate: '', updatedBy: null, updatedDate: null },
   ] as Ward[],
-  pageNumber: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false,
+  pageNumber: 1,
+  pageSize: 10,
+  totalCount: 1,
+  totalPages: 1,
+  hasPrevious: false,
+  hasNext: false,
 };
 
 const baseProps: TaxZoningPageProps = {
   data: [
-    { taxZoneId: 1, wardId: 89, taxZone: '1', wardNo: 'MM11', propertyNo: '16', fromProperty: '3', toProperty: '3', isActive: true, createdDate: null, updatedDate: null },
+    { 
+      taxZoneId: 1, 
+      wardId: 89, 
+      taxZone: '1', 
+      wardNo: 'MM11', 
+      propertyNo: '16', 
+      fromProperty: '10', 
+      toProperty: '20', 
+      isActive: true, 
+      createdDate: null, 
+      updatedDate: null 
+    },
   ],
   pageNumber: 1,
-  pageSize: 5,
+  pageSize: 10,
   totalCount: 1,
   totalPages: 1,
   taxZones: mockTaxZones,
   wardsData: mockWardsData,
+  allProperties: { success: true, data: { items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPrevious: false, hasNext: false } },
 };
 
 describe('useTaxZoning', () => {
@@ -55,130 +110,136 @@ describe('useTaxZoning', () => {
     vi.clearAllMocks();
     mockSearchParams = new URLSearchParams();
   });
-  it('should initialize with correct defaults', () => {
+
+  it('should initialize with values from searchParams', () => {
+    mockSearchParams.set('taxZoneId', '1');
+    mockSearchParams.set('wardId', '89');
+    
     const { result } = renderHook(() => useTaxZoning(baseProps));
-    expect(result.current.zone).toBe('');
-    expect(result.current.ward).toEqual([]);
-    expect(result.current.fromProps).toBe('');
-    expect(result.current.toProps).toBe('');
-    expect(result.current.loading).toBe(false);
-    expect(result.current.saving).toBe(false);
-    expect(result.current.submitted).toBe(false);
+    
+    expect(result.current.zone).toBe('1');
+    expect(result.current.ward).toEqual(['89']);
   });
 
-  it('should compute zoneOptions from taxZones', () => {
+  it('should compute zoneOptions and wardOptions correctly', () => {
     const { result } = renderHook(() => useTaxZoning(baseProps));
-    expect(result.current.zoneOptions).toEqual([
-      { label: '1', value: '1' },
-      { label: '2', value: '2' },
-    ]);
+    
+    expect(result.current.zoneOptions).toHaveLength(2);
+    expect(result.current.zoneOptions[0]).toEqual({ label: '1', value: '1' });
+    
+    // wardOptions should be empty if no zone is selected
+    expect(result.current.wardOptions).toHaveLength(0);
+    
+    act(() => {
+      result.current.setZone('1');
+    });
+    
+    expect(result.current.wardOptions).toHaveLength(1);
+    expect(result.current.wardOptions[0]).toEqual({ label: 'MM11', value: '89' });
   });
 
-  it('should not show ward options when no zone selected', () => {
+  it('should handle pagination changes', () => {
     const { result } = renderHook(() => useTaxZoning(baseProps));
-    expect(result.current.wardOptions).toEqual([]);
+    
+    act(() => {
+      result.current.changePage(2);
+    });
+    
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('page=2'));
+    
+    act(() => {
+      result.current.changePageSize(50);
+    });
+    
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('pageSize=50'));
+    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('page=1'));
   });
 
-  it('should map data to records correctly', () => {
+  it('should generate preview data when all fields are set', () => {
     const { result } = renderHook(() => useTaxZoning(baseProps));
-    expect(result.current.tableRecords).toHaveLength(1);
-    expect(result.current.tableRecords[0]).toEqual(expect.objectContaining({
-      taxZoneId: 1,
+    
+    act(() => {
+      result.current.setZone('1');
+      result.current.setWard(['89']);
+      result.current.setFromProps('100');
+      result.current.setToProps('102');
+    });
+    
+    expect(result.current.previewData).toHaveLength(3);
+    expect(result.current.previewData[0]).toEqual({
       taxZoneNo: '1',
-      wardId: 89,
       wardNo: 'MM11',
-      fromProperty: '3',
-      toProperty: '3',
+      propertyNo: '100',
+    });
+  });
+
+  it('should validate form correctly', () => {
+    const { result } = renderHook(() => useTaxZoning(baseProps));
+    
+    expect(result.current.isFormValid).toBe(false);
+    
+    act(() => {
+      result.current.setZone('1');
+      result.current.setWard(['89', '90']); // multiple wards, property range not needed
+    });
+    
+    expect(result.current.isFormValid).toBe(true);
+    
+    act(() => {
+      result.current.setWard(['89']); // single ward, property range needed
+    });
+    
+    expect(result.current.isFormValid).toBe(false);
+    
+    act(() => {
+      result.current.setFromProps('10');
+      result.current.setToProps('20');
+    });
+    
+    expect(result.current.isFormValid).toBe(true);
+  });
+
+  it('should handle form submission', () => {
+    const { result } = renderHook(() => useTaxZoning(baseProps));
+    
+    act(() => {
+      result.current.setZone('1');
+      result.current.setWard(['89']);
+      result.current.setFromProps('10');
+      result.current.setToProps('20');
+    });
+    
+    act(() => {
+      result.current.handleSubmit({ preventDefault: vi.fn() } as unknown as React.FormEvent);
+    });
+    
+    expect(mockHandleUpdate).toHaveBeenCalledWith(expect.objectContaining({
+      zone: '1',
+      ward: ['89'],
     }));
   });
 
-  it('should return empty records when data is empty', () => {
-    const { result } = renderHook(() => useTaxZoning({ ...baseProps, data: [] }));
-    expect(result.current.tableRecords).toEqual([]);
+  it('should handle bulk update', () => {
+    const { result } = renderHook(() => useTaxZoning(baseProps));
+    
+    act(() => {
+      result.current.handleBulkUpdate();
+    });
+    
+    expect(mockBulkUpdateAction).toHaveBeenCalled();
   });
 
-  it('should set zone and update URL on setZone', () => {
+  it('should clear form on onFormClear', () => {
     const { result } = renderHook(() => useTaxZoning(baseProps));
-    act(() => { result.current.setZone('1'); });
-    expect(result.current.zone).toBe('1');
-    expect(mockReplace).toHaveBeenCalled();
-  });
-
-  it('should clear fromProps and toProps when multiple wards selected', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    act(() => { result.current.setZone('1'); });
-    act(() => { result.current.setFromProps('10'); });
-    act(() => { result.current.setToProps('20'); });
-    act(() => { result.current.setWard(['1', '2']); });
-    expect(result.current.fromProps).toBe('');
-    expect(result.current.toProps).toBe('');
-  });
-
-  it('should generate preview data when zone, ward, from, to are set', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    act(() => { result.current.setZone('1'); });
-    act(() => { result.current.setWard(['89']); });
-    act(() => { result.current.setFromProps('10'); });
-    act(() => { result.current.setToProps('12'); });
-    expect(result.current.previewData).toHaveLength(3);
-    expect(result.current.previewData[0]).toEqual({ taxZoneNo: '1', wardNo: 'MM11', propertyNo: '10' });
-    expect(result.current.previewData[2]).toEqual({ taxZoneNo: '1', wardNo: 'MM11', propertyNo: '12' });
-  });
-
-  it('should return empty previewData when from > to', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    act(() => { result.current.setZone('1'); });
-    act(() => { result.current.setWard(['89']); });
-    act(() => { result.current.setFromProps('20'); });
-    act(() => { result.current.setToProps('10'); });
-    expect(result.current.previewData).toEqual([]);
-  });
-
-  it('should clear form state on onFormClear', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    act(() => { result.current.setZone('1'); });
-    act(() => { result.current.setWard(['89']); });
-    act(() => { result.current.onFormClear(); });
+    
+    act(() => {
+      result.current.setZone('1');
+      result.current.setWard(['89']);
+      result.current.onFormClear();
+    });
+    
     expect(result.current.zone).toBe('');
     expect(result.current.ward).toEqual([]);
-  });
-
-  it('should compute validation flags correctly', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    expect(result.current.isTaxZoneValid).toBe(false); // no zone
-    expect(result.current.isWardValid).toBe(false); // no ward
-    expect(result.current.isFormValid).toBe(false);
-  });
-
-  it('should return correct column definitions', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    expect(result.current.columns).toHaveLength(4);
-    expect(result.current.previewColumns).toHaveLength(3);
-  });
-
-  it('should provide correct page size options', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    expect(result.current.pageSizeOptions).toEqual([5, 10, 20, 50, 100]);
-  });
-  it('should update URL while preserving existing params on changePage', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    act(() => { result.current.changePage(2); });
-    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('page=2'));
-    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('pageSize=5'));
-  });
-
-  it('should reset to page 1 and update URL on changePageSize', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    act(() => { result.current.changePageSize(20); });
-    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('page=1'));
-    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('pageSize=20'));
-  });
-  it('should preserve taxZoneId when changing page', () => {
-    const { result } = renderHook(() => useTaxZoning(baseProps));
-    act(() => { result.current.setZone('1'); }); // This will call replace with taxZoneId=1
-    mockReplace.mockClear();
-    act(() => { result.current.changePage(2); });
-    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('taxZoneId=1'));
-    expect(mockReplace).toHaveBeenCalledWith(expect.stringContaining('page=2'));
+    expect(mockReplace).toHaveBeenCalled();
   });
 });

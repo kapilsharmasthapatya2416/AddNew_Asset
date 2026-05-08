@@ -82,7 +82,7 @@
       "criticalError": "थोक अपडेट के दौरान गंभीर त्रुटि हुई। कृपया पुनः प्रयास करें।",
       "noRecordsFound": "फ़ाइल में कोई वैध रिकॉर्ड नहीं मिला",
       "invalidDataFormat": "फ़ाइल में अमान्य डेटा प्रारूप",
-      "dbOperationCompleted": "डेटाबेस ऑपरेशन पूर्ण:",
+      "dbOperationCompleted": "डेटा आयात ऑपरेशन पूर्ण:",
       "newRecordsCreated": "नए रिकॉर्ड सफलतापूर्वक बनाए गए",
       "recordsUpdatedSuccessfully": "रिकॉर्ड सफलतापूर्वक अपडेट किए गए",
       "newRecordsCreatedAnd": "नए रिकॉर्ड बनाए गए और",

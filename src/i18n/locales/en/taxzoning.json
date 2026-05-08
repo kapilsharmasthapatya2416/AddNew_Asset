@@ -82,7 +82,7 @@
       "criticalError": "Critical error occurred during bulk update. Please try again.",
       "noRecordsFound": "No valid records found in file",
       "invalidDataFormat": "Invalid data format in file",
-      "dbOperationCompleted": "Database operation completed:",
+      "dbOperationCompleted": "Import operation completed:",
       "newRecordsCreated": "new record(s) created successfully",
       "recordsUpdatedSuccessfully": "record(s) updated successfully",
       "newRecordsCreatedAnd": "new record(s) created and",

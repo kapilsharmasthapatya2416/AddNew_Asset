@@ -110,7 +110,7 @@ export const useTaxZoningActions = (t: (key: string, values?: Record<string, str
             propertyId: 0,
           };
 
-          logger.info(`[BulkUpdate] ${row.status} → ward:${row.wardId} from:${row.fromProperty} to:${row.toProperty} taxZone:${row.taxZoneId}`);
+          logger.info(`[BulkUpdate] ${row.status} -> ward:${row.wardId} from:${row.fromProperty} to:${row.toProperty} taxZone:${row.taxZoneId}`);
 
 
           const result = row.status === "New"
