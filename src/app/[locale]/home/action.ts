@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { userProfileService } from "@/lib/api/user-profile.service";
+import { getUserProfileCached } from "@/lib/api/user-profile-cache";
 import { Service } from "@/types/home/home.types";
 import { getDepartmentConfig, getDepartmentRoute } from "@/config/home-services.config";
 import { getUserIdFromCookies } from "@/lib/utils/cookie";
@@ -91,7 +92,7 @@ export async function listServices(locale: string): Promise<ListServicesResponse
  * Server action to get formatted display values for user profile
  * Used by UserProfilePopup component
  */
-export async function getUserProfileDisplayAction(userId: number): Promise<{
+export async function getUserProfileDisplayAction(): Promise<{
     success: boolean;
     data?: {
         fullName: string;
@@ -110,40 +111,42 @@ export async function getUserProfileDisplayAction(userId: number): Promise<{
     error?: string;
 }> {
     try {
-        const response = await userProfileService.getUserProfile(userId);
-        
+        const cookieStore = await cookies();
+        const userId = getUserIdFromCookies(cookieStore);
+        if (!userId) {
+            return {
+                success: false,
+                error: 'User not authenticated',
+            };
+        }
+        // Use cached fetch for deduplication
+        const response = await getUserProfileCached(userId);
         if (!response.success || !response.data) {
             return {
                 success: false,
                 error: response.error || 'Failed to fetch user profile',
             };
         }
-
         const profile = response.data;
-        
         // Format profile for display
         const fullName = [profile.firstName, profile.middleName, profile.lastName]
             .filter(Boolean)
             .join(' ');
-
         const roles = [...new Set(
             profile.roleAllocations
                 .filter(r => r.isActive)
                 .map(r => r.userRoleName)
         )];
-
         const departments = [...new Set(
             profile.departments
                 .filter(d => d.isActive)
                 .map(d => d.departmentName)
         )];
-
         const modules = [...new Set(
             profile.moduleAccess
                 .filter(m => m.isActive)
                 .map(m => m.moduleName)
         )];
-
         return {
             success: true,
             data: {

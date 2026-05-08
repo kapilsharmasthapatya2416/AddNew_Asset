@@ -63,7 +63,7 @@ export function useHeaderState(initialIp = '192.168.1.100') {
             if (typeof error === 'object' && error && 'digest' in error && String(error.digest).startsWith('NEXT_REDIRECT')) {
                 throw error;
             }
-            console.error("Logout error:", error);
+            // Optionally log to a monitoring service here if needed
             toast.error("Logout failed. Please try again.");
             setIsLoggingOut(false);
         }
