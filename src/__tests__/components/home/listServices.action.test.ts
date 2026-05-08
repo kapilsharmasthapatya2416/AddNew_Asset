@@ -8,11 +8,11 @@ vi.mock('next/headers', () => ({
     cookies: () => Promise.resolve(mockCookieStore),
 }));
 
-// Mock apiClient
-const mockApiClientGet = vi.fn();
-vi.mock('@/services/api.service', () => ({
-    apiClient: {
-        get: (url: string) => mockApiClientGet(url),
+// Mock userProfileService
+const mockGetUserProfile = vi.fn();
+vi.mock('@/lib/api/user-profile.service', () => ({
+    userProfileService: {
+        getUserProfile: (userId: number) => mockGetUserProfile(userId),
     },
 }));
 
@@ -71,7 +71,7 @@ describe('listServices Server Action', () => {
 
     describe('successful responses', () => {
         beforeEach(() => {
-            mockApiClientGet.mockResolvedValue({
+            mockGetUserProfile.mockResolvedValue({
                 success: true,
                 data: mockUserProfile,
             });
@@ -118,7 +118,7 @@ describe('listServices Server Action', () => {
         });
 
         it('filters out inactive departments', async () => {
-            mockApiClientGet.mockResolvedValue({
+            mockGetUserProfile.mockResolvedValue({
                 success: true,
                 data: {
                     ...mockUserProfile,
@@ -147,7 +147,7 @@ describe('listServices Server Action', () => {
         });
 
         it('returns error when API fails', async () => {
-            mockApiClientGet.mockResolvedValue({
+            mockGetUserProfile.mockResolvedValue({
                 success: false,
                 error: 'API Error',
             });
@@ -159,7 +159,7 @@ describe('listServices Server Action', () => {
         });
 
         it('returns empty services when user has no departments', async () => {
-            mockApiClientGet.mockResolvedValue({
+            mockGetUserProfile.mockResolvedValue({
                 success: true,
                 data: { ...mockUserProfile, departments: [] },
             });

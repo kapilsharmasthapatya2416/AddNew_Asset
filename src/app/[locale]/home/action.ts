@@ -1,12 +1,11 @@
 'use server';
 
 import { cookies } from "next/headers";
-import { apiClient } from "@/services/api.service";
+import { userProfileService } from "@/lib/api/user-profile.service";
 import { Service } from "@/types/home/home.types";
 import { getDepartmentConfig, getDepartmentRoute } from "@/config/home-services.config";
 import { getUserIdFromCookies } from "@/lib/utils/cookie";
-import type { UserProfile, UserDepartment } from "@/types/user-profile.types";
-import type { ApiResponse } from "@/types/common.types";
+import type { UserDepartment } from "@/types/user-profile.types";
 
 /**
  * Response type for listServices
@@ -14,21 +13,6 @@ import type { ApiResponse } from "@/types/common.types";
 export interface ListServicesResponse {
     services: Service[];
     error?: string;
-}
-
-/**
- * Fetches user profile from API
- * GET /api/users/{userId}
- */
-async function fetchUserProfile(userId: number): Promise<ApiResponse<UserProfile>> {
-    try {
-        return await apiClient.get<UserProfile>(`/users/${userId}`);
-    } catch (error) {
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Failed to fetch user profile',
-        };
-    }
 }
 
 /**
@@ -67,7 +51,7 @@ export async function listServices(locale: string): Promise<ListServicesResponse
             return { services: [], error: "User not authenticated" };
         }
         
-        const response = await fetchUserProfile(userId);
+        const response = await userProfileService.getUserProfile(userId);
         
         if (!response.success || !response.data) {
             return { services: [], error: response.error || "Failed to load user profile" };
@@ -126,7 +110,7 @@ export async function getUserProfileDisplayAction(userId: number): Promise<{
     error?: string;
 }> {
     try {
-        const response = await fetchUserProfile(userId);
+        const response = await userProfileService.getUserProfile(userId);
         
         if (!response.success || !response.data) {
             return {
