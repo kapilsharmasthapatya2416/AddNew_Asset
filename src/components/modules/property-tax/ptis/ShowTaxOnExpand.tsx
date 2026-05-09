@@ -56,7 +56,7 @@ export const ShowTaxOnExpand: React.FC<ShowTaxOnExpandProps> = ({
   const currencySymbol = commonT('Grid.currencySymbol');
 
   const entries = buildTaxEntries(taxes).map((tax) => ({
-    displayLabel: getTranslatedTaxLabel(t as any, tax.taxName),
+    displayLabel: getTranslatedTaxLabel(t, tax.taxName),
     color,
     borderColor,
     ...tax,

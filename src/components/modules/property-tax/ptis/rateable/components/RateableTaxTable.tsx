@@ -36,11 +36,11 @@ export const RateableTaxTable: React.FC<RateableTaxTableProps> = ({ rateableData
     <div className={PTIS_TABLE_PRESETS.container}>
       <FloorDetailsTable
         data={rows}
-        columns={getRateableColumns(rootT as any)}
+        columns={getRateableColumns(rootT)}
         emptyMessage={t('noRateableRows')}
         expandedLabel={t('viewTaxBreakdown')}
         expandedRowIds={expandedRowIds}
-        getExpandHref={(row) => buildExpandHref(searchParams as any, row.id, expandedRowIds)}
+        getExpandHref={(row) => buildExpandHref(searchParams as Record<string, string | string[] | undefined>, row.id, expandedRowIds)}
         tableClassName="w-full min-w-[1500px]"
         headerBadgeClassName={PTIS_TABLE_PRESETS.headerBadge}
         cellClassName={PTIS_TABLE_PRESETS.cellText}

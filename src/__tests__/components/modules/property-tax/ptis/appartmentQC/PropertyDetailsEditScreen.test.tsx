@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import PropertyDetailsEditScreen from '@/components/modules/property-tax/ptis/appartmentQC/PropertyDetailsEditScreen';
+import type { ApartmentQCDetail } from '@/types/apartmentQC.types';
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -11,7 +12,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock next-intl
 vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string, values?: any) => {
+  useTranslations: () => (key: string, values?: Record<string, unknown>) => {
     const map: Record<string, string> = {
       "apartmentQC.edit.title": "Property Details",
       "apartmentQC.edit.basicInfo": "Basic Information",
@@ -44,7 +45,7 @@ vi.mock('@/hooks/apartmentQc/useApartmentQCEdit', () => ({
 
 // Mock Drawer to render its children directly for easier testing
 vi.mock('@/components/common/Drawer', () => ({
-  Drawer: ({ children, title }: any) => (
+  Drawer: ({ children, title }: { children: React.ReactNode; title: string }) => (
     <div data-testid="drawer">
       <div>{title}</div>
       {children}
@@ -56,7 +57,18 @@ describe('PropertyDetailsEditScreen', () => {
   const mockProps = {
     open: true,
     onClose: vi.fn(),
-    propertyData: { wardId: 13, buildingNo: 'B-12', propertyNo: 'RP001', society: 'Green Valley' } as any,
+    propertyData: { 
+      id: 1, 
+      pdnId: 123,
+      taxZoneId: 1,
+      zoneNo: '1',
+      wardId: 13, 
+      buildingNo: 'B-12', 
+      propertyNo: 'RP001', 
+      society: 'Green Valley',
+      rentYearly: 0,
+      rentMonthly: 0,
+    } as Partial<ApartmentQCDetail> as ApartmentQCDetail,
   };
 
   it('renders property details in the title', () => {

@@ -36,11 +36,11 @@ export const CapitalTaxTable: React.FC<Props> = ({ capitalData, searchParams, lo
     <div className={PTIS_TABLE_PRESETS.container}>
       <FloorDetailsTable
         data={rows}
-        columns={getCapitalColumns(rootT as any)}
+        columns={getCapitalColumns(rootT)}
         emptyMessage={t('noCapitalRows')}
         expandedLabel={t('viewTaxBreakdown')}
         expandedRowIds={expandedRowIds}
-        getExpandHref={(row) => buildExpandHref(searchParams as any, row.id, expandedRowIds)}
+        getExpandHref={(row) => buildExpandHref(searchParams as Record<string, string | string[] | undefined>, row.id, expandedRowIds)}
         tableClassName="w-full min-w-[1400px]"
         headerBadgeClassName={PTIS_TABLE_PRESETS.headerBadge}
         cellClassName={PTIS_TABLE_PRESETS.cellText}

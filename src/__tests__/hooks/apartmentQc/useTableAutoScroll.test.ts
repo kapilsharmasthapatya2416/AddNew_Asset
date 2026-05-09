@@ -16,7 +16,7 @@ describe("useTableAutoScroll", () => {
     document.body.appendChild(mockElement);
 
     // Mock findScrollableElement by actually letting it find the element in the DOM
-    vi.spyOn(document, 'querySelectorAll').mockReturnValue([mockElement] as any);
+    vi.spyOn(document, 'querySelectorAll').mockReturnValue([mockElement] as unknown as NodeListOf<Element>);
   });
 
   afterEach(() => {

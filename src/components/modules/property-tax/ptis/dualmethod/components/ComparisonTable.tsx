@@ -83,7 +83,7 @@ export const DualMethodComparisonTable: React.FC<DualMethodComparisonTableProps>
   ];
 
   taxNames.forEach((taxName) => {
-    const translatedLabel = getTranslatedTaxLabel(rootT as any, taxName);
+    const translatedLabel = getTranslatedTaxLabel(rootT, taxName);
     const key = taxKeyMap[taxName];
 
     columns.push({

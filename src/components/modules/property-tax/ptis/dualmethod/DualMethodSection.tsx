@@ -63,7 +63,7 @@ export const DualMethodSection: React.FC<DualMethodSectionProps> = ({
   const showFloorDetails = canShowFloorDetails && rawShowDetails === DUAL_METHOD_QUERY_PARAMS.SHOW_DETAILS;
   
   const ptisPath = `/${locale}/property-tax/ptis`;
-  const toggleHref = `${ptisPath}${buildPtisUrl(searchParams as any, {
+  const toggleHref = `${ptisPath}${buildPtisUrl(searchParams as Record<string, string | string[] | undefined>, {
     showDetails: !showFloorDetails,
   })}`;
 

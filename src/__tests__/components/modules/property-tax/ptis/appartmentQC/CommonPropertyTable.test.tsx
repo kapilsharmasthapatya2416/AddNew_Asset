@@ -1,10 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import CommonPropertyTable from '@/components/modules/property-tax/ptis/appartmentQC/CommonPropertyTable';
+import type { Column } from '@/components/common/MasterTable';
 
 // Mock next-intl
 vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string, values?: any) => {
+  useTranslations: () => (key: string, values?: Record<string, unknown>) => {
     if (key === 'apartmentTabs.showingData' && values) {
       return `Showing ${values.tab} data`;
     }
@@ -15,7 +16,7 @@ vi.mock('next-intl', () => ({
 
 describe('CommonPropertyTable', () => {
   const mockProps = {
-    columns: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }] as any,
+    columns: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }] as Column<{ id: string; name: string }>[],
     data: [{ id: '1', name: 'Prop 1' }, { id: '2', name: 'Prop 2' }],
     title: 'Property List',
     activeTab: 'residential',

@@ -80,7 +80,7 @@ describe("useApartmentQCEdit", () => {
       ...mockProps,
       floors: [{ floorId: 1, floorCode: "F1", description: "First Floor" }],
     };
-    const { result } = renderHook(() => useApartmentQCEdit(propsWithData as any));
+    const { result } = renderHook(() => useApartmentQCEdit(propsWithData as unknown as Parameters<typeof useApartmentQCEdit>[0]));
 
     expect(result.current.floorOptions).toEqual([{ value: "1", label: "First Floor" }]);
   });

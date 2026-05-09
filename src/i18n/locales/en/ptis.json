@@ -1,6 +1,7 @@
 {
   "title": "Property Tax Information System",
   "subtitle": "Manage property tax records and assessments",
+  "noDataAvailable": "No data available for this section",
   "taxDetailsDualMethod": "Tax Details (Dual Method)",
   "taxDetailsRateable": "Tax Details (Rateable Value)",
   "taxDetailsCapital": "Tax Details (Capital Value)",

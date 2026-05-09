@@ -14,6 +14,10 @@ import AppartmentQCSection from '@/components/modules/property-tax/ptis/appartme
 import { OldDetailsData } from '@/types/ptis.types';
 import { PtisSearchParams } from '@/lib/utils/params';
 import type { DualMethodSectionData } from '@/components/modules/property-tax/ptis/dualmethod/dual-method-data';
+import type { ApartmentQCDetail, PagedResponse } from '@/types/apartmentQC.types';
+import type { RateableValueResponse } from '@/types/rateableValue.types';
+import type { CapitalValueResponse } from '@/types/capitalValue.types';
+import type { ActionResult } from '@/lib/utils/action-response.util';
 
 interface PtisMainScreenProps {
   locale: string;
@@ -22,9 +26,13 @@ interface PtisMainScreenProps {
   ptisParams: PtisSearchParams;
   resolvedSearchParams: Record<string, string | string[] | undefined>;
   error?: string;
-  initialApartmentData?: any;
-  initialRateableData?: any;
-  initialCapitalData?: any;
+  initialApartmentData?: {
+    amenities: PagedResponse<ApartmentQCDetail>;
+    commercial: PagedResponse<ApartmentQCDetail>;
+    residential: PagedResponse<ApartmentQCDetail>;
+  };
+  initialRateableData?: ActionResult<RateableValueResponse> | null;
+  initialCapitalData?: ActionResult<CapitalValueResponse> | null;
   initialDualSectionData?: DualMethodSectionData;
   wardId?: number | string;
   propertyNo?: string;
@@ -50,6 +58,18 @@ const PtisMainScreen: React.FC<PtisMainScreenProps> = (props) => {
   const t = useTranslations('ptis');
 
   const activeTab = ptisParams.tab || 'rateable';
+
+  // Extract data from ActionResult
+  const extractData = <T,>(actionResult: ActionResult<T> | null | undefined): T | null | undefined => {
+    if (!actionResult) return null;
+    if (typeof actionResult === 'object' && actionResult !== null && 'success' in actionResult && 'data' in actionResult) {
+      return actionResult.data;
+    }
+    return actionResult as T;
+  };
+
+  const capitalData = extractData(initialCapitalData);
+  const rateableData = extractData(initialRateableData);
 
   const handleTabChange = (value: string | number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -99,20 +119,20 @@ const PtisMainScreen: React.FC<PtisMainScreenProps> = (props) => {
               {activeTab === 'capital' ? (
                 <div className="p-0.5 sm:p-1">
                   <CapitalTaxDetailsSection
-                    capitalData={initialCapitalData?.data}
+                    capitalData={capitalData}
                     oldDetails={initialOldDetails}
                     propertyId={propertyId}
-                    searchParams={resolvedSearchParams as any}
+                    searchParams={resolvedSearchParams as Record<string, string | string[] | undefined>}
                     locale={locale}
                   />
                 </div>
               ) : activeTab === 'rateable' ? (
                 <div className="p-0.5 sm:p-1">
                   <RateableTaxDetailsSection
-                    rateableData={initialRateableData?.data}
+                    rateableData={rateableData}
                     oldDetails={initialOldDetails}
                     propertyId={propertyId}
-                    searchParams={resolvedSearchParams as any}
+                    searchParams={resolvedSearchParams as Record<string, string | string[] | undefined>}
                     locale={locale}
                   />
                 </div>
@@ -129,7 +149,7 @@ const PtisMainScreen: React.FC<PtisMainScreenProps> = (props) => {
                   <DualMethodSection
                     propertyId={propertyId}
                     initialOldDetails={initialOldDetails}
-                    searchParams={resolvedSearchParams as any}
+                    searchParams={resolvedSearchParams as Record<string, string | string[] | undefined>}
                     locale={locale}
                     initialData={initialDualSectionData}
                   />
@@ -140,7 +160,7 @@ const PtisMainScreen: React.FC<PtisMainScreenProps> = (props) => {
                     📊
                   </div>
                   <p className="font-medium text-lg">
-                    No data available for this section
+                    {t('noDataAvailable')}
                   </p>
                 </div>
               )}
