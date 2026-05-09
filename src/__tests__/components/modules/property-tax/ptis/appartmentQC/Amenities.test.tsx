@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import Amenities from '@/components/modules/property-tax/ptis/appartmentQC/Ammenities';
+import Amenities from '@/components/modules/property-tax/ptis/appartmentQC/Amenities';
 
 // Mock next-intl
 vi.mock('next-intl', () => ({

@@ -1,6 +1,6 @@
 import { ApartmentQCDetail } from "@/types/apartmentQC.types";
-import Ammenities from "@/components/modules/property-tax/ptis/appartmentQC/Ammenities";
 import { fetchApartmentQCDetailsPagedAction } from "../action";
+import Amenities from "@/components/modules/property-tax/ptis/appartmentQC/Amenities";
 
 interface PageProps {
   searchParams: Promise<{
@@ -48,7 +48,7 @@ const Page = async ({ searchParams }: PageProps) => {
   const totalPages = result.success ? (result.data?.totalPages ?? 1) : 1;
 
   return (
-    <Ammenities
+    <Amenities
       initialData={data}
       initialPageNumber={pageNumber}
       initialPageSize={pageSize}

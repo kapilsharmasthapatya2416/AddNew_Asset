@@ -23,14 +23,29 @@ const Page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
 
   // Support both PascalCase and camelCase for better resilience
-  const wardId = params.WardId || params.wardId || "89";
-  const propertyNo = params.PropertyNo || params.propertyNo || "266";
+  const wardId = params.WardId || params.wardId;
+  const propertyNo = params.PropertyNo || params.propertyNo;
 
   const pageNumber = Number(params.pageNumber) || Number(params.page) || 1;
   const pageSize = Number(params.pageSize) || Number(params.limit) || 10;
   const searchTerm = params.searchTerm || params.q || "";
   const sortBy = params.sortBy || "";
   const sortOrder = params.sortOrder || "";
+
+  // If required params are missing, return empty state
+  if (!wardId || !propertyNo) {
+    return (
+      <Commercial
+        initialData={[]}
+        initialTotalCount={0}
+        initialPageNumber={1}
+        initialPageSize={10}
+        initialTotalPages={0}
+        initialSearchTerm=""
+        error="Ward ID and Property Number are required"
+      />
+    );
+  }
 
   const result = await fetchApartmentQCDetailsPagedAction({
     partType: "C",

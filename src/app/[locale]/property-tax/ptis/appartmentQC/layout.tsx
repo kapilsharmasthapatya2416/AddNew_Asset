@@ -57,7 +57,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <div className="flex flex-row">
                     {/* Main Tabs */}
                     <Tabs
-                        className='flex flex-row w-125'
+                        className='flex flex-row w-[125px]'
                         value={activeTab}
                         variant="pills"
                         items={tabs}

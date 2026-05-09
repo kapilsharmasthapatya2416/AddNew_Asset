@@ -16,7 +16,7 @@ import {
   fetchOldFloorDetailsAction,
   fetchOldTaxesDetailsAction,
 } from './actions';
-import { getApartmentQCDataAction } from './appartmentQC.action';
+import { getApartmentQCDataAction } from './apartmentQC.action';
 import { getCapitalValue } from './CapitalValue.action';
 import { getRateableValue } from './RateableValue.action';
 import { assembleDualMethodSectionData } from '@/components/modules/property-tax/ptis/dualmethod/dual-method-data';
@@ -248,11 +248,12 @@ export default async function PtisPage({ params, searchParams }: PtisPageProps) 
     oldTaxesData = oldTaxesResult.data;
   }
 
-  // Dual Method logic relies on oldDetails being ready
-  const dualSectionData = await assembleDualMethodSectionData(
-    resolvedPropertyId, 
-    oldDetails
-  );
+  // Dual Method data triggers additional valuation fetches internally,
+  // so only load it when the dual-method UI is actually being rendered.
+  const dualSectionData =
+    ptisParams.tab === 'dual'
+      ? await assembleDualMethodSectionData(resolvedPropertyId, oldDetails)
+      : undefined;
 
   const initialData: PtisInitialData = {
     propertyDetails: propertyDetailsResult.propertyDetails,

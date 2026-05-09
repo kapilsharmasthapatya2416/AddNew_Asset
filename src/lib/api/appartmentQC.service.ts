@@ -67,17 +67,17 @@ export async function getApartmentQCDetails(
 }
 
 /**
- * Fetch apartment QC details with error handling and localization keys.
+ * Fetch apartment QC details with error handling and user-friendly messages.
  */
 export async function getApartmentQCDetailsLocalized(
   params: ApartmentQCSearchParams = {}
 ): Promise<ApartmentQCResponse> {
   try {
     const res = await getApartmentQCDetails(params);
-    return handleApiResponse(res, "ptis.apartmentQC.errors.fetchFailed");
+    return handleApiResponse(res, "Failed to fetch apartment QC details");
   } catch (error) {
     if (error instanceof ApiError) throw error;
-    throw new ApiError(500, (error as Error).message, "ptis.apartmentQC.errors.fetchFailed");
+    throw new ApiError(500, (error as Error).message, "Failed to fetch apartment QC details");
   }
 }
 
@@ -109,7 +109,7 @@ export async function updateApartmentQCDetails(
 }
 
 /**
- * Update apartment QC property details with error handling and localization keys.
+ * Update apartment QC property details with error handling and user-friendly messages.
  */
 export async function updateApartmentQCDetailsLocalized(
   propertyDetailsId: number | string,
@@ -117,9 +117,9 @@ export async function updateApartmentQCDetailsLocalized(
 ): Promise<ApartmentQCDetail> {
   try {
     const res = await updateApartmentQCDetails(propertyDetailsId, payload);
-    return handleApiResponse(res, "ptis.apartmentQC.errors.updateFailed");
+    return handleApiResponse(res, "Failed to update apartment QC details");
   } catch (error) {
     if (error instanceof ApiError) throw error;
-    throw new ApiError(500, (error as Error).message, "ptis.apartmentQC.errors.updateFailed");
+    throw new ApiError(500, (error as Error).message, "Failed to update apartment QC details");
   }
 }

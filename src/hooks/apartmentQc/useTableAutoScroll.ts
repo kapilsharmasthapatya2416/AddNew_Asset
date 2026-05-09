@@ -42,7 +42,6 @@ export const useTableAutoScroll = (isAutoScrolling: boolean) => {
         if (!container) return;
         activeContainer = container;
         scrollContainerRef.current = container;
-        container.style.outline = "1px solid #5a81ec";
         
         mouseEnterHandler = () => { if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current); };
         mouseLeaveHandler = () => { if (isAutoScrolling) animationFrameRef.current = requestAnimationFrame(smoothScroll); };
@@ -57,14 +56,12 @@ export const useTableAutoScroll = (isAutoScrolling: boolean) => {
         if (activeContainer) {
           activeContainer.removeEventListener('mouseenter', mouseEnterHandler);
           activeContainer.removeEventListener('mouseleave', mouseLeaveHandler);
-          activeContainer.style.outline = "";
         }
         if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       };
     } else {
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       if (scrollContainerRef.current) {
-        scrollContainerRef.current.style.outline = "";
         scrollContainerRef.current = null;
       }
     }
