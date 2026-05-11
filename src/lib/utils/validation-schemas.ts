@@ -29,7 +29,14 @@ import {
 import { validateForm } from './validation-helpers';
 import type { Validator } from './validation-helpers';
 import type { OfficeFormModel } from '@/types/office.types';
-import type { FloorInformationFormData } from '@/types/property-old-details.types';
+import type {
+  FloorInformationFormData,
+  PropertyOldDetailsApiItem,
+  SaveOldFloorDetailPayload,
+  OldTaxesDetails,
+  OldTaxYear,
+  OldTaxItem
+} from '@/types/property-old-details.types';
 
 /**
  * Common validation rules for Master Forms
@@ -449,6 +456,201 @@ export const oldDetailsValidations = {
       oldConstructionTypeId: propertyValidations.required("constructionType", t),
       oldTypeOfUseId: propertyValidations.required("typeOfUse", t),
     });
+  },
+
+  /**
+   * Validates old property taxation details.
+   * 
+   * @param data - The taxation details payload
+   * @param t - Translation function
+   * @returns Object containing validation errors
+   */
+  validateOldPropertyDetails: (
+    data: Partial<PropertyOldDetailsApiItem>,
+    t: (key: string, values?: Record<string, string | number | Date>) => string
+  ) => {
+    const errors: Record<string, string> = {};
+
+    // Numeric fields validation (must be non-negative numbers)
+    const numericFields = [
+      'oldPlotArea', 'oldRV', 'oldALV', 'oldTotalTax',
+      'oldGeneralTax', 'oldConstructionArea',
+      'oldCarpetAreaSqFeet', 'oldCarpetAreaSqMeter',
+      'oldConstructionTypeId', 'oldTypeOfUseId'
+    ] as const;
+
+    numericFields.forEach(field => {
+      const val = data[field];
+      if (val !== undefined && val !== null && String(val) !== '') {
+        const numVal = Number(val);
+        if (isNaN(numVal) || numVal < 0) {
+          errors[field] = t(`property.validation.${field}Invalid`);
+        }
+      }
+    });
+
+    // Construction Year validation (must be 4 digits)
+    if (data.oldConstructionYear) {
+      if (!YEAR_REGEX.test(data.oldConstructionYear)) {
+        errors.oldConstructionYear = t('property.validation.constructionYearInvalid');
+      }
+    }
+
+    return errors;
+  },
+
+  /**
+   * Sanitizes old property taxation details.
+   * Trims strings and ensures consistency.
+   * 
+   * @param data - The taxation details payload
+   * @returns Sanitized payload
+   */
+  sanitizeOldPropertyDetails: (
+    data: Partial<PropertyOldDetailsApiItem>
+  ): Partial<PropertyOldDetailsApiItem> => {
+    const sanitized: Record<string, unknown> = { ...data };
+
+    // Trim string fields
+    const stringFields = [
+      'oldWardNo', 'oldPropertyNo', 'oldPartitionNo',
+      'oldEgovNo', 'oldPlotNo', 'oldZoneNo', 'oldCSN'
+    ] as const;
+
+    stringFields.forEach(field => {
+      const val = sanitized[field];
+      if (typeof val === 'string') {
+        sanitized[field] = val.trim() || null;
+      }
+    });
+
+    return sanitized as Partial<PropertyOldDetailsApiItem>;
+  },
+
+  /**
+   * Validates old floor detail payload.
+   * 
+   * @param data - The floor detail payload
+   * @param t - Translation function
+   * @returns Object containing validation errors
+   */
+  validateOldFloorDetails: (
+    data: SaveOldFloorDetailPayload,
+    t: (key: string, values?: Record<string, string | number | Date>) => string
+  ) => {
+    const errors: Record<string, string> = {};
+
+    // Required numeric fields
+    const requiredNumeric = {
+      oldFloorId: 'floor',
+      oldConstructionTypeId: 'constructionType',
+      oldTypeOfUseId: 'typeOfUse',
+    } as const;
+
+    Object.entries(requiredNumeric).forEach(([field, label]) => {
+      const val = data[field as keyof SaveOldFloorDetailPayload];
+      if (!val || Number(val) <= 0) {
+        errors[field] = t(`property.validation.${label}Required`);
+      }
+    });
+
+    // Carpet area validation (required, positive)
+    if (!data.oldCarpetAreaSqFeet || Number(data.oldCarpetAreaSqFeet) <= 0) {
+      errors.oldCarpetAreaSqFeet = t('property.validation.carpetAreaInvalid');
+    }
+
+    // Construction Year validation (required, 4 digits)
+    if (!data.oldConstructionYear) {
+      errors.oldConstructionYear = t('property.validation.constructionYearRequired');
+    } else if (!YEAR_REGEX.test(data.oldConstructionYear)) {
+      errors.oldConstructionYear = t('property.validation.constructionYearInvalid');
+    }
+
+    return errors;
+  },
+
+  /**
+   * Sanitizes old floor detail payload.
+   * 
+   * @param data - The floor detail payload
+   * @returns Sanitized payload
+   */
+  sanitizeOldFloorDetails: (
+    data: SaveOldFloorDetailPayload
+  ): SaveOldFloorDetailPayload => {
+    return {
+      ...data,
+      oldFloorId: Number(data.oldFloorId),
+      oldSubFloorId: data.oldSubFloorId ? Number(data.oldSubFloorId) : null,
+      oldConstructionTypeId: Number(data.oldConstructionTypeId),
+      oldTypeOfUseId: Number(data.oldTypeOfUseId),
+      oldSubTypeOfUseId: data.oldSubTypeOfUseId ? Number(data.oldSubTypeOfUseId) : null,
+      oldCarpetAreaSqFeet: Number(data.oldCarpetAreaSqFeet),
+      oldConstructionYear: String(data.oldConstructionYear).trim(),
+    };
+  },
+
+  /**
+   * Validates old taxes details payload.
+   * 
+   * @param data - The taxes details payload
+   * @param t - Translation function
+   * @returns Object containing validation errors
+   */
+  validateOldTaxesDetails: (
+    data: OldTaxesDetails,
+    t: (key: string, values?: Record<string, string | number | Date>) => string
+  ) => {
+    const errors: Record<string, string> = {};
+
+    if (!data.propertyId || data.propertyId <= 0) {
+      errors.propertyId = t('property.validation.propertyIdRequired');
+    }
+
+    if (!data.taxYears || !Array.isArray(data.taxYears) || data.taxYears.length === 0) {
+      errors.taxYears = t('property.validation.taxYearsRequired');
+    } else {
+      data.taxYears.forEach((year: OldTaxYear, index: number) => {
+        if (!year.financeYearId || year.financeYearId <= 0) {
+          errors[`taxYears.${index}.financeYearId`] = t('property.validation.financeYearRequired');
+        }
+        if (year.taxTotal < 0) {
+          errors[`taxYears.${index}.taxTotal`] = t('property.validation.taxTotalInvalid');
+        }
+      });
+    }
+
+    return errors;
+  },
+
+  /**
+   * Sanitizes old taxes details payload.
+   * 
+   * @param data - The taxes details payload
+   * @returns Sanitized payload
+   */
+  sanitizeOldTaxesDetails: (
+    data: OldTaxesDetails
+  ): OldTaxesDetails => {
+    return {
+      ...data,
+      propertyId: Number(data.propertyId),
+      taxYears: (data.taxYears || []).map((year: OldTaxYear) => ({
+        ...year,
+        financeYearId: Number(year.financeYearId),
+        year: Number(year.year),
+        rVorCVValue: Number(year.rVorCVValue || 0),
+        taxTotal: Number(year.taxTotal || 0),
+        interest: Number(year.interest || 0),
+        netTotal: Number(year.netTotal || 0),
+        remark: year.remark?.trim(),
+        taxes: (year.taxes || []).map((tax: OldTaxItem) => ({
+          ...tax,
+          taxId: Number(tax.taxId),
+          taxAmount: Number(tax.taxAmount || 0)
+        }))
+      }))
+    };
   }
 };
 

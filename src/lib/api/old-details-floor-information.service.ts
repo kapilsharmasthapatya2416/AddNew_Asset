@@ -40,7 +40,7 @@ export async function getSubFloors(pageNumber: number, pageSize: number,
 }
 
 /* ---------------- GET CONSTRUCTION TYPES ---------------- */
-export async function getConstructionTypes( pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<ConstructionType>> {
+export async function getConstructionTypes(pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<ConstructionType>> {
     const params = new URLSearchParams({
         PageNumber: pageNumber.toString(),
         PageSize: pageSize.toString(),
@@ -52,7 +52,7 @@ export async function getConstructionTypes( pageNumber: number, pageSize: number
 }
 
 /* ---------------- GET TYPE OF USES ---------------- */
-export async function getTypeOfUses( pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<TypeOfUse>> {
+export async function getTypeOfUses(pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<TypeOfUse>> {
     const params = new URLSearchParams({
         PageNumber: pageNumber.toString(),
         PageSize: pageSize.toString(),
@@ -65,7 +65,7 @@ export async function getTypeOfUses( pageNumber: number, pageSize: number, searc
 }
 
 /* ---------------- GET SUB TYPE OF USES ---------------- */
-export async function getSubTypeOfUses( typeOfUseId: number, pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<SubTypeOfUse>> {
+export async function getSubTypeOfUses(typeOfUseId: number, pageNumber: number, pageSize: number, searchTerm?: string): Promise<PagedResponse<SubTypeOfUse>> {
     const params = new URLSearchParams({
         PageNumber: pageNumber.toString(),
         PageSize: pageSize.toString(),
@@ -92,9 +92,9 @@ export async function saveOldFloorDetails(propertyId: number, data: SaveOldFloor
 }
 
 /* ---------------- UPDATE OLD FLOOR DETAILS ---------------- */
-export async function updateOldFloorDetails( 
-    propertyId: number, 
-    floorDetailId: number, 
+export async function updateOldFloorDetails(
+    propertyId: number,
+    floorDetailId: number,
     data: SaveOldFloorDetailPayload
 ): Promise<OldFloorDetailsResponse> {
     const response = await apiClient.put<OldFloorDetailsResponse>(

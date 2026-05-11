@@ -24,6 +24,10 @@ import {
 } from "@/types/property-old-details.types";
 import { revalidatePath } from "next/cache";
 
+import { getTranslations } from "next-intl/server";
+import { oldDetailsValidations } from "@/lib/utils/validation-schemas";
+import { hasErrors } from "@/lib/utils/validation-helpers";
+
 //  Common error message helper for actions
 function getActionErrorMessage(error: unknown): string {
     if (error instanceof Error && error.message) {
@@ -163,10 +167,33 @@ export async function saveOldFloorDetailsAction(
     data: SaveOldFloorDetailPayload, 
     locale: string
 ): Promise<ActionResult<OldFloorDetailsResponse>> {
+    const t = await getTranslations({ locale });
+
     try {
-        const response = await saveOldFloorDetails(propertyId, data);
+        // 1. Validate propertyId
+        if (!propertyId || propertyId <= 0) {
+            return {
+                success: false,
+                error: t('property.validation.propertyIdRequired')
+            };
+        }
+
+        // 2. Validate payload
+        const validationErrors = oldDetailsValidations.validateOldFloorDetails(data, t);
+        if (hasErrors(validationErrors)) {
+            return {
+                success: false,
+                validationErrors,
+                error: t('common.validationError')
+            };
+        }
+
+        // 3. Sanitize data
+        const sanitizedData = oldDetailsValidations.sanitizeOldFloorDetails(data);
+
+        // 4. Save
+        const response = await saveOldFloorDetails(propertyId, sanitizedData);
         
-        // ✅ Revalidate the floor information path to refresh server-side data (Existing Floors list)
         revalidatePath(`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/OldDetails/floor-information`);
         return {
             success: true,
@@ -193,10 +220,33 @@ export async function updateOldFloorDetailsAction(
     data: SaveOldFloorDetailPayload,
     locale: string
 ): Promise<ActionResult<OldFloorDetailsResponse>> {
+    const t = await getTranslations({ locale });
+
     try {
-        const response = await updateOldFloorDetails(propertyId, floorDetailId, data);
+        // 1. Validate IDs
+        if (!propertyId || propertyId <= 0 || !floorDetailId || floorDetailId <= 0) {
+            return {
+                success: false,
+                error: t('property.validation.invalidIds')
+            };
+        }
+
+        // 2. Validate payload
+        const validationErrors = oldDetailsValidations.validateOldFloorDetails(data, t);
+        if (hasErrors(validationErrors)) {
+            return {
+                success: false,
+                validationErrors,
+                error: t('common.validationError')
+            };
+        }
+
+        // 3. Sanitize data
+        const sanitizedData = oldDetailsValidations.sanitizeOldFloorDetails(data);
+
+        // 4. Update
+        const response = await updateOldFloorDetails(propertyId, floorDetailId, sanitizedData);
         
-        // ✅ Revalidate the floor information path to update the UI list with latest changes
         revalidatePath(`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/OldDetails/floor-information`);
         return {
             success: true,

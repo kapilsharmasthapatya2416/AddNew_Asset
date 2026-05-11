@@ -3,12 +3,16 @@
 import { getOldTaxesDetails, saveOldTaxesDetails } from "@/lib/api/property-old-details.service";
 import { OldTaxesDetails } from "@/types/property-old-details.types";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
+import { oldDetailsValidations } from "@/lib/utils/validation-schemas";
+import { hasErrors } from "@/lib/utils/validation-helpers";
+import { ActionResult } from "@/types/common.types";
 
 /**
  * Server Action to fetch old taxes details for a property.
  * @param propertyId The ID of the property.
  */
-export async function getOldTaxesDetailsAction(propertyId: number) {
+export async function getOldTaxesDetailsAction(propertyId: number): Promise<ActionResult<OldTaxesDetails | null>> {
   try {
     const response = await getOldTaxesDetails(propertyId);
     return {
@@ -30,14 +34,42 @@ export async function getOldTaxesDetailsAction(propertyId: number) {
  * @param data The taxation breakdown data to save.
  * @param locale The current locale for revalidation.
  */
-export async function saveOldTaxesDetailsAction(propertyId: number, data: OldTaxesDetails, locale: string) {
+export async function saveOldTaxesDetailsAction(
+  propertyId: number, 
+  data: OldTaxesDetails, 
+  locale: string
+): Promise<ActionResult<OldTaxesDetails | null>> {
+  const t = await getTranslations({ locale });
+
   try {
+    // 1. Validate propertyId
+    if (!propertyId || propertyId <= 0) {
+      return {
+        success: false,
+        error: t('property.validation.propertyIdRequired')
+      };
+    }
+
+    // 2. Validate payload
+    const validationErrors = oldDetailsValidations.validateOldTaxesDetails(data, t);
+    if (hasErrors(validationErrors)) {
+      return {
+        success: false,
+        validationErrors,
+        error: t('common.validationError')
+      };
+    }
+
+    // 3. Sanitize data
+    const sanitizedData = oldDetailsValidations.sanitizeOldTaxesDetails(data);
+
+    // 4. Save
+    const response = await saveOldTaxesDetails(propertyId, sanitizedData);
     
-    const response = await saveOldTaxesDetails(propertyId, data);
     revalidatePath(`/${locale}/property-tax/ptis/QuickDataEntry/${propertyId}/OldDetails/taxation-breakdown`);
     return {
       success: true,
-      data: response
+      data: response.items
     };
   } catch (error) {
     return {
