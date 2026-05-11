@@ -32,11 +32,13 @@ export default getRequestConfig(async ({ locale }) => {
     depreciationMessages,
     propertyTypeMessages,
     natureFactorCVMasterMessages,
+    ptisRVRateMasterMessages,
     useCategoryFactorMasterMessages,
     ageFactorMasterMessages,
     zoneMasterMessages,
     officeMessages,
     bankMasterMessages,
+    screenAccessMessages,
     modulesMessages,
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
@@ -55,6 +57,7 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/depreciation.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/propertyType.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/natureFactorCVMaster.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/ptis.RVRateMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/useCategoryFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/ageFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/zoneMaster.json`).then((m) => m.default),
@@ -62,6 +65,7 @@ export default getRequestConfig(async ({ locale }) => {
       .catch(() => ({}))
       .then((m) => m.default || m),
     import(`./locales/${validatedLocale}/bank-master.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/screenAccess.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
   ]);
 
@@ -84,11 +88,13 @@ export default getRequestConfig(async ({ locale }) => {
       depreciation: depreciationMessages.depreciationMaster,
       propertyType: propertyTypeMessages,
       natureFactorCVMaster: natureFactorCVMasterMessages.natureFactorCVMaster,
+      ptis_RVRateMaster: ptisRVRateMasterMessages,
       useCategoryFactorMaster: useCategoryFactorMasterMessages.useCategoryFactorMaster,
       ageFactorMaster: ageFactorMasterMessages.ageFactorMaster,
       zoneMaster: zoneMasterMessages,
       office: officeMessages,
       bankMaster: bankMasterMessages,
+      screenAccess: screenAccessMessages,
       modules: modulesMessages,
     },
   };

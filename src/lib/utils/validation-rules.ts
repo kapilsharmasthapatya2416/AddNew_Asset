@@ -50,3 +50,7 @@ export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const MOBILE_10_REGEX = /^[0-9]{10}$/;
 export const YEAR_REGEX = /^\d{4}$/;
 
+
+/* ================= POSITIVE DECIMAL VALIDATION ================= */
+// Regex pattern to match invalid keys for positive decimal input (blocks e, E, +, -)
+export const POSITIVE_DECIMAL_INVALID_KEYS = /^[eE+\-]$/;
