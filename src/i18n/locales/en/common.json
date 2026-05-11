@@ -36,7 +36,8 @@
     "maxChars": "Maximum {count} characters allowed",
     "alphanumericUnderscore": "{label} must be alphanumeric (underscores and hyphens allowed)",
     "invalidFormat": "Invalid format",
-    "mustBeNumber": "Must be a valid number"
+    "mustBeNumber": "Must be a valid number",
+    "submissionIdRequired": "Submission ID is required"
   },
   "form": {
     "validation": {
@@ -252,7 +253,8 @@
     "lastPage": "Last page",
     "previousPage": "Previous page",
     "nextPage": "Next page",
-    "rowsPerPage": "Rows per page"
+    "rowsPerPage": "Rows per page",
+    "clickToView": "Click to view details"
   },
   "multiSelect": {
     "selectAll": "Select All",

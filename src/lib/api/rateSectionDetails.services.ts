@@ -1,9 +1,9 @@
 import { apiClient } from "@/services/api.service";
+import { ApiResponse } from "@/types/common.types";
 import {
   SectionItem,
   RateSectionDetailsPagedResponse,
   UpdateWardStatusPayload,
-  RateSectionDetailsBatchPayload,
   RateSectionDetailsBatchResponse,
   RateSectionDetailsPayload,
 } from "@/types/rateSectionMaster.types";
@@ -19,8 +19,8 @@ export type { RateSectionDetailsPayload };
  */
 export async function createRateSectionDetail(payload: RateSectionDetailsPayload): Promise<{ success: boolean; error?: string }> {
   const response = await apiClient.post(`/RateSectionDetails`, payload);
-  return response.success 
-    ? { success: true } 
+  return response.success
+    ? { success: true }
     : { success: false, error: response.error || "Failed to create RateSectionDetail" };
 }
 
@@ -29,8 +29,8 @@ export async function createRateSectionDetail(payload: RateSectionDetailsPayload
  */
 export async function deleteRateSectionDetail(id: number): Promise<{ success: boolean; error?: string }> {
   const response = await apiClient.delete(`/RateSectionDetails/${id}`);
-  return response.success 
-    ? { success: true } 
+  return response.success
+    ? { success: true }
     : { success: false, error: response.error || "Failed to delete rate section detail" };
 }
 
@@ -42,6 +42,51 @@ export async function getWardTotalCount(): Promise<number> {
   if (!response.success || !response.data) return 0;
   const data = response.data;
   return data?.totalCount ?? data?.TotalCount ?? data?.count ?? (Array.isArray(data?.items) ? data.items.length : 0);
+}
+
+/**
+ * Fetch all SectionItems (ward assignments) for a specific Rate Section ID.
+ * Uses proper pagination (500/page) because /RateSectionDetails does NOT support PageSize=-1.
+ * @param rateSectionId - The numeric rate section ID to filter by
+ */
+export async function getWardsByRateSectionId(
+  rateSectionId: number
+): Promise<SectionItem[]> {
+  let allItems: SectionItem[] = [];
+  let page = 1;
+  const pageSize = 500;
+  let hasMore = true;
+
+  while (hasMore) {
+    const params = new URLSearchParams({
+      PageNumber: page.toString(),
+      PageSize: pageSize.toString(),
+      RateSectionId: rateSectionId.toString(),
+    });
+
+    const response = await apiClient.get<RateSectionDetailsPagedResponse>(
+      `/RateSectionDetails?${params.toString()}`
+    );
+
+    if (!response.success || !response.data) break;
+
+    const data = response.data;
+    const dataObj = data as unknown as Record<string, unknown>;
+    const items = (data.items ?? dataObj.Items ?? []) as SectionItem[];
+
+    if (items.length === 0) break;
+
+    allItems = [...allItems, ...items];
+
+    const totalCount = (data.totalCount ?? dataObj.TotalCount ?? 0) as number;
+    if (items.length < pageSize || allItems.length >= totalCount || page >= 50) {
+      hasMore = false;
+    } else {
+      page++;
+    }
+  }
+
+  return allItems;
 }
 
 /**
@@ -61,7 +106,7 @@ export async function getAllRateSectionDetails(): Promise<SectionItem[]> {
     });
 
     const response = await apiClient.get<RateSectionDetailsPagedResponse>(`/RateSectionDetails?${params.toString()}`);
-    
+
     if (!response.success || !response.data) break;
 
     const data = response.data;
@@ -99,18 +144,18 @@ export async function getRateSectionDetailsPaged(
   pageNumber: number,
   pageSize: number,
   rateSectionNo?: string,
-  searchTerm?: string
-): Promise<RateSectionDetailsPagedResponse> {
+  searchTerm?: string,
+  rateSectionId?: number
+): Promise<ApiResponse<RateSectionDetailsPagedResponse>> {
   const params = new URLSearchParams({
     PageNumber: pageNumber.toString(),
     PageSize: pageSize.toString(),
   });
   if (rateSectionNo) params.append("rateSectionNo", rateSectionNo);
+  if (rateSectionId) params.append("RateSectionId", rateSectionId.toString());
   if (searchTerm) params.append("SearchTerm", searchTerm);
-  const response = await apiClient.get<RateSectionDetailsPagedResponse>(`/RateSectionDetails?${params.toString()}`);
-  return response.success && response.data ? response.data : {
-    items: [], totalCount: 0, pageNumber: 1, pageSize: 10
-  };
+
+  return await apiClient.get<RateSectionDetailsPagedResponse>(`/RateSectionDetails?${params.toString()}`);
 }
 
 /**
@@ -135,15 +180,66 @@ export async function getWardPagedServer(
 }
 
 /**
- * Batch create Rate Section Details (Multiple Ward Assignments).
+ * Bulk create Rate Section Details (Multiple Ward Assignments).
+ * Used when linking new wards to a rate section.
+ * API: POST /api/RateSectionDetails/Bulk
  */
-export async function createRateSectionDetailsBatch(
-  payload: RateSectionDetailsBatchPayload[]
+export async function bulkCreateRateSectionDetails(
+  payload: Array<{
+    isActive: boolean;
+    createdBy: number;
+    updatedBy: number;
+    rateSectionId: number;
+    wardId: number;
+  }>
 ): Promise<RateSectionDetailsBatchResponse> {
-  const response = await apiClient.post<RateSectionDetailsBatchResponse>(`/RateSectionDetails/Batch`, payload);
+  const response = await apiClient.post<RateSectionDetailsBatchResponse>(`/RateSectionDetails/Bulk`, payload);
   return response.success && response.data ? response.data : {
     success: false,
-    message: response.error || "Failed to create batch rate section details",
+    message: response.error || "Failed to bulk create rate section details",
+    items: { successCount: 0, failedCount: 0, results: [], errors: [], hasFailures: true, allSucceeded: false },
+    errors: null,
+  };
+}
+
+/**
+ * Bulk update Rate Section Details (Multiple Ward Assignments).
+ * Used when moving wards to selected rate section.
+ * API: PUT /api/RateSectionDetails/Bulk
+ */
+export async function bulkUpdateRateSectionDetails(
+  payload: Array<{
+    id: number;
+    data: {
+      isActive: boolean;
+      updatedBy: number;
+      createdBy?: number;
+      rateSectionId: number;
+      wardId: number;
+    }
+  }>
+): Promise<RateSectionDetailsBatchResponse> {
+  const response = await apiClient.put<RateSectionDetailsBatchResponse>(`/RateSectionDetails/Bulk`, payload);
+  return response.success && response.data ? response.data : {
+    success: false,
+    message: response.error || "Failed to bulk update rate section details",
+    items: { successCount: 0, failedCount: 0, results: [], errors: [], hasFailures: true, allSucceeded: false },
+    errors: null,
+  };
+}
+
+/**
+ * Bulk purge delete Rate Section Details (Multiple Ward Assignments).
+ * Used when moving wards from selected rate section back to available.
+ * API: DELETE /api/RateSectionDetails/Bulk/purge
+ */
+export async function bulkPurgeRateSectionDetails(
+  ids: number[]
+): Promise<RateSectionDetailsBatchResponse> {
+  const response = await apiClient.delete<RateSectionDetailsBatchResponse>(`/RateSectionDetails/Bulk/purge`, { body: JSON.stringify(ids) });
+  return response.success && response.data ? response.data : {
+    success: false,
+    message: response.error || "Failed to bulk purge rate section details",
     items: { successCount: 0, failedCount: 0, results: [], errors: [], hasFailures: true, allSucceeded: false },
     errors: null,
   };
@@ -165,8 +261,8 @@ export async function updateRateSectionDetail(
   payload: Partial<SectionItem>
 ): Promise<{ success: boolean; error?: string }> {
   const response = await apiClient.put(`/RateSectionDetails/${id}`, payload);
-  return response.success 
-    ? { success: true } 
+  return response.success
+    ? { success: true }
     : { success: false, error: response.error || "Failed to update rate section detail" };
 }
 
@@ -182,10 +278,10 @@ export async function getWardsByRateSection(
   const response = await apiClient.get<SectionItem[] | { items?: SectionItem[]; data?: SectionItem[]; rateSectionDetails?: SectionItem[] }>(`/RateSectionDetails?${params.toString()}`);
   if (!response.success || !response.data) return [];
   const data = response.data;
-  return Array.isArray(data) ? data 
+  return Array.isArray(data) ? data
     : Array.isArray(data.rateSectionDetails) ? data.rateSectionDetails
-    : Array.isArray(data.items) ? data.items 
-    : Array.isArray(data.data) ? data.data : [];
+      : Array.isArray(data.items) ? data.items
+        : Array.isArray(data.data) ? data.data : [];
 }
 
 export const getWardsByRate = getWardsByRateSection;

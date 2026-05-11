@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Drawer } from "@/components/common/Drawer";
 import { useTranslations } from "next-intl";
 import { Map } from "lucide-react";
@@ -10,9 +10,9 @@ import { LinkWardProps } from "@/types/rateSectionMaster.types";
 import RateSectionWards from "./RateSectionWards";
 import LinkWardTabs from "./LinkWardTabs";
 import { getRateSectionDisplayLabel, getSelectedZoneName, handleToggleAvailable, handleToggleSelected} from "./linkWardHelpers";
-import { useLinkWardHandlers } from "@/hooks/useLinkWardHandlers";
-import { useLinkWardActions } from "@/hooks/useLinkWardActions";
-import { useLinkWardPagination } from "@/hooks/useLinkWardPagination";
+import { useLinkWardHandlers } from "@/hooks/rateSectionMaster/useLinkWardHandlers";
+import { useLinkWardPagination } from "@/hooks/rateSectionMaster/useLinkWardPagination";
+import { useLinkWardActions } from "@/hooks/rateSectionMaster/useLinkWardActions";
 
 export default function AddWard({
   open,
@@ -35,7 +35,7 @@ export default function AddWard({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const wardAssignments = ssrWardAssignments;
+  const [wardAssignments, setWardAssignments] = useState(ssrWardAssignments);
   const allAvailableWards = ssrAllWards;
   const totalViewAllCount = ssrViewAllWardsTotalCount || ssrAllWardsCount;
 
@@ -67,7 +67,9 @@ export default function AddWard({
     setLoading: state.setLoading,
     setSelectedWards: state.setSelectedWards,
     setSelectedWardsTotalCount: state.setSelectedWardsTotalCount,
+    setWardAssignments,
     getRateSectionDisplayLabel: getRateSectionLabel,
+    router,
     t
   });
 
@@ -77,8 +79,10 @@ export default function AddWard({
   );
 
   const totalUnassignedForHeader = useMemo(() => {
-    return allAvailableWards.filter(ward => !wardAssignments[ward.wardNo]).length;
-  }, [allAvailableWards, wardAssignments]);
+    return allAvailableWards.filter(ward => 
+      !wardAssignments[ward.wardNo] && !state.selectedWards.includes(ward.wardNo)
+    ).length;
+  }, [allAvailableWards, wardAssignments, state.selectedWards]);
 
   const toggleAvailable = (wardNo: string) =>
     handleToggleAvailable(

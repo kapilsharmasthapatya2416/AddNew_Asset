@@ -33,7 +33,8 @@
     "invalidEmail": "अमान्य ईमेल पता",
     "minLength": "कम से कम {count} वर्ण आवश्यक हैं",
     "maxLength": "अधिकतम {count} वर्ण की अनुमति है",
-    "invalidFormat": "अमान्य प्रारूप"
+    "invalidFormat": "अमान्य प्रारूप",
+    "submissionIdRequired": "सबमिशन आईडी आवश्यक है"
   },
   "form": {
     "validation": {
@@ -158,7 +159,8 @@
     "lastPage": "अंतिम पृष्ठ",
     "previousPage": "पिछला पृष्ठ",
     "nextPage": "अगला पृष्ठ",
-    "rowsPerPage": "प्रति पृष्ठ पंक्तियाँ"
+    "rowsPerPage": "प्रति पृष्ठ पंक्तियाँ",
+    "clickToView": "विवरण देखने के लिए क्लिक करें"
   },
   "language": {
     "select": "भाषा चुनें",
