@@ -35,8 +35,9 @@ export default getRequestConfig(async ({ locale }) => {
     useCategoryFactorMasterMessages,
     ageFactorMasterMessages,
     zoneMasterMessages,
+    officeMessages,
+    bankMasterMessages,
     modulesMessages,
-    officeMessages
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
@@ -57,9 +58,11 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/useCategoryFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/ageFactorMaster.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/zoneMaster.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/office.json`)
+      .catch(() => ({}))
+      .then((m) => m.default || m),
+    import(`./locales/${validatedLocale}/bank-master.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
-    import(`./locales/${validatedLocale}/office.json`).catch(() => ({})).then((m) => m.default || m),
-
   ]);
 
   return {
@@ -77,15 +80,16 @@ export default getRequestConfig(async ({ locale }) => {
       ptis: ptisMessages,
       floorFactorMaster: floorFactorMasterMessages.floorFactorMaster,
       weightageMaster: weightageMasterMessages.weightageMaster,
+      typeofusemaster: typeofusemasterMessages,
       depreciation: depreciationMessages.depreciationMaster,
       propertyType: propertyTypeMessages,
       natureFactorCVMaster: natureFactorCVMasterMessages.natureFactorCVMaster,
       useCategoryFactorMaster: useCategoryFactorMasterMessages.useCategoryFactorMaster,
       ageFactorMaster: ageFactorMasterMessages.ageFactorMaster,
-      typeofusemaster: typeofusemasterMessages,
       zoneMaster: zoneMasterMessages,
-      modules: modulesMessages,
       office: officeMessages,
+      bankMaster: bankMasterMessages,
+      modules: modulesMessages,
     },
   };
 });
