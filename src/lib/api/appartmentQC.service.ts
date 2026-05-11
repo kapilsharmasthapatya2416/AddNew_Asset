@@ -1,5 +1,6 @@
 import { apiClient } from '@/services/api.service';
 import { ApiError, handleApiResponse } from '@/lib/utils/api';
+import { logger } from '@/lib/utils/logger';
 import type { ApartmentQCDetail, ApartmentQCResponse, ApartmentQCSearchParams } from '@/types/apartmentQC.types';
 import type { ApiResponse } from '@/types/common.types';
 
@@ -9,45 +10,55 @@ import type { ApiResponse } from '@/types/common.types';
 ============================================================ */
 
 /**
+ * Configuration for mapping search params to URL query parameters
+ */
+type ParamConfig = {
+  key: keyof ApartmentQCSearchParams;
+  queryParam: string;
+  shouldTrim?: boolean;
+  skipEmptyCheck?: boolean;
+};
+
+const PARAM_MAPPINGS: ParamConfig[] = [
+  { key: 'wardId', queryParam: 'WardId' },
+  { key: 'propertyNo', queryParam: 'PropertyNo' },
+  { key: 'propertyDetailsId', queryParam: 'PropertyDetailsId' },
+  { key: 'partType', queryParam: 'PartType', shouldTrim: true },
+  { key: 'type', queryParam: 'Type', shouldTrim: true },
+  { key: 'pageNumber', queryParam: 'PageNumber', skipEmptyCheck: true },
+  { key: 'pageSize', queryParam: 'PageSize', skipEmptyCheck: true },
+  { key: 'searchTerm', queryParam: 'SearchTerm', shouldTrim: true },
+  { key: 'sortBy', queryParam: 'SortBy', shouldTrim: true },
+  { key: 'sortOrder', queryParam: 'SortOrder', shouldTrim: true },
+  { key: 'filterLogic', queryParam: 'FilterLogic', skipEmptyCheck: true },
+];
+
+/**
  * Build a URLSearchParams object from the supplied search params.
  * Only non-empty / non-undefined values are included.
+ * Uses configuration-driven approach for maintainability.
  */
 function buildQueryParams(params: ApartmentQCSearchParams): URLSearchParams {
   const qs = new URLSearchParams();
 
-  if (params.wardId !== undefined && params.wardId !== '') {
-    qs.append('WardId', String(params.wardId));
-  }
-  if (params.propertyNo !== undefined && params.propertyNo !== '') {
-    qs.append('PropertyNo', String(params.propertyNo));
-  }
-  if (params.propertyDetailsId !== undefined && params.propertyDetailsId !== '') {
-    qs.append('PropertyDetailsId', String(params.propertyDetailsId));
-  }
-  if (params.partType !== undefined && params.partType.trim() !== '') {
-    qs.append('PartType', params.partType.trim());
-  }
-  if (params.type !== undefined && params.type.trim() !== '') {
-    qs.append('Type', params.type.trim());
-  }
-  if (params.pageNumber !== undefined) {
-    qs.append('PageNumber', String(params.pageNumber));
-  }
-  if (params.pageSize !== undefined) {
-    qs.append('PageSize', String(params.pageSize));
-  }
-  if (params.searchTerm !== undefined && params.searchTerm.trim() !== '') {
-    qs.append('SearchTerm', params.searchTerm.trim());
-  }
-  if (params.sortBy !== undefined && params.sortBy.trim() !== '') {
-    qs.append('SortBy', params.sortBy.trim());
-  }
-  if (params.sortOrder !== undefined && params.sortOrder.trim() !== '') {
-    qs.append('SortOrder', params.sortOrder.trim());
-  }
-  if (params.filterLogic !== undefined) {
-    qs.append('FilterLogic', String(params.filterLogic));
-  }
+  PARAM_MAPPINGS.forEach(({ key, queryParam, shouldTrim, skipEmptyCheck }) => {
+    const value = params[key];
+    
+    if (value === undefined) return;
+    
+    // Skip empty string checks for numeric parameters
+    if (!skipEmptyCheck && value === '') return;
+    
+    // Handle string trimming
+    if (shouldTrim && typeof value === 'string') {
+      const trimmed = value.trim();
+      if (trimmed !== '') {
+        qs.append(queryParam, trimmed);
+      }
+    } else {
+      qs.append(queryParam, String(value));
+    }
+  });
 
   return qs;
 }
@@ -92,7 +103,10 @@ export async function getApartmentQCDetailsSafe(
     const data = await getApartmentQCDetailsLocalized(params);
     return data.items ?? [];
   } catch (err) {
-    console.error('[appartmentQC.service] Safe wrapper error:', err);
+    logger.error('[appartmentQC.service] Failed to fetch apartment QC details', {
+      error: err instanceof Error ? err : new Error(String(err)),
+      params,
+    });
     return [];
   }
 }

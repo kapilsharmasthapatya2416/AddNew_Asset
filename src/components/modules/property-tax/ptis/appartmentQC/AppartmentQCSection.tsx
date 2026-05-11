@@ -105,7 +105,7 @@ const AppartmentQCSection = ({
         />
       </div>
 
-      <div className="flex-1 overflow-auto text-gray-900 bg-gray-50/30 p-2 relative min-h-[400px]">
+      <div className="flex-1 overflow-auto text-gray-900 bg-gray-50/30 p-2 relative min-h-[200px]">
         {isPending && (
           <div className="absolute inset-0 z-50 bg-white/60 backdrop-blur-[1px] flex items-center justify-center">
             <LoadingPage translationNamespace="ptis.loading" />
