@@ -44,19 +44,21 @@ vi.mock('next/navigation', () => ({
 vi.mock('lucide-react', async () => {
   const React = await import('react');
   
-  // Create a mock icon component that renders an svg with passed props
-  // Includes the lucide class naming convention for proper test compatibility
+  // Create a mock icon component factory  
   const createIcon = (name: string) => {
     const lucideClassName = `lucide-${name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '')}`;
-    const IconComponent = React.forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>>((props, ref) => {
-      const { className, ...rest } = props;
-      return React.createElement('svg', { 
-        ref,
-        'data-icon': name,
-        className: className ? `${lucideClassName} ${className}` : lucideClassName,
-        ...rest 
-      });
-    });
+    const IconComponent = React.forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>>(
+      function IconComponent(props, ref) {
+        const { className, ...rest } = props;
+        return React.createElement('svg', {
+          ref,
+          'data-testid': `${name.toLowerCase().replace(/([A-Z])/g, '-$1').replace(/^-/, '')}-icon`,
+          'data-icon': name,
+          className: className ? `${lucideClassName} ${className}` : lucideClassName,
+          ...rest,
+        });
+      }
+    );
     IconComponent.displayName = name;
     return IconComponent;
   };
