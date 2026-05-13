@@ -41,6 +41,9 @@ export default getRequestConfig(async ({ locale }) => {
     bankMasterMessages,
     screenAccessMessages,
     modulesMessages,
+    departmentMasterMessages,
+    departmentActivationMessages,
+    homeMessages,
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
@@ -69,6 +72,15 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/bank-master.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/screenAccess.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
+    import(`./locales/${validatedLocale}/departmentMaster.json`)
+      .catch(() => ({}))
+      .then((m) => m.default || m),
+    import(`./locales/${validatedLocale}/departmentActivation.json`)
+      .catch(() => ({}))
+      .then((m) => m.default || m),
+    import(`./locales/${validatedLocale}/home.json`)
+      .catch(() => ({}))
+      .then((m) => m.default || m),
   ]);
 
   return {
@@ -99,6 +111,9 @@ export default getRequestConfig(async ({ locale }) => {
       bankMaster: bankMasterMessages,
       screenAccess: screenAccessMessages,
       modules: modulesMessages,
+      departmentMaster: departmentMasterMessages,
+      departmentActivation: departmentActivationMessages,
+      home: homeMessages,
     },
   };
 });
