@@ -34,11 +34,19 @@ interface RateFiltersSectionProps {
   existingRateFound: boolean;
   isCheckingRates: boolean;
   mode: "edit" | "delete" | "add";
+  // Loading states
+  isLoadingZones?: boolean;
+  isLoadingUseGroups?: boolean;
+  isLoadingAssessmentYears?: boolean;
   // Handlers
-  onDropdownChange: (field: 'zone' | 'useGroup' | 'assessmentYear', value: string) => void;
+  onDropdownChange: (field: 'zone' | 'useGroup' | 'assessmentYear', value: string, label?: string) => void;
   onGenerateMatrix: () => void;
   onToggleMultipliers: () => void;
   onToggleCopyRates: () => void;
+  // Lazy load handlers
+  onLoadZones?: () => void;
+  onLoadUseGroups?: () => void;
+  onLoadAssessmentYears?: () => void;
   // Translations
   t: ReturnType<typeof import("next-intl").useTranslations>;
 }
@@ -57,10 +65,16 @@ export function RateFiltersSection({
   existingRateFound,
   isCheckingRates,
   mode,
+  isLoadingZones,
+  isLoadingUseGroups,
+  isLoadingAssessmentYears,
   onDropdownChange,
   onGenerateMatrix,
   onToggleMultipliers,
   onToggleCopyRates,
+  onLoadZones,
+  onLoadUseGroups,
+  onLoadAssessmentYears,
   t,
 }: RateFiltersSectionProps) {
   return (
@@ -78,7 +92,12 @@ export function RateFiltersSection({
           options={zoneOptions}
           placeholder={t('placeholders.selectRateSection')}
           value={selectedZone}
-          onChange={(_name, value) => onDropdownChange('zone', value)}
+          onChange={(_name, value) => {
+            const selectedOption = zoneOptions.find(opt => opt.value === value);
+            onDropdownChange('zone', value, selectedOption?.label);
+          }}
+          onInputFocus={onLoadZones}
+          isLoading={isLoadingZones}
           className={`text-black ${errors.zone ? 'border-red-500' : ''}`}
         />
         <ValidationMessage message={errors.zone} visible={!!errors.zone} />
@@ -97,7 +116,12 @@ export function RateFiltersSection({
           options={useGroupOptions}
           placeholder={t('placeholders.selectUseGroup')}
           value={selectedUseGroup}
-          onChange={(_name, value) => onDropdownChange('useGroup', value)}
+          onChange={(_name, value) => {
+            const selectedOption = useGroupOptions.find(opt => opt.value === value);
+            onDropdownChange('useGroup', value, selectedOption?.label);
+          }}
+          onInputFocus={onLoadUseGroups}
+          isLoading={isLoadingUseGroups}
           className={`text-black ${errors.useGroup ? 'border-red-500' : ''}`}
         />
         <ValidationMessage message={errors.useGroup} visible={!!errors.useGroup} />
@@ -119,8 +143,13 @@ export function RateFiltersSection({
                 label=""
                 options={assessmentYears}
                 placeholder={t('placeholders.selectAssessmentYear')}
+                onInputFocus={onLoadAssessmentYears}
+                isLoading={isLoadingAssessmentYears}
                 value={assessmentYear}
-                onChange={(_name, value) => onDropdownChange('assessmentYear', value)}
+                onChange={(_name, value) => {
+                  const selectedOption = assessmentYears.find(opt => opt.value === value);
+                  onDropdownChange('assessmentYear', value, selectedOption?.label);
+                }}
                 className={`text-black ${errors.assessmentYear ? 'border-red-500' : ''}`}
               />
               <ValidationMessage message={errors.assessmentYear} visible={!!errors.assessmentYear} />
@@ -140,13 +169,15 @@ export function RateFiltersSection({
                 id="assessment-year-range-select"
                 name="assessmentYearRange"
                 label=""
-                options={assessmentYearRanges?.map((range) => ({
-                  label: range.label,
-                  value: range.value,
-                })) ?? []}
+                options={assessmentYears}
                 placeholder={t('placeholders.selectAssessmentYearRange')}
+                onInputFocus={onLoadAssessmentYears}
+                isLoading={isLoadingAssessmentYears}
                 value={assessmentYear}
-                onChange={(_name, value) => onDropdownChange('assessmentYear', value)}
+                onChange={(_name, value) => {
+                  const selectedOption = assessmentYears.find(opt => opt.value === value);
+                  onDropdownChange('assessmentYear', value, selectedOption?.label);
+                }}
                 className={`text-black ${errors.assessmentYear ? 'border-red-500' : ''}`}
               />
               <ValidationMessage message={errors.assessmentYear} visible={!!errors.assessmentYear} />
