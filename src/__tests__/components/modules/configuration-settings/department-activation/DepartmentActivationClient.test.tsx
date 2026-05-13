@@ -104,7 +104,9 @@ describe('DepartmentActivationClient', () => {
     const configButtons = screen.getAllByText('card.configureSubmodules');
     await user.click(configButtons[0]);
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
     expect(screen.getByText('Module 1')).toBeInTheDocument();
   });
 });

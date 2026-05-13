@@ -10,13 +10,7 @@ export const nextNavMocks = {
 };
 
 vi.mock('next/navigation', () => ({
-  useRouter: vi.fn(() => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    refresh: vi.fn(),
-    back: vi.fn(),
-    prefetch: vi.fn(),
-  })),
+  useRouter: vi.fn(() => nextNavMocks),
   usePathname: vi.fn(() => '/en/configuration-settings/department-master'),
   useSearchParams: vi.fn(() => ({
     get: vi.fn(),

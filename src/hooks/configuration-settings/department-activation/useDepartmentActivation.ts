@@ -28,9 +28,11 @@ export function useDepartmentActivation({
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const departmentIdParam = searchParams.get('departmentId');
-  const selectedDepartment = departmentIdParam 
-    ? initialDepartments.find(d => d.departmentId.toString() === departmentIdParam) || null
-    : null;
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(
+    departmentIdParam 
+      ? initialDepartments.find(d => d.departmentId.toString() === departmentIdParam) || null
+      : null
+  );
   const isSubmoduleDialogOpen = !!selectedDepartment;
 
   const [optimisticDepartments, addOptimisticDepartmentUpdate] = useOptimistic<
@@ -180,6 +182,7 @@ export function useDepartmentActivation({
   };
 
   const setSubmoduleDialogOpen = (open: boolean, dept?: Department) => {
+    setSelectedDepartment(open && dept ? dept : null);
     const params = new URLSearchParams(searchParams.toString());
     if (open && dept) params.set('departmentId', dept.departmentId.toString());
     else params.delete('departmentId');
