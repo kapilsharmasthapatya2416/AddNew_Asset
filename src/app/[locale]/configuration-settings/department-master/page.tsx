@@ -14,9 +14,12 @@ export default async function DepartmentMasterPage({ searchParams }: PageProps) 
     const pageNumber = Number(resolvedSearchParams.page) || 1;
     const pageSize = Number(resolvedSearchParams.pageSize) || 10;
     const searchTerm = (resolvedSearchParams.search as string) || "";
+    const rawStatus = resolvedSearchParams.status;
+    const statusParam = Array.isArray(rawStatus) ? rawStatus[0] : rawStatus;
+    const status = statusParam && statusParam !== "all" ? statusParam : undefined;
 
     const [pagedData, allData] = await Promise.all([
-        getDepartmentMastersPaged(pageNumber, pageSize, searchTerm),
+        getDepartmentMastersPaged(pageNumber, pageSize, searchTerm, status),
         getDepartmentMasters(1, 1000)
     ]);
 

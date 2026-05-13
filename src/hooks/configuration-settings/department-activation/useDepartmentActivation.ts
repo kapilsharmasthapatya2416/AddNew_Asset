@@ -35,12 +35,14 @@ export function useDepartmentActivation({
 
   const [optimisticDepartments, addOptimisticDepartmentUpdate] = useOptimistic<
       Department[], 
-      { id: number; isActive: boolean } | { type: 'all'; isActive: boolean }
+      { id: number; isActive: boolean } | { ids: number[]; isActive: boolean }
     >(
       initialDepartments,
       (state, update) => {
-        if ('type' in update && update.type === 'all') {
-          return state.map(dept => ({ ...dept, isActive: update.isActive }));
+        if ('ids' in update) {
+          return state.map(dept => 
+            update.ids.includes(dept.departmentId) ? { ...dept, isActive: update.isActive } : dept
+          );
         } else if ('id' in update) {
           return state.map(dept => 
             dept.departmentId === update.id ? { ...dept, isActive: update.isActive } : dept
@@ -111,7 +113,7 @@ export function useDepartmentActivation({
     
     startTransition(() => {
       void (async () => {
-        addOptimisticDepartmentUpdate({ type: 'all', isActive: activate });
+        addOptimisticDepartmentUpdate({ ids: targets.map(d => d.departmentId), isActive: activate });
         
         const updatePromises = targets.map(dept => {
           const formData = new FormData();

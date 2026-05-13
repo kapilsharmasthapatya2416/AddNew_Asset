@@ -28,13 +28,17 @@ export async function getDepartmentById(id: number): Promise<DepartmentMaster | 
 export async function getDepartmentMastersPaged(
     pageNumber: number,
     pageSize: number,
-    searchTerm?: string
+    searchTerm?: string,
+    status?: string
 ): Promise<PagedResponse<DepartmentMaster>> {
     const params = new URLSearchParams();
     params.append("PageNumber", String(pageNumber));
     params.append("PageSize", String(pageSize));
     if (searchTerm?.trim()) {
         params.append("SearchTerm", searchTerm.trim());
+    }
+    if (status) {
+        params.append("Status", status);
     }
 
     const response = await apiClient.get<PagedResponse<DepartmentMaster>>(

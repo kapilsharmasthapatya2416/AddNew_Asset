@@ -20,7 +20,7 @@ import { getDepartmentColumns } from "./DepartmentColumns";
 import { useDepartmentSearch } from "@/hooks/configuration-settings/department-master/useDepartmentSearch";
 import { useDepartmentPagination } from "@/hooks/configuration-settings/department-master/useDepartmentPagination";
 import { DepartmentStatsCards } from "./DepartmentStatsCards";
-import DepartmentMasterForm from "./DepartmentMasterForm";
+
 
 export function DepartmentMaster({
   initialData, 
@@ -52,7 +52,6 @@ export function DepartmentMaster({
   const {
     changePage,
     handlePageSizeChange,
-    paginationInfo
   } = useDepartmentPagination({
     totalCount,
     pageNumber,
