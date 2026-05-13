@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, X, Briefcase } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { Button } from '@/components/common/ActionButton';
 import { SearchInput } from '@/components/common/SearchInput';
 import type { DepartmentActivationProps } from '@/types/departmentActivation.types';

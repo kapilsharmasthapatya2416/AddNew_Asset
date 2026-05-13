@@ -23,11 +23,6 @@ export function useDepartmentForm({ editingDepartment, onSuccess, onClose }: Use
   const [submittedOnce, setSubmittedOnce] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(true);
-  const isMounted = useRef(true);
-
-  useEffect(() => {
-    return () => { isMounted.current = false; };
-  }, []);
 
   const [formData, setFormData] = useState<DepartmentMasterFormData>({
     departmentCode: "",
@@ -65,8 +60,8 @@ export function useDepartmentForm({ editingDepartment, onSuccess, onClose }: Use
 
   const validate = useCallback((data: DepartmentMasterFormData) => {
     const newErrors: Record<string, string> = {};
-    if (!data.departmentCode?.trim()) newErrors.departmentCode = t("validation.required");
-    if (!data.departmentName?.trim()) newErrors.departmentName = t("validation.required");
+    if (!data.departmentCode?.trim()) newErrors.departmentCode = tCommon("validation.required");
+    if (!data.departmentName?.trim()) newErrors.departmentName = tCommon("validation.required");
     
     if (data.departmentCode && data.departmentCode.length > 50) {
       newErrors.departmentCode = tCommon("validation.maxLength", { count: 50 });

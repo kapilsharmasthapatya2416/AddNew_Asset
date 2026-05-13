@@ -78,23 +78,25 @@ export function useDepartmentActivation({
 
   const toggleDepartment = (id: number, currentDepartment: Department) => {
     const newIsActive = !currentDepartment.isActive;
-    startTransition(async () => {
-      addOptimisticDepartmentUpdate({ id, isActive: newIsActive });
-      const formData = new FormData();
-      formData.append('departmentId', String(id));
-      formData.append('departmentCode', currentDepartment.departmentCode);
-      formData.append('departmentName', currentDepartment.departmentName);
-      formData.append('departmentNameLocal', currentDepartment.departmentNameLocal || '');
-      formData.append('departmentIcon', currentDepartment.departmentIcon || '');
-      formData.append('departmentDescription', currentDepartment.departmentDescription || '');
-      formData.append('isActive', String(newIsActive));
+    startTransition(() => {
+      void (async () => {
+        addOptimisticDepartmentUpdate({ id, isActive: newIsActive });
+        const formData = new FormData();
+        formData.append('departmentId', String(id));
+        formData.append('departmentCode', currentDepartment.departmentCode);
+        formData.append('departmentName', currentDepartment.departmentName);
+        formData.append('departmentNameLocal', currentDepartment.departmentNameLocal || '');
+        formData.append('departmentIcon', currentDepartment.departmentIcon || '');
+        formData.append('departmentDescription', currentDepartment.departmentDescription || '');
+        formData.append('isActive', String(newIsActive));
 
-      const result = await updateDepartmentStatusAction(formData);
-      if (result.success) {
-        toast.success(`${currentDepartment.departmentName} ${newIsActive ? 'activated' : 'deactivated'}`);
-      } else {
-        toast.error(result.error || "Failed to update department");
-      }
+        const result = await updateDepartmentStatusAction(formData);
+        if (result.success) {
+          toast.success(`${currentDepartment.departmentName} ${newIsActive ? 'activated' : 'deactivated'}`);
+        } else {
+          toast.error(result.error || "Failed to update department");
+        }
+      })();
     });
   };
 
@@ -107,31 +109,33 @@ export function useDepartmentActivation({
     const targets = filteredDepartments.filter(d => d.isActive !== activate);
     if (targets.length === 0) return;
     
-    startTransition(async () => {
-      addOptimisticDepartmentUpdate({ type: 'all', isActive: activate });
-      
-      const updatePromises = targets.map(dept => {
-        const formData = new FormData();
-        formData.append('departmentId', String(dept.departmentId));
-        formData.append('departmentCode', dept.departmentCode);
-        formData.append('departmentName', dept.departmentName);
-        formData.append('departmentNameLocal', dept.departmentNameLocal || '');
-        formData.append('departmentIcon', dept.departmentIcon || '');
-        formData.append('departmentDescription', dept.departmentDescription || '');
-        formData.append('isActive', String(activate));
-        return updateDepartmentStatusAction(formData);
-      });
+    startTransition(() => {
+      void (async () => {
+        addOptimisticDepartmentUpdate({ type: 'all', isActive: activate });
+        
+        const updatePromises = targets.map(dept => {
+          const formData = new FormData();
+          formData.append('departmentId', String(dept.departmentId));
+          formData.append('departmentCode', dept.departmentCode);
+          formData.append('departmentName', dept.departmentName);
+          formData.append('departmentNameLocal', dept.departmentNameLocal || '');
+          formData.append('departmentIcon', dept.departmentIcon || '');
+          formData.append('departmentDescription', dept.departmentDescription || '');
+          formData.append('isActive', String(activate));
+          return updateDepartmentStatusAction(formData);
+        });
 
-      const results = await Promise.all(updatePromises);
-      const failCount = results.filter(r => !r.success).length;
-      const successCount = results.length - failCount;
+        const results = await Promise.all(updatePromises);
+        const failCount = results.filter(r => !r.success).length;
+        const successCount = results.length - failCount;
 
-      if (failCount > 0) {
-        toast.warning(`Updated ${successCount} departments, ${failCount} failed`);
-      } else {
-        toast.success(activate ? t('messages.activateAllSuccess') : t('messages.deactivateAllSuccess'));
-      }
-      router.refresh();
+        if (failCount > 0) {
+          toast.warning(`Updated ${successCount} departments, ${failCount} failed`);
+        } else {
+          toast.success(activate ? t('messages.activateAllSuccess') : t('messages.deactivateAllSuccess'));
+        }
+        router.refresh();
+      })();
     });
   };
 
@@ -143,27 +147,29 @@ export function useDepartmentActivation({
         prev.map(m => m.moduleId === module.moduleId ? { ...m, isActive: newIsActive } : m)
     );
 
-    startTransition(async () => {
-        const formData = new FormData();
-        formData.append('moduleId', String(module.moduleId));
-        formData.append('departmentId', String(selectedDepartment.departmentId));
-        formData.append('moduleCode', module.moduleCode);
-        formData.append('moduleName', module.moduleName);
-        formData.append('moduleNameLocal', module.moduleNameLocal || '');
-        formData.append('moduleIcon', module.moduleIcon || '');
-        formData.append('moduleLabel', module.moduleLabel || '');
-        formData.append('moduleDescription', module.moduleDescription || '');
-        formData.append('isActive', String(newIsActive));
+    startTransition(() => {
+        void (async () => {
+            const formData = new FormData();
+            formData.append('moduleId', String(module.moduleId));
+            formData.append('departmentId', String(selectedDepartment.departmentId));
+            formData.append('moduleCode', module.moduleCode);
+            formData.append('moduleName', module.moduleName);
+            formData.append('moduleNameLocal', module.moduleNameLocal || '');
+            formData.append('moduleIcon', module.moduleIcon || '');
+            formData.append('moduleLabel', module.moduleLabel || '');
+            formData.append('moduleDescription', module.moduleDescription || '');
+            formData.append('isActive', String(newIsActive));
 
-        const result = await updateModuleStatusAction(formData);
-        if (result.success) {
-            toast.success(`${module.moduleName} updated successfully`);
-        } else {
-            setLocalModules(prev =>
-                prev.map(m => m.moduleId === module.moduleId ? { ...m, isActive: module.isActive } : m)
-            );
-            toast.error(result.error || "Failed to update module");
-        }
+            const result = await updateModuleStatusAction(formData);
+            if (result.success) {
+                toast.success(`${module.moduleName} updated successfully`);
+            } else {
+                setLocalModules(prev =>
+                    prev.map(m => m.moduleId === module.moduleId ? { ...m, isActive: module.isActive } : m)
+                );
+                toast.error(result.error || "Failed to update module");
+            }
+        })();
     });
   };
 

@@ -6,12 +6,15 @@ import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Button } from "@/components/common/ActionButton";
 import { Badge } from "@/components/common/Badge";
 
+import { useTranslations } from "next-intl";
+
 export function DepartmentCard({
   department,
   onToggle,
   onConfigure,
   configureButtonText,
 }: DepartmentCardProps) {
+  const t = useTranslations('departmentActivation');
   return (
     <div
       className={`relative p-4 rounded-xl border-2 transition-all ${
@@ -41,7 +44,7 @@ export function DepartmentCard({
           </Badge>
         </div>
         <p className="text-xs text-gray-500 line-clamp-2 h-8">
-          {department.departmentDescription || "No description provided"}
+          {department.departmentDescription || t('card.noDescription')}
         </p>
       </div>
 

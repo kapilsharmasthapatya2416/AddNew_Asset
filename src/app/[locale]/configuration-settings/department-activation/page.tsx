@@ -1,6 +1,6 @@
 import { departmentActivationService } from "@/lib/api/configuration-settings/department-activation/departmentActivation.service";
 import { DepartmentActivationClient } from "@/components/modules/configuration-settings/department-activation/DepartmentActivationClient";
-import { DepartmentActivationStatsCards } from "@/components/modules/configuration-settings/department-activation/DepartmentActivationStatsCards";
+
 import { PageContainer } from "@/components/common/PageContainer";
 import { getTranslations } from "next-intl/server";
 

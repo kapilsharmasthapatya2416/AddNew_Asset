@@ -26,12 +26,13 @@ export function normalizeModule(data: any): Module {
     return {
         moduleId: Number(data.moduleId ?? data.ModuleId ?? data.moduleMasterId ?? data.ModuleMasterId ?? data.id ?? data.Id ?? 0),
         departmentId: Number(data.departmentId ?? data.DepartmentId ?? data.departmentMasterId ?? data.DepartmentMasterId ?? 0),
+        departmentName: cleanString(data.departmentName ?? data.DepartmentName),
         moduleCode: cleanString(data.moduleCode ?? data.ModuleCode),
         moduleName: cleanString(data.moduleName ?? data.ModuleName),
         moduleNameLocal: cleanString(data.moduleNameLocal ?? data.ModuleNameLocal),
         moduleIcon: cleanString(data.moduleIcon ?? data.ModuleIcon),
         moduleLabel: cleanString(data.moduleLabel ?? data.ModuleLabel),
-        moduleDescription: cleanString(data.moduleDescription ?? data.moduleDescription ?? data.DepartmentDescription),
+        moduleDescription: cleanString(data.moduleDescription ?? data.ModuleDescription),
         isActive: parseBoolean(data.isActive ?? data.IsActive ?? data.isStatus),
     };
 }

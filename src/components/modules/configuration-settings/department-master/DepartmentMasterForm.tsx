@@ -158,7 +158,7 @@ export default function DepartmentMasterForm({
                                     <div>
                                         <div className="font-semibold text-sm text-blue-900">{t('form.fields.isActive')}</div>
                                         <div className="text-xs text-gray-500">
-                                            {t('form.fields.statusText', { status: formData.isActive ? t('status.active') : t('status.inactive') })}
+                                            {t('form.fields.statusText', { status: formData.isActive ? tCommon('status.active') : tCommon('status.inactive') })}
                                         </div>
                                     </div>
                                 </div>

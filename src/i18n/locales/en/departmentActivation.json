@@ -12,7 +12,8 @@
     "inactive": "Inactive"
   },
   "card": {
-    "configureSubmodules": "Configure Submodules"
+    "configureSubmodules": "Configure Submodules",
+    "noDescription": "No description provided"
   },
   "modal": {
     "title": "Configure Submodules",

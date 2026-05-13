@@ -5,14 +5,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface UseDepartmentSearchProps {
   pageSize: number;
-  locale: string;
   startTransition: (callback: () => void) => void;
   status?: string;
 }
 
 export function useDepartmentSearch({
   pageSize,
-  locale,
   startTransition,
   status: initialStatus,
 }: UseDepartmentSearchProps) {
@@ -33,7 +31,7 @@ export function useDepartmentSearch({
     if (urlStatus !== selectedStatus) {
       setSelectedStatus(urlStatus);
     }
-  }, [searchParams]);
+  }, [searchParams, search, selectedStatus]);
 
   const currentSearchTerm = searchParams.get("search") || "";
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);

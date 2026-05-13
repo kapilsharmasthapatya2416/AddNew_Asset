@@ -1,10 +1,9 @@
 'use client';
 
-import { Package, Check, X, Settings2 } from 'lucide-react';
+import { Package, Settings2 } from 'lucide-react';
 import { Drawer } from '@/components/common/Drawer';
 import { Badge } from '@/components/common/Badge';
 import { ToggleSwitch } from '@/components/common/ToggleSwitch';
-import { Button } from '@/components/common/ActionButton';
 import { useRouter } from 'next/navigation';
 import type { Department, Module } from '@/types/departmentActivation.types';
 import { useTranslations } from 'next-intl';

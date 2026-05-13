@@ -7,7 +7,6 @@ interface UseDepartmentPaginationProps {
   totalCount: number;
   pageNumber: number;
   pageSize: number;
-  locale: string;
   currentSearchTerm: string;
   startTransition: (callback: () => void) => void;
   status: string;
@@ -17,7 +16,6 @@ export function useDepartmentPagination({
   totalCount,
   pageNumber,
   pageSize,
-  locale,
   currentSearchTerm,
   startTransition,
   status,

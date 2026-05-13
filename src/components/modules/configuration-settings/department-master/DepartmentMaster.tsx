@@ -46,7 +46,6 @@ export function DepartmentMaster({
     handleStatusChange,
   } = useDepartmentSearch({
     pageSize,
-    locale,
     startTransition,
   });
 
@@ -58,7 +57,6 @@ export function DepartmentMaster({
     totalCount,
     pageNumber,
     pageSize,
-    locale,
     currentSearchTerm,
     startTransition,
     status: selectedStatus
