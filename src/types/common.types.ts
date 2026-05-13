@@ -11,7 +11,6 @@ export interface ActionResult<T> {
   data?: T;
   error?: string;
   statusCode?: number;
-  validationErrors?: Record<string, string>;
 }
 export interface User {
   id: string;
