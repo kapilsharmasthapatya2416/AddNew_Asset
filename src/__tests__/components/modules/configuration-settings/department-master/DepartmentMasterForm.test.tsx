@@ -36,8 +36,8 @@ describe('DepartmentMasterForm', () => {
 
   it('shows validation errors for empty required fields on submit', async () => {
     render(<DepartmentMasterForm open={true} onClose={vi.fn()} editingDepartment={null} />);
-    const submitButton = screen.getByText('form.buttons.save');
-    await user.click(submitButton);
+    const form = document.getElementById('department-form') as HTMLFormElement;
+    fireEvent.submit(form);
 
     await waitFor(() => {
       // Assuming it uses standard HTML validation or Zod/React Hook Form

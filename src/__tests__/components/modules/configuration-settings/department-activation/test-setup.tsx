@@ -1,5 +1,30 @@
 import { vi } from 'vitest';
 
+// Mock next/navigation
+export const mockNextNav = {
+  push: vi.fn(),
+  replace: vi.fn(),
+  refresh: vi.fn(),
+  back: vi.fn(),
+  prefetch: vi.fn(),
+};
+
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: vi.fn(),
+    back: vi.fn(),
+    prefetch: vi.fn(),
+  })),
+  usePathname: vi.fn(() => '/en/configuration-settings/department-activation'),
+  useSearchParams: vi.fn(() => ({
+    get: vi.fn(),
+    toString: vi.fn(() => ''),
+    forEach: vi.fn(),
+  })),
+}));
+
 // Mock next-intl
 vi.mock('next-intl', () => ({
   useTranslations: vi.fn(() => (key: string) => key),
