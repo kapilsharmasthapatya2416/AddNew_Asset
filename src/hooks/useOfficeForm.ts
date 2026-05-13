@@ -75,7 +75,7 @@ export function useOfficeForm({
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     let processedValue: string | number | boolean | null = value;
-
+    
     if (type === 'number' || ['officeIncharge', 'designationMasterId'].includes(name)) {
       processedValue = value === '' ? null : Number(value);
     }
@@ -101,7 +101,7 @@ export function useOfficeForm({
           router.push(`/${locale}/configuration-settings/office-master`);
         });
       }
-    }, 400);
+    }, 400); 
   }, [router, locale]);
 
   const handleCancel = useCallback(() => {
