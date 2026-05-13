@@ -100,6 +100,28 @@ class ApiClient {
 
   private extractErrorMessage(errBody: unknown, statusText: string): string {
     const body = errBody as Record<string, unknown> | null | undefined;
+    
+    // First check for specific error messages in the errors object (e.g., validation errors)
+    if (body?.errors && typeof body.errors === 'object') {
+      const errors = body.errors as Record<string, unknown>;
+      // Check for General error first, then other error keys
+      const errorKeys = ['General', ...Object.keys(errors).filter(k => k !== 'General')];
+      for (const key of errorKeys) {
+        const errorValue = errors[key];
+        if (typeof errorValue === 'string' && errorValue.trim()) {
+          return errorValue.trim();
+        }
+        // Handle array of error messages
+        if (Array.isArray(errorValue) && errorValue.length > 0) {
+          const firstError = errorValue[0];
+          if (typeof firstError === 'string' && firstError.trim()) {
+            return firstError.trim();
+          }
+        }
+      }
+    }
+    
+    // Fall back to standard error message fields
     const candidates = [body?.message, body?.error, body?.title, body?.detail, statusText];
     for (const c of candidates) {
       if (typeof c === 'string' && c.trim()) return c.trim();

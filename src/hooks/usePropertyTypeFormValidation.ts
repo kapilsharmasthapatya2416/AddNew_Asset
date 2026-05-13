@@ -17,7 +17,7 @@ interface UsePropertyTypeFormValidationProps {
   submittedOnce: boolean;
   touched: Record<string, boolean>;
   errors: Partial<Record<keyof PropertyTypeFormModel, string>>;
-  t: (key: string) => string;
+  t: (key: string, values?: Record<string, string | number | Date>) => string;
 }
 
 /**
@@ -45,11 +45,22 @@ export function usePropertyTypeFormValidation({
           format: 'form.validation.propertyDescriptionFormat',
           maxLength: 'form.validation.propertyDescriptionMaxLength',
         }),
-        type: commonValidations.masterCode(t, TYPE_MAX, {
-          required: 'form.validation.typeRequired',
-          format: 'form.validation.typeFormat',
-          maxLength: 'form.validation.typeMaxLength',
-        }),
+        type: (value: unknown) => {
+          const strVal = String(value ?? "").trim();
+          const validTypes = ["R", "C", "I", "N", "R-C", "I-C"];
+          
+          if (!strVal) {
+            return t('form.validation.typeRequired');
+          }
+          if (strVal.length > TYPE_MAX) {
+            return t('form.validation.typeMaxLength', { count: TYPE_MAX });
+          }
+          // Allow specific preset values or validate against CODE_REGEX pattern
+          if (!validTypes.includes(strVal) && !/^[A-Za-z0-9]+([A-Za-z0-9_]*[A-Za-z0-9]+)*$/.test(strVal)) {
+            return t('form.validation.typeFormat');
+          }
+          return undefined;
+        },
         propertyTypeGroup: commonValidations.masterDescription(t, PROPERTY_TYPE_GROUP_MAX, {
           required: 'form.validation.propertyTypeGroupRequired',
           format: 'form.validation.propertyDescriptionFormat',
