@@ -11,6 +11,7 @@ const TABS: Tab[] = [
     { label: 'Kyc', href: 'Kyc', icon: UserCheck },
     { label: 'Society', href: 'Society', icon: Building2 },
     { label: 'FloorSubmission', href: 'FloorSubmission', icon: Building2 },
+    { label: 'OldDetails', href: 'OldDetails/old-taxation', icon: Building2 },
 ];
 
 const TAB_GRADIENT_CLASSES: Record<string, string> = {
@@ -18,7 +19,7 @@ const TAB_GRADIENT_CLASSES: Record<string, string> = {
     Kyc: 'from-emerald-500 to-emerald-600 border-emerald-700',
     Society: 'from-purple-500 to-purple-600 border-purple-700',
     FloorSubmission: 'from-orange-500 to-orange-600 border-orange-700',
-
+    OldDetails: "from-rose-500 to-red-600 border-red-700"
 };
 
 export function TabNavigation() {
@@ -32,8 +33,6 @@ export function TabNavigation() {
     const wardId = searchParams.get("wardId") || "";
     const propertyNo = searchParams.get("propertyNo") || "";
     const partitionNo = searchParams.get("partitionNo") || "";
-
-    const activeSegment = pathname.split('/').pop() ?? '';
 
     // Check if we have search parameters that can resolve authoritative property ID
     const hasPropertyKeys = wardNo && propertyNo && partitionNo;
@@ -53,9 +52,16 @@ export function TabNavigation() {
                 {TABS.map((tab) => {
                     const currentPath = pathname.split('?')[0];
                     const pathSegments = currentPath.split('/').filter(Boolean);
-                    const baseTabPath = `/${pathSegments.slice(0, -1).join('/')}`;
-                    const tabPath = `${baseTabPath}/${tab.href}`;
                     
+                    // Find the base path up to the propertyId segment. 
+                    // The structure is expected to be .../QuickDataEntry/[propertyId]/...
+                    const qdeIndex = pathSegments.indexOf('QuickDataEntry');
+                    const baseTabPath = qdeIndex !== -1 && pathSegments[qdeIndex + 1]
+                        ? `/${pathSegments.slice(0, qdeIndex + 2).join('/')}`
+                        : `/${pathSegments.slice(0, -1).join('/')}`;
+                        
+                    const tabPath = `${baseTabPath}/${tab.href}`;
+
                     // For FloorSubmission tab: exclude propertyId if we have search params
                     // to let the page resolve authoritative ID from backend
                     let tabQueryString = queryString;
@@ -67,13 +73,25 @@ export function TabNavigation() {
                         if (partitionNo) tabParams.set('partitionNo', partitionNo);
                         tabQueryString = tabParams.toString();
                     }
-                    
+
                     const tabHref = tabQueryString ? `${tabPath}?${tabQueryString}` : tabPath;
-                    const isActive = activeSegment === tab.href || pathname === tabPath;
+                    
+                    const activeSegment = pathname.split('/').pop() ?? '';
+                    const oldDetailsSectionPath = `${baseTabPath}/OldDetails`;
+                    
+                    // This is safe and intentional for single-segment tabs; OldDetails is a section tab
+                    // and should remain active for any nested route under /OldDetails/.
+                    const isOldDetailsTab = tab.href === 'OldDetails/old-taxation';
+                    const isActive = isOldDetailsTab
+                        ? pathname === tabPath ||
+                          pathname === oldDetailsSectionPath ||
+                          pathname.startsWith(`${oldDetailsSectionPath}/`)
+                        : activeSegment === tab.href || pathname === tabPath;
+                    
                     const Icon = tab.icon;
 
                     const gradientClass =
-                        TAB_GRADIENT_CLASSES[tab.href] ?? 'from-gray-500 to-gray-600 border-gray-700';
+                        TAB_GRADIENT_CLASSES[tab.label] ?? 'from-gray-500 to-gray-600 border-gray-700';
 
                     return (
                         <Link
