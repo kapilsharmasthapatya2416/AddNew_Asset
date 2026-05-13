@@ -14,7 +14,7 @@ describe('DepartmentMasterForm', () => {
   });
 
   it('renders add department form correctly', () => {
-    render(<DepartmentMasterForm id={null} />);
+    render(<DepartmentMasterForm open={true} onClose={vi.fn()} editingDepartment={null} />);
     expect(screen.getByText('form.title.add')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('form.fields.departmentNamePlaceholder')).toBeInTheDocument();
   });
@@ -29,13 +29,13 @@ describe('DepartmentMasterForm', () => {
       departmentDescription: 'IT Dept',
       isActive: true,
     };
-    render(<DepartmentMasterForm id={1} editingDepartment={initialData} />);
+    render(<DepartmentMasterForm open={true} onClose={vi.fn()} editingDepartment={initialData} />);
     expect(screen.getByText('form.title.edit')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Information Technology')).toBeInTheDocument();
   });
 
   it('shows validation errors for empty required fields on submit', async () => {
-    render(<DepartmentMasterForm id={null} />);
+    render(<DepartmentMasterForm open={true} onClose={vi.fn()} editingDepartment={null} />);
     const submitButton = screen.getByText('form.buttons.save');
     await user.click(submitButton);
 
@@ -47,7 +47,7 @@ describe('DepartmentMasterForm', () => {
   });
 
   it('handles successful department creation', async () => {
-    render(<DepartmentMasterForm id={null} />);
+    render(<DepartmentMasterForm open={true} onClose={vi.fn()} editingDepartment={null} />);
 
     fireEvent.change(screen.getByPlaceholderText('form.fields.departmentCodePlaceholder'), { target: { value: 'NEW01' } });
     fireEvent.change(screen.getByPlaceholderText('form.fields.departmentNamePlaceholder'), { target: { value: 'New Dept' } });
@@ -69,7 +69,7 @@ describe('DepartmentMasterForm', () => {
       error: 'API Error',
     });
 
-    render(<DepartmentMasterForm id={null} />);
+    render(<DepartmentMasterForm open={true} onClose={vi.fn()} editingDepartment={null} />);
     
     // Fill required fields
     fireEvent.change(screen.getByPlaceholderText('form.fields.departmentCodePlaceholder'), { target: { value: 'ERR01' } });

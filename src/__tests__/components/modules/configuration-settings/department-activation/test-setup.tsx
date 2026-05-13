@@ -19,7 +19,7 @@ vi.mock('sonner', () => ({
 
 // Mock actions
 vi.mock('@/app/[locale]/configuration-settings/department-activation/action', () => ({
-    toggleDepartmentActivation: vi.fn().mockResolvedValue({ success: true }),
-    toggleModuleActivation: vi.fn().mockResolvedValue({ success: true }),
-    toggleAllDepartments: vi.fn().mockResolvedValue({ success: true }),
+    updateDepartmentStatusAction: vi.fn().mockResolvedValue({ success: true }),
+    updateModuleStatusAction: vi.fn().mockResolvedValue({ success: true }),
+    bulkUpdateDepartmentStatusAction: vi.fn().mockResolvedValue({ success: true }),
 }));

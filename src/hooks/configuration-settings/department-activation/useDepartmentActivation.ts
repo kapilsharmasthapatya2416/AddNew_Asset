@@ -25,7 +25,7 @@ export function useDepartmentActivation({
 
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [isPending, startTransition] = useTransition();
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const departmentIdParam = searchParams.get('departmentId');
   const selectedDepartment = departmentIdParam 
@@ -96,9 +96,11 @@ export function useDepartmentActivation({
 
         const result = await updateDepartmentStatusAction(formData);
         if (result.success) {
-          toast.success(`${currentDepartment.departmentName} ${newIsActive ? 'activated' : 'deactivated'}`);
+          toast.success(`${currentDepartment.departmentName} ${t(`messages.${newIsActive ? 'activated' : 'deactivated'}`)}`);
         } else {
-          toast.error(result.error || "Failed to update department");
+          // Rollback on failure
+          addOptimisticDepartmentUpdate({ id, isActive: !newIsActive });
+          toast.error(result.error || t("messages.departmentUpdateError"));
         }
       })();
     });
@@ -134,7 +136,7 @@ export function useDepartmentActivation({
         const successCount = results.length - failCount;
 
         if (failCount > 0) {
-          toast.warning(`Updated ${successCount} departments, ${failCount} failed`);
+          toast.warning(t('messages.bulkUpdateResult', { successCount, failCount }));
         } else {
           toast.success(activate ? t('messages.activateAllSuccess') : t('messages.deactivateAllSuccess'));
         }
@@ -166,12 +168,12 @@ export function useDepartmentActivation({
 
             const result = await updateModuleStatusAction(formData);
             if (result.success) {
-                toast.success(`${module.moduleName} updated successfully`);
+                toast.success(`${module.moduleName} ${t('messages.moduleUpdateSuccess')}`);
             } else {
                 setLocalModules(prev =>
                     prev.map(m => m.moduleId === module.moduleId ? { ...m, isActive: module.isActive } : m)
                 );
-                toast.error(result.error || "Failed to update module");
+                toast.error(result.error || t("messages.moduleUpdateFailed"));
             }
         })();
     });

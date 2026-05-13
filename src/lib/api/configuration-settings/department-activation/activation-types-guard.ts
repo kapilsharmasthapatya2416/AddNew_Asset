@@ -18,7 +18,7 @@ export function normalizeDepartment(data: Record<string, unknown>): Department {
         departmentNameLocal: cleanString(data.departmentNameLocal ?? data.DepartmentNameLocal),
         departmentIcon: cleanString(data.departmentIcon ?? data.DepartmentIcon),
         departmentDescription: cleanString(data.departmentDescription ?? data.DepartmentDescription),
-        isActive: parseBoolean(data.isActive ?? data.IsActive),
+        isActive: parseBoolean(data.isActive ?? data.IsActive ?? data.isStatus ?? data.Status),
     };
 }
 
@@ -33,6 +33,6 @@ export function normalizeModule(data: Record<string, unknown>): Module {
         moduleIcon: cleanString(data.moduleIcon ?? data.ModuleIcon),
         moduleLabel: cleanString(data.moduleLabel ?? data.ModuleLabel),
         moduleDescription: cleanString(data.moduleDescription ?? data.ModuleDescription),
-        isActive: parseBoolean(data.isActive ?? data.IsActive),
+        isActive: parseBoolean(data.isActive ?? data.IsActive ?? data.isStatus ?? data.Status),
     };
 }

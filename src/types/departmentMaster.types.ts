@@ -57,3 +57,5 @@ export interface DepartmentMasterProps {
     initialTotalPages: number;
     initialSearchTerm?: string;
 }
+
+export type { PagedResponse } from "./common.types";

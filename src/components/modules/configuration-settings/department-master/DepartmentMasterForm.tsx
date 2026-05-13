@@ -13,6 +13,7 @@ import { useDepartmentForm } from "@/hooks/configuration-settings/department-mas
 import { DepartmentMasterFormProps } from "@/types/departmentMaster.types";
 
 export default function DepartmentMasterForm({
+    open: initialOpen,
     editingDepartment,
     onSuccess,
     onClose,
@@ -32,7 +33,7 @@ export default function DepartmentMasterForm({
         isEdit,
         t,
         tCommon,
-    } = useDepartmentForm({ editingDepartment, onSuccess, onClose });
+    } = useDepartmentForm({ initialOpen, editingDepartment, onSuccess, onClose });
 
     const showError = (field: keyof typeof formData) =>
         (submittedOnce || touched[field]) && !!errors[field];

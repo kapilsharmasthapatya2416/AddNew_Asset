@@ -32,8 +32,7 @@ export function useDepartmentSearch({
     if (urlStatus !== selectedStatus) {
       setSelectedStatus(urlStatus);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams, search, selectedStatus]);
 
   const currentSearchTerm = searchParams.get("search") || "";
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

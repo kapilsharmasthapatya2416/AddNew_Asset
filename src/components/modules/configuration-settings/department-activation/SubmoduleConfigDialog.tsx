@@ -66,7 +66,7 @@ export function SubmoduleConfigDialog({
                                         </div>
                                         <ToggleSwitch checked={module.isActive} onChange={() => onToggleModule(module)} showPopup={false} />
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-1">{module.moduleDescription || 'No description'}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{module.moduleDescription || t('card.noDescription')}</p>
                                 </div>
                             </div>
                         </div>

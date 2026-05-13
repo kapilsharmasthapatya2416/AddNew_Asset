@@ -1,5 +1,4 @@
 import { vi } from 'vitest';
-import type React from 'react';
 
 // Mock next/navigation
 export const nextNavMocks = {

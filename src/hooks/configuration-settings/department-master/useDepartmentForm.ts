@@ -8,12 +8,13 @@ import { saveDepartmentMasterAction } from "@/app/[locale]/configuration-setting
 import { DepartmentMaster, DepartmentMasterFormData } from "@/types/departmentMaster.types";
 
 interface UseDepartmentFormProps {
+  initialOpen?: boolean;
   editingDepartment: DepartmentMaster | null;
   onSuccess?: () => void;
   onClose?: () => void;
 }
 
-export function useDepartmentForm({ editingDepartment, onSuccess, onClose }: UseDepartmentFormProps) {
+export function useDepartmentForm({ initialOpen = true, editingDepartment, onSuccess, onClose }: UseDepartmentFormProps) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("departmentMaster");
@@ -22,7 +23,7 @@ export function useDepartmentForm({ editingDepartment, onSuccess, onClose }: Use
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedOnce, setSubmittedOnce] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(initialOpen);
 
   const [formData, setFormData] = useState<DepartmentMasterFormData>({
     departmentCode: "",

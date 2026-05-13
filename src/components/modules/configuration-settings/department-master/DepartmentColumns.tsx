@@ -52,7 +52,7 @@ export function getDepartmentColumns(
             align: "center",
             render: (value: unknown) => (
                 <StatusBadge 
-                    value={value} 
+                    value={value as boolean} 
                     activeLabel={tCommon("status.active")} 
                     inactiveLabel={tCommon("status.inactive")} 
                 />

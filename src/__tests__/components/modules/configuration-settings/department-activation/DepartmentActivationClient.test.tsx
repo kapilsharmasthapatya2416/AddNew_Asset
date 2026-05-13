@@ -12,6 +12,8 @@ const mockDepartments = [
     departmentCode: 'DEPT01',
     departmentName: 'IT Department',
     departmentNameLocal: 'आईटी विभाग',
+    departmentIcon: 'it-icon',
+    departmentDescription: 'IT Dept Desc',
     isActive: true,
   },
   {
@@ -19,6 +21,8 @@ const mockDepartments = [
     departmentCode: 'DEPT02',
     departmentName: 'HR Department',
     departmentNameLocal: 'एचआर विभाग',
+    departmentIcon: 'hr-icon',
+    departmentDescription: 'HR Dept Desc',
     isActive: false,
   },
 ];
@@ -27,7 +31,13 @@ const mockModules = [
   {
     moduleId: 101,
     departmentId: 1,
+    departmentName: 'IT Department',
+    moduleCode: 'MOD01',
     moduleName: 'Module 1',
+    moduleNameLocal: 'मॉड्यूल 1',
+    moduleIcon: 'mod-icon',
+    moduleLabel: 'Label 1',
+    moduleDescription: 'Module 1 Desc',
     isActive: true,
   },
 ];
@@ -64,7 +74,7 @@ describe('DepartmentActivationClient', () => {
     await user.click(toggles[1]); // HR Department toggle
 
     await waitFor(() => {
-      expect(activationActions.toggleDepartmentActivation).toHaveBeenCalledWith(2, true);
+      expect(activationActions.updateDepartmentStatusAction).toHaveBeenCalled();
     });
   });
 
@@ -75,7 +85,15 @@ describe('DepartmentActivationClient', () => {
     await user.click(activateAllButton);
 
     await waitFor(() => {
-      expect(activationActions.toggleAllDepartments).toHaveBeenCalledWith(true);
+      // It calls updateDepartmentStatusAction for the only inactive department (HR)
+      expect(activationActions.updateDepartmentStatusAction).toHaveBeenCalledTimes(1);
+      
+      const calls = vi.mocked(activationActions.updateDepartmentStatusAction).mock.calls;
+      const formData = calls[0][0];
+      expect(formData).toBeInstanceOf(FormData);
+      expect(formData.get('departmentId')).toBe('2');
+      expect(formData.get('isActive')).toBe('true');
+      
       expect(mockToastSuccess).toHaveBeenCalled();
     });
   });
