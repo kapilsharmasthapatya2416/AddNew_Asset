@@ -34,7 +34,7 @@ export function useDepartmentSearch({
   }, [searchParams, search, selectedStatus]);
 
   const currentSearchTerm = searchParams.get("search") || "";
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const updateUrl = useCallback((newSearch: string, newStatus: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -52,8 +52,7 @@ export function useDepartmentSearch({
     });
   }, [searchParams, pageSize, pathname, router, startTransition]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
+  const handleSearchChange = (val: string) => {
     setSearch(val);
 
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);

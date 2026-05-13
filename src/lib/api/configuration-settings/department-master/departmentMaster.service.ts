@@ -1,5 +1,6 @@
 import { apiClient } from "@/services/api.service";
-import { DepartmentMaster, DepartmentMasterFormModel, PagedResponse } from "@/types/departmentMaster.types";
+import { DepartmentMaster, DepartmentMasterFormModel } from "@/types/departmentMaster.types";
+import { PagedResponse } from "@/types/common.types";
 import { normalizeDepartmentMaster } from "./department-types-guard";
 
 const API_ENDPOINTS = {
