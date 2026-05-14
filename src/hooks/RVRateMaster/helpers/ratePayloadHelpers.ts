@@ -72,8 +72,9 @@ export function buildPayloadFromMatrix(
       );
       
       // For new rates (inserts), skip if value is 0 or negative
-      // For existing rates (updates), allow 0 values
-      if (!existing && Number(val) <= 0) return;
+      // For existing rates (updates), allow 0 values, but always skip negatives
+      if (Number(val) < 0) return;
+      if (!existing && Number(val) === 0) return;
       
       const payload: RatePayload = {
         taxZoneId: Number(row.taxZoneId) || Number(zoneNoVal),

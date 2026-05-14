@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react";
+import { renderHook, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useLazyDropdownData } from "@/hooks/RVRateMaster/useLazyDropdownData";
 
@@ -49,7 +49,9 @@ describe("useLazyDropdownData", () => {
 
     expect(result.current.isLoadingZones).toBe(false);
     
-    result.current.loadZoneOptions();
+    await act(async () => {
+      result.current.loadZoneOptions();
+    });
 
     await waitFor(() => {
       expect(result.current.zoneOptions).toEqual(mockZoneOptions);
@@ -64,7 +66,9 @@ describe("useLazyDropdownData", () => {
     
     const { result } = renderHook(() => useLazyDropdownData());
 
-    result.current.loadUseGroupOptions();
+    await act(async () => {
+      result.current.loadUseGroupOptions();
+    });
 
     await waitFor(() => {
       expect(result.current.useGroupOptions).toEqual(mockUseGroupOptions);
@@ -78,7 +82,9 @@ describe("useLazyDropdownData", () => {
     
     const { result } = renderHook(() => useLazyDropdownData());
 
-    result.current.loadAssessmentYears();
+    await act(async () => {
+      result.current.loadAssessmentYears();
+    });
 
     await waitFor(() => {
       expect(result.current.assessmentYears).toEqual(mockAssessmentYears);
@@ -92,13 +98,17 @@ describe("useLazyDropdownData", () => {
     
     const { result } = renderHook(() => useLazyDropdownData());
 
-    result.current.loadZoneOptions();
+    await act(async () => {
+      result.current.loadZoneOptions();
+    });
     await waitFor(() => {
       expect(result.current.zoneOptions).toEqual(mockZoneOptions);
     });
 
     // Call again
-    result.current.loadZoneOptions();
+    await act(async () => {
+      result.current.loadZoneOptions();
+    });
     
     // Should still only be called once
     expect(getZoneOptions).toHaveBeenCalledTimes(1);
@@ -131,7 +141,9 @@ describe("useLazyDropdownData", () => {
     
     const { result } = renderHook(() => useLazyDropdownData());
 
-    result.current.loadUseGroupOptions();
+    await act(async () => {
+      result.current.loadUseGroupOptions();
+    });
 
     await waitFor(() => {
       expect(result.current.isLoadingUseGroups).toBe(false);

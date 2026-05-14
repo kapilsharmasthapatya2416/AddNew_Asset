@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Building2 } from "lucide-react";
 import { Drawer } from "@/components/common/Drawer";
@@ -25,11 +26,15 @@ export default function AddRateDrawer({
   const t = useTranslations("ptis_RVRateMaster");
 
   // Read filter values from URL params for persistence on reload
-  const filterValues = {
-    zone: searchParams.get('zone') || undefined,
-    useGroup: searchParams.get('useGroup') || undefined,
-    year: searchParams.get('year') || searchParams.get('assessmentYear') || undefined,
-  };
+  const zoneParam = searchParams.get('zone');
+  const useGroupParam = searchParams.get('useGroup');
+  const yearParam = searchParams.get('year');
+  const assessmentYearParam = searchParams.get('assessmentYear');
+  const filterValues = useMemo(() => ({
+    zone: zoneParam || undefined,
+    useGroup: useGroupParam || undefined,
+    year: yearParam || assessmentYearParam || undefined,
+  }), [zoneParam, useGroupParam, yearParam, assessmentYearParam]);
 
   const handleClose = () => {
     router.replace(`/${locale}/property-tax/rate-master/rvratemaster`);

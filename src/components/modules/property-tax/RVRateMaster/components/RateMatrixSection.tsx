@@ -15,7 +15,7 @@ import {
 } from "./rateMatrixHelpers";
 
 // Maximum allowed rate value
-const MAX_RATE_VALUE = 10000;
+const MAX_RATE_VALUE = 99999;
 
 type MatrixRow = {
   id: number;

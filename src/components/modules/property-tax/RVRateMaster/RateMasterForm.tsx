@@ -114,7 +114,6 @@ const RateMasterForm: React.FC<RateMasterFormProps> = ({ id, zoneOptions, useGro
             assessmentYears={finalAssessmentYears}
             assessmentYearRanges={assessmentYearRanges}
             errors={errors}
-            isEditMode={isEditMode}
             allFiltersSelected={allFiltersSelected}
             existingRateFound={existingRateFound}
             isCheckingRates={isCheckingRates}
