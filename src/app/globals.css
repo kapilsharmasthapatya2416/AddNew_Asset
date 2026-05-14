@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-geist-sans: 'Inter', 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-geist-mono: 'SFMono-Regular', 'Menlo', 'monospace';
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-devanagari: 'Noto Sans Devanagari', system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), var(--font-devanagari), system-ui, sans-serif;
+}
+
+:root {
+  --input-foreground: #050505;
+  --input-background: #f5f7fb;
+}
+
+input,
+textarea,
+select {
+  color: var(--input-foreground);
+  background-color: var(--input-background);
+  caret-color: var(--foreground);
+}
