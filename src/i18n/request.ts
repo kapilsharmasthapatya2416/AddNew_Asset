@@ -41,10 +41,10 @@ export default getRequestConfig(async ({ locale }) => {
     bankMasterMessages,
     screenAccessMessages,
     appartmentQCMessages,
-    modulesMessages,
     departmentMasterMessages,
     departmentActivationMessages,
     homeMessages,
+    modulesMessages,
   ] = await Promise.all([
     import(`./locales/${validatedLocale}/common.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/dashboard.json`).then((m) => m.default),
@@ -73,7 +73,6 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/bank-master.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/screenAccess.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/appartmentQC.json`).catch(() => ({})).then((m) => m.default || m),
-    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
     import(`./locales/${validatedLocale}/departmentMaster.json`)
       .catch(() => ({}))
       .then((m) => m.default || m),
@@ -83,6 +82,7 @@ export default getRequestConfig(async ({ locale }) => {
     import(`./locales/${validatedLocale}/home.json`)
       .catch(() => ({}))
       .then((m) => m.default || m),
+    import(`./locales/${validatedLocale}/modules.json`).then((m) => m.default),
   ]);
 
   return {
@@ -113,10 +113,10 @@ export default getRequestConfig(async ({ locale }) => {
       bankMaster: bankMasterMessages,
       screenAccess: screenAccessMessages,
       appartmentQC: appartmentQCMessages,
-      modules: modulesMessages,
       departmentMaster: departmentMasterMessages,
       departmentActivation: departmentActivationMessages,
       home: homeMessages,
+      modules: modulesMessages,
     },
   };
 });

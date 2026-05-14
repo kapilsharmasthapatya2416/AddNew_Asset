@@ -16,7 +16,6 @@ export async function fetchDepartmentsPagedAction(
   try {
     return await getDepartmentMastersPaged(pageNumber, pageSize, searchTerm);
   } catch (error) {
-    console.error("fetchDepartmentsPagedAction error:", error);
     throw error;
   }
 }
@@ -27,7 +26,6 @@ export async function getDepartmentByIdAction(id: number): Promise<DepartmentMas
     if (!result) throw new Error("Department not found");
     return result;
   } catch (error) {
-    console.error("getDepartmentByIdAction error:", error);
     throw error;
   }
 }
