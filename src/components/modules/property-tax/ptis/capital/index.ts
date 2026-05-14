@@ -1,1 +1,0 @@
-export { CapitalTaxDetailsSection } from './CapitalTaxDetailSection';
