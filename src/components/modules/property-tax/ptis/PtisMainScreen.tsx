@@ -9,18 +9,13 @@ const { TabList, Tab } = Tabs;
 
 import { DualMethodSection } from '@/components/modules/property-tax/ptis/dualmethod';
 import AppartmentQCSection from '@/components/modules/property-tax/ptis/appartmentQC/AppartmentQCSection';
-import { OldDetailsData } from '@/types/ptis.types';
 import { PtisSearchParams } from '@/lib/utils/params';
 import type { DualMethodSectionData } from '@/components/modules/property-tax/ptis/dualmethod/dual-method-data';
 import type { ApartmentQCDetail, PagedResponse } from '@/types/apartmentQC.types';
-import type { RateableValueResponse } from '@/types/rateableValue.types';
-import type { CapitalValueResponse } from '@/types/capitalValue.types';
-import type { ActionResult } from '@/lib/utils/action-response.util';
 
 interface PtisMainScreenProps {
   locale: string;
   propertyId?: number;
-  initialOldDetails: OldDetailsData;
   ptisParams: PtisSearchParams;
   resolvedSearchParams: Record<string, string | string[] | undefined>;
   error?: string;
@@ -29,8 +24,6 @@ interface PtisMainScreenProps {
     commercial: PagedResponse<ApartmentQCDetail>;
     residential: PagedResponse<ApartmentQCDetail>;
   };
-  initialRateableData?: ActionResult<RateableValueResponse> | null;
-  initialCapitalData?: ActionResult<CapitalValueResponse> | null;
   initialDualSectionData?: DualMethodSectionData;
   wardId?: number | string;
   propertyNo?: string;
@@ -43,14 +36,11 @@ interface PtisMainScreenProps {
 const PtisMainScreen: React.FC<PtisMainScreenProps> = (props) => {
   const {
     locale,
-    initialRateableData,
-    initialCapitalData,
     initialDualSectionData,
     initialApartmentData,
     wardId,
     propertyNo,
     ptisParams,
-    initialOldDetails,
     propertyId,
     resolvedSearchParams,
     rateableSection,
@@ -64,18 +54,6 @@ const PtisMainScreen: React.FC<PtisMainScreenProps> = (props) => {
   const t = useTranslations('ptis');
 
   const activeTab = ptisParams.tab || 'rateable';
-
-  // Extract data from ActionResult
-  const extractData = <T,>(actionResult: ActionResult<T> | null | undefined): T | null | undefined => {
-    if (!actionResult) return null;
-    if (typeof actionResult === 'object' && actionResult !== null && 'success' in actionResult && 'data' in actionResult) {
-      return actionResult.data;
-    }
-    return actionResult as T;
-  };
-
-  const capitalData = extractData(initialCapitalData);
-  const rateableData = extractData(initialRateableData);
 
   const handleTabChange = (value: string | number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -142,7 +120,6 @@ const PtisMainScreen: React.FC<PtisMainScreenProps> = (props) => {
                 <div className="p-0.5 sm:p-1">
                   <DualMethodSection
                     propertyId={propertyId}
-                    initialOldDetails={initialOldDetails}
                     searchParams={resolvedSearchParams as Record<string, string | string[] | undefined>}
                     locale={locale}
                     initialData={initialDualSectionData}

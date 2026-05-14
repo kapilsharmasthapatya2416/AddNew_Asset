@@ -1,21 +1,10 @@
 'use client';
 
 import React from 'react';
-import { RateableValueResponse } from '@/types/rateableValue.types';
-import { CapitalValueResponse } from '@/types/capitalValue.types';
-import { OldDetailsData } from '@/types/ptis.types';
 import { useTranslations } from 'next-intl';
 import { PTIS_UI_CLASSES } from '@/components/modules/property-tax/ptis/constants';
 
 interface Props {
-  propertyId?: number;
-  initialRateableData: RateableValueResponse | null;
-  initialCapitalData: CapitalValueResponse | null;
-  initialOldDetails: OldDetailsData;
-  rateableError?: string;
-  capitalError?: string;
-  searchParams: Record<string, string | string[] | undefined>;
-  locale: string;
   rateableSection?: React.ReactNode;
   capitalSection?: React.ReactNode;
 }
@@ -25,14 +14,6 @@ interface Props {
  * Receives Server Components as props to avoid client-side translation errors.
  */
 export const DualMethodFloorDetails: React.FC<Props> = ({
-  propertyId,
-  initialRateableData,
-  initialCapitalData,
-  initialOldDetails,
-  rateableError,
-  capitalError,
-  searchParams,
-  locale,
   rateableSection,
   capitalSection,
 }) => {

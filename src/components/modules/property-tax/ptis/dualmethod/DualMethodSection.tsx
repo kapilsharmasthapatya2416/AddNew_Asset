@@ -9,14 +9,12 @@ import { DualMethodComparisonTable } from './components/ComparisonTable';
 import { DualMethodSummary } from './components/DualMethodSummary';
 import { DualMethodFloorDetails } from './components/DualMethodFloorDetails';
 import { buildPtisUrl } from '@/lib/utils/params';
-import { OldDetailsData } from '@/types/ptis.types';
 import { PTIS_UI_CLASSES } from '@/components/modules/property-tax/ptis/constants';
 import { DUAL_METHOD_QUERY_PARAMS } from './constants';
 import type { DualMethodSectionData } from './dual-method-data';
 
 interface DualMethodSectionProps {
   propertyId?: number;
-  initialOldDetails: OldDetailsData;
   searchParams: Record<string, string | string[] | undefined>;
   locale: string;
   initialData?: DualMethodSectionData;
@@ -26,7 +24,6 @@ interface DualMethodSectionProps {
 
 export const DualMethodSection: React.FC<DualMethodSectionProps> = ({
   propertyId,
-  initialOldDetails,
   searchParams,
   locale,
   initialData,
@@ -45,10 +42,6 @@ export const DualMethodSection: React.FC<DualMethodSectionProps> = ({
 
   const {
     initialDualMethodData,
-    initialRateableData,
-    initialCapitalData,
-    rateableError,
-    capitalError,
     finalErrorMessage,
     oldRv,
     oldTax,
@@ -103,14 +96,6 @@ export const DualMethodSection: React.FC<DualMethodSectionProps> = ({
 
       {showFloorDetails && (
         <DualMethodFloorDetails
-          locale={locale}
-          propertyId={propertyId}
-          initialRateableData={initialRateableData}
-          initialCapitalData={initialCapitalData}
-          rateableError={rateableError}
-          capitalError={capitalError}
-          initialOldDetails={initialOldDetails}
-          searchParams={searchParams}
           rateableSection={rateableSection}
           capitalSection={capitalSection}
         />

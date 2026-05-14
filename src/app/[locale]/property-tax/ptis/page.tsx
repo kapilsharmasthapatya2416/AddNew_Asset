@@ -318,19 +318,18 @@ export default async function PtisPage({ params, searchParams }: PtisPageProps) 
       <PtisMainScreen
         locale={locale}
         propertyId={resolvedPropertyId}
-        initialOldDetails={initialData.oldDetails || defaultOldDetails}
         ptisParams={ptisParams}
         resolvedSearchParams={resolvedSearchParams}
         error={sanitizedInitialError}
         initialApartmentData={apartmentData}
-        initialRateableData={rateableResult}
-        initialCapitalData={capitalResult}
         initialDualSectionData={dualSectionData}
         wardId={resolvedWardId}
         propertyNo={propertyNo}
         rateableSection={
           <RateableTaxDetailsSection
             rateableData={rateableResult?.success ? rateableResult.data : null}
+            error={!rateableResult?.success ? rateableResult?.error : undefined}
+            hasFetchedData={rateableResult != null}
             oldDetails={initialData.oldDetails || defaultOldDetails}
             propertyId={resolvedPropertyId}
             searchParams={resolvedSearchParams as Record<string, string | string[] | undefined>}
@@ -340,6 +339,8 @@ export default async function PtisPage({ params, searchParams }: PtisPageProps) 
         capitalSection={
           <CapitalTaxDetailsSection
             capitalData={capitalResult?.success ? capitalResult.data : null}
+            error={!capitalResult?.success ? capitalResult?.error : undefined}
+            hasFetchedData={capitalResult != null}
             oldDetails={initialData.oldDetails || defaultOldDetails}
             propertyId={resolvedPropertyId}
             searchParams={resolvedSearchParams as Record<string, string | string[] | undefined>}
@@ -349,6 +350,8 @@ export default async function PtisPage({ params, searchParams }: PtisPageProps) 
         dualRateableSection={
           <RateableTaxDetailsSection
             rateableData={dualSectionData?.initialRateableData || null}
+            error={dualSectionData?.rateableError}
+            hasFetchedData={dualSectionData != null}
             oldDetails={initialData.oldDetails || defaultOldDetails}
             propertyId={resolvedPropertyId}
             searchParams={resolvedSearchParams as Record<string, string | string[] | undefined>}
@@ -359,6 +362,8 @@ export default async function PtisPage({ params, searchParams }: PtisPageProps) 
         dualCapitalSection={
           <CapitalTaxDetailsSection
             capitalData={dualSectionData?.initialCapitalData || null}
+            error={dualSectionData?.capitalError}
+            hasFetchedData={dualSectionData != null}
             oldDetails={initialData.oldDetails || defaultOldDetails}
             propertyId={resolvedPropertyId}
             searchParams={resolvedSearchParams as Record<string, string | string[] | undefined>}
