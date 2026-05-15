@@ -27,6 +27,7 @@ const extraServerActionOrigins = [
 ];
 
 const nextConfig: NextConfig = {
+  distDir: 'dist',
   experimental: {
     serverActions: {
       allowedOrigins: extraServerActionOrigins,
