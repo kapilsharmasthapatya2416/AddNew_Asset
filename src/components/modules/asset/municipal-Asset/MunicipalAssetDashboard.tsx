@@ -16,6 +16,8 @@ import {
   BadgeInfo
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Drawer } from '@/components/common/Drawer';
+import { AssetCategoryType } from './add-New-Asset/identification/AssetCategoryType';
 
 // Mock data to match Figma logic
 const mockMunicipalAssets = [
@@ -113,8 +115,29 @@ export default function MunicipalAssetDashboard() {
     },
   };
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerData, setDrawerData] = useState({
+    category: '',
+    assetType: ''
+  });
+
   const handleAddNew = () => {
-    router.push('/asset/municipal-Asset/add-New-Asset/identification');
+    setIsDrawerOpen(true);
+  };
+
+  const handleDrawerChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setDrawerData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleDrawerSubmit = () => {
+    if (drawerData.category && drawerData.assetType) {
+      const params = new URLSearchParams({
+        category: drawerData.category,
+        assetType: drawerData.assetType
+      });
+      router.push(`/asset/municipal-Asset/add-New-Asset/basic-Info?${params.toString()}`);
+    }
   };
 
   return (
@@ -307,6 +330,48 @@ export default function MunicipalAssetDashboard() {
           })}
         </div>
       </div>
+      
+      {/* ── ADD ASSET DRAWER ── */}
+      <Drawer
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        title={
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-600 p-1.5 rounded-lg">
+              <Plus className="size-4 text-white" />
+            </div>
+            <span className="text-sm font-bold text-slate-800 uppercase tracking-wide">
+              Add New Asset
+            </span>
+          </div>
+        }
+        footer={
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsDrawerOpen(false)}
+              className="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDrawerSubmit}
+              disabled={!drawerData.category || !drawerData.assetType}
+              className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                drawerData.category && drawerData.assetType
+                  ? "bg-blue-600 text-white shadow-lg hover:bg-blue-700 shadow-blue-200"
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
+              }`}
+            >
+              Start Registration
+              <ChevronRight className="size-4" />
+            </button>
+          </div>
+        }
+      >
+        <div className="p-4 bg-slate-50/50 min-h-full">
+          <AssetCategoryType formData={drawerData} onChange={handleDrawerChange} />
+        </div>
+      </Drawer>
     </div>
   );
 }

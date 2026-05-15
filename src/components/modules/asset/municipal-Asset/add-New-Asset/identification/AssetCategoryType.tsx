@@ -4,12 +4,9 @@ import React from "react";
 import { Select, Card, CardHeader, CardTitle, CardContent } from "@/components/common";
 import { ClipboardList, Search } from "lucide-react";
 
-interface AssetCategoryTypeProps {
-  formData: any;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-}
+import { AssetWizardStepProps } from "@/types/asset-wizard.types";
 
-export function AssetCategoryType({ formData, onChange }: AssetCategoryTypeProps) {
+export function AssetCategoryType({ formData, onChange }: AssetWizardStepProps) {
   const categoryToTypes: Record<string, { label: string; value: string }[]> = {
     building: [
       { label: "Municipal Office", value: "Municipal Office" },
@@ -85,6 +82,24 @@ export function AssetCategoryType({ formData, onChange }: AssetCategoryTypeProps
              <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest px-1">Specialized Sub-Type</p>
         </div>
       </CardContent>
+
+      {/* Validation Message */}
+      <div className="px-8 pb-6">
+        <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 ${
+          formData.category && formData.assetType 
+            ? "bg-emerald-50 border-emerald-100 text-emerald-800" 
+            : "bg-amber-50 border-amber-100 text-amber-800"
+        }`}>
+          <div className={`size-2 rounded-full ${
+            formData.category && formData.assetType ? "bg-emerald-500" : "bg-amber-500 animate-pulse"
+          }`} />
+          <p className="text-[10px] font-black uppercase tracking-widest">
+            {formData.category && formData.assetType 
+              ? "Selection Complete: You can now proceed to Basic Info" 
+              : "Action Required: Select Category and Type to unlock registration steps"}
+          </p>
+        </div>
+      </div>
     </Card>
   );
 }

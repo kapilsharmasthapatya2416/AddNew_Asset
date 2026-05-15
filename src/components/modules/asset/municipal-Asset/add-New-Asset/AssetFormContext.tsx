@@ -2,59 +2,55 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface AssetFormData {
-  category: string;
-  assetType: string;
-  assetName: string;
-  assetCode: string;
-  [key: string]: any;
-}
+import { AssetFormData, AssetFormContextType } from "@/types/asset-wizard.types";
 
-interface AssetFormContextType {
-  formData: AssetFormData;
-  updateFormData: (data: Partial<AssetFormData>) => void;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  handleToggleChange: (name: string, checked: boolean) => void;
-}
+import { useSearchParams } from "next/navigation";
 
 const AssetFormContext = createContext<AssetFormContextType | undefined>(undefined);
 
 export function AssetFormProvider({ children }: { children: ReactNode }) {
-  const [formData, setFormData] = useState<AssetFormData>({
-    category: "building",
-    assetType: "Municipal Office",
-    assetName: "",
-    assetCode: "BLD-2024-001",
-    propertyNumber: "",
-    upicId: "",
-    zone: "",
-    ward: "",
-    department: "",
-    status: "active",
-    operationalControl: "self",
-    inChargeName: "",
-    inChargeDesignation: "",
-    inChargeMobile: "",
-    inChargeEmail: "",
-    officeExtension: "",
-    fullAddress: "",
-    locality: "",
-    landmark: "",
-    pinCode: "",
-    latitude: "",
-    longitude: "",
-    // Legal
-    ownershipType: "municipal",
-    acquisitionMethod: "purchase",
-    possessionDate: "",
-    agreementNumber: "",
-    // Furniture (initialize common ones)
-    officeTables: 0,
-    executiveChairs: 0,
-    // Valuation
-    landValue: 0,
-    buildingValue: 0,
-    totalValue: 0,
+  const searchParams = useSearchParams();
+  
+  const [formData, setFormData] = useState<AssetFormData>(() => {
+    const category = searchParams.get("category") || "building";
+    const assetType = searchParams.get("assetType") || "";
+    
+    return {
+      category,
+      assetType,
+      assetName: "",
+      assetCode: "BLD-2024-001",
+      propertyNumber: "",
+      upicId: "",
+      zone: "",
+      ward: "",
+      department: "",
+      status: "active",
+      operationalControl: "self",
+      inChargeName: "",
+      inChargeDesignation: "",
+      inChargeMobile: "",
+      inChargeEmail: "",
+      officeExtension: "",
+      fullAddress: "",
+      locality: "",
+      landmark: "",
+      pinCode: "",
+      latitude: "",
+      longitude: "",
+      // Legal
+      ownershipType: "municipal",
+      acquisitionMethod: "purchase",
+      possessionDate: "",
+      agreementNumber: "",
+      // Furniture (initialize common ones)
+      officeTables: 0,
+      executiveChairs: 0,
+      // Valuation
+      landValue: 0,
+      buildingValue: 0,
+      totalValue: 0,
+    };
   });
 
   const updateFormData = (data: Partial<AssetFormData>) => {

@@ -4,10 +4,7 @@ import React from "react";
 import { Check } from "lucide-react";
 import type { AssetFormStepConfig } from "./assetFormSteps";
 
-interface AssetStepperProps {
-  currentStepId: number;
-  steps: AssetFormStepConfig[];
-}
+import { AssetStepperProps } from "@/types/asset-wizard.types";
 
 export function AssetStepper({
   currentStepId,

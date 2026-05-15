@@ -5,12 +5,9 @@ import { Input, Card, CardHeader, CardTitle, CardContent } from "@/components/co
 import { MapPin, Ruler } from "lucide-react";
 import { useAssetForm } from "../AssetFormContext";
 
-interface AssetLocationDetailsProps {
-  formData: any;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-}
+import { AssetWizardStepProps } from "@/types/asset-wizard.types";
 
-export function AssetLocationDetails({ formData, onChange }: AssetLocationDetailsProps) {
+export function AssetLocationDetails({ formData, onChange }: AssetWizardStepProps) {
   const isLand = formData.category === "land";
 
   return (

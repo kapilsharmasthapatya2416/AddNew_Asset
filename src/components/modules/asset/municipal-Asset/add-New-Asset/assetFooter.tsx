@@ -38,12 +38,12 @@ export function AssetFormFooter() {
   };
 
   const totalSteps = ASSET_FORM_STEPS.length; 
-  const currentStepId = currentStep?.id ?? 1; // Default to 1 if current step is not found
+  const currentStepId = currentStep?.id ?? 1;
   const isFirstStep = !previousStep;
   const isLastStep = !nextStep;
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-3 rounded-xl border border-[#CBD8EA] bg-white px-5 py-2.5 shadow-sm">
+    <div className="flex shrink-0 items-center gap-2 rounded-xl border border-[#CBD8EA] bg-white px-3 py-1.5 shadow-sm h-full">
       <button
         type="button"
         disabled={isFirstStep}

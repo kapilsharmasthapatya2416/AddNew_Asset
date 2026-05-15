@@ -4,12 +4,9 @@ import React from "react";
 import { Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/common";
 import { ClipboardList } from "lucide-react";
 
-interface AssetIdentityProps {
-  formData: any;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-}
+import { AssetWizardStepProps } from "@/types/asset-wizard.types";
 
-export function AssetIdentity({ formData, onChange }: AssetIdentityProps) {
+export function AssetIdentity({ formData, onChange }: AssetWizardStepProps) {
   return (
     <Card variant="bordered" padding="sm" className="shadow-sm border-blue-100">
       <CardHeader className="flex items-center gap-2 border-b border-blue-50 pb-3 mb-4">

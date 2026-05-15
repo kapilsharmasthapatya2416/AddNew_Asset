@@ -19,12 +19,16 @@ export function AssetStepShell({ children }: AssetStepShellProps) {
   return (
     <AssetFormProvider>
       <div className="space-y-2">
-        <AssetStepper
-          currentStepId={currentStep?.id ?? 1}
-          steps={ASSET_FORM_STEPS}
-        />
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1">
+            <AssetStepper
+              currentStepId={currentStep?.id ?? 1}
+              steps={ASSET_FORM_STEPS}
+            />
+          </div>
+          <AssetFormFooter />
+        </div>
         {children}
-        <AssetFormFooter />
       </div>
     </AssetFormProvider>
   );
