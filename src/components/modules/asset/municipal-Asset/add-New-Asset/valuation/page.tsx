@@ -9,11 +9,11 @@ export default function ValuationPage() {
   const { formData, handleInputChange, updateFormData } = useAssetForm();
 
   useEffect(() => {
-    const total = (Number(formData.landValue) || 0) + (Number(formData.buildingValue) || 0);
-    if (total !== formData.totalValue) {
-      updateFormData({ totalValue: total });
+    // For new registrations, we initialize Capital Value with Gross Value
+    if (formData.grossValue && formData.grossValue !== formData.capitalValue) {
+      updateFormData({ capitalValue: formData.grossValue });
     }
-  }, [formData.landValue, formData.buildingValue, formData.totalValue, updateFormData]);
+  }, [formData.grossValue, formData.capitalValue, updateFormData]);
 
   return (
     <div className="space-y-1 animate-in fade-in slide-in-from-bottom-4 duration-500">

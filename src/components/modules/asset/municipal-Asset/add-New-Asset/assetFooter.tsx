@@ -7,7 +7,8 @@ import {
   getNextAssetStep,
   getPreviousAssetStep,
 } from "./assetFormStepHelpers";
-import { ASSET_FORM_STEPS } from "./assetFormSteps";
+import { getFilteredSteps } from "./assetFormSteps";
+import { useAssetForm } from "./AssetFormContext";
 
 function withLocale(pathname: string, targetPath: string) {
   const segments = pathname.split("/").filter(Boolean);
@@ -19,10 +20,11 @@ export function AssetFormFooter() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { formData } = useAssetForm();
 
-  const currentStep = getCurrentAssetStep(pathname);
-  const previousStep = getPreviousAssetStep(pathname);
-  const nextStep = getNextAssetStep(pathname);
+  const currentStep = getCurrentAssetStep(pathname, formData.category);
+  const previousStep = getPreviousAssetStep(pathname, formData.category);
+  const nextStep = getNextAssetStep(pathname, formData.category);
 
   const queryString = searchParams.toString();
   const appendQuery = (url: string) => (queryString ? `${url}?${queryString}` : url);
@@ -37,7 +39,8 @@ export function AssetFormFooter() {
     router.push(appendQuery(withLocale(pathname, nextStep.path)));
   };
 
-  const totalSteps = ASSET_FORM_STEPS.length; 
+  const filteredSteps = getFilteredSteps(formData.category);
+  const totalSteps = filteredSteps.length; 
   const currentStepId = currentStep?.id ?? 1;
   const isFirstStep = !previousStep;
   const isLastStep = !nextStep;

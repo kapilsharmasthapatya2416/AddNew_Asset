@@ -4,18 +4,40 @@ import React, { useState } from "react";
 import { DocumentUploadList } from "./DocumentUploadList";
 import { AssetMediaGallery } from "./AssetMediaGallery";
 import { useAssetForm } from "../AssetFormContext";
+import { HARDCODED_ASSET_DATA } from "../constants";
 
 export default function DocumentsPage() {
-  const { updateFormData } = useAssetForm();
+  const { formData, updateFormData } = useAssetForm();
   
   // Local state for UI responsiveness, but could be synced to context
-  const [documents, setDocuments] = useState([
-    { id: "1", name: "Title Deed / Sanad", isRequired: true, isUploaded: false, fileName: "" },
-    { id: "2", name: "Possession Certificate", isRequired: true, isUploaded: false, fileName: "" },
-    { id: "3", name: "NA Order", isRequired: false, isUploaded: false, fileName: "" },
-    { id: "4", name: "Layout Approval Plan", isRequired: true, isUploaded: false, fileName: "" },
-    { id: "5", name: "Structural Audit Report", isRequired: false, isUploaded: false, fileName: "" },
-  ]);
+  const [documents, setDocuments] = useState(() => {
+    // If documents already in context, use them
+    if (formData.documents && formData.documents.length > 0) {
+        return formData.documents;
+    }
+
+    // Otherwise initialize from config
+    const categoryData = HARDCODED_ASSET_DATA[formData.category];
+    const typeData = categoryData?.types[formData.assetType];
+    
+    if (typeData?.documents) {
+        return typeData.documents.map((docName: string, index: number) => ({
+            id: String(index + 1),
+            name: docName,
+            isRequired: true,
+            isUploaded: false,
+            fileName: ""
+        }));
+    }
+
+    return [
+      { id: "1", name: "Title Deed / Sanad", isRequired: true, isUploaded: false, fileName: "" },
+      { id: "2", name: "Possession Certificate", isRequired: true, isUploaded: false, fileName: "" },
+      { id: "3", name: "NA Order", isRequired: false, isUploaded: false, fileName: "" },
+      { id: "4", name: "Layout Approval Plan", isRequired: true, isUploaded: false, fileName: "" },
+      { id: "5", name: "Structural Audit Report", isRequired: false, isUploaded: false, fileName: "" },
+    ];
+  });
 
   const [photos, setPhotos] = useState<any[]>([]);
 

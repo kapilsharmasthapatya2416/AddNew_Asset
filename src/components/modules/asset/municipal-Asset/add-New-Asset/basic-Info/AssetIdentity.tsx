@@ -17,123 +17,107 @@ export function AssetIdentity({ formData, onChange }: AssetWizardStepProps) {
           A) Asset Identity Details
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
-        <Input
-          label="Asset Name"
-          name="assetName"
-          value={formData.assetName}
-          onChange={onChange}
-          placeholder="e.g. Town Hall Headquarters"
-          required
-        />
-        <Input
-          label="Asset Code / ID"
-          name="assetCode"
-          value={formData.assetCode}
-          onChange={onChange}
-          placeholder="Auto-generated"
-          disabled
-        />
-        <Input
-          label="Property Number"
-          name="propertyNumber"
-          value={formData.propertyNumber}
-          onChange={onChange}
-          placeholder="e.g. MC/W12/P45"
-        />
-        <Input
-          label="UPIC ID"
-          name="upicId"
-          value={formData.upicId}
-          onChange={onChange}
-          placeholder="Unified Property ID"
-        />
-      </CardContent>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
+          <Input
+            label="Asset Name"
+            name="assetName"
+            value={formData.assetName}
+            onChange={onChange}
+            placeholder="e.g. Town Hall Headquarters"
+            required
+          />
+          <Input
+            label="Asset Code / ID"
+            name="assetCode"
+            value={formData.assetCode}
+            onChange={onChange}
+            placeholder="Auto-generated"
+            disabled
+          />
+          <Input
+            label="Asset No"
+            name="assetNo"
+            value={formData.assetNo}
+            onChange={onChange}
+            placeholder="e.g. MC/W12/P45"
+          />
+          
+          <Select
+            label="Asset Status"
+            name="status"
+            value={formData.status || "Active"}
+            onChange={onChange}
+            options={[
+                { label: "Active", value: "Active" },
+                { label: "In-Active", value: "Inactive" },
+                { label: "Under Maintenance", value: "UnderMaintenance" },
+                { label: "Disposed", value: "Disposed" },
+            ]}
+          />
 
-      {/* Dynamic Category Specifications */}
-      {(formData.category === "building" || formData.category === "movable" || formData.category === "infrastructure") && (
-        <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
-          {formData.category === "building" && (
-            <>
-              <Input
-                label="Built-up Area (Sq. Ft)"
-                name="builtUpArea"
-                value={formData.builtUpArea}
+          <Select
+            label="Asset Condition"
+            name="condition"
+            value={formData.condition || "Good"}
+            onChange={onChange}
+            options={[
+                { label: "Good", value: "Good" },
+                { label: "Average", value: "Average" },
+                { label: "Poor", value: "Poor" },
+            ]}
+          />
+
+          <Select
+            label="Is Revenue Generating?"
+            name="isRevenueGenerating"
+            value={formData.isRevenueGenerating || "No"}
+            onChange={onChange}
+            options={[
+                { label: "Yes", value: "Yes" },
+                { label: "No", value: "No" },
+            ]}
+          />
+
+          <div className="col-span-full mt-2 p-4 bg-slate-50/80 rounded-2xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-100">
+                 <div className={`size-3 rounded-full ${formData.parentAssetId ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
+              </div>
+              <div>
+                <h4 className="text-[11px] font-black text-slate-800 uppercase tracking-tighter">Hierarchy Linkage</h4>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Register this asset under a Parent Asset</p>
+              </div>
+            </div>
+            
+            <div className="flex-1 max-w-md">
+              <Select
+                label=""
+                name="parentAssetId"
+                value={formData.parentAssetId || ""}
                 onChange={onChange}
-                type="number"
-                required
+                options={[
+                  { label: "--- No Parent (Standalone) ---", value: "" },
+                  { label: "Main Municipal Building (ADM-001)", value: "1" },
+                  { label: "Zone 4 Office Complex (ADM-042)", value: "2" },
+                  { label: "Central Warehouse (WH-09)", value: "3" },
+                ]}
+                className="bg-white"
               />
-              <Input
-                label="Total Floors"
-                name="totalFloors"
-                value={formData.totalFloors}
-                onChange={onChange}
-                type="number"
-                required
-              />
-              <Input
-                label="Year of Construction"
-                name="constructionYear"
-                value={formData.constructionYear}
-                onChange={onChange}
-                placeholder="YYYY"
-                maxLength={4}
-              />
-            </>
-          )}
-          {formData.category === "movable" && (
-            <>
-              <Input
-                label="Make / Manufacturer"
-                name="manufacturer"
-                value={formData.manufacturer}
-                onChange={onChange}
-                placeholder="e.g. Toyota, Dell"
-              />
-              <Input
-                label="Model Number"
-                name="modelNumber"
-                value={formData.modelNumber}
-                onChange={onChange}
-                placeholder="e.g. Inspiron 5000"
-              />
-              <Input
-                label="Serial / Chassis Number"
-                name="serialNumber"
-                value={formData.serialNumber}
-                onChange={onChange}
-                placeholder="Unique ID"
-                required
-              />
-            </>
-          )}
-          {formData.category === "infrastructure" && (
-            <>
-               <Input
-                label="Infrastructure Material"
-                name="infraMaterial"
-                value={formData.infraMaterial}
-                onChange={onChange}
-                placeholder="e.g. RCC, Bitumen, Steel"
-              />
-               <Input
-                label="Installation Year"
-                name="installationYear"
-                value={formData.installationYear}
-                onChange={onChange}
-                placeholder="YYYY"
-              />
-               <Input
-                label="System Capacity"
-                name="systemCapacity"
-                value={formData.systemCapacity}
-                onChange={onChange}
-                placeholder="e.g. 500 KL, 100 KVA"
-              />
-            </>
-          )}
+            </div>
+          </div>
         </div>
-      )}
+        <div className="mt-2">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-1">Asset Description</label>
+            <textarea
+                name="assetDescription"
+                value={formData.assetDescription || ""}
+                onChange={onChange as any}
+                className="w-full min-h-[80px] p-3 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                placeholder="Enter detailed description of the asset..."
+            />
+        </div>
+      </CardContent>
     </Card>
   );
 }

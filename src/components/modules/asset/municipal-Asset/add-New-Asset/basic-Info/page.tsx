@@ -5,14 +5,16 @@ import { AssetIdentity } from "./AssetIdentity";
 import { AssetJurisdiction } from "./AssetJurisdiction";
 import { AssetContact } from "./AssetContact";
 import { AssetLocationDetails } from "./AssetLocationDetails";
+import { DynamicAttributes } from "./DynamicAttributes";
 import { useAssetForm } from "../AssetFormContext";
 
 export default function BasicInfoPage() {
-  const { formData, handleInputChange } = useAssetForm();
+  const { formData, handleInputChange, handleAttributeChange } = useAssetForm();
 
   return (
     <div className="space-y-1 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <AssetIdentity formData={formData} onChange={handleInputChange} />
+      <DynamicAttributes formData={formData} onAttributeChange={handleAttributeChange} />
       <AssetJurisdiction formData={formData} onChange={handleInputChange} />
       <AssetContact formData={formData} onChange={handleInputChange} />
       <AssetLocationDetails formData={formData} onChange={handleInputChange} />

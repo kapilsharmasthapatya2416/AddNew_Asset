@@ -22,62 +22,65 @@ export function LegalCertificates({ formData, onToggle, onChange }: LegalCertifi
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Certificate Row 1 */}
+        {/* Row 1: Building & Completion */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <CertificateEntry
-            title="Title Deed Available?"
-            toggleName="titleDeedAvailable"
-            noName="titleDeedNo"
-            dateName="titleDeedDate"
+            title="Building Plan Approval?"
+            toggleName="hasBuildingPlan"
+            noName="buildingPlanNo"
+            dateName="buildingPlanDate"
             formData={formData}
             onToggle={onToggle}
             onChange={onChange}
           />
           <CertificateEntry
-            title="Possession Certificate?"
-            toggleName="possessionCertAvailable"
-            noName="possessionCertNo"
-            dateName="possessionCertDate"
+            title="Completion Certificate?"
+            toggleName="hasCompletionCertificate"
+            noName="completionCertificateNo"
+            dateName="completionCertificateDate"
             formData={formData}
             onToggle={onToggle}
             onChange={onChange}
           />
           <CertificateEntry
-            title="NA Order Available?"
-            toggleName="naOrderAvailable"
-            noName="naOrderNo"
-            dateName="naOrderDate"
+            title="Fire Safety Certificate?"
+            toggleName="hasFireSafety"
+            noName="fireSafetyCertificateNo"
+            dateName="fireSafetyValidTill"
             formData={formData}
             onToggle={onToggle}
             onChange={onChange}
+            isDateValidTill={true}
           />
         </div>
 
-        {/* Certificate Row 2 */}
+        {/* Row 2: Lift, Insurance, Lease */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4 border-t border-slate-100">
            <CertificateEntry
-            title="7/12 Extract Available?"
-            toggleName="extract712Available"
-            noName="extract712No"
-            dateName="extract712Date"
+            title="Lift License Available?"
+            toggleName="hasLift"
+            noName="liftLicenseNo"
+            dateName="liftLicenseValidTill"
             formData={formData}
             onToggle={onToggle}
             onChange={onChange}
+            isDateValidTill={true}
           />
           <CertificateEntry
-            title="Property Card?"
-            toggleName="propertyCardAvailable"
-            noName="propertyCardNo"
-            dateName="propertyCardDate"
+            title="Asset Insurance?"
+            toggleName="hasInsurance"
+            noName="insurancePolicyNo"
+            dateName="insuranceValidTill"
             formData={formData}
             onToggle={onToggle}
             onChange={onChange}
+            isDateValidTill={true}
           />
            <CertificateEntry
-            title="Gazette Notification?"
-            toggleName="gazetteAvailable"
-            noName="gazetteNo"
-            dateName="gazetteDate"
+            title="Lease Agreement?"
+            toggleName="hasLeaseAgreement"
+            noName="leaseAgreementNo"
+            dateName="leaseAgreementDate"
             formData={formData}
             onToggle={onToggle}
             onChange={onChange}
@@ -89,7 +92,7 @@ export function LegalCertificates({ formData, onToggle, onChange }: LegalCertifi
 }
 
 function CertificateEntry({ 
-  title, toggleName, noName, dateName, formData, onToggle, onChange 
+  title, toggleName, noName, dateName, formData, onToggle, onChange, isDateValidTill 
 }: any) {
   const isAvailable = formData[toggleName];
   
@@ -114,7 +117,7 @@ function CertificateEntry({
           disabled={!isAvailable}
         />
         <Input
-          label="Date"
+          label={isDateValidTill ? "Valid Till" : "Date"}
           name={dateName}
           value={formData[dateName]}
           onChange={onChange}

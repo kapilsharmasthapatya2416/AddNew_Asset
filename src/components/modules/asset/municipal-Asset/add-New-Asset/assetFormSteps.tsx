@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { AssetFormStepConfig } from "@/types/asset-wizard.types";
 
-export const ASSET_FORM_STEPS: AssetFormStepConfig[] = [
+export const ALL_ASSET_FORM_STEPS: AssetFormStepConfig[] = [
   {
     id: 1,
     key: "basic-info",
@@ -44,3 +44,21 @@ export const ASSET_FORM_STEPS: AssetFormStepConfig[] = [
     path: "/asset/municipal-Asset/add-New-Asset/documents",
   },
 ];
+///Dynamic coming 
+export function getFilteredSteps(category: string): AssetFormStepConfig[] {
+  let filtered = [...ALL_ASSET_FORM_STEPS];
+
+  if (category === "MOVABLE") {
+    // Hide Legal and Furniture for Movable
+    filtered = filtered.filter(step => step.key !== "legal-complience" && step.key !== "furniture-fixture");
+  } else if (category === "LAND") {
+    // Hide Furniture for Land
+    filtered = filtered.filter(step => step.key !== "furniture-fixture");
+  } else if (category === "INFRASTRUCTURE") {
+    // Infrastructure usually doesn't have furniture either
+    filtered = filtered.filter(step => step.key !== "furniture-fixture");
+  }
+
+  // Re-assign IDs to maintain sequential order for the stepper
+  return filtered.map((step, index) => ({ ...step, id: index + 1 }));
+}

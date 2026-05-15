@@ -3,13 +3,16 @@
 This document explains the architectural patterns and implementation details of the dynamic "Add New Asset" registration wizard.
 
 ## 1. Overview
-The registration wizard is designed to handle hundreds of different asset types across four major categories: **Land, Building, Infrastructure, and Movable**. Each combination requires a unique set of data fields while sharing common municipal registration metadata.
+The registration wizard uses a **Hybrid Data Model** to handle the vast diversity of municipal assets. 
+*   **Fixed Fields**: Common data points (Property No, Location, Department) stored in structured tables like `AssetMaster`.
+*   **Dynamic Attributes**: Type-specific fields (e.g., "Soil Type" for Land, "Chassis No" for Vehicles) stored as flexible Attribute-Value pairs.
 
 ## 2. Core Architecture
 
-### A) Centralized State (AssetFormContext)
-We use a React Context (`AssetFormContext.tsx`) to manage the global state of the registration form.
-*   **Purpose**: Persists data across 6 different routes/steps.
+### A) Hybrid State (AssetFormContext)
+We use a React Context (`AssetFormContext.tsx`) to manage the state:
+*   **Static Object**: Stores properties that map directly to `AMS.AssetMaster`.
+*   **Attributes Object**: Stores dynamic key-value pairs that map to `AMS.AssetAttributeValue`.
 *   **Logic**: Captures selections in Step 1 (Identification) which then drive the UI behavior of Steps 2-6.
 *   **Integrity**: Automatically resets sub-type selections when the primary category changes.
 

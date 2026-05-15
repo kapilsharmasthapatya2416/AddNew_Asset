@@ -13,6 +13,8 @@ export interface AssetFormData {
   assetType: string;
   assetName: string;
   assetCode: string;
+  attributes: Record<string, any>;
+  documents: any[];
   [key: string]: any;
 }
 
@@ -21,6 +23,7 @@ export interface AssetFormContextType {
   updateFormData: (data: Partial<AssetFormData>) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleToggleChange: (name: string, checked: boolean) => void;
+  handleAttributeChange: (name: string, value: any) => void;
 }
 
 export interface AssetWizardStepProps {

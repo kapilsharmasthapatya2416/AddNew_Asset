@@ -21,11 +21,11 @@ import { AssetCategoryType } from './add-New-Asset/identification/AssetCategoryT
 
 // Mock data to match Figma logic
 const mockMunicipalAssets = [
-  { id: '1', category: 'building', status: 'Excellent', health: 95, valueLakhs: 500, subCategory: 'Municipal Office' },
-  { id: '2', category: 'building', status: 'Good', health: 80, valueLakhs: 300, subCategory: 'School' },
-  { id: '3', category: 'land', status: 'Excellent', health: 100, valueLakhs: 1000, subCategory: 'Public Park' },
-  { id: '4', category: 'infrastructure', status: 'Good', health: 75, valueLakhs: 1500, subCategory: 'Bridge' },
-  { id: '5', category: 'movable', status: 'Fair', health: 60, valueLakhs: 200, subCategory: 'Garbage Truck' },
+  { id: '1', category: 'building', status: 'Excellent', subCategory: 'Municipal Office' },
+  { id: '2', category: 'building', status: 'Good', subCategory: 'School' },
+  { id: '3', category: 'land', status: 'Excellent', subCategory: 'Public Park' },
+  { id: '4', category: 'infrastructure', status: 'Good', subCategory: 'Bridge' },
+  { id: '5', category: 'movable', status: 'Fair', subCategory: 'Garbage Truck' },
 ];
 
 export default function MunicipalAssetDashboard() {
@@ -143,7 +143,7 @@ export default function MunicipalAssetDashboard() {
   return (
     <div className="space-y-0 pb-4">
       {/* ── PAGE HEADER ── */}
-      <div className="bg-white border-b border-municipal-primary/10 px-6 pt-4 pb-0 rounded-t-xl">
+      <div className="bg-white border-b border-municipal-primary/10 px-6 pt-8 pb-0 rounded-t-xl">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <div className="relative flex-shrink-0">
@@ -208,13 +208,13 @@ export default function MunicipalAssetDashboard() {
       </div>
 
       {/* ── CATEGORY CARDS GRID ── */}
-      <div className="px-8 pt-5 pb-2">
+      <div className="px-8 pt-20 pb-0">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {assetCategories.map((category, cardIdx) => {
             const Icon = category.icon;
             const t = themes[category.id] || themes.building;
             const catAssets = mockMunicipalAssets.filter(a => a.category === category.id);
-            const totalValueCr = (catAssets.reduce((s, a) => s + a.valueLakhs, 0) / 100).toFixed(2);
+            // const totalValueCr = (catAssets.reduce((s, a) => s + a.valueLakhs, 0) / 100).toFixed(2);
 
             return (
               <motion.div
@@ -251,14 +251,7 @@ export default function MunicipalAssetDashboard() {
                       </div>
                     </div>
 
-                    <div className={`flex-shrink-0 bg-white/70 group-hover:bg-white/15 group-hover:border-white/25 backdrop-blur-sm border rounded-lg px-2.5 py-1.5 text-right transition-all duration-300`}>
-                      <p className={`text-slate-400 group-hover:text-white/80 text-[8px] font-bold uppercase tracking-widest leading-none transition-colors duration-300`}>
-                        Value
-                      </p>
-                      <p className={`text-slate-900 group-hover:text-white text-xs font-black mt-0.5 leading-none transition-colors duration-300`}>
-                        ₹{totalValueCr} Cr
-                      </p>
-                    </div>
+
                   </div>
                 </div>
 
@@ -279,15 +272,7 @@ export default function MunicipalAssetDashboard() {
                           </p>
                         </div>
                       </div>
-                      <div className="h-6 w-px bg-slate-200" />
-                      <div className="flex flex-col items-end">
-                        <p className={`text-[8px] font-bold uppercase tracking-widest ${t.statLabel} leading-none mb-0.5`}>
-                          Health
-                        </p>
-                        <p className={`text-lg font-black leading-none ${t.statText}`}>
-                          92%
-                        </p>
-                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -330,7 +315,7 @@ export default function MunicipalAssetDashboard() {
           })}
         </div>
       </div>
-      
+
       {/* ── ADD ASSET DRAWER ── */}
       <Drawer
         open={isDrawerOpen}
@@ -356,11 +341,10 @@ export default function MunicipalAssetDashboard() {
             <button
               onClick={handleDrawerSubmit}
               disabled={!drawerData.category || !drawerData.assetType}
-              className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                drawerData.category && drawerData.assetType
-                  ? "bg-blue-600 text-white shadow-lg hover:bg-blue-700 shadow-blue-200"
-                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
-              }`}
+              className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${drawerData.category && drawerData.assetType
+                ? "bg-blue-600 text-white shadow-lg hover:bg-blue-700 shadow-blue-200"
+                : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                }`}
             >
               Start Registration
               <ChevronRight className="size-4" />

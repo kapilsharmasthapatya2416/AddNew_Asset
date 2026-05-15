@@ -22,46 +22,47 @@ export function AssetValuation({ formData, onChange }: AssetValuationProps) {
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
         <Input
-          label="Land Value (₹)"
-          name="landValue"
-          value={formData.landValue}
+          label="Gross Value (₹)"
+          name="grossValue"
+          value={formData.grossValue}
           onChange={onChange}
-          placeholder="e.g. 50,00,000"
+          placeholder="Original Purchase Value"
           type="number"
           required
         />
         <Input
-          label="Building / Structural Value (₹)"
-          name="buildingValue"
-          value={formData.buildingValue}
+          label="Current Book Value (₹)"
+          name="currentBookValue"
+          value={formData.currentBookValue}
           onChange={onChange}
-          placeholder="e.g. 25,00,000"
+          placeholder="Value after Depreciation"
           type="number"
         />
         <Input
-          label="Total Asset Value (₹)"
-          name="totalValue"
-          value={formData.totalValue}
+          label="Market Value (₹)"
+          name="marketValue"
+          value={formData.marketValue}
           onChange={onChange}
-          placeholder="Sum of Land + Building"
+          placeholder="Fair Market Value"
+          type="number"
+        />
+        <Input
+          label="Capital Value (₹)"
+          name="capitalValue"
+          value={formData.capitalValue}
+          onChange={onChange}
+          placeholder="Final Recorded Value"
           type="number"
           readOnly
-          className="bg-slate-50 font-black text-emerald-700"
+          className="bg-emerald-50 font-black text-emerald-700"
         />
         <Input
           label="Valuation Date"
-          name="valuationDate"
-          value={formData.valuationDate}
+          name="lastValuationDate"
+          value={formData.lastValuationDate}
           onChange={onChange}
           type="date"
           required
-        />
-        <Input
-          label="Name of Valuer / Agency"
-          name="valuerName"
-          value={formData.valuerName}
-          onChange={onChange}
-          placeholder="e.g. PWD Valuation Cell"
         />
         <Input
           label="Valuation Report No."

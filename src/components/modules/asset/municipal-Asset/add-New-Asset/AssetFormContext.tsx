@@ -12,20 +12,23 @@ export function AssetFormProvider({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
   
   const [formData, setFormData] = useState<AssetFormData>(() => {
-    const category = searchParams.get("category") || "building";
+    const category = searchParams.get("category") || "BUILDING";
     const assetType = searchParams.get("assetType") || "";
     
     return {
       category,
       assetType,
+      attributes: {},
+      documents: [],
       assetName: "",
       assetCode: "BLD-2024-001",
       propertyNumber: "",
-      upicId: "",
       zone: "",
       ward: "",
       department: "",
-      status: "active",
+      status: "Active",
+      condition: "Good",
+      isRevenueGenerating: "No",
       operationalControl: "self",
       inChargeName: "",
       inChargeDesignation: "",
@@ -72,11 +75,36 @@ export function AssetFormProvider({ children }: { children: ReactNode }) {
   };
 
   const handleToggleChange = (name: string, checked: boolean) => {
-    setFormData((prev) => ({ ...prev, [name]: checked }));
+    setFormData((prev) => {
+      const newData = { ...prev, [name]: checked };
+      
+      // Inheritance logic
+      if (name === "inheritLocation" && checked && prev.parentAssetId) {
+        // Simulated parent data retrieval
+        newData.fullAddress = "Main Municipal Building, Administrative Block, Zone 4";
+        newData.locality = "Civil Lines";
+        newData.landmark = "Opposite District Court";
+        newData.pinCode = "400001";
+        newData.latitude = "19.0760";
+        newData.longitude = "72.8777";
+      }
+      
+      return newData;
+    });
+  };
+
+  const handleAttributeChange = (name: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: {
+        ...prev.attributes,
+        [name]: value,
+      },
+    }));
   };
 
   return (
-    <AssetFormContext.Provider value={{ formData, updateFormData, handleInputChange, handleToggleChange }}>
+    <AssetFormContext.Provider value={{ formData, updateFormData, handleInputChange, handleToggleChange, handleAttributeChange }}>
       {children}
     </AssetFormContext.Provider>
   );

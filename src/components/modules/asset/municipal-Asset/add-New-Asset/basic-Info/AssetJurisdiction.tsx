@@ -19,34 +19,33 @@ export function AssetJurisdiction({ formData, onChange }: AssetWizardStepProps) 
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
         <Select
-          label="Zone"
-          name="zone"
-          value={formData.zone}
+          label="Authority"
+          name="authorityId"
+          value={formData.authorityId}
           onChange={onChange}
           required
           options={[
-            { label: "Zone 1 - Central", value: "zone1" },
-            { label: "Zone 2 - North", value: "zone2" },
-            { label: "Zone 3 - South", value: "zone3" },
-            { label: "Zone 4 - East", value: "zone4" },
-            { label: "Zone 5 - West", value: "zone5" },
+            { label: "ULB (Municipal Council)", value: "ULB" },
+            { label: "MIDC", value: "MIDC" },
+            { label: "CIDCO", value: "CIDCO" },
           ]}
         />
         <Select
-          label="Ward Number"
-          name="ward"
-          value={formData.ward}
+          label="Organization / Office"
+          name="organizationId"
+          value={formData.organizationId}
           onChange={onChange}
           required
-          options={Array.from({ length: 20 }, (_, i) => ({
-            label: `Ward ${i + 1}`,
-            value: `${i + 1}`,
-          }))}
+          options={[
+            { label: "Main Headquarters", value: "HQ" },
+            { label: "Divisional Office - North", value: "DIV_NORTH" },
+            { label: "Divisional Office - South", value: "DIV_SOUTH" },
+          ]}
         />
         <Select
           label="Owning Department"
-          name="department"
-          value={formData.department}
+          name="departmentId"
+          value={formData.departmentId}
           onChange={onChange}
           required
           options={[
@@ -54,20 +53,31 @@ export function AssetJurisdiction({ formData, onChange }: AssetWizardStepProps) 
             { label: "Health & Sanitation", value: "health" },
             { label: "Education", value: "education" },
             { label: "Water Supply", value: "water" },
-            { label: "Administration", value: "admin" },
+            { label: "Estate Management", value: "estate" },
           ]}
         />
         <Select
-          label="Current Status"
-          name="status"
-          value={formData.status}
+          label="Zone (Location Node)"
+          name="zoneId"
+          value={formData.zoneId}
           onChange={onChange}
+          required
           options={[
-            { label: "Active / Functional", value: "active" },
-            { label: "Inactive", value: "inactive" },
-            { label: "Under Maintenance", value: "maintenance" },
-            { label: "Proposed", value: "proposed" },
+            { label: "Central Zone", value: "central" },
+            { label: "Industrial Zone", value: "industrial" },
+            { label: "Residential Zone", value: "residential" },
           ]}
+        />
+        <Select
+          label="Ward (Location Node)"
+          name="wardId"
+          value={formData.wardId}
+          onChange={onChange}
+          required
+          options={Array.from({ length: 10 }, (_, i) => ({
+            label: `Ward No. ${i + 1}`,
+            value: `WARD_${i + 1}`,
+          }))}
         />
         <Select
           label="Operational Control"
@@ -76,23 +86,9 @@ export function AssetJurisdiction({ formData, onChange }: AssetWizardStepProps) 
           onChange={onChange}
           options={[
             { label: "Self Managed", value: "self" },
-            { label: "Outsourced", value: "outsourced" },
-            { label: "PPP Model", value: "ppp" },
+            { label: "Outsourced / Contract", value: "outsourced" },
+            { label: "Leased Out", value: "leased" },
           ]}
-        />
-        <Input
-          label="Last Maintenance Date"
-          name="lastMaintenanceDate"
-          value={formData.lastMaintenanceDate}
-          onChange={onChange}
-          type="date"
-        />
-        <Input
-          label="Next Scheduled Maintenance"
-          name="nextMaintenanceDate"
-          value={formData.nextMaintenanceDate}
-          onChange={onChange}
-          type="date"
         />
       </CardContent>
     </Card>

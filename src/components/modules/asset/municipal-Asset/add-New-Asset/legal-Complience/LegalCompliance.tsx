@@ -101,6 +101,16 @@ export function LegalCompliance({ formData, onToggle, onChange }: LegalComplianc
           </div>
         </div>
       </CardContent>
+      <div className="px-4 pb-4">
+        <label className="block text-[10px] font-black text-slate-700 uppercase tracking-widest mb-1.5 ml-1">Compliance Remarks</label>
+        <textarea
+            name="complianceRemarks"
+            value={formData.complianceRemarks || ""}
+            onChange={onChange as any}
+            className="w-full min-h-[60px] p-3 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all bg-red-50/20"
+            placeholder="Enter any legal or safety remarks..."
+        />
+      </div>
     </Card>
   );
 }

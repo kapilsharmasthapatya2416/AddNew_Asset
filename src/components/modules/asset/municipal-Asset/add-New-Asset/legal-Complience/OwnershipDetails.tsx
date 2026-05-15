@@ -68,6 +68,21 @@ export function OwnershipDetails({ formData, onChange }: AssetWizardStepProps) {
           type="date"
         />
         <Input
+          label="Purchase Value / Cost"
+          name="purchaseValue"
+          value={formData.purchaseValue}
+          onChange={onChange}
+          type="number"
+          placeholder="0.00"
+        />
+        <Input
+          label="Vendor / Donor Name"
+          name="vendorName"
+          value={formData.vendorName}
+          onChange={onChange}
+          placeholder="e.g. ABC Developers"
+        />
+        <Input
           label="Lease / Rent Period (Yrs)"
           name="leasePeriod"
           value={formData.leasePeriod}

@@ -5,35 +5,20 @@ import { Select, Card, CardHeader, CardTitle, CardContent } from "@/components/c
 import { ClipboardList, Search } from "lucide-react";
 
 import { AssetWizardStepProps } from "@/types/asset-wizard.types";
+import { HARDCODED_ASSET_DATA } from "../constants";
 
 export function AssetCategoryType({ formData, onChange }: AssetWizardStepProps) {
-  const categoryToTypes: Record<string, { label: string; value: string }[]> = {
-    building: [
-      { label: "Municipal Office", value: "Municipal Office" },
-      { label: "Health Facility", value: "Health Facility" },
-      { label: "Educational", value: "Educational" },
-      { label: "Public Service", value: "Public Service" },
-    ],
-    land: [
-      { label: "Open Space", value: "open_space" },
-      { label: "Park / Garden", value: "park" },
-      { label: "Playground", value: "playground" },
-      { label: "Parking Lot", value: "parking" },
-    ],
-    infrastructure: [
-      { label: "Road / Bridge", value: "road" },
-      { label: "Water Tank", value: "water_tank" },
-      { label: "Sewerage Plant", value: "sewerage" },
-      { label: "Street Lighting", value: "lighting" },
-    ],
-    movable: [
-      { label: "Vehicle", value: "vehicle" },
-      { label: "Machinery", value: "machinery" },
-      { label: "IT Equipment", value: "it_equip" },
-    ],
-  };
+  const categoryOptions = Object.entries(HARDCODED_ASSET_DATA).map(([key, data]: [string, any]) => ({
+    label: data.label,
+    value: key,
+  }));
 
-  const typeOptions = categoryToTypes[formData.category] || [];
+  const typeOptions = formData.category && HARDCODED_ASSET_DATA[formData.category]
+    ? Object.entries(HARDCODED_ASSET_DATA[formData.category].types).map(([key, data]: [string, any]) => ({
+        label: data.label,
+        value: key,
+      }))
+    : [];
 
   return (
     <Card variant="bordered" padding="md" className="shadow-lg border-blue-200 bg-white max-w-4xl mx-auto mt-10">
@@ -57,12 +42,7 @@ export function AssetCategoryType({ formData, onChange }: AssetWizardStepProps) 
             onChange={onChange}
             required
             className="h-12"
-            options={[
-                { label: "Building", value: "building" },
-                { label: "Land", value: "land" },
-                { label: "Infrastructure", value: "infrastructure" },
-                { label: "Movable", value: "movable" },
-            ]}
+            options={categoryOptions}
             />
             <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest px-1">Primary Classification</p>
         </div>

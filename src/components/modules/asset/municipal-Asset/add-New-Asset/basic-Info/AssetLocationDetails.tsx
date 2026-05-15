@@ -2,13 +2,24 @@
 
 import React from "react";
 import { Input, Card, CardHeader, CardTitle, CardContent } from "@/components/common";
-import { MapPin, Ruler } from "lucide-react";
+import { MapPin, Ruler, Map as MapIcon } from "lucide-react";
 import { useAssetForm } from "../AssetFormContext";
+import { MapPicker } from "./MapPicker";
 
 import { AssetWizardStepProps } from "@/types/asset-wizard.types";
 
 export function AssetLocationDetails({ formData, onChange }: AssetWizardStepProps) {
-  const isLand = formData.category === "land";
+  const { updateFormData, handleToggleChange } = useAssetForm();
+  const [isMapOpen, setIsMapOpen] = React.useState(false);
+  const isLand = formData.category === "LAND";
+  const isMovable = formData.category === "MOVABLE";
+  const typesWithGeo = ["CCTV_CAMERAS", "IOT_SENSORS", "TRAFFIC_SIGNALS"];
+  const showGeo = !isMovable || typesWithGeo.includes(formData.assetType);
+
+  const handleMapSelect = (lat: string, lng: string) => {
+    updateFormData({ latitude: lat, longitude: lng });
+    setIsMapOpen(false);
+  };
 
   return (
     <Card variant="bordered" padding="sm" className="shadow-sm border-violet-100 mt-4">
@@ -21,6 +32,15 @@ export function AssetLocationDetails({ formData, onChange }: AssetWizardStepProp
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Map Picker Modal */}
+        <MapPicker 
+          isOpen={isMapOpen} 
+          onClose={() => setIsMapOpen(false)} 
+          onSelect={handleMapSelect}
+          initialLat={formData.latitude}
+          initialLng={formData.longitude}
+        />
+
         {isLand && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3 p-3 bg-violet-50/50 rounded-xl border border-violet-100 mb-2 animate-in slide-in-from-top-2 duration-300">
             <div className="flex items-center gap-2 col-span-full mb-1">
@@ -54,54 +74,109 @@ export function AssetLocationDetails({ formData, onChange }: AssetWizardStepProp
           </div>
         )}
 
-        <Input
-          label="Full Postal Address"
-          name="fullAddress"
-          value={formData.fullAddress}
-          onChange={onChange}
-          placeholder="Detailed street address, building name, etc."
-          required
-          fullWidth
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
+        {formData.parentAssetId && (
+          <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-2xl flex items-center justify-between gap-4 mb-2 animate-in fade-in slide-in-from-left-4 duration-500">
+            <div className="flex items-center gap-3">
+              <div className="bg-emerald-600 p-2 rounded-xl shadow-lg shadow-emerald-200">
+                 <MapPin className="size-4 text-white" />
+              </div>
+              <div>
+                <h4 className="text-[11px] font-black text-emerald-800 uppercase tracking-tighter">Location Inheritance Available</h4>
+                <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-tight">Sync address and coordinates from Parent Asset</p>
+              </div>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer group">
+              <input 
+                type="checkbox" 
+                className="sr-only peer"
+                checked={!!formData.inheritLocation}
+                onChange={(e) => handleToggleChange("inheritLocation", e.target.checked)}
+              />
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600 shadow-inner group-hover:ring-4 group-hover:ring-emerald-50" />
+              <span className="ml-3 text-[10px] font-black text-slate-700 uppercase tracking-widest">Inherit</span>
+            </label>
+          </div>
+        )}
+
+        <div className={`space-y-4 transition-all duration-500 ${formData.inheritLocation ? "opacity-60 pointer-events-none grayscale-[0.5]" : ""}`}>
           <Input
-            label="Locality / Area"
-            name="locality"
-            value={formData.locality}
+            label="Full Postal Address"
+            name="fullAddress"
+            value={formData.fullAddress}
             onChange={onChange}
-            placeholder="e.g. Shivaji Nagar"
+            placeholder="Detailed street address, building name, etc."
+            required
+            fullWidth
+            disabled={!!formData.inheritLocation}
           />
-          <Input
-            label="Landmark"
-            name="landmark"
-            value={formData.landmark}
-            onChange={onChange}
-            placeholder="e.g. Opposite Central Bus Stand"
-          />
-          <Input
-            label="Pin Code"
-            name="pinCode"
-            value={formData.pinCode}
-            onChange={onChange}
-            placeholder="6-digit code"
-            maxLength={6}
-          />
-          <Input
-            label="Latitude"
-            name="latitude"
-            value={formData.latitude}
-            onChange={onChange}
-            placeholder="e.g. 19.0760"
-          />
-          <Input
-            label="Longitude"
-            name="longitude"
-            value={formData.longitude}
-            onChange={onChange}
-            placeholder="e.g. 72.8777"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-3">
+            <Input
+              label="Locality / Area"
+              name="locality"
+              value={formData.locality}
+              onChange={onChange}
+              placeholder="e.g. Shivaji Nagar"
+              disabled={!!formData.inheritLocation}
+            />
+            <Input
+              label="Landmark"
+              name="landmark"
+              value={formData.landmark}
+              onChange={onChange}
+              placeholder="e.g. Opposite Central Bus Stand"
+              disabled={!!formData.inheritLocation}
+            />
+            <Input
+              label="Pin Code"
+              name="pinCode"
+              value={formData.pinCode}
+              onChange={onChange}
+              placeholder="6-digit code"
+              maxLength={6}
+              disabled={!!formData.inheritLocation}
+            />
+          {showGeo && (
+            <>
+              <div className="relative">
+                <Input
+                  label="Latitude"
+                  name="latitude"
+                  value={formData.latitude}
+                  onChange={onChange}
+                  placeholder="e.g. 19.0760"
+                  disabled={!!formData.inheritLocation}
+                />
+              </div>
+              <div className="relative">
+                <Input
+                  label="Longitude"
+                  name="longitude"
+                  value={formData.longitude}
+                  onChange={onChange}
+                  placeholder="e.g. 72.8777"
+                  disabled={!!formData.inheritLocation}
+                />
+              </div>
+              <div className="flex items-end">
+                <button 
+                  type="button"
+                  onClick={() => setIsMapOpen(true)}
+                  disabled={!!formData.inheritLocation}
+                  className={`w-full h-10 flex items-center justify-center gap-2 border rounded-xl transition-all font-black text-[10px] uppercase tracking-widest shadow-sm ${
+                    formData.inheritLocation 
+                      ? "bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed" 
+                      : "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600"
+                  }`}
+                >
+                  <MapIcon className="size-4" />
+                  Pick from Map
+                </button>
+              </div>
+            </>
+          )}
         </div>
-      </CardContent>
-    </Card>
-  );
+      </div>
+    </CardContent>
+  </Card>
+);
 }
