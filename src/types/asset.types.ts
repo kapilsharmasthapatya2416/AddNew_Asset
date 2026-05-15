@@ -348,10 +348,6 @@ export interface ConfigurationMasterProps {
   initialScreenConfigs?: ScreenConfig[];
 }
 
-export interface ScreenFieldsMasterShellProps {
-  initialScreenConfigs: ScreenConfig[];
-}
-
 export type GroupedScreenField = ScreenField & {
   sourceSectionId?: string;
   sourceSectionLabel?: string;
@@ -387,20 +383,10 @@ export interface FieldListProps {
   sectionName?: string;
 }
 
-export interface FieldListShellProps {
-  sections: ScreenSection[];
-  sectionName?: string;
-  screenId?: string;
-}
-
 export interface ScreenListProps {
   screens: ScreenConfig[];
   selectedScreenId: string | null;
   onScreenSelect: (screenId: string) => void;
-}
-
-export interface ScreenListShellProps {
-  initialScreens: ScreenConfig[];
 }
 
 export interface SectionListProps {
@@ -416,11 +402,6 @@ export interface SectionGroup {
   sections: ScreenSection[];
   fieldsCount: number;
   firstOrder: number;
-}
-
-export interface SectionListShellProps {
-  initialSections: ScreenSection[];
-  screenName?: string;
 }
 
 export interface InlineMultiSelectOption {

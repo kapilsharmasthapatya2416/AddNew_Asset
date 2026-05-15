@@ -3,7 +3,7 @@ import { ScreenItem } from '@/types/asset.types';
 export const PROJECT_SCREEN_CATALOG: ScreenItem[] = [
   { screenCode: "asset_dash", screenPath: "/dashboard" },
   { screenCode: "map_viewer", screenPath: "/map-viewer" },
-  { screenCode: "assets", screenPath: "/assets" },
+  { screenCode: "assets", screenPath: "/asset/municipal-Asset" },
   { screenCode: "maintenance", screenPath: "/maintenance/dashboard" },
   { screenCode: "change_detection", screenPath: "/change-detection" },
   { screenCode: "inventory", screenPath: "/inventory-dashboard" },

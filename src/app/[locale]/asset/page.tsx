@@ -1,5 +1,5 @@
 import { MainLayout } from '@/components/layout';
-import { AssetSidebar } from '@/components/modules/asset/AssetSidebar';
+import { AssetSidebar } from '@/components/layout/AssetSidebar';
 
 /**
  * Asset Module Page - Server Component

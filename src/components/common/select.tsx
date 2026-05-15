@@ -19,7 +19,7 @@ export interface SelectProps {
   selectSize?: "sm" | "md";
   disabled?: boolean;
  
-  /* Added */
+  name?: string;
   label?: string;
   required?: boolean;
   error?: string;
@@ -33,6 +33,7 @@ export function Select({
   className = "",
   selectSize = "md",
   disabled = false,
+  name,
   label,
   required,
   error,
@@ -48,7 +49,14 @@ export function Select({
   const handleSelect = (val: string) => {
     setInternalValue(val);
     setOpen(false);
-    onChange?.(val);
+    if (onChange) {
+      if (name) {
+        // Pass a mock event object for compatibility with handleInputChange
+        onChange({ target: { name, value: val } } as any);
+      } else {
+        onChange(val as any);
+      }
+    }
   };
  
   const selectedLabel = options.find(

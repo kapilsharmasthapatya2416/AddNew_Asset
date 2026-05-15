@@ -14,7 +14,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
  * Follows accessibility best practices
  */
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, helperText, fullWidth = false, id, disabled, required, ...props }, ref) => {
+  (props, ref) => {
+    const { className, label, error, helperText, fullWidth = false, id, disabled, required, value, ...rest } = props;
     const generatedId = useId();
     const inputId = id || `input-${generatedId}`;
 
@@ -40,11 +41,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className
           )}
           disabled={disabled}
+          value={value ?? ''}
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={
             error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
           }
-          {...props}
+          {...rest}
         />
         {error && (
           <span id={`${inputId}-error`} className="mt-1 text-sm text-red-600">
