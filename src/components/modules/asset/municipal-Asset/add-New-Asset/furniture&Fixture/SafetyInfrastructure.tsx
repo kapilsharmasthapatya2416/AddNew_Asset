@@ -36,7 +36,7 @@ export function SafetyInfrastructure({ formData, onToggle, onChange }: SafetyInf
               <ToggleSwitch
                 checked={formData[item.toggle]}
                 onChange={(checked) => onToggle(item.toggle, checked)}
-                size="sm"
+
               />
             </div>
             <Input

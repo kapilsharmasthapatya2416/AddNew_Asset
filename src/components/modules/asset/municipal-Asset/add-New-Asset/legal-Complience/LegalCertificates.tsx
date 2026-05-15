@@ -103,7 +103,7 @@ function CertificateEntry({
         <ToggleSwitch
           checked={isAvailable}
           onChange={(checked) => onToggle(toggleName, checked)}
-          size="sm"
+
         />
       </div>
       <div className={`grid grid-cols-2 gap-2 transition-opacity duration-300 ${isAvailable ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>

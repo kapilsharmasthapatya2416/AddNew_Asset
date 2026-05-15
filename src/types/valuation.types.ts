@@ -53,7 +53,7 @@ export interface ValuationDetailSectionData {
   totalValue: number;
 }
 
-export type ValuationDetailsData = Record<ValuationDetailSection, ValuationDetailSectionData>;
+export type ValuationDetailsData = Record<string, any>;
 
 export interface ValuationPageData {
   category: AssetCategory;

@@ -29,7 +29,7 @@ export function LegalCompliance({ formData, onToggle, onChange }: LegalComplianc
             <ToggleSwitch
               checked={formData.encroachmentIdentified}
               onChange={(checked) => onToggle("encroachmentIdentified", checked)}
-              size="sm"
+
             />
           </div>
           <Select
@@ -57,7 +57,7 @@ export function LegalCompliance({ formData, onToggle, onChange }: LegalComplianc
             <ToggleSwitch
               checked={formData.litigationCourtCase}
               onChange={(checked) => onToggle("litigationCourtCase", checked)}
-              size="sm"
+
             />
           </div>
           <Select
@@ -96,7 +96,7 @@ export function LegalCompliance({ formData, onToggle, onChange }: LegalComplianc
             <ToggleSwitch
               checked={formData.safetyRiskIdentified}
               onChange={(checked) => onToggle("safetyRiskIdentified", checked)}
-              size="sm"
+
             />
           </div>
         </div>

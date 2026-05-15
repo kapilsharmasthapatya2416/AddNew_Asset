@@ -1,13 +1,13 @@
 import {
   Building2,
 } from 'lucide-react';
-import { SidebarSection } from '@/types/asset.types';
+import { SidebarSection, MenuItem } from '@/types/asset.types';
 
-export const sidebarItems = [
+export const sidebarItems: MenuItem[] = [
   { id: 'assets', label: 'Municipal Assets', icon: Building2, route: '/asset/municipal-Asset' },
 ];
 
-export const secondarySidebarItems = [];
+export const secondarySidebarItems: MenuItem[] = [];
 
 export const ASSET_MENU_SECTIONS: SidebarSection[] = [];
 

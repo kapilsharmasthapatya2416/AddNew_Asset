@@ -6,11 +6,19 @@ import { AssetMediaGallery } from "./AssetMediaGallery";
 import { useAssetForm } from "../AssetFormContext";
 import { HARDCODED_ASSET_DATA } from "../constants";
 
+interface DocumentItem {
+  id: string;
+  name: string;
+  isRequired: boolean;
+  isUploaded: boolean;
+  fileName: string;
+}
+
 export default function DocumentsPage() {
   const { formData, updateFormData } = useAssetForm();
   
   // Local state for UI responsiveness, but could be synced to context
-  const [documents, setDocuments] = useState(() => {
+  const [documents, setDocuments] = useState<DocumentItem[]>(() => {
     // If documents already in context, use them
     if (formData.documents && formData.documents.length > 0) {
         return formData.documents;

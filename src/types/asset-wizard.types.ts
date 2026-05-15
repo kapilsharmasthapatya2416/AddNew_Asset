@@ -37,3 +37,8 @@ export interface AssetWizardStepProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onToggleChange?: (name: string, checked: boolean) => void;
 }
+
+export interface AssetStepperProps {
+  currentStepId: number;
+  steps: AssetFormStepConfig[];
+}

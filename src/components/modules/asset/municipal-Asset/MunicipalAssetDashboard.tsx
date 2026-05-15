@@ -353,7 +353,7 @@ export default function MunicipalAssetDashboard() {
         }
       >
         <div className="p-4 bg-slate-50/50 min-h-full">
-          <AssetCategoryType formData={drawerData} onChange={handleDrawerChange} />
+          <AssetCategoryType formData={drawerData as any} onChange={handleDrawerChange} />
         </div>
       </Drawer>
     </div>

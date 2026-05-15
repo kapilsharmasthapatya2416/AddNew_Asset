@@ -12,7 +12,8 @@ export type ButtonVariant =
   | "danger" 
   | "success"
   | "edit"
-  | "delete";
+  | "delete"
+  | "outline";
 
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
@@ -78,8 +79,9 @@ export function Button({
     ghost: "text-gray-600 hover:bg-gray-100",
     danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
     success: "bg-green-600 text-white hover:bg-green-700 shadow-sm",
-     edit: "text-[#1A86E8] hover:bg-blue-50 border border-blue-400 hover:shadow-md hover:scale-105",
+    edit: "text-[#1A86E8] hover:bg-blue-50 border border-blue-400 hover:shadow-md hover:scale-105",
     delete: "text-red-500 hover:bg-red-50 border border-red-400 hover:shadow-md hover:scale-105",
+    outline: "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50",
   };
 
   return (

@@ -6,6 +6,7 @@ import {
   FileText,
 } from "lucide-react";
 import { AssetFormStepConfig } from "@/types/asset-wizard.types";
+export type { AssetFormStepConfig };
 
 export const ALL_ASSET_FORM_STEPS: AssetFormStepConfig[] = [
   {

@@ -54,7 +54,7 @@ export default function ValuationDetailsDrawer({
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const meta = section ? details[section] : null;
-  const Icon = meta ? iconMap[meta.iconKey] : Building2;
+  const Icon = meta ? iconMap[meta.iconKey as keyof typeof iconMap] : Building2;
   const tableColumns = meta ? toTableColumns(meta.columns) : [];
   const tableRows = meta ? withRowIds(meta.rows) : [];
   const totalCount = tableRows.length;

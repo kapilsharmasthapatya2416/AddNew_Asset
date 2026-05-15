@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { ChevronLeft } from "lucide-react";
 import { AssetStepper } from "@/components/modules/asset/municipal-Asset/add-New-Asset/assetStepper";
 import { AssetFormFooter } from "@/components/modules/asset/municipal-Asset/add-New-Asset/assetFooter";
@@ -15,9 +16,11 @@ interface AssetStepShellProps {
 
 export function AssetStepShell({ children }: AssetStepShellProps) {
   return (
-    <AssetFormProvider>
-      <AssetStepShellContent>{children}</AssetStepShellContent>
-    </AssetFormProvider>
+    <Suspense fallback={<div className="flex items-center justify-center h-20 text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Initializing Asset Wizard...</div>}>
+      <AssetFormProvider>
+        <AssetStepShellContent>{children}</AssetStepShellContent>
+      </AssetFormProvider>
+    </Suspense>
   );
 }
 

@@ -13,7 +13,7 @@ export interface Option {
 export interface SelectProps {
   options: Option[];
   value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: any) => void;
   placeholder?: string;
   className?: string;
   selectSize?: "sm" | "md";

@@ -1,7 +1,7 @@
 // Field ID Migration Utility
 // Converts old numbered field IDs (field_a_001) to descriptive IDs (field_category)
 
-import { ScreenConfig } from '../data/types/screenFields';
+import { ScreenConfig } from '@/types/asset.types';
 
 /**
  * Migrates field IDs from old numbered format to new descriptive format
